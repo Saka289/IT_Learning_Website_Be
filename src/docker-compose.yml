@@ -1,0 +1,29 @@
+#docker-compose
+name: myapp
+
+services:
+  educationDB:
+    image: mysql:8.0.37
+  
+  cacheDB:
+    image: redis:alpine
+  
+  #infrastructure section
+  
+  #api section
+  lw.api:
+    image: ${DOCKER_REGISTRY-}lw-api:${PLATFORM:-linux}-${TAG:-latest}
+    build:
+      context: .
+      dockerfile: LW.API/Dockerfile
+
+#network section
+networks:
+  default:
+    name: network_service
+    driver: bridge
+
+#vollumes section
+volumes:
+  mysql_data:
+    name: mysql_data
