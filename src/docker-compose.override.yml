@@ -1,0 +1,39 @@
+#docker-compose.override
+name: myapp
+
+services:
+  #database section
+  
+  #educationDB: mysql
+  educationDB:
+    container_name: educationDB
+    environment:
+      MYSQL_ROOT_PASSWORD: "admin@1234"
+    restart: always
+    volumes:
+      - mysql_data:/var/lib/mysql
+    ports:
+      - "3306:3306"
+
+  #cacheDB: redis
+  cacheDB:
+    container_name: cacheDB
+    restart: always
+    ports:
+      - "6379:6379"
+
+  #infrastructure section
+  
+  
+  #microservices api section
+  lw.api:
+    container_name: lw.api
+    environment:
+      - ASPNETCORE_ENVIRONMENT=Development
+      - ASPNETCORE_URLS=http://+:80
+      - "ConnectionStrings:DefaultConnectionString=Server=educationDB,Port=3306;Database=Database;Uid=root;Pwd=admin@1234;"
+    depends_on:
+      - productdb
+    ports:
+      - "6002:80"
+    restart: always
