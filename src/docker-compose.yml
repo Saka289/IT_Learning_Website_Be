@@ -10,12 +10,12 @@ services:
   
   #infrastructure section
   
-  #api section
-  lw.api:
-    image: ${DOCKER_REGISTRY-}lw-api:${PLATFORM:-linux}-${TAG:-latest}
-    build:
-      context: .
-      dockerfile: LW.API/Dockerfile
+#  #api section
+#  lw.api:
+#    image: ${DOCKER_REGISTRY-}lw-api:${PLATFORM:-linux}-${TAG:-latest}
+#    build:
+#      context: .
+#      dockerfile: LW.API/Dockerfile
 
 #network section
 networks:
