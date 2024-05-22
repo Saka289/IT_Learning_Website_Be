@@ -74,6 +74,6 @@ docker-compose down
 - dotnet build
 - Migration commands for Sample API:
   - cd into Sample folder
-  - dotnet ef migrations add "SampleMigration" -p Sample.Infrastructure --startup-project Sample.API --output-dir Persistence/Migrations
-  - dotnet ef migrations remove -p Sample.Infrastructure --startup-project Sample.API
-  - dotnet ef database update -p Sample.Infrastructure --startup-project Sample.API
+  - dotnet ef migrations add "SampleMigration" -p Libraries/Sample.Data --startup-project Sample.API --output-dir Persistence/Migrations
+  - dotnet ef migrations remove -p Libraries/Sample.Data --startup-project Sample.API
+  - dotnet ef database update -p Libraries/Sample.Data --startup-project Sample.API
