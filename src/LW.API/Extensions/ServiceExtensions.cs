@@ -1,7 +1,15 @@
-﻿using LW.Data.Common;
+﻿using System.Text;
+using LW.Data.Common;
 using LW.Data.Common.Interfaces;
+using LW.Data.Entities;
 using LW.Data.Persistence;
+using LW.Infrastructure.Extensions;
+using LW.Shared.Configurations;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.IdentityModel.Tokens;
+using Microsoft.OpenApi.Models;
 using Pomelo.EntityFrameworkCore.MySql.Infrastructure;
 using MySqlConnector;
 
@@ -9,23 +17,93 @@ namespace LW.API.Extensions;
 
 public static class ServiceExtensions
 {
+    internal static IServiceCollection AddConfigurationSettings(this IServiceCollection services,
+        IConfiguration configuration)
+    {
+        var jwtSettings = configuration.GetSection(nameof(JwtSettings)).Get<JwtSettings>();
+        services.AddSingleton(jwtSettings);
+
+        return services;
+    }
+
     public static IServiceCollection AddInfrastructure(this IServiceCollection services, IConfiguration configuration)
     {
         // Add services to the container.
         services.AddControllers();
         services.Configure<RouteOptions>(options => options.LowercaseUrls = true);
+        services.AddIdentity<ApplicationUser, IdentityRole>(options =>
+            {
+                options.SignIn.RequireConfirmedEmail = true;
+            }).AddEntityFrameworkStores<AppDbContext>()
+            .AddSignInManager<SignInManager<ApplicationUser>>()
+            .AddDefaultTokenProviders();
 
         // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
         services.AddEndpointsApiExplorer();
-        services.AddSwaggerGen();
-        services.ConfigureProductDbContext(configuration);
+        services.AddSwaggerGen(option =>
+        {
+            option.AddSecurityDefinition(name: JwtBearerDefaults.AuthenticationScheme,
+                securityScheme: new OpenApiSecurityScheme()
+                {
+                    Name = "Authorization",
+                    Description = "Enter the Bearer Authorization string as following: `Bearer Generated-JWT-Token`",
+                    In = ParameterLocation.Header,
+                    Type = SecuritySchemeType.ApiKey,
+                    BearerFormat = "JWT",
+                    Scheme = "Bearer"
+                });
+            option.AddSecurityRequirement(new OpenApiSecurityRequirement
+            {
+                {
+                    new OpenApiSecurityScheme
+                    {
+                        Reference = new OpenApiReference
+                        {
+                            Type = ReferenceType.SecurityScheme,
+                            Id = JwtBearerDefaults.AuthenticationScheme
+                        }
+                    },
+                    new List<string>()
+                }
+            });
+        });
+        services.ConfigureAppDbContext(configuration);
         services.AddInfrastructureServices();
         services.AddAutoMapper(cfg => cfg.AddProfile(new MappingProfile()));
 
         return services;
     }
 
-    private static IServiceCollection ConfigureProductDbContext(this IServiceCollection services,
+    public static WebApplicationBuilder AddAppAuthentication(this WebApplicationBuilder builder)
+    {
+        var settings = builder.Services.GetOptions<JwtSettings>(nameof(JwtSettings));
+
+        var key = Encoding.ASCII.GetBytes(settings.Secret);
+
+        builder.Services.AddAuthentication(x =>
+        {
+            x.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
+            x.DefaultChallengeScheme = JwtBearerDefaults.AuthenticationScheme;
+            x.DefaultScheme = JwtBearerDefaults.AuthenticationScheme;
+        }).AddJwtBearer(x =>
+        {
+            x.SaveToken = true;
+            x.RequireHttpsMetadata = false;
+            x.TokenValidationParameters = new TokenValidationParameters()
+            {
+                ValidateIssuerSigningKey = true,
+                IssuerSigningKey = new SymmetricSecurityKey(key),
+                ValidateIssuer = true,
+                ValidIssuer = settings.Issuer,
+                ValidAudience = settings.Audience,
+                ValidateAudience = true,
+            };
+        });
+
+        return builder;
+    }
+
+    private static IServiceCollection ConfigureAppDbContext(this IServiceCollection services,
         IConfiguration configuration)
     {
         var connectionString = configuration.GetConnectionString("DefaultConnectionString");

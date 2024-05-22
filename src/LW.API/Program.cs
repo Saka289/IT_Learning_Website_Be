@@ -13,8 +13,12 @@ try
     builder.Host.UseSerilog(Serilogger.Configure);
 
     builder.Host.AddAppConfiguration();
-
+    
     builder.Services.AddInfrastructure(builder.Configuration);
+    
+    builder.Services.AddConfigurationSettings(builder.Configuration);
+
+    builder.AddAppAuthentication();
 
     var app = builder.Build();
 
