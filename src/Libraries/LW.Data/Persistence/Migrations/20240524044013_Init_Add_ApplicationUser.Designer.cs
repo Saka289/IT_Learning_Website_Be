@@ -11,7 +11,7 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace LW.Data.Persistence.Migrations
 {
     [DbContext(typeof(AppDbContext))]
-    [Migration("20240522160104_Init_Add_ApplicationUser")]
+    [Migration("20240524044013_Init_Add_ApplicationUser")]
     partial class Init_Add_ApplicationUser
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -96,7 +96,47 @@ namespace LW.Data.Persistence.Migrations
                         .IsUnique()
                         .HasDatabaseName("UserNameIndex");
 
-                    b.ToTable("AspNetUsers", (string)null);
+                    b.ToTable("Users", (string)null);
+
+                    b.HasData(
+                        new
+                        {
+                            Id = "6f28ca18-e21a-45a8-acf9-7796ed0ca66c",
+                            AccessFailedCount = 0,
+                            ConcurrencyStamp = "f3ffa80e-691f-4e99-ac1d-777413d1b578",
+                            Email = "admin@gmail.com",
+                            EmailConfirmed = true,
+                            FirstName = "Frank",
+                            LastName = "Lotus",
+                            LockoutEnabled = false,
+                            NormalizedEmail = "ADMIN@GMAIL.COM",
+                            NormalizedUserName = "ADMIN",
+                            PasswordHash = "AQAAAAEAACcQAAAAEIf1ySMPJysLVYC3qQ7DXfvgFevJ9xSC3kkrHsmsIiidbalpYt8VwIxH1/p9h7gb5w==",
+                            PhoneNumber = "1234567890",
+                            PhoneNumberConfirmed = false,
+                            SecurityStamp = "e8bd0ae2-8af9-4761-a7c1-0718770f3e19",
+                            TwoFactorEnabled = false,
+                            UserName = "admin"
+                        },
+                        new
+                        {
+                            Id = "e5579d95-df4e-42db-9cd3-eeb8adf6cb9b",
+                            AccessFailedCount = 0,
+                            ConcurrencyStamp = "b6b15da7-1396-402d-963a-d2492c0fae08",
+                            Email = "user@gmail.com",
+                            EmailConfirmed = true,
+                            FirstName = "Frank",
+                            LastName = "Cadi",
+                            LockoutEnabled = false,
+                            NormalizedEmail = "USER@GMAIL.COM",
+                            NormalizedUserName = "USER",
+                            PasswordHash = "AQAAAAEAACcQAAAAEO6kBWUXOQ3g+tpCvma3J+/jHge16L17s9o+zl5KVRSqLCIiclufL98j2g1Jn5QZ+g==",
+                            PhoneNumber = "1234567890",
+                            PhoneNumberConfirmed = false,
+                            SecurityStamp = "8978ce0c-4766-4969-ae0e-ce37035495ab",
+                            TwoFactorEnabled = false,
+                            UserName = "user"
+                        });
                 });
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityRole", b =>
@@ -122,7 +162,23 @@ namespace LW.Data.Persistence.Migrations
                         .IsUnique()
                         .HasDatabaseName("RoleNameIndex");
 
-                    b.ToTable("AspNetRoles", (string)null);
+                    b.ToTable("Roles", (string)null);
+
+                    b.HasData(
+                        new
+                        {
+                            Id = "cd288b95-c972-4643-af81-c40f971acee0",
+                            ConcurrencyStamp = "ca53864c-d00c-478d-bcae-ba641a54592c",
+                            Name = "User",
+                            NormalizedName = "USER"
+                        },
+                        new
+                        {
+                            Id = "844802e1-e6ca-4ea4-b80e-cc77bc4d26ae",
+                            ConcurrencyStamp = "808965ce-eede-4e38-aecb-74201ce01b5a",
+                            Name = "Admin",
+                            NormalizedName = "ADMIN"
+                        });
                 });
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityRoleClaim<string>", b =>
@@ -145,7 +201,7 @@ namespace LW.Data.Persistence.Migrations
 
                     b.HasIndex("RoleId");
 
-                    b.ToTable("AspNetRoleClaims", (string)null);
+                    b.ToTable("RoleClaims", (string)null);
                 });
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityUserClaim<string>", b =>
@@ -168,7 +224,7 @@ namespace LW.Data.Persistence.Migrations
 
                     b.HasIndex("UserId");
 
-                    b.ToTable("AspNetUserClaims", (string)null);
+                    b.ToTable("UserClaims", (string)null);
                 });
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityUserLogin<string>", b =>
@@ -190,7 +246,7 @@ namespace LW.Data.Persistence.Migrations
 
                     b.HasIndex("UserId");
 
-                    b.ToTable("AspNetUserLogins", (string)null);
+                    b.ToTable("UserLogins", (string)null);
                 });
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityUserRole<string>", b =>
@@ -205,7 +261,19 @@ namespace LW.Data.Persistence.Migrations
 
                     b.HasIndex("RoleId");
 
-                    b.ToTable("AspNetUserRoles", (string)null);
+                    b.ToTable("UserRoles", (string)null);
+
+                    b.HasData(
+                        new
+                        {
+                            UserId = "6f28ca18-e21a-45a8-acf9-7796ed0ca66c",
+                            RoleId = "844802e1-e6ca-4ea4-b80e-cc77bc4d26ae"
+                        },
+                        new
+                        {
+                            UserId = "e5579d95-df4e-42db-9cd3-eeb8adf6cb9b",
+                            RoleId = "cd288b95-c972-4643-af81-c40f971acee0"
+                        });
                 });
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityUserToken<string>", b =>
@@ -224,7 +292,7 @@ namespace LW.Data.Persistence.Migrations
 
                     b.HasKey("UserId", "LoginProvider", "Name");
 
-                    b.ToTable("AspNetUserTokens", (string)null);
+                    b.ToTable("UserTokens", (string)null);
                 });
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityRoleClaim<string>", b =>
