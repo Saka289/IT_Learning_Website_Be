@@ -20,6 +20,7 @@
           <PrivateAssets>all</PrivateAssets>
           <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
         </PackageReference>
+        <PackageReference Include="Microsoft.VisualStudio.Web.CodeGeneration.Design" Version="6.0.16" />
         <PackageReference Include="Pomelo.EntityFrameworkCore.MySql" Version="6.0.3" />
         <PackageReference Include="Swashbuckle.AspNetCore" Version="6.5.0"/>
     </ItemGroup>
@@ -35,6 +36,7 @@
       <ProjectReference Include="..\BuildingBlocks\LW.Logging\LW.Logging.csproj" />
       <ProjectReference Include="..\BuildingBlocks\LW.Shared\LW.Shared.csproj" />
       <ProjectReference Include="..\Libraries\LW.Data\LW.Data.csproj" />
+      <ProjectReference Include="..\Libraries\LW.Services\LW.Services.csproj" />
     </ItemGroup>
 
 </Project>

@@ -4,6 +4,7 @@ using LW.Data.Common.Interfaces;
 using LW.Data.Entities;
 using LW.Data.Persistence;
 using LW.Infrastructure.Extensions;
+using LW.Services.AdminServices;
 using LW.Shared.Configurations;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Identity;
@@ -122,6 +123,7 @@ public static class ServiceExtensions
     private static IServiceCollection AddInfrastructureServices(this IServiceCollection services)
     {
         services.AddScoped(typeof(IUnitOfWork), typeof(UnitOfWork));
+        services.AddScoped<IAdminAuthorService,AdminAuthorService>();
         return services;
     }
 }
