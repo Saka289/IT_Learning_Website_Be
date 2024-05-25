@@ -7,5 +7,4 @@ public class RoleConstant
     public const string RoleStaff = "STAFF";
     public const string RoleTeacher = "TEACHER";
     public const string RoleParent = "PARENT";
-    
 }
