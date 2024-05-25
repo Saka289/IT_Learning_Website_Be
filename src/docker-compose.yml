@@ -20,10 +20,10 @@ services:
 #network section
 networks:
   default:
-    name: network_service
+    name: lw_network_service
     driver: bridge
 
 #vollumes section
 volumes:
-  mysql_data:
-    name: mysql_data
+  lw_mysql_data:
+    name: lw_mysql_data
