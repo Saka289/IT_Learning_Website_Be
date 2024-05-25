@@ -11,7 +11,7 @@ services:
       MYSQL_ROOT_PASSWORD: "admin@1234"
     restart: always
     volumes:
-      - mysql_data:/var/lib/mysql
+      - lw_mysql_data:/var/lib/mysql
     ports:
       - "3306:3306"
 
@@ -25,7 +25,7 @@ services:
   #infrastructure section
 
 
-#  #microservices api section
+#  #services api section
 #  lw.api:
 #    container_name: lw.api
 #    environment:
