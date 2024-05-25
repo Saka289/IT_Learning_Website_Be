@@ -10,6 +10,7 @@ using LW.Data.Persistence;
 using LW.Infrastructure.Common;
 using LW.Infrastructure.Configurations;
 using LW.Infrastructure.Extensions;
+using LW.Services.AdminServices;
 using LW.Infrastructure.Services;
 using LW.Services.JwtTokenService;
 using LW.Services.UserService;
@@ -155,6 +156,7 @@ public static class ServiceExtensions
     private static IServiceCollection AddInfrastructureServices(this IServiceCollection services)
     {
         services.AddScoped(typeof(IUnitOfWork), typeof(UnitOfWork));
+        services.AddScoped<IAdminAuthorService,AdminAuthorService>();
         services.AddScoped<IUserService, UserService>();
         services.AddScoped(typeof(ISmtpEmailService), typeof(SmtpEmailService));
         services.AddTransient<ISerializeService, SerializeService>();
