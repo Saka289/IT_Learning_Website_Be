@@ -1,5 +1,6 @@
 ﻿using AutoMapper;
 using LW.Data.Entities;
+using LW.Services.JwtTokenService;
 using LW.Shared.DTOs.Admin;
 using LW.Shared.SeedWork;
 using Microsoft.AspNetCore.Identity;
@@ -14,14 +15,17 @@ public class AdminAuthorService : IAdminAuthorService
     private readonly UserManager<ApplicationUser> _userManager;
     private readonly RoleManager<IdentityRole> _roleManager;
     private readonly IMapper _mapper;
+    private readonly IJwtTokenService _jwtTokenService;
 
 
     public AdminAuthorService(UserManager<ApplicationUser> userManager, RoleManager<IdentityRole> roleManager,
-        IMapper mapper)
+        IMapper mapper, IJwtTokenService jwtTokenService)
     {
         _userManager = userManager;
         _mapper = mapper;
         _roleManager = roleManager;
+        _jwtTokenService = jwtTokenService ?? throw new ArgumentNullException(nameof(jwtTokenService));
+        ;
     }
 
     private async Task<bool> CheckEmailExistsAsync(string email)
@@ -72,18 +76,14 @@ public class AdminAuthorService : IAdminAuthorService
 
         if (user == null || isValid == false)
         {
-            LoginAdminResponseDto responseDto = new LoginAdminResponseDto()
-            {
-                Admin = null,
-                Token = ""
-            };
-            return new ApiResult<LoginAdminResponseDto>(false, responseDto,
+            return new ApiResult<LoginAdminResponseDto>(false,
                 "The password you entered is incorrect. Please try again.");
         }
 
 
         var roles = await _userManager.GetRolesAsync(user);
-        //var token = _jwtTokenGenerator.GenerateToken(user, roles);
+        var token = _jwtTokenService.GenerateToken(user, roles);
+
 
         AdminDto adminDto = new()
         {
@@ -96,7 +96,7 @@ public class AdminAuthorService : IAdminAuthorService
         LoginAdminResponseDto loginResponseDto = new LoginAdminResponseDto()
         {
             Admin = adminDto,
-            Token = "Tí nữa có jwt thì nhận được",
+            Token = token,
         };
         return new ApiResult<LoginAdminResponseDto>(true, loginResponseDto,
             "Login Successfully");
@@ -113,11 +113,11 @@ public class AdminAuthorService : IAdminAuthorService
             }
 
             await _userManager.AddToRoleAsync(user, roleName);
-            return new ApiResult<bool>(true, true,
+            return new ApiResult<bool>(true,
                 $"Assign {roleName} to user with email {email} successfully !");
         }
 
-        return new ApiResult<bool>(false, false,
+        return new ApiResult<bool>(false,
             "Don't find user with email " + email);
     }
 
@@ -134,14 +134,14 @@ public class AdminAuthorService : IAdminAuthorService
                 x => x.Email.Equals(updateAdminDto.Email) && x.Id != updateAdminDto.UserId);
         if (checkEmail)
         {
-            return new ApiResult<UpdateAdminDto>(false, null,
+            return new ApiResult<UpdateAdminDto>(false,
                 $"An existing account is using {updateAdminDto.Email}, email address. Please try with another email address");
         }
 
         var user = await _userManager.FindByIdAsync(updateAdminDto.UserId);
         if (user == null)
         {
-            return new ApiResult<UpdateAdminDto>(false, null,
+            return new ApiResult<UpdateAdminDto>(false,
                 $"User Not Found !");
         }
 
@@ -157,23 +157,23 @@ public class AdminAuthorService : IAdminAuthorService
             $"Update Successfully !");
     }
 
-    public async Task<ApiResult<bool>> DeleteAsync(string UserId)
+    public async Task<ApiResult<bool>> DeleteAsync(string userId)
     {
-        var user = await _userManager.FindByIdAsync(UserId);
+        var user = await _userManager.FindByIdAsync(userId);
         if (user != null)
         {
             await _userManager.DeleteAsync(user);
-            return new ApiResult<bool>(true, true,
+            return new ApiResult<bool>(true,
                 $"Delete Successfully !");
         }
 
-        return new ApiResult<bool>(false, false,
+        return new ApiResult<bool>(false,
             $"User Not Found !");
     }
 
-    public async Task<ApiResult<bool>> LockMemberAsync(string UserId)
+    public async Task<ApiResult<bool>> LockMemberAsync(string userId)
     {
-        var user = await _userManager.FindByIdAsync(UserId);
+        var user = await _userManager.FindByIdAsync(userId);
         if (user != null)
         {
             await _userManager.SetLockoutEndDateAsync(user, DateTime.UtcNow.AddDays(30));
@@ -181,13 +181,13 @@ public class AdminAuthorService : IAdminAuthorService
                 $"LockMember Successfully !");
         }
 
-        return new ApiResult<bool>(false, false,
+        return new ApiResult<bool>(false,
             $"User Not Found !");
     }
 
-    public async Task<ApiResult<bool>> UnLockMemberAsync(string UserId)
+    public async Task<ApiResult<bool>> UnLockMemberAsync(string userId)
     {
-        var user = await _userManager.FindByIdAsync(UserId);
+        var user = await _userManager.FindByIdAsync(userId);
         if (user != null)
         {
             await _userManager.SetLockoutEndDateAsync(user, null);
@@ -195,7 +195,7 @@ public class AdminAuthorService : IAdminAuthorService
                 $"UnLockMember Successfully !");
         }
 
-        return new ApiResult<bool>(false, false,
+        return new ApiResult<bool>(false,
             $"User Not Found !");
     }
 
@@ -206,9 +206,9 @@ public class AdminAuthorService : IAdminAuthorService
             $"Get Roles Successfully !");
     }
 
-    public async Task<ApiResult<AdminDto>> GetByUserIdAsync(string UserId)
+    public async Task<ApiResult<AdminDto>> GetByUserIdAsync(string userId)
     {
-        var user = await _userManager.FindByIdAsync(UserId);
+        var user = await _userManager.FindByIdAsync(userId);
         if (user != null)
         {
             var result = _mapper.Map<AdminDto>(user);
@@ -217,13 +217,13 @@ public class AdminAuthorService : IAdminAuthorService
                 $"Get User By Id Successfully !");
         }
 
-        return new ApiResult<AdminDto>(false, null,
+        return new ApiResult<AdminDto>(false,
             $"User Not Found !");
     }
 
-    public async Task<ApiResult<AdminDto>> GetByEmailAsync(string Email)
+    public async Task<ApiResult<AdminDto>> GetByEmailAsync(string email)
     {
-        var user = await _userManager.FindByEmailAsync(Email);
+        var user = await _userManager.FindByEmailAsync(email);
         if (user != null)
         {
             var result = _mapper.Map<AdminDto>(user);
@@ -231,7 +231,7 @@ public class AdminAuthorService : IAdminAuthorService
                 $"Get User By Email Successfully !");
         }
 
-        return new ApiResult<AdminDto>(false, null,
+        return new ApiResult<AdminDto>(false,
             $"User Not Found !");
     }
 }
