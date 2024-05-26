@@ -1,7 +1,6 @@
 ﻿using AutoMapper;
 using LW.Data.Entities;
 using LW.Shared.DTOs.Admin;
-using LW.Shared.Enums;
 using LW.Shared.SeedWork;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
@@ -13,20 +12,16 @@ namespace LW.Services.AdminServices;
 public class AdminAuthorService : IAdminAuthorService
 {
     private readonly UserManager<ApplicationUser> _userManager;
-    private readonly SignInManager<ApplicationUser> _signInManager;
     private readonly RoleManager<IdentityRole> _roleManager;
-    private readonly IConfiguration _configuration;
     private readonly IMapper _mapper;
 
 
-    public AdminAuthorService(UserManager<ApplicationUser> userManager, IConfiguration configuration,
-        RoleManager<IdentityRole> roleManager, SignInManager<ApplicationUser> signInManager, IMapper mapper)
+    public AdminAuthorService(UserManager<ApplicationUser> userManager, RoleManager<IdentityRole> roleManager,
+        IMapper mapper)
     {
         _userManager = userManager;
-        _signInManager = signInManager;
         _mapper = mapper;
         _roleManager = roleManager;
-        _configuration = configuration;
     }
 
     private async Task<bool> CheckEmailExistsAsync(string email)
@@ -217,7 +212,7 @@ public class AdminAuthorService : IAdminAuthorService
         if (user != null)
         {
             var result = _mapper.Map<AdminDto>(user);
-            
+
             return new ApiResult<AdminDto>(true, result,
                 $"Get User By Id Successfully !");
         }
@@ -235,6 +230,8 @@ public class AdminAuthorService : IAdminAuthorService
             return new ApiResult<AdminDto>(true, result,
                 $"Get User By Email Successfully !");
         }
+
         return new ApiResult<AdminDto>(false, null,
-            $"User Not Found !");    }
+            $"User Not Found !");
+    }
 }

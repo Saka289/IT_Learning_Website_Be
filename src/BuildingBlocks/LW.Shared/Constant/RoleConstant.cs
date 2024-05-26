@@ -1,4 +1,4 @@
-﻿namespace LW.Shared.Enums;
+﻿namespace LW.Shared.Constant;
 
 public class RoleConstant
 {

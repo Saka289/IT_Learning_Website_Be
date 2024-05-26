@@ -122,6 +122,11 @@ public class UserService : IUserService
         return new ApiResult<LoginResponseUserDto>(true, loginResponseUserDto, "Login successfully !!!");
     }
 
+    public async Task<ApiResult<LoginResponseUserDto>> LoginGoogle(LoginUserDto loginUserDto)
+    {
+        return new ApiResult<LoginResponseUserDto>();
+    }
+
     public async Task<ApiResult<bool>> SendVerifyEmail(string email)
     {
         var emailExist = await _userManager.Users.AnyAsync(x => x.Email.ToLower() == email.ToLower());
@@ -168,7 +173,7 @@ public class UserService : IUserService
 
             if (verifyEmailDecode.Id.Equals(result.Id))
             {
-                _redisCacheService.RemoveStringKey(result.Email);
+                await _redisCacheService.RemoveStringKey(result.Email);
                 return new ApiResult<bool>(true, "Email verified successfully.");
             }
 

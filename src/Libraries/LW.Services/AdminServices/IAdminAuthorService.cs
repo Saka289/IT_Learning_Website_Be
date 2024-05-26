@@ -18,7 +18,4 @@ public interface IAdminAuthorService
     public Task<ApiResult<List<string>>> GetApplicationRolesAsync();
     public Task<ApiResult<AdminDto>> GetByUserIdAsync(string UserId);
     public Task<ApiResult<AdminDto>> GetByEmailAsync(string Email);
-    
-    
-    
 }
