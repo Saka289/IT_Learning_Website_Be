@@ -2,10 +2,15 @@ using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.Linq;
+using System.Security.Claims;
 using System.Threading.Tasks;
 using LW.Services.UserService;
+using LW.Shared.DTOs.Google;
 using LW.Shared.DTOs.User;
 using LW.Shared.SeedWork;
+using Microsoft.AspNetCore.Authentication;
+using Microsoft.AspNetCore.Authentication.Cookies;
+using Microsoft.AspNetCore.Authentication.Google;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 
@@ -48,6 +53,34 @@ namespace LW.API.Controllers
         public async Task<ActionResult<ApiResult<bool>>> Login([FromBody] LoginUserDto loginUserDto)
         {
             var result = await _userService.Login(loginUserDto);
+            return Ok(result);
+        }
+
+        [HttpPost("GoogleLogin")]
+        public async Task<IActionResult> GoogleLogin([FromBody] GoogleSignInDto googleSignInDto)
+        {
+            var result = await _userService.LoginGoogle(googleSignInDto);
+            return Ok(result);
+        }
+
+        [HttpPost("ChangePassword")]
+        public async Task<IActionResult> ChangePassword([FromBody] ChangePasswordDto changePasswordDto)
+        {
+            var result = await _userService.ChangePassword(changePasswordDto);
+            return Ok(result);
+        }
+
+        [HttpPost("ForgotPassword")]
+        public async Task<IActionResult> ForgotPassword([FromBody] string email)
+        {
+            var result = await _userService.ForgotPassword(email);
+            return Ok(result);
+        }
+
+        [HttpPost("ResetPassword")]
+        public async Task<IActionResult> ResetPassword([FromBody] ResetPasswordDto resetPasswordDto)
+        {
+            var result = await _userService.ResetPassword(resetPasswordDto);
             return Ok(result);
         }
     }

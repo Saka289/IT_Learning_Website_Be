@@ -1,14 +1,18 @@
 ﻿using System.Text;
 using AutoMapper;
+using Google.Apis.Auth;
 using LW.Cache.Interfaces;
 using LW.Contracts.Common;
 using LW.Contracts.Services;
 using LW.Data.Entities;
+using LW.Data.Persistence;
 using LW.Services.JwtTokenService;
 using LW.Shared.Configurations;
 using LW.Shared.Constant;
 using LW.Shared.DTOs.Email;
+using LW.Shared.DTOs.Google;
 using LW.Shared.DTOs.User;
+using LW.Shared.Enums;
 using LW.Shared.SeedWork;
 using LW.Shared.Services.Email;
 using Microsoft.AspNetCore.Identity;
@@ -32,11 +36,14 @@ public class UserService : IUserService
     private readonly IRedisCache<VerifyEmailTokenDto> _redisCacheService;
     private readonly ISerializeService _serializeService;
     private readonly IJwtTokenService _jwtTokenService;
+    private readonly GoogleSettings _googleSettings;
+    private readonly AppDbContext _context;
 
     public UserService(UserManager<ApplicationUser> userManager, RoleManager<IdentityRole> roleManager, IMapper mapper,
         ISmtpEmailService emailService, ILogger logger, IOptions<VerifyEmailSettings> verifyEmailSettings,
         IOptions<UrlBase> urlBase, IRedisCache<VerifyEmailTokenDto> redisCacheService,
-        ISerializeService serializeService, IJwtTokenService jwtTokenService)
+        ISerializeService serializeService, IJwtTokenService jwtTokenService, IOptions<GoogleSettings> googleSettings,
+        AppDbContext context)
     {
         _roleManager = roleManager ?? throw new ArgumentNullException(nameof(roleManager));
         _mapper = mapper ?? throw new ArgumentNullException(nameof(mapper));
@@ -45,6 +52,8 @@ public class UserService : IUserService
         _redisCacheService = redisCacheService ?? throw new ArgumentNullException(nameof(redisCacheService));
         _serializeService = serializeService ?? throw new ArgumentNullException(nameof(serializeService));
         _jwtTokenService = jwtTokenService ?? throw new ArgumentNullException(nameof(jwtTokenService));
+        _context = context;
+        _googleSettings = googleSettings.Value;
         _urlBase = urlBase.Value;
         _verifyEmailSettings = verifyEmailSettings.Value;
         _userManager = userManager ?? throw new ArgumentNullException(nameof(userManager));
@@ -75,7 +84,7 @@ public class UserService : IUserService
             return new ApiResult<RegisterResponseUserDto>(false, result.Errors.FirstOrDefault().Description);
         }
 
-        await _userManager.AddToRoleAsync(user, "user");
+        await _userManager.AddToRoleAsync(user, RoleConstant.RoleUser);
         var userDto = new RegisterResponseUserDto
         {
             ID = user.Id,
@@ -122,9 +131,108 @@ public class UserService : IUserService
         return new ApiResult<LoginResponseUserDto>(true, loginResponseUserDto, "Login successfully !!!");
     }
 
-    public async Task<ApiResult<LoginResponseUserDto>> LoginGoogle(LoginUserDto loginUserDto)
+    public async Task<ApiResult<LoginResponseUserDto>> LoginGoogle(GoogleSignInDto googleSignInDto)
     {
-        return new ApiResult<LoginResponseUserDto>();
+        GoogleJsonWebSignature.Payload payload = new();
+        try
+        {
+            GoogleJsonWebSignature.ValidationSettings settings = new GoogleJsonWebSignature.ValidationSettings();
+
+            settings.Audience = new List<string>()
+            {
+                _googleSettings.ClientId
+            };
+
+            payload = GoogleJsonWebSignature.ValidateAsync(googleSignInDto.IdToken, settings).Result;
+        }
+        catch (Exception ex)
+        {
+            _logger.Error(ex.Message, ex);
+            return new ApiResult<LoginResponseUserDto>(false, "Failed to get a response");
+        }
+
+        var userCreated = new CreateUserFromSocialLogin()
+        {
+            FirstName = payload.GivenName,
+            LastName = payload.FamilyName,
+            Email = payload.Email,
+            ProfilePicture = payload.Picture,
+            LoginProviderSubject = payload.Subject,
+        };
+
+        var user = await _userManager.CreateUserFromSocialLogin(userCreated, ELoginProvider.Google);
+        var roles = await _userManager.GetRolesAsync(user);
+        var token = _jwtTokenService.GenerateToken(user, roles);
+
+        UserDto userDto = new()
+        {
+            ID = user.Id,
+            Email = user.Email,
+            UserName = user.UserName,
+            FullName = user.FirstName + " " + user.LastName,
+            PhoneNumber = user.PhoneNumber,
+        };
+        LoginResponseUserDto loginResponseUserDto = new()
+        {
+            UserDto = userDto,
+            token = token,
+        };
+        return new ApiResult<LoginResponseUserDto>(true, loginResponseUserDto, "Login successfully !!!");
+    }
+
+    public async Task<ApiResult<bool>> ChangePassword(ChangePasswordDto changePasswordDto)
+    {
+        var user = await _userManager.Users.FirstOrDefaultAsync(u =>
+            u.Email.ToLower().Equals(changePasswordDto.Email.ToLower()));
+        var password = await _userManager.CheckPasswordAsync(user, changePasswordDto.Password);
+        if (password == false)
+        {
+            return new ApiResult<bool>(false, "The password you entered is incorrect.");
+        }
+
+        var token = await _userManager.GeneratePasswordResetTokenAsync(user);
+        var result = await _userManager.ResetPasswordAsync(user, token, changePasswordDto.NewPassword);
+        if (!result.Succeeded)
+        {
+            return new ApiResult<bool>(false, result.Errors.FirstOrDefault().Description);
+        }
+
+        return new ApiResult<bool>(true, "Changed password successfully !!!");
+    }
+
+    public async Task<ApiResult<bool>> ForgotPassword(string email)
+    {
+        var user = await _userManager.FindByEmailAsync(email);
+        if (user == null)
+        {
+            return new ApiResult<bool>(false, "This email address has not been registered yet");
+        }
+
+        var token = await _userManager.GeneratePasswordResetTokenAsync(user);
+        token = WebEncoders.Base64UrlEncode(Encoding.UTF8.GetBytes(token));
+
+        SendForgotPasswordEmail(user, token, new CancellationToken());
+
+        return new ApiResult<bool>(true, $"Send email to: {email}");
+    }
+
+    public async Task<ApiResult<bool>> ResetPassword(ResetPasswordDto resetPasswordDto)
+    {
+        var user = await _userManager.FindByEmailAsync(resetPasswordDto.Email);
+        if (user == null)
+        {
+            return new ApiResult<bool>(false, "This email address has not been registered yet");
+        }
+
+        var decodedTokenBytes = WebEncoders.Base64UrlDecode(resetPasswordDto.Token);
+        var decodedToken = Encoding.UTF8.GetString(decodedTokenBytes);
+        var result = await _userManager.ResetPasswordAsync(user, decodedToken, resetPasswordDto.NewPassword);
+        if (!result.Succeeded)
+        {
+            return new ApiResult<bool>(false, result.Errors.FirstOrDefault().Description);
+        }
+
+        return new ApiResult<bool>(true, "Reset password successfully !!!");
     }
 
     public async Task<ApiResult<bool>> SendVerifyEmail(string email)
@@ -145,7 +253,7 @@ public class UserService : IUserService
         var token = _serializeService.Serialize(verifyEmailTokenDto);
         token = WebEncoders.Base64UrlEncode(Encoding.UTF8.GetBytes(token));
 
-        SendEmailAsync(email, token, new CancellationToken());
+        SendConfirmEmailAsync(email, token, new CancellationToken());
 
         return new ApiResult<bool>(true, $"Send email to: {email}");
     }
@@ -189,7 +297,7 @@ public class UserService : IUserService
         }
     }
 
-    private async Task SendEmailAsync(string email, string token, CancellationToken cancellationToken)
+    private async Task SendConfirmEmailAsync(string email, string token, CancellationToken cancellationToken)
     {
         var url = $"{_urlBase.ClientUrl}/{_verifyEmailSettings.VerifyEmailPath}?token={token}";
         var emailRequest = new MailRequest()
@@ -211,6 +319,33 @@ public class UserService : IUserService
         catch (Exception ex)
         {
             _logger.Error($"Verify your email {email} failed due to an error with the email service: {ex.Message}");
+        }
+    }
+
+    private async Task SendForgotPasswordEmail(ApplicationUser user, string token, CancellationToken cancellationToken)
+    {
+        var url = $"{_urlBase.ClientUrl}/{_verifyEmailSettings.ResetPasswordPath}?token={token}&email={user.Email}";
+        var emailRequest = new MailRequest()
+        {
+            ToAddress = user.Email,
+            Body = $"<p>Hello: {user.FirstName} {user.LastName}</p>" +
+                   $"<p>Username: {user.UserName}.</p>" +
+                   "<p>In order to reset your password, please click on the following link.</p>" +
+                   $"<p><a href=\"{url}\">Click here</a></p>" +
+                   "<p>Thank you,</p>" +
+                   $"<br>{_verifyEmailSettings.ApplicationName}",
+            Subject = $"Hello, Forgot Password your email."
+        };
+
+        try
+        {
+            await _emailService.SendEmailAsync(emailRequest, cancellationToken);
+            _logger.Information($"Forgot Password your email {user.Email}");
+        }
+        catch (Exception ex)
+        {
+            _logger.Error(
+                $"Forgot Password your email {user.Email} failed due to an error with the email service: {ex.Message}");
         }
     }
 }
