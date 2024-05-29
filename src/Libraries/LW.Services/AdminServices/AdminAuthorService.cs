@@ -1,12 +1,19 @@
-﻿using AutoMapper;
+﻿using System.Text;
+using AutoMapper;
+using LW.Contracts.Services;
 using LW.Data.Entities;
 using LW.Services.JwtTokenService;
+using LW.Shared.Configurations;
 using LW.Shared.DTOs.Admin;
 using LW.Shared.SeedWork;
+using LW.Shared.Services.Email;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.WebUtilities;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
+using Microsoft.Extensions.Options;
+using Serilog;
 
 namespace LW.Services.AdminServices;
 
@@ -16,16 +23,26 @@ public class AdminAuthorService : IAdminAuthorService
     private readonly RoleManager<IdentityRole> _roleManager;
     private readonly IMapper _mapper;
     private readonly IJwtTokenService _jwtTokenService;
-
+    private readonly UrlBase _urlBase;
+    private readonly VerifyEmailSettings _verifyEmailSettings;
+    private readonly ISmtpEmailService _emailService;
+    private readonly ILogger _logger;
 
     public AdminAuthorService(UserManager<ApplicationUser> userManager, RoleManager<IdentityRole> roleManager,
+        IOptions<UrlBase> urlBase,
+        IOptions<VerifyEmailSettings> verifyEmailSettings ,
+        ILogger logger,
+        ISmtpEmailService emailService,
         IMapper mapper, IJwtTokenService jwtTokenService)
     {
         _userManager = userManager;
         _mapper = mapper;
         _roleManager = roleManager;
+        _urlBase = urlBase.Value;
+        _logger = logger ?? throw new ArgumentNullException(nameof(logger));
+        _verifyEmailSettings = verifyEmailSettings.Value;
         _jwtTokenService = jwtTokenService ?? throw new ArgumentNullException(nameof(jwtTokenService));
-        ;
+        _emailService = emailService;
     }
 
     private async Task<bool> CheckEmailExistsAsync(string email)
@@ -234,4 +251,91 @@ public class AdminAuthorService : IAdminAuthorService
         return new ApiResult<AdminDto>(false,
             $"User Not Found !");
     }
+
+    public async Task<ApiResult<bool>> ChangePasswordAsync(ChangePasswordAdminDto changePasswordAdminDto)
+    {
+        // find user by email
+        var user = await _userManager.Users.FirstOrDefaultAsync(u =>
+            u.Email.ToLower().Equals(changePasswordAdminDto.Email.ToLower()));
+        if (user == null)
+        {
+            return new ApiResult<bool>(false, "The email you entered is incorrect .");
+        }
+        // check pass
+        var password = await _userManager.CheckPasswordAsync(user, changePasswordAdminDto.Password);
+        if (password == false)
+        {
+            return new ApiResult<bool>(false, "The password you entered is incorrect.");
+        }
+
+        var token = await _userManager.GeneratePasswordResetTokenAsync(user);
+        var result = await _userManager.ResetPasswordAsync(user, token, changePasswordAdminDto.NewPassword);
+        if (!result.Succeeded)
+        {
+            return new ApiResult<bool>(false, result.Errors.FirstOrDefault().Description);
+        }
+
+        return new ApiResult<bool>(true, "Changed password successfully !!!");
+    }
+
+    public async Task<ApiResult<bool>> ForgotPasswordAsync(string email)
+    {
+        var user = await _userManager.FindByEmailAsync(email);
+        if (user == null)
+        {
+            return new ApiResult<bool>(false, "This email address has not been registered yet");
+        }
+
+        var token = await _userManager.GeneratePasswordResetTokenAsync(user);
+        token = WebEncoders.Base64UrlEncode(Encoding.UTF8.GetBytes(token));
+
+        SendForgotPasswordEmail(user, token, new CancellationToken());
+
+        return new ApiResult<bool>(true, $"Send email to: {email}");
+    }
+    private async Task SendForgotPasswordEmail(ApplicationUser user, string token, CancellationToken cancellationToken)
+    {
+        var url = $"{_urlBase.ClientUrl}/{_verifyEmailSettings.ResetPasswordPath}?token={token}&email={user.Email}";
+        var emailRequest = new MailRequest()
+        {
+            ToAddress = user.Email,
+            Body = $"<p>Hello: {user.FirstName} {user.LastName}</p>" +
+                   $"<p>Username: {user.UserName}.</p>" +
+                   "<p>In order to reset your password, please click on the following link.</p>" +
+                   $"<p><a href=\"{url}\">Click here</a></p>" +
+                   "<p>Thank you,</p>" +
+                   $"<br>{_verifyEmailSettings.ApplicationName}",
+            Subject = $"Hello, Forgot Password your email."
+        };
+
+        try
+        {
+            await _emailService.SendEmailAsync(emailRequest, cancellationToken);
+            _logger.Information($"Forgot Password your email {user.Email}");
+        }
+        catch (Exception ex)
+        {
+            _logger.Error(
+                $"Forgot Password your email {user.Email} failed due to an error with the email service: {ex.Message}");
+        }
+    }
+    public async Task<ApiResult<bool>> ResetPasswordAsync(ResetPasswordAdminDto resetPasswordAdminDto)
+    {
+        var user = await _userManager.FindByEmailAsync(resetPasswordAdminDto.Email);
+        if (user == null)
+        {
+            return new ApiResult<bool>(false, "This email address has not been registered yet");
+        }
+
+        var decodedTokenBytes = WebEncoders.Base64UrlDecode(resetPasswordAdminDto.Token);
+        var decodedToken = Encoding.UTF8.GetString(decodedTokenBytes);
+        var result = await _userManager.ResetPasswordAsync(user, decodedToken, resetPasswordAdminDto.NewPassword);
+        if (!result.Succeeded)
+        {
+            return new ApiResult<bool>(false, result.Errors.FirstOrDefault().Description);
+        }
+
+        return new ApiResult<bool>(true, "Reset password successfully !!!");
+    }
+    
 }

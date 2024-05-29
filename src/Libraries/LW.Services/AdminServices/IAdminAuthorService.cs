@@ -18,4 +18,9 @@ public interface IAdminAuthorService
     public Task<ApiResult<List<string>>> GetApplicationRolesAsync();
     public Task<ApiResult<AdminDto>> GetByUserIdAsync(string userId);
     public Task<ApiResult<AdminDto>> GetByEmailAsync(string email);
+    public Task<ApiResult<bool>> ChangePasswordAsync(ChangePasswordAdminDto changePasswordAdminDto);
+    
+    public Task<ApiResult<bool>> ForgotPasswordAsync(string email);
+    public Task<ApiResult<bool>> ResetPasswordAsync(ResetPasswordAdminDto resetPasswordAdminDto);
+
 }
