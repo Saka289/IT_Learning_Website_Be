@@ -6,10 +6,12 @@ using LW.Contracts.Common;
 using LW.Contracts.Services;
 using LW.Data.Entities;
 using LW.Data.Persistence;
+using LW.Services.FacebookService;
 using LW.Services.JwtTokenService;
 using LW.Shared.Configurations;
 using LW.Shared.Constant;
 using LW.Shared.DTOs.Email;
+using LW.Shared.DTOs.Facebook;
 using LW.Shared.DTOs.Google;
 using LW.Shared.DTOs.User;
 using LW.Shared.Enums;
@@ -37,13 +39,13 @@ public class UserService : IUserService
     private readonly ISerializeService _serializeService;
     private readonly IJwtTokenService _jwtTokenService;
     private readonly GoogleSettings _googleSettings;
-    private readonly AppDbContext _context;
+    private readonly IFacebookService _facebookService;
 
     public UserService(UserManager<ApplicationUser> userManager, RoleManager<IdentityRole> roleManager, IMapper mapper,
         ISmtpEmailService emailService, ILogger logger, IOptions<VerifyEmailSettings> verifyEmailSettings,
         IOptions<UrlBase> urlBase, IRedisCache<VerifyEmailTokenDto> redisCacheService,
         ISerializeService serializeService, IJwtTokenService jwtTokenService, IOptions<GoogleSettings> googleSettings,
-        AppDbContext context)
+        IFacebookService facebookService)
     {
         _roleManager = roleManager ?? throw new ArgumentNullException(nameof(roleManager));
         _mapper = mapper ?? throw new ArgumentNullException(nameof(mapper));
@@ -52,7 +54,7 @@ public class UserService : IUserService
         _redisCacheService = redisCacheService ?? throw new ArgumentNullException(nameof(redisCacheService));
         _serializeService = serializeService ?? throw new ArgumentNullException(nameof(serializeService));
         _jwtTokenService = jwtTokenService ?? throw new ArgumentNullException(nameof(jwtTokenService));
-        _context = context;
+        _facebookService = facebookService ?? throw new ArgumentNullException(nameof(facebookService));
         _googleSettings = googleSettings.Value;
         _urlBase = urlBase.Value;
         _verifyEmailSettings = verifyEmailSettings.Value;
@@ -180,9 +182,47 @@ public class UserService : IUserService
         return new ApiResult<LoginResponseUserDto>(true, loginResponseUserDto, "Login successfully !!!");
     }
 
-    public Task<ApiResult<LoginResponseUserDto>> LoginFacebook(GoogleSignInDto googleSignInDto)
+    public async Task<ApiResult<LoginResponseUserDto>> LoginFacebook(FacebookSignInDto facebookSignInDto)
     {
-        throw new NotImplementedException();
+        var validatedFbToken = await _facebookService.ValidateFacebookToken(facebookSignInDto.AccessToken);
+        if (!validatedFbToken.IsSucceeded)
+        {
+            return new ApiResult<LoginResponseUserDto>(false, null, validatedFbToken.Message);
+        }
+
+        var userInfo = await _facebookService.GetFacebookUserInformation(facebookSignInDto.AccessToken);
+        if (!userInfo.IsSucceeded)
+        {
+            return new ApiResult<LoginResponseUserDto>(false, null, userInfo.Message);
+        }
+
+        var userCreated = new CreateUserFromSocialLogin()
+        {
+            FirstName = userInfo.Data.FirstName,
+            LastName = userInfo.Data.LastName,
+            Email = userInfo.Data.Email,
+            ProfilePicture = userInfo.Data.Picture.Data.Url.AbsoluteUri,
+            LoginProviderSubject = userInfo.Data.Id,
+        };
+
+        var user = await _userManager.CreateUserFromSocialLogin(userCreated, ELoginProvider.Facebook);
+        var roles = await _userManager.GetRolesAsync(user);
+        var token = _jwtTokenService.GenerateToken(user, roles);
+
+        UserDto userDto = new()
+        {
+            ID = user.Id,
+            Email = user.Email,
+            UserName = user.UserName,
+            FullName = user.FirstName + " " + user.LastName,
+            PhoneNumber = user.PhoneNumber,
+        };
+        LoginResponseUserDto loginResponseUserDto = new()
+        {
+            UserDto = userDto,
+            token = token,
+        };
+        return new ApiResult<LoginResponseUserDto>(true, loginResponseUserDto, "Login successfully !!!");
     }
 
     public async Task<ApiResult<bool>> ChangePassword(ChangePasswordDto changePasswordDto)

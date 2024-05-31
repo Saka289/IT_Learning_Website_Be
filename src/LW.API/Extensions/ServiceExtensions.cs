@@ -12,6 +12,7 @@ using LW.Infrastructure.Configurations;
 using LW.Infrastructure.Extensions;
 using LW.Services.AdminServices;
 using LW.Infrastructure.Services;
+using LW.Services.FacebookService;
 using LW.Services.JwtTokenService;
 using LW.Services.UserService;
 using LW.Shared.Configurations;
@@ -39,11 +40,13 @@ public static class ServiceExtensions
         var googleSettings = services.Configure<GoogleSettings>(configuration.GetSection(nameof(GoogleSettings)));
         services.AddSingleton(googleSettings);
 
+        var facebookSettings = services.Configure<FacebookSettings>(configuration.GetSection(nameof(FacebookSettings)));
+        services.AddSingleton(facebookSettings);
+
         var jwtSettings = services.Configure<JwtSettings>(configuration.GetSection(nameof(JwtSettings)));
         services.AddSingleton(jwtSettings);
 
-        var confirmEmailSettings =
-            services.Configure<VerifyEmailSettings>(configuration.GetSection(nameof(VerifyEmailSettings)));
+        var confirmEmailSettings = services.Configure<VerifyEmailSettings>(configuration.GetSection(nameof(VerifyEmailSettings)));
         services.AddSingleton(confirmEmailSettings);
 
         var urlBaseSettings = services.Configure<UrlBase>(configuration.GetSection(nameof(UrlBase)));
@@ -61,7 +64,12 @@ public static class ServiceExtensions
             .AddEntityFrameworkStores<AppDbContext>()
             .AddSignInManager<SignInManager<ApplicationUser>>()
             .AddDefaultTokenProviders();
-
+        //Add services HttpClient 
+        services.AddHttpClient("Facebook", facebookOptions =>
+        {
+            facebookOptions.BaseAddress = new Uri(configuration.GetValue<string>("FacebookSettings:BaseUrl"));
+        });
+ 
         // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
         services.AddEndpointsApiExplorer();
         services.AddSwaggerGen(option =>
@@ -102,7 +110,8 @@ public static class ServiceExtensions
     public static WebApplicationBuilder AddAppAuthentication(this WebApplicationBuilder builder)
     {
         var settingsJwt = builder.Services.GetOptions<JwtSettings>(nameof(JwtSettings));
-        var settingGoogle = builder.Services.GetOptions<GoogleSettings>(nameof(GoogleSettings));
+        var settingsGoogle = builder.Services.GetOptions<GoogleSettings>(nameof(GoogleSettings));
+        var settingsFacebook = builder.Services.GetOptions<FacebookSettings>(nameof(FacebookSettings));
 
         var key = Encoding.ASCII.GetBytes(settingsJwt.Secret);
 
@@ -126,8 +135,12 @@ public static class ServiceExtensions
             };
         }).AddGoogle(x =>
         {
-            x.ClientId = settingGoogle.ClientId;
-            x.ClientSecret = settingGoogle.ClientSecret;
+            x.ClientId = settingsGoogle.ClientId;
+            x.ClientSecret = settingsGoogle.ClientSecret;
+        }).AddFacebook(x =>
+        {
+            x.AppId = settingsFacebook.AppId;
+            x.AppSecret = settingsFacebook.AppSecret;
         });
 
         return builder;
@@ -170,6 +183,7 @@ public static class ServiceExtensions
         services.AddTransient<ISerializeService, SerializeService>();
         services.AddTransient(typeof(IRedisCache<>), typeof(RedisCache<>));
         services.AddScoped<IJwtTokenService, JwtTokenService>();
+        services.AddScoped<IFacebookService, FacebookService>();
         return services;
     }
 }
