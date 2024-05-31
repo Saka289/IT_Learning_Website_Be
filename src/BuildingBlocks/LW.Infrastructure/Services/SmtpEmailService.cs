@@ -1,4 +1,5 @@
-﻿using LW.Contracts.Services;
+﻿using System.Text;
+using LW.Contracts.Services;
 using LW.Infrastructure.Configurations;
 using LW.Shared.Services.Email;
 using MailKit.Net.Smtp;

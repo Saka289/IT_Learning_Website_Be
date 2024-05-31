@@ -100,5 +100,23 @@ namespace LW.API.Controllers
             var result = await _adminAuthorService.GetByEmailAsync(Email);
             return Ok(result);
         }
+        [HttpPost("ChangePassword")]
+        public async Task<ActionResult<ApiResult<bool>>> ChangePassword([FromBody] ChangePasswordAdminDto changePasswordAdminDto)
+        {
+            var result = await _adminAuthorService.ChangePasswordAsync(changePasswordAdminDto);
+            return Ok(result);
+        }   
+        [HttpPost("ForgotPassword")]
+        public async Task<ActionResult<ApiResult<bool>>> ForgotPassword( string email)
+        {
+            var result = await _adminAuthorService.ForgotPasswordAsync(email);
+            return Ok(result);
+        }   
+        [HttpPost("ResetPassword")]
+        public async Task<ActionResult<ApiResult<bool>>> ResetPassword( [FromBody] ResetPasswordAdminDto resetPasswordAdminDto)
+        {
+            var result = await _adminAuthorService.ResetPasswordAsync(resetPasswordAdminDto);
+            return Ok(result);
+        }   
     }
 }

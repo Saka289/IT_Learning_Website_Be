@@ -36,6 +36,9 @@ public static class ServiceExtensions
         var cacheSettings = configuration.GetSection(nameof(CacheSettings)).Get<CacheSettings>();
         services.AddSingleton(cacheSettings);
 
+        var googleSettings = services.Configure<GoogleSettings>(configuration.GetSection(nameof(GoogleSettings)));
+        services.AddSingleton(googleSettings);
+
         var jwtSettings = services.Configure<JwtSettings>(configuration.GetSection(nameof(JwtSettings)));
         services.AddSingleton(jwtSettings);
 
@@ -98,9 +101,10 @@ public static class ServiceExtensions
 
     public static WebApplicationBuilder AddAppAuthentication(this WebApplicationBuilder builder)
     {
-        var settings = builder.Services.GetOptions<JwtSettings>(nameof(JwtSettings));
+        var settingsJwt = builder.Services.GetOptions<JwtSettings>(nameof(JwtSettings));
+        var settingGoogle = builder.Services.GetOptions<GoogleSettings>(nameof(GoogleSettings));
 
-        var key = Encoding.ASCII.GetBytes(settings.Secret);
+        var key = Encoding.ASCII.GetBytes(settingsJwt.Secret);
 
         builder.Services.AddAuthentication(x =>
         {
@@ -116,10 +120,14 @@ public static class ServiceExtensions
                 ValidateIssuerSigningKey = true,
                 IssuerSigningKey = new SymmetricSecurityKey(key),
                 ValidateIssuer = true,
-                ValidIssuer = settings.Issuer,
-                ValidAudience = settings.Audience,
+                ValidIssuer = settingsJwt.Issuer,
+                ValidAudience = settingsJwt.Audience,
                 ValidateAudience = true,
             };
+        }).AddGoogle(x =>
+        {
+            x.ClientId = settingGoogle.ClientId;
+            x.ClientSecret = settingGoogle.ClientSecret;
         });
 
         return builder;
@@ -156,7 +164,7 @@ public static class ServiceExtensions
     private static IServiceCollection AddInfrastructureServices(this IServiceCollection services)
     {
         services.AddScoped(typeof(IUnitOfWork), typeof(UnitOfWork));
-        services.AddScoped<IAdminAuthorService,AdminAuthorService>();
+        services.AddScoped<IAdminAuthorService, AdminAuthorService>();
         services.AddScoped<IUserService, UserService>();
         services.AddScoped(typeof(ISmtpEmailService), typeof(SmtpEmailService));
         services.AddTransient<ISerializeService, SerializeService>();
