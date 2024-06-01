@@ -59,7 +59,6 @@ public class LevelService : ILevelService
         var list =await _levelRepository.GetAllLevel();
         var result = _mapper.Map<IEnumerable<LevelDto>>(list);
         return new ApiResult<IEnumerable<LevelDto>>(true,result, "Get all level successfully");
-
     }
 
     public async Task<ApiResult<LevelDto>> GetById(int id)
@@ -69,9 +68,11 @@ public class LevelService : ILevelService
             return new ApiResult<LevelDto>(true, "Id is invalid");
         }
         var level = await _levelRepository.GetLevelById(id);
+        if (level == null)
+        {
+            return new ApiResult<LevelDto>(false, "Not Found");
+        }
         var result = _mapper.Map<LevelDto>(level);
         return new ApiResult<LevelDto>(true,result, "Get level successfully");
     }
-    
-    
 }

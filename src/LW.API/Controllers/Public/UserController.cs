@@ -15,7 +15,7 @@ using Microsoft.AspNetCore.Authentication.Google;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 
-namespace LW.API.Controllers
+namespace LW.API.Controllers.Public
 {
     [Route("api/[controller]")]
     [ApiController]

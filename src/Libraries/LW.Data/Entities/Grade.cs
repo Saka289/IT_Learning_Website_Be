@@ -4,15 +4,15 @@ using LW.Contracts.Domains;
 
 namespace LW.Data.Entities;
 
-public class Grade: EntityAuditBase<int>
+public class Grade : EntityAuditBase<int>
 {
-    [Required]
+    [Required] 
     public string Name { get; set; }
-    [Required]
+    [Required] 
     public bool Active { get; set; }
-    [Required]
+    [Required] 
     public int LevelId { get; set; }
-    [ForeignKey("LevelId")]
+    [ForeignKey("LevelId")] 
     public virtual Level Level { get; set; }
     public ICollection<Subject> Subjects { get; set; }
 }

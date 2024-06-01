@@ -11,7 +11,7 @@ using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 
-namespace LW.API.Controllers
+namespace LW.API.Controllers.Admin
 {
     [Route("api/[controller]")]
     [ApiController]
