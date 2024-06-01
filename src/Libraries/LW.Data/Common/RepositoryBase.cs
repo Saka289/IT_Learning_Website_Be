@@ -6,12 +6,12 @@ using Microsoft.EntityFrameworkCore.Storage;
 
 namespace LW.Data.Common;
 
-public class RepositoryBaseAsync<T, K> : RepositoryQueryBase<T, K>, IRepositoryBase<T, K> where T : EntityBase<K>
+public class RepositoryBase<T, K> : RepositoryQueryBase<T, K>, IRepositoryBase<T, K> where T : EntityBase<K>
 {
     private readonly AppDbContext _dbContext;
     private readonly IUnitOfWork _unitOfWork;
 
-    public RepositoryBaseAsync(AppDbContext dbContext, IUnitOfWork unitOfWork) : base(dbContext)
+    public RepositoryBase(AppDbContext dbContext, IUnitOfWork unitOfWork) : base(dbContext)
     {
         _dbContext = dbContext ?? throw new ArgumentOutOfRangeException(nameof(dbContext));
         _unitOfWork = unitOfWork ?? throw new ArgumentOutOfRangeException(nameof(unitOfWork));

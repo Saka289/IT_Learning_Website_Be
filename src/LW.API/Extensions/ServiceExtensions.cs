@@ -7,12 +7,14 @@ using LW.Data.Common;
 using LW.Data.Common.Interfaces;
 using LW.Data.Entities;
 using LW.Data.Persistence;
+using LW.Data.Repositories.LevelRepositories;
 using LW.Infrastructure.Common;
 using LW.Infrastructure.Configurations;
 using LW.Infrastructure.Extensions;
 using LW.Services.AdminServices;
 using LW.Infrastructure.Services;
 using LW.Services.JwtTokenService;
+using LW.Services.LevelServices;
 using LW.Services.UserService;
 using LW.Shared.Configurations;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
@@ -164,8 +166,10 @@ public static class ServiceExtensions
     private static IServiceCollection AddInfrastructureServices(this IServiceCollection services)
     {
         services.AddScoped(typeof(IUnitOfWork), typeof(UnitOfWork));
+        services.AddScoped<ILevelRepository, LevelRepository>();
         services.AddScoped<IAdminAuthorService, AdminAuthorService>();
         services.AddScoped<IUserService, UserService>();
+        services.AddScoped<ILevelService, LevelService>();
         services.AddScoped(typeof(ISmtpEmailService), typeof(SmtpEmailService));
         services.AddTransient<ISerializeService, SerializeService>();
         services.AddTransient(typeof(IRedisCache<>), typeof(RedisCache<>));
