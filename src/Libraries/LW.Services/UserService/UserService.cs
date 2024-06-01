@@ -6,10 +6,12 @@ using LW.Contracts.Common;
 using LW.Contracts.Services;
 using LW.Data.Entities;
 using LW.Data.Persistence;
+using LW.Services.FacebookService;
 using LW.Services.JwtTokenService;
 using LW.Shared.Configurations;
 using LW.Shared.Constant;
 using LW.Shared.DTOs.Email;
+using LW.Shared.DTOs.Facebook;
 using LW.Shared.DTOs.Google;
 using LW.Shared.DTOs.User;
 using LW.Shared.Enums;
@@ -37,13 +39,13 @@ public class UserService : IUserService
     private readonly ISerializeService _serializeService;
     private readonly IJwtTokenService _jwtTokenService;
     private readonly GoogleSettings _googleSettings;
-    private readonly AppDbContext _context;
+    private readonly IFacebookService _facebookService;
 
     public UserService(UserManager<ApplicationUser> userManager, RoleManager<IdentityRole> roleManager, IMapper mapper,
         ISmtpEmailService emailService, ILogger logger, IOptions<VerifyEmailSettings> verifyEmailSettings,
         IOptions<UrlBase> urlBase, IRedisCache<VerifyEmailTokenDto> redisCacheService,
         ISerializeService serializeService, IJwtTokenService jwtTokenService, IOptions<GoogleSettings> googleSettings,
-        AppDbContext context)
+        IFacebookService facebookService)
     {
         _roleManager = roleManager ?? throw new ArgumentNullException(nameof(roleManager));
         _mapper = mapper ?? throw new ArgumentNullException(nameof(mapper));
@@ -52,7 +54,7 @@ public class UserService : IUserService
         _redisCacheService = redisCacheService ?? throw new ArgumentNullException(nameof(redisCacheService));
         _serializeService = serializeService ?? throw new ArgumentNullException(nameof(serializeService));
         _jwtTokenService = jwtTokenService ?? throw new ArgumentNullException(nameof(jwtTokenService));
-        _context = context;
+        _facebookService = facebookService ?? throw new ArgumentNullException(nameof(facebookService));
         _googleSettings = googleSettings.Value;
         _urlBase = urlBase.Value;
         _verifyEmailSettings = verifyEmailSettings.Value;
@@ -180,9 +182,47 @@ public class UserService : IUserService
         return new ApiResult<LoginResponseUserDto>(true, loginResponseUserDto, "Login successfully !!!");
     }
 
-    public Task<ApiResult<LoginResponseUserDto>> LoginFacebook(GoogleSignInDto googleSignInDto)
+    public async Task<ApiResult<LoginResponseUserDto>> LoginFacebook(FacebookSignInDto facebookSignInDto)
     {
-        throw new NotImplementedException();
+        var validatedFbToken = await _facebookService.ValidateFacebookToken(facebookSignInDto.AccessToken);
+        if (!validatedFbToken.IsSucceeded)
+        {
+            return new ApiResult<LoginResponseUserDto>(false, null, validatedFbToken.Message);
+        }
+
+        var userInfo = await _facebookService.GetFacebookUserInformation(facebookSignInDto.AccessToken);
+        if (!userInfo.IsSucceeded)
+        {
+            return new ApiResult<LoginResponseUserDto>(false, null, userInfo.Message);
+        }
+
+        var userCreated = new CreateUserFromSocialLogin()
+        {
+            FirstName = userInfo.Data.FirstName,
+            LastName = userInfo.Data.LastName,
+            Email = userInfo.Data.Email,
+            ProfilePicture = userInfo.Data.Picture.Data.Url.AbsoluteUri,
+            LoginProviderSubject = userInfo.Data.Id,
+        };
+
+        var user = await _userManager.CreateUserFromSocialLogin(userCreated, ELoginProvider.Facebook);
+        var roles = await _userManager.GetRolesAsync(user);
+        var token = _jwtTokenService.GenerateToken(user, roles);
+
+        UserDto userDto = new()
+        {
+            ID = user.Id,
+            Email = user.Email,
+            UserName = user.UserName,
+            FullName = user.FirstName + " " + user.LastName,
+            PhoneNumber = user.PhoneNumber,
+        };
+        LoginResponseUserDto loginResponseUserDto = new()
+        {
+            UserDto = userDto,
+            token = token,
+        };
+        return new ApiResult<LoginResponseUserDto>(true, loginResponseUserDto, "Login successfully !!!");
     }
 
     public async Task<ApiResult<bool>> ChangePassword(ChangePasswordDto changePasswordDto)
@@ -308,12 +348,14 @@ public class UserService : IUserService
         var emailRequest = new MailRequest()
         {
             ToAddress = email,
-            Body = $"<p>{_verifyEmailSettings.ApplicationName}</p>" +
-                   "<p>Please verify your email address by clicking on the following link.</p>" +
-                   $"<p><a href=\"{url}\">Click here</a></p>" +
-                   "<p>Thank you,</p>" +
-                   $"<br>{_verifyEmailSettings.ApplicationName}",
-            Subject = $"Hello, Verify your email."
+            Body = "<h4>Xác thực tài khoản</h4>" +
+                   $"<h4>Chào bạn, {_verifyEmailSettings.ApplicationName} xin kính chào!</h4>" +
+                   "<span>Vui lòng xác thực tài khoản của bạn bằng cách nhấp vào liên kết dưới đây: </span>" +
+                   $"<span><a class=\"button\" href=\"{url}\" target=\"_blank\">Click here</a></span>" +
+                   "<p>Nếu bạn không yêu cầu xác thực tài khoản, vui lòng bỏ qua email này.</p>" +
+                   "<h4>Trân trọng,</h4>" +
+                   $"<h4>{_verifyEmailSettings.ApplicationName}</h4>",
+            Subject = $"Xin chào, Xác thực email của bạn !!!"
         };
 
         try
@@ -333,13 +375,14 @@ public class UserService : IUserService
         var emailRequest = new MailRequest()
         {
             ToAddress = user.Email,
-            Body = $"<p>Hello: {user.FirstName} {user.LastName}</p>" +
-                   $"<p>Username: {user.UserName}.</p>" +
-                   "<p>In order to reset your password, please click on the following link.</p>" +
-                   $"<p><a href=\"{url}\">Click here</a></p>" +
-                   "<p>Thank you,</p>" +
-                   $"<br>{_verifyEmailSettings.ApplicationName}",
-            Subject = $"Hello, Forgot Password your email."
+            Body = $"<h4>Xin chào {user.FirstName} {user.LastName}</h4>" +
+                   $"<p>Chúng tôi đã nhận được yêu cầu đặt lại mật khẩu cho tài khoản của bạn với tên đăng nhập: {user.UserName}.</p>" +
+                   "<span>Để tiến hành đặt lại mật khẩu, vui lòng nhấp vào liên kết dưới đây: </span>" +
+                   $"<span><a class=\"button\" href=\"{url}\" target=\"_blank\">Click here</a></span>" +
+                   "<p>Nếu bạn không yêu cầu thay đổi mật khẩu, hãy bỏ qua email này.</p>" +
+                   "<h4>Trân trọng,</h4>" +
+                   $"<h4>{_verifyEmailSettings.ApplicationName}</h4>",
+            Subject = $"Xin chào, Đặt lại mật khẩu tài khoản của bạn !!!"
         };
 
         try

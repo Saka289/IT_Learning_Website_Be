@@ -5,6 +5,7 @@ using System.Linq;
 using System.Security.Claims;
 using System.Threading.Tasks;
 using LW.Services.UserService;
+using LW.Shared.DTOs.Facebook;
 using LW.Shared.DTOs.Google;
 using LW.Shared.DTOs.User;
 using LW.Shared.SeedWork;
@@ -60,6 +61,13 @@ namespace LW.API.Controllers
         public async Task<IActionResult> GoogleLogin([FromBody] GoogleSignInDto googleSignInDto)
         {
             var result = await _userService.LoginGoogle(googleSignInDto);
+            return Ok(result);
+        }
+
+        [HttpPost("FacebookLogin")]
+        public async Task<IActionResult> FacebookLogin([FromBody] FacebookSignInDto facebookSignInDto)
+        {
+            var result = await _userService.LoginFacebook(facebookSignInDto);
             return Ok(result);
         }
 
