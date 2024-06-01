@@ -7,6 +7,7 @@ using LW.Data.Common;
 using LW.Data.Common.Interfaces;
 using LW.Data.Entities;
 using LW.Data.Persistence;
+using LW.Data.Repositories.GradeRepositories;
 using LW.Data.Repositories.LevelRepositories;
 using LW.Infrastructure.Common;
 using LW.Infrastructure.Configurations;
@@ -14,6 +15,7 @@ using LW.Infrastructure.Extensions;
 using LW.Services.AdminServices;
 using LW.Infrastructure.Services;
 using LW.Services.FacebookService;
+using LW.Services.GradeService;
 using LW.Services.JwtTokenService;
 using LW.Services.LevelServices;
 using LW.Services.UserService;
@@ -67,11 +69,12 @@ public static class ServiceExtensions
             .AddSignInManager<SignInManager<ApplicationUser>>()
             .AddDefaultTokenProviders();
         //Add services HttpClient 
-        services.AddHttpClient("Facebook", facebookOptions =>
-        {
-            facebookOptions.BaseAddress = new Uri(configuration.GetValue<string>("FacebookSettings:BaseUrl"));
-        });
- 
+        services.AddHttpClient("Facebook",
+            facebookOptions =>
+            {
+                facebookOptions.BaseAddress = new Uri(configuration.GetValue<string>("FacebookSettings:BaseUrl"));
+            });
+
         // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
         services.AddEndpointsApiExplorer();
         services.AddSwaggerGen(option =>
@@ -179,15 +182,19 @@ public static class ServiceExtensions
     private static IServiceCollection AddInfrastructureServices(this IServiceCollection services)
     {
         services.AddScoped(typeof(IUnitOfWork), typeof(UnitOfWork));
+        services.AddScoped(typeof(IRepositoryBase<,>), typeof(RepositoryBase<,>));
+        services.AddScoped(typeof(IRepositoryBase<,>), typeof(RepositoryQueryBase<,>));
         services.AddScoped<ILevelRepository, LevelRepository>();
+        services.AddScoped<IGradeRepository, GradeRepository>();
         services.AddScoped<IAdminAuthorService, AdminAuthorService>();
         services.AddScoped<IUserService, UserService>();
         services.AddScoped<ILevelService, LevelService>();
-        services.AddScoped(typeof(ISmtpEmailService), typeof(SmtpEmailService));
-        services.AddTransient<ISerializeService, SerializeService>();
-        services.AddTransient(typeof(IRedisCache<>), typeof(RedisCache<>));
+        services.AddScoped<IGradeService, GradeService>();
         services.AddScoped<IJwtTokenService, JwtTokenService>();
         services.AddScoped<IFacebookService, FacebookService>();
+        services.AddTransient<ISerializeService, SerializeService>();
+        services.AddScoped(typeof(ISmtpEmailService), typeof(SmtpEmailService));
+        services.AddTransient(typeof(IRedisCache<>), typeof(RedisCache<>));
         return services;
     }
 }

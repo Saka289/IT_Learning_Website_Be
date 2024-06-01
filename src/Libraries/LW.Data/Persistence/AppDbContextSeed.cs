@@ -14,6 +14,13 @@ public class AppDbContextSeed
             logger.Information("Seeded data for Education DB associated with context {DbContextName}",
                 nameof(AppDbContext));
         }
+        if (!context.Grades.Any())
+        {
+            context.AddRange(SeedGrade());
+            await context.SaveChangesAsync();
+            logger.Information("Seeded data for Education DB associated with context {DbContextName}",
+                nameof(AppDbContext));
+        }
     }
     private static IEnumerable<Level> SeedLevel()
     {
@@ -33,6 +40,31 @@ public class AppDbContextSeed
             {
                 Name =  "Trung học phổ thông",
                 Active = true
+            },
+        };
+    }
+    
+    private static IEnumerable<Grade> SeedGrade()
+    {
+        return new List<Grade>()
+        {
+            new()
+            {
+                Name =  "Cấp 1",
+                Active = true,
+                LevelId = 1
+            },
+            new()
+            {
+                Name =  "Cấp 2",
+                Active = true,
+                LevelId = 2
+            },
+            new()
+            {
+                Name =  "Cấp 3",
+                Active = true,
+                LevelId = 3
             },
         };
     }
