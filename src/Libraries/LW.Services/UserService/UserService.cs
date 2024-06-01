@@ -348,12 +348,14 @@ public class UserService : IUserService
         var emailRequest = new MailRequest()
         {
             ToAddress = email,
-            Body = $"<p>{_verifyEmailSettings.ApplicationName}</p>" +
-                   "<p>Please verify your email address by clicking on the following link.</p>" +
-                   $"<p><a href=\"{url}\">Click here</a></p>" +
-                   "<p>Thank you,</p>" +
-                   $"<br>{_verifyEmailSettings.ApplicationName}",
-            Subject = $"Hello, Verify your email."
+            Body = "<h4>Xác thực tài khoản</h4>" +
+                   $"<h4>Chào bạn, {_verifyEmailSettings.ApplicationName} xin kính chào!</h4>" +
+                   "<span>Vui lòng xác thực tài khoản của bạn bằng cách nhấp vào liên kết dưới đây: </span>" +
+                   $"<span><a class=\"button\" href=\"{url}\" target=\"_blank\">Click here</a></span>" +
+                   "<p>Nếu bạn không yêu cầu xác thực tài khoản, vui lòng bỏ qua email này.</p>" +
+                   "<h4>Trân trọng,</h4>" +
+                   $"<h4>{_verifyEmailSettings.ApplicationName}</h4>",
+            Subject = $"Xin chào, Xác thực email của bạn !!!"
         };
 
         try
@@ -373,13 +375,14 @@ public class UserService : IUserService
         var emailRequest = new MailRequest()
         {
             ToAddress = user.Email,
-            Body = $"<p>Hello: {user.FirstName} {user.LastName}</p>" +
-                   $"<p>Username: {user.UserName}.</p>" +
-                   "<p>In order to reset your password, please click on the following link.</p>" +
-                   $"<p><a href=\"{url}\">Click here</a></p>" +
-                   "<p>Thank you,</p>" +
-                   $"<br>{_verifyEmailSettings.ApplicationName}",
-            Subject = $"Hello, Forgot Password your email."
+            Body = $"<h4>Xin chào {user.FirstName} {user.LastName}</h4>" +
+                   $"<p>Chúng tôi đã nhận được yêu cầu đặt lại mật khẩu cho tài khoản của bạn với tên đăng nhập: {user.UserName}.</p>" +
+                   "<span>Để tiến hành đặt lại mật khẩu, vui lòng nhấp vào liên kết dưới đây: </span>" +
+                   $"<span><a class=\"button\" href=\"{url}\" target=\"_blank\">Click here</a></span>" +
+                   "<p>Nếu bạn không yêu cầu thay đổi mật khẩu, hãy bỏ qua email này.</p>" +
+                   "<h4>Trân trọng,</h4>" +
+                   $"<h4>{_verifyEmailSettings.ApplicationName}</h4>",
+            Subject = $"Xin chào, Đặt lại mật khẩu tài khoản của bạn !!!"
         };
 
         try
