@@ -51,7 +51,7 @@ namespace LW.API.Controllers.Public
         }
         
         [HttpDelete("DeleteGrade/{id}")]
-        public async Task<ActionResult<ApiResult<GradeDto>>> DeleteGrade([Required] int id)
+        public async Task<ActionResult<ApiResult<bool>>> DeleteGrade([Required] int id)
         {
             var result = await _gradeService.DeleteGrade(id);
             return Ok(result);
