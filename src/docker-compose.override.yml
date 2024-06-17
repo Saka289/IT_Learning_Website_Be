@@ -11,7 +11,7 @@ services:
       MYSQL_ROOT_PASSWORD: "admin@1234"
     restart: always
     volumes:
-      - mysql_data:/var/lib/mysql
+      - lw_mysql_data:/var/lib/mysql
     ports:
       - "3306:3306"
 
@@ -23,17 +23,17 @@ services:
       - "6379:6379"
 
   #infrastructure section
-  
-  
-  #microservices api section
-  lw.api:
-    container_name: lw.api
-    environment:
-      - ASPNETCORE_ENVIRONMENT=Development
-      - ASPNETCORE_URLS=http://+:80
-      - "ConnectionStrings:DefaultConnectionString=Server=educationDB,Port=3306;Database=Database;Uid=root;Pwd=admin@1234;"
-    depends_on:
-      - productdb
-    ports:
-      - "6002:80"
-    restart: always
+
+
+#  #services api section
+#  lw.api:
+#    container_name: lw.api
+#    environment:
+#      - ASPNETCORE_ENVIRONMENT=Development
+#      - ASPNETCORE_URLS=http://+:80
+#      - "ConnectionStrings:DefaultConnectionString=Server=educationDB,Port=3306;Database=Database;Uid=root;Pwd=admin@1234;"
+#    depends_on:
+#      - educationDB
+#    ports:
+#      - "8000:80"
+#    restart: always

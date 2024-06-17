@@ -1,4 +1,4 @@
-﻿namespace LW.Contracts.Common.Interfaces;
+﻿namespace LW.Contracts.Common;
 
 public interface ISerializeService
 {

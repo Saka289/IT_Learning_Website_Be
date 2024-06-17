@@ -7,16 +7,12 @@
     </PropertyGroup>
 
     <ItemGroup>
-      <Folder Include="Configurations\" />
-      <Folder Include="Services\" />
-    </ItemGroup>
-
-    <ItemGroup>
       <ProjectReference Include="..\..\Libraries\LW.Data\LW.Data.csproj" />
       <ProjectReference Include="..\LW.Contracts\LW.Contracts.csproj" />
     </ItemGroup>
 
     <ItemGroup>
+      <PackageReference Include="MailKit" Version="4.6.0" />
       <PackageReference Include="Newtonsoft.Json" Version="13.0.3" />
     </ItemGroup>
 

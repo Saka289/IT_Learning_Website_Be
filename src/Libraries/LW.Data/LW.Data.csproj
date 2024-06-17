@@ -7,18 +7,19 @@
     </PropertyGroup>
 
     <ItemGroup>
-      <Folder Include="Entities\" />
-      <Folder Include="Persistence\Configuration\" />
-      <Folder Include="Persistence\Migrations\" />
-      <Folder Include="Repositories\" />
+        <Folder Include="Persistence\Configuration\"/>
+        <Folder Include="Persistence\Migrations\" />
     </ItemGroup>
 
     <ItemGroup>
-      <PackageReference Include="Microsoft.EntityFrameworkCore" Version="6.0.30" />
+        <PackageReference Include="Microsoft.AspNetCore.Identity.EntityFrameworkCore" Version="6.0.30"/>
+        <PackageReference Include="Pomelo.EntityFrameworkCore.MySql" Version="6.0.3"/>
+        <PackageReference Include="Microsoft.EntityFrameworkCore" Version="6.0.30"/>
     </ItemGroup>
 
     <ItemGroup>
-      <ProjectReference Include="..\..\BuildingBlocks\LW.Contracts\LW.Contracts.csproj" />
+        <ProjectReference Include="..\..\BuildingBlocks\LW.Contracts\LW.Contracts.csproj" />
+        <ProjectReference Include="..\..\BuildingBlocks\LW.Logging\LW.Logging.csproj"/>
     </ItemGroup>
 
 </Project>

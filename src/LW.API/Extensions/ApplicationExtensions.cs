@@ -15,6 +15,8 @@ public static class ApplicationExtensions
         // for production only 
         // app.UseHttpsRedirection();
 
+        app.UseAuthentication();
+
         app.UseAuthorization();
 
         app.UseEndpoints(endpoints =>

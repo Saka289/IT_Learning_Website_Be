@@ -6,4 +6,20 @@
         <Nullable>enable</Nullable>
     </PropertyGroup>
 
+    <ItemGroup>
+        <ProjectReference Include="..\..\BuildingBlocks\LW.Shared\LW.Shared.csproj"/>
+        <ProjectReference Include="..\LW.Cache\LW.Cache.csproj" />
+        <ProjectReference Include="..\LW.Data\LW.Data.csproj"/>
+    </ItemGroup>
+
+    <ItemGroup>
+        <PackageReference Include="AutoMapper" Version="12.0.0" />
+        <PackageReference Include="AutoMapper.Extensions.Microsoft.DependencyInjection" Version="12.0.0" />
+        <PackageReference Include="Google.Apis.Auth" Version="1.68.0" />
+        <PackageReference Include="Microsoft.AspNetCore.Authentication.Facebook" Version="6.0.30" />
+        <PackageReference Include="Microsoft.AspNetCore.Authentication.Google" Version="6.0.30" />
+        <PackageReference Include="Microsoft.AspNetCore.Authentication.JwtBearer" Version="6.0.30"/>
+        <PackageReference Include="Microsoft.OpenApi" Version="1.6.14" />
+    </ItemGroup>
+
 </Project>

@@ -1,4 +1,5 @@
 using LW.API.Extensions;
+using LW.Data.Persistence;
 using LW.Logging;
 using Serilog;
 
@@ -12,14 +13,21 @@ try
     builder.Host.UseSerilog(Serilogger.Configure);
 
     builder.Host.AddAppConfiguration();
-
+    
     builder.Services.AddInfrastructure(builder.Configuration);
+    
+    builder.Services.AddConfigurationSettings(builder.Configuration);
+
+    builder.AddAppAuthentication();
 
     var app = builder.Build();
 
     app.UseInfrastructure(builder.Environment);
 
-    app.Run();
+    app.MigrateDatabase<AppDbContext>((context, _) =>
+    {
+        AppDbContextSeed.SeedDataAsync(context, Log.Logger).Wait();
+    }).Run();
 }
 catch (Exception ex)
 {
