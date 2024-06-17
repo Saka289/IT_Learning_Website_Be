@@ -46,11 +46,6 @@ public class LevelService : ILevelService
     }
     public async Task<ApiResult<bool>> UpdateStatus(int id)
     {
-        if (id == null || id <= 0)
-        {
-            return new ApiResult<bool>(true, "Id is invalid");
-        }
-
         var objLevel = await _levelRepository.GetLevelById(id);
         if (objLevel == null)
         {
@@ -63,11 +58,6 @@ public class LevelService : ILevelService
 
     public async Task<ApiResult<bool>> Delete(int id)
     {
-        if (id == null || id <= 0)
-        {
-            return new ApiResult<bool>(false, "Id is invalid");
-        }
-
         var level = await _levelRepository.GetLevelById(id);
         if (level == null)
         {
@@ -90,10 +80,6 @@ public class LevelService : ILevelService
 
     public async Task<ApiResult<LevelDto>> GetById(int id)
     {
-        if (id == null || id <= 0)
-        {
-            return new ApiResult<LevelDto>(true, "Id is invalid");
-        }
         var level = await _levelRepository.GetLevelById(id);
         if (level == null)
         {
