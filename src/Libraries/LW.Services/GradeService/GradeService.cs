@@ -53,7 +53,7 @@ public class GradeService : IGradeService
         }
 
         var gradeEntity = _mapper.Map<Grade>(gradeCreateDto);
-        gradeEntity.Active = true;
+        gradeEntity.IsActive = true;
         await _gradeRepository.CreateGrade(gradeEntity);
         await _gradeRepository.SaveChangesAsync();
         var result = _mapper.Map<GradeDto>(gradeEntity);

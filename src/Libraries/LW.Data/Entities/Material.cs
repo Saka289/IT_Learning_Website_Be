@@ -4,18 +4,20 @@ using LW.Contracts.Domains;
 
 namespace LW.Data.Entities;
 
-public class Material:EntityAuditBase<int>
+public class Material : EntityAuditBase<int>
 {
-    [Required]
+    [Required] 
     public string Title { get; set; }
-    [Required]
+    [Required] 
+    public string KeyWord { get; set; }
+    [Required] 
     public string Content { get; set; }
+    [Required] 
+    public string FilePath { get; set; }
     [Required]
     public bool IsActive { get; set; }
-    [Required]
-    public int TopicId { get; set; }
-    [ForeignKey("TopicId")]
-    public virtual Topic Topic { get; set; }
-
-    
+    [Required] 
+    public int LessonId { get; set; }
+    [ForeignKey(nameof(LessonId))] 
+    public virtual Lesson Lesson { get; set; }
 }
