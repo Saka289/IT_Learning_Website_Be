@@ -6,10 +6,11 @@ namespace LW.Data.Entities;
 public class Level : EntityAuditBase<int>
 {
     [Required]
-    public string Name { get; set; }
+    public string Title { get; set; }
     [Required]
-    public bool Active { get; set; }
+    public string KeyWord { get; set; }
+    [Required]
+    public bool IsActive { get; set; }
     
-    public ICollection<Grade> Grades { get; set; }
-
+    public virtual ICollection<Grade> Grades { get; set; }
 }

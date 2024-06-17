@@ -63,6 +63,7 @@ public static class ServiceExtensions
     {
         // Add services to the container.
         services.AddControllers();
+        services.AddHttpContextAccessor();
         services.Configure<RouteOptions>(options => options.LowercaseUrls = true);
         services.AddIdentity<ApplicationUser, IdentityRole>(options => { options.SignIn.RequireConfirmedEmail = true; })
             .AddEntityFrameworkStores<AppDbContext>()

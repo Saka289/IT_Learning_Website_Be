@@ -47,7 +47,7 @@ public class LevelRepository : RepositoryBase<Level, int>, ILevelRepository
         var level =  await GetLevelById(id);
         if (level != null)
         {
-            level.Active = false;
+            // level.Active = false;
             await UpdateAsync(level);
             return true;
         }

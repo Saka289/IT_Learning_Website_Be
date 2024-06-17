@@ -4,17 +4,17 @@ using LW.Contracts.Domains;
 
 namespace LW.Data.Entities;
 
-public class Grade : EntityAuditBase<int>
+public class Lesson : EntityAuditBase<int>
 {
-    [Required] 
+    [Required]
     public string Title { get; set; }
-    [Required] 
+    [Required]
     public string KeyWord { get; set; }
     [Required] 
     public bool IsActive { get; set; }
-    [Required] 
-    public int LevelId { get; set; }
-    [ForeignKey(nameof(LevelId))] 
-    public virtual Level Level { get; set; }
-    public virtual ICollection<Document> Documents { get; set; }
+    [Required]
+    public int TopicId { get; set; }
+    [ForeignKey(nameof(TopicId))]
+    public virtual Topic Topic { get; set; }
+    public virtual ICollection<Material> Materials { get; set; }
 }
