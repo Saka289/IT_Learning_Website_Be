@@ -56,7 +56,6 @@ public class DocumentService : IDocumentService
         var DocumentEntity = _mapper.Map<Document>(DocumentCreateDto);
         DocumentEntity.IsActive = true;
         await _DocumentRepository.CreateDocument(DocumentEntity);
-        await _DocumentRepository.SaveChangesAsync();
         var result = _mapper.Map<DocumentDto>(DocumentEntity);
         return new ApiSuccessResult<DocumentDto>(result);
     }
@@ -77,7 +76,6 @@ public class DocumentService : IDocumentService
 
         var model = _mapper.Map(DocumentUpdateDto, DocumentEntity);
         var updateDocument = await _DocumentRepository.UpdateDocument(model);
-        await _DocumentRepository.SaveChangesAsync();
 
         var result = _mapper.Map<DocumentDto>(updateDocument);
         return new ApiSuccessResult<DocumentDto>(result);
