@@ -13,8 +13,11 @@ public class Lesson : EntityAuditBase<int>
     [Required] 
     public bool IsActive { get; set; }
     [Required]
+    public string Content { get; set; }
+    [Required]
+    public string FilePath { get; set; }
+    [Required]
     public int TopicId { get; set; }
     [ForeignKey(nameof(TopicId))]
     public virtual Topic Topic { get; set; }
-    public virtual ICollection<Material> Materials { get; set; }
 }

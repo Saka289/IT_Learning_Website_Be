@@ -29,8 +29,7 @@ public class AppDbContext : IdentityDbContext<ApplicationUser>
     public DbSet<Grade> Grades { get; set; }
     public DbSet<Document> Documents { get; set; }
     public DbSet<Topic> Topics { get; set; }
-    public DbSet<Topic> Lesson { get; set; }
-    public DbSet<Material> Materials { get; set; }
+    public DbSet<Lesson> Lessons { get; set; }
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
