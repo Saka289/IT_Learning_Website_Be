@@ -11,8 +11,8 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace LW.Data.Persistence.Migrations
 {
     [DbContext(typeof(AppDbContext))]
-    [Migration("20240531173505_AddTablesForProvidingDocument")]
-    partial class AddTablesForProvidingDocument
+    [Migration("20240617061743_Init_Add_All_Class")]
+    partial class Init_Add_All_Class
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
@@ -101,9 +101,9 @@ namespace LW.Data.Persistence.Migrations
                     b.HasData(
                         new
                         {
-                            Id = "d69bc19b-cc95-4b5e-b44b-7a70fe53cf3d",
+                            Id = "c2ab718e-af47-4674-ae37-0b810cb5127f",
                             AccessFailedCount = 0,
-                            ConcurrencyStamp = "670b8ef7-058e-4381-a50a-6fec84aa9414",
+                            ConcurrencyStamp = "b7b08a7d-b1dd-4253-955d-e74eb6bb5791",
                             Email = "admin@gmail.com",
                             EmailConfirmed = true,
                             FirstName = "Frank",
@@ -111,18 +111,18 @@ namespace LW.Data.Persistence.Migrations
                             LockoutEnabled = false,
                             NormalizedEmail = "ADMIN@GMAIL.COM",
                             NormalizedUserName = "ADMIN",
-                            PasswordHash = "AQAAAAEAACcQAAAAEFsEf28Owi06D6o2THl89/Y0LeDtuQ8NFZAPOEqvY/M62VH1V8rM2F0l02qwJfYrpQ==",
+                            PasswordHash = "AQAAAAEAACcQAAAAEJ27xmoF2ZpYGKboBGJ/2gfTqQERMZGmj51eKjE2NbJXyM3gsQgBbN24VP3EAeA13A==",
                             PhoneNumber = "1234567890",
                             PhoneNumberConfirmed = false,
-                            SecurityStamp = "721519d5-2046-4812-819b-bcdc17353aa7",
+                            SecurityStamp = "c081979c-f908-487d-b21b-127738ab5fee",
                             TwoFactorEnabled = false,
                             UserName = "admin"
                         },
                         new
                         {
-                            Id = "3e1acdb4-a689-4b4b-bfa1-a9cfe6127e08",
+                            Id = "43ef6dba-7cde-42fa-8ef9-17bf023e7d87",
                             AccessFailedCount = 0,
-                            ConcurrencyStamp = "3fb8acd9-7592-4bbe-b3d7-1c720913ee6e",
+                            ConcurrencyStamp = "7ad31309-65c0-42dc-88bf-e0136bca3118",
                             Email = "user@gmail.com",
                             EmailConfirmed = true,
                             FirstName = "Frank",
@@ -130,10 +130,10 @@ namespace LW.Data.Persistence.Migrations
                             LockoutEnabled = false,
                             NormalizedEmail = "USER@GMAIL.COM",
                             NormalizedUserName = "USER",
-                            PasswordHash = "AQAAAAEAACcQAAAAEOG49j8eo1HOFtCCfDp546n7NUjrp9tb1iIEOG04vgcNVuuk+TxvrvDurUvmIzEuGg==",
+                            PasswordHash = "AQAAAAEAACcQAAAAENYQ/YJnkvTLC3w3CgSVKG3/MYobNW70Dxwh8ak8H2yZFWTLBVtQsVyJQ409oaX/ng==",
                             PhoneNumber = "1234567890",
                             PhoneNumberConfirmed = false,
-                            SecurityStamp = "4dc3b263-b22b-4da6-807a-b93d4bf858dd",
+                            SecurityStamp = "52772d2a-4af9-4aac-803f-d68460be8cef",
                             TwoFactorEnabled = false,
                             UserName = "user"
                         });
@@ -145,6 +145,10 @@ namespace LW.Data.Persistence.Migrations
                         .ValueGeneratedOnAdd()
                         .HasColumnType("int");
 
+                    b.Property<string>("CreatedBy")
+                        .IsRequired()
+                        .HasColumnType("longtext");
+
                     b.Property<DateTimeOffset>("CreatedDate")
                         .HasColumnType("datetime(6)");
 
@@ -152,22 +156,21 @@ namespace LW.Data.Persistence.Migrations
                         .IsRequired()
                         .HasColumnType("longtext");
 
-                    b.Property<string>("FilePath")
-                        .IsRequired()
-                        .HasColumnType("longtext");
+                    b.Property<int>("GradeId")
+                        .HasColumnType("int");
 
                     b.Property<bool>("IsActive")
                         .HasColumnType("tinyint(1)");
 
-                    b.Property<DateTimeOffset?>("LastModifiedDate")
-                        .HasColumnType("datetime(6)");
-
-                    b.Property<string>("Name")
+                    b.Property<string>("KeyWord")
                         .IsRequired()
                         .HasColumnType("longtext");
 
-                    b.Property<int>("SubjectId")
-                        .HasColumnType("int");
+                    b.Property<string>("LastModifiedBy")
+                        .HasColumnType("longtext");
+
+                    b.Property<DateTimeOffset?>("LastModifiedDate")
+                        .HasColumnType("datetime(6)");
 
                     b.Property<string>("Title")
                         .IsRequired()
@@ -175,7 +178,7 @@ namespace LW.Data.Persistence.Migrations
 
                     b.HasKey("Id");
 
-                    b.HasIndex("SubjectId");
+                    b.HasIndex("GradeId");
 
                     b.ToTable("Documents");
                 });
@@ -186,11 +189,22 @@ namespace LW.Data.Persistence.Migrations
                         .ValueGeneratedOnAdd()
                         .HasColumnType("int");
 
-                    b.Property<bool>("Active")
-                        .HasColumnType("tinyint(1)");
+                    b.Property<string>("CreatedBy")
+                        .IsRequired()
+                        .HasColumnType("longtext");
 
                     b.Property<DateTimeOffset>("CreatedDate")
                         .HasColumnType("datetime(6)");
+
+                    b.Property<bool>("IsActive")
+                        .HasColumnType("tinyint(1)");
+
+                    b.Property<string>("KeyWord")
+                        .IsRequired()
+                        .HasColumnType("longtext");
+
+                    b.Property<string>("LastModifiedBy")
+                        .HasColumnType("longtext");
 
                     b.Property<DateTimeOffset?>("LastModifiedDate")
                         .HasColumnType("datetime(6)");
@@ -198,7 +212,7 @@ namespace LW.Data.Persistence.Migrations
                     b.Property<int>("LevelId")
                         .HasColumnType("int");
 
-                    b.Property<string>("Name")
+                    b.Property<string>("Title")
                         .IsRequired()
                         .HasColumnType("longtext");
 
@@ -209,22 +223,73 @@ namespace LW.Data.Persistence.Migrations
                     b.ToTable("Grades");
                 });
 
+            modelBuilder.Entity("LW.Data.Entities.Lesson", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    b.Property<string>("CreatedBy")
+                        .IsRequired()
+                        .HasColumnType("longtext");
+
+                    b.Property<DateTimeOffset>("CreatedDate")
+                        .HasColumnType("datetime(6)");
+
+                    b.Property<bool>("IsActive")
+                        .HasColumnType("tinyint(1)");
+
+                    b.Property<string>("KeyWord")
+                        .IsRequired()
+                        .HasColumnType("longtext");
+
+                    b.Property<string>("LastModifiedBy")
+                        .HasColumnType("longtext");
+
+                    b.Property<DateTimeOffset?>("LastModifiedDate")
+                        .HasColumnType("datetime(6)");
+
+                    b.Property<string>("Title")
+                        .IsRequired()
+                        .HasColumnType("longtext");
+
+                    b.Property<int>("TopicId")
+                        .HasColumnType("int");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("TopicId");
+
+                    b.ToTable("Lesson");
+                });
+
             modelBuilder.Entity("LW.Data.Entities.Level", b =>
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("int");
 
-                    b.Property<bool>("Active")
-                        .HasColumnType("tinyint(1)");
+                    b.Property<string>("CreatedBy")
+                        .IsRequired()
+                        .HasColumnType("longtext");
 
                     b.Property<DateTimeOffset>("CreatedDate")
                         .HasColumnType("datetime(6)");
 
+                    b.Property<bool>("IsActive")
+                        .HasColumnType("tinyint(1)");
+
+                    b.Property<string>("KeyWord")
+                        .IsRequired()
+                        .HasColumnType("longtext");
+
+                    b.Property<string>("LastModifiedBy")
+                        .HasColumnType("longtext");
+
                     b.Property<DateTimeOffset?>("LastModifiedDate")
                         .HasColumnType("datetime(6)");
 
-                    b.Property<string>("Name")
+                    b.Property<string>("Title")
                         .IsRequired()
                         .HasColumnType("longtext");
 
@@ -243,56 +308,47 @@ namespace LW.Data.Persistence.Migrations
                         .IsRequired()
                         .HasColumnType("longtext");
 
+                    b.Property<string>("CreatedBy")
+                        .IsRequired()
+                        .HasColumnType("longtext");
+
                     b.Property<DateTimeOffset>("CreatedDate")
                         .HasColumnType("datetime(6)");
+
+                    b.Property<string>("FilePath")
+                        .IsRequired()
+                        .HasColumnType("longtext");
 
                     b.Property<bool>("IsActive")
                         .HasColumnType("tinyint(1)");
 
+                    b.Property<string>("KeyWord")
+                        .IsRequired()
+                        .HasColumnType("longtext");
+
+                    b.Property<string>("LastModifiedBy")
+                        .HasColumnType("longtext");
+
                     b.Property<DateTimeOffset?>("LastModifiedDate")
                         .HasColumnType("datetime(6)");
+
+                    b.Property<int>("LessonId")
+                        .HasColumnType("int");
 
                     b.Property<string>("Title")
                         .IsRequired()
                         .HasColumnType("longtext");
 
-                    b.Property<int>("TopicId")
+                    b.Property<int?>("TopicId")
                         .HasColumnType("int");
 
                     b.HasKey("Id");
+
+                    b.HasIndex("LessonId");
 
                     b.HasIndex("TopicId");
 
                     b.ToTable("Materials");
-                });
-
-            modelBuilder.Entity("LW.Data.Entities.Subject", b =>
-                {
-                    b.Property<int>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("int");
-
-                    b.Property<bool>("Active")
-                        .HasColumnType("tinyint(1)");
-
-                    b.Property<DateTimeOffset>("CreatedDate")
-                        .HasColumnType("datetime(6)");
-
-                    b.Property<int>("GradeId")
-                        .HasColumnType("int");
-
-                    b.Property<DateTimeOffset?>("LastModifiedDate")
-                        .HasColumnType("datetime(6)");
-
-                    b.Property<string>("Name")
-                        .IsRequired()
-                        .HasColumnType("longtext");
-
-                    b.HasKey("Id");
-
-                    b.HasIndex("GradeId");
-
-                    b.ToTable("Subjects");
                 });
 
             modelBuilder.Entity("LW.Data.Entities.Topic", b =>
@@ -301,8 +357,16 @@ namespace LW.Data.Persistence.Migrations
                         .ValueGeneratedOnAdd()
                         .HasColumnType("int");
 
+                    b.Property<string>("CreatedBy")
+                        .IsRequired()
+                        .HasColumnType("longtext");
+
                     b.Property<DateTimeOffset>("CreatedDate")
                         .HasColumnType("datetime(6)");
+
+                    b.Property<string>("Description")
+                        .IsRequired()
+                        .HasColumnType("longtext");
 
                     b.Property<int>("DocumentId")
                         .HasColumnType("int");
@@ -310,10 +374,17 @@ namespace LW.Data.Persistence.Migrations
                     b.Property<bool>("IsActive")
                         .HasColumnType("tinyint(1)");
 
+                    b.Property<string>("KeyWord")
+                        .IsRequired()
+                        .HasColumnType("longtext");
+
+                    b.Property<string>("LastModifiedBy")
+                        .HasColumnType("longtext");
+
                     b.Property<DateTimeOffset?>("LastModifiedDate")
                         .HasColumnType("datetime(6)");
 
-                    b.Property<string>("Name")
+                    b.Property<string>("Title")
                         .IsRequired()
                         .HasColumnType("longtext");
 
@@ -321,7 +392,7 @@ namespace LW.Data.Persistence.Migrations
 
                     b.HasIndex("DocumentId");
 
-                    b.ToTable("Topics");
+                    b.ToTable("Topic");
                 });
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityRole", b =>
@@ -352,15 +423,15 @@ namespace LW.Data.Persistence.Migrations
                     b.HasData(
                         new
                         {
-                            Id = "983fccee-6668-49a3-8e5e-7c45bac99034",
-                            ConcurrencyStamp = "0405f866-e397-49ff-87e2-f106d20e937c",
+                            Id = "166d6000-feaf-401a-916b-8a4e1e473ca3",
+                            ConcurrencyStamp = "7081e00f-58db-4e34-8bb2-fc1c070ddb37",
                             Name = "User",
                             NormalizedName = "USER"
                         },
                         new
                         {
-                            Id = "3fd192c2-6a29-408e-8a1b-8f9ffc91a4cb",
-                            ConcurrencyStamp = "a5b3e4f3-3180-425c-8fb9-203a579779a3",
+                            Id = "7ea7e151-2ef2-4205-a82d-2a71e4d14950",
+                            ConcurrencyStamp = "f8c21b67-271f-4366-ba48-74d8043e2cda",
                             Name = "Admin",
                             NormalizedName = "ADMIN"
                         });
@@ -451,13 +522,13 @@ namespace LW.Data.Persistence.Migrations
                     b.HasData(
                         new
                         {
-                            UserId = "d69bc19b-cc95-4b5e-b44b-7a70fe53cf3d",
-                            RoleId = "3fd192c2-6a29-408e-8a1b-8f9ffc91a4cb"
+                            UserId = "c2ab718e-af47-4674-ae37-0b810cb5127f",
+                            RoleId = "7ea7e151-2ef2-4205-a82d-2a71e4d14950"
                         },
                         new
                         {
-                            UserId = "3e1acdb4-a689-4b4b-bfa1-a9cfe6127e08",
-                            RoleId = "983fccee-6668-49a3-8e5e-7c45bac99034"
+                            UserId = "43ef6dba-7cde-42fa-8ef9-17bf023e7d87",
+                            RoleId = "166d6000-feaf-401a-916b-8a4e1e473ca3"
                         });
                 });
 
@@ -482,13 +553,13 @@ namespace LW.Data.Persistence.Migrations
 
             modelBuilder.Entity("LW.Data.Entities.Document", b =>
                 {
-                    b.HasOne("LW.Data.Entities.Subject", "Subject")
+                    b.HasOne("LW.Data.Entities.Grade", "Grade")
                         .WithMany("Documents")
-                        .HasForeignKey("SubjectId")
+                        .HasForeignKey("GradeId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.Navigation("Subject");
+                    b.Navigation("Grade");
                 });
 
             modelBuilder.Entity("LW.Data.Entities.Grade", b =>
@@ -502,10 +573,10 @@ namespace LW.Data.Persistence.Migrations
                     b.Navigation("Level");
                 });
 
-            modelBuilder.Entity("LW.Data.Entities.Material", b =>
+            modelBuilder.Entity("LW.Data.Entities.Lesson", b =>
                 {
                     b.HasOne("LW.Data.Entities.Topic", "Topic")
-                        .WithMany("Materials")
+                        .WithMany()
                         .HasForeignKey("TopicId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
@@ -513,15 +584,19 @@ namespace LW.Data.Persistence.Migrations
                     b.Navigation("Topic");
                 });
 
-            modelBuilder.Entity("LW.Data.Entities.Subject", b =>
+            modelBuilder.Entity("LW.Data.Entities.Material", b =>
                 {
-                    b.HasOne("LW.Data.Entities.Grade", "Grade")
-                        .WithMany("Subjects")
-                        .HasForeignKey("GradeId")
+                    b.HasOne("LW.Data.Entities.Lesson", "Lesson")
+                        .WithMany("Materials")
+                        .HasForeignKey("LessonId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.Navigation("Grade");
+                    b.HasOne("LW.Data.Entities.Topic", null)
+                        .WithMany("Materials")
+                        .HasForeignKey("TopicId");
+
+                    b.Navigation("Lesson");
                 });
 
             modelBuilder.Entity("LW.Data.Entities.Topic", b =>
@@ -593,17 +668,17 @@ namespace LW.Data.Persistence.Migrations
 
             modelBuilder.Entity("LW.Data.Entities.Grade", b =>
                 {
-                    b.Navigation("Subjects");
+                    b.Navigation("Documents");
+                });
+
+            modelBuilder.Entity("LW.Data.Entities.Lesson", b =>
+                {
+                    b.Navigation("Materials");
                 });
 
             modelBuilder.Entity("LW.Data.Entities.Level", b =>
                 {
                     b.Navigation("Grades");
-                });
-
-            modelBuilder.Entity("LW.Data.Entities.Subject", b =>
-                {
-                    b.Navigation("Documents");
                 });
 
             modelBuilder.Entity("LW.Data.Entities.Topic", b =>

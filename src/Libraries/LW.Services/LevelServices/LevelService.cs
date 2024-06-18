@@ -1,4 +1,5 @@
-﻿using AutoMapper;
+﻿using System.Text;
+using AutoMapper;
 using LW.Data.Entities;
 using LW.Data.Repositories.LevelRepositories;
 using Serilog;
@@ -23,6 +24,7 @@ public class LevelService : ILevelService
     public async Task<ApiResult<bool>> Create(LevelDtoForCreate model)
     {
         var level = _mapper.Map<Level>(model);
+        level.KeyWord = level.Title.ToLower();
         await _levelRepository.CreateLevel(level);
         return new ApiResult<bool>(true, "Create level successfully");
     }
@@ -30,27 +32,42 @@ public class LevelService : ILevelService
 
     public async Task<ApiResult<bool>> Update(LevelDtoForUpdate model)
     {
-        var level = _mapper.Map<Level>(model);
+        var levelInDb = await _levelRepository.GetLevelById(model.Id);
+        if (levelInDb == null)
+        {
+            return new ApiResult<bool>(false, "Not found");
+        }
+        var obj = _mapper.Map(model, levelInDb);
+        // Sau khi ánh xạ, levelIbDb sẽ có các giá trị từ model:
+        var level = _mapper.Map<Level>(obj);
+        level.KeyWord = level.Title.ToLower();
         await _levelRepository.UpdateLevel(level);
         return new ApiResult<bool>(true, "Update level successfully");
     }
     public async Task<ApiResult<bool>> UpdateStatus(int id)
     {
-        if (id == null || id <= 0)
+        var objLevel = await _levelRepository.GetLevelById(id);
+        if (objLevel == null)
         {
-            return new ApiResult<bool>(true, "Id is invalid");
+            return new ApiResult<bool>(true, "Not found !");
         }
-        await _levelRepository.UpdateStatusLevel(id);
+        objLevel.IsActive = !objLevel.IsActive;
+        await _levelRepository.UpdateLevel(objLevel);
         return new ApiResult<bool>(true, "Update Status of level successfully");
     }
 
     public async Task<ApiResult<bool>> Delete(int id)
     {
-        if (id == null || id <= 0)
+        var level = await _levelRepository.GetLevelById(id);
+        if (level == null)
         {
-            return new ApiResult<bool>(true, "Id is invalid");
+            return new ApiResult<bool>(false, "Not found !");
         }
-        await _levelRepository.DeleteLevel(id);
+        var isDeleted = await _levelRepository.DeleteLevel(id);
+        if (!isDeleted)
+        {
+            return new ApiResult<bool>(false, "Delete level failed");
+        }
         return new ApiResult<bool>(true, "Delete level successfully");
     }
 
@@ -63,10 +80,6 @@ public class LevelService : ILevelService
 
     public async Task<ApiResult<LevelDto>> GetById(int id)
     {
-        if (id == null || id <= 0)
-        {
-            return new ApiResult<LevelDto>(true, "Id is invalid");
-        }
         var level = await _levelRepository.GetLevelById(id);
         if (level == null)
         {

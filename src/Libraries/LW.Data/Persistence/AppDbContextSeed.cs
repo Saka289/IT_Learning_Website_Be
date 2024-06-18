@@ -14,6 +14,7 @@ public class AppDbContextSeed
             logger.Information("Seeded data for Education DB associated with context {DbContextName}",
                 nameof(AppDbContext));
         }
+
         if (!context.Grades.Any())
         {
             context.AddRange(SeedGrade());
@@ -22,48 +23,55 @@ public class AppDbContextSeed
                 nameof(AppDbContext));
         }
     }
+
     private static IEnumerable<Level> SeedLevel()
     {
         return new List<Level>()
         {
             new()
             {
-                Name =  "Tiểu học",
-                Active = true
+                Title = "Tiểu học",
+                KeyWord = "tieu hoc",
+                IsActive = true
             },
             new()
             {
-                Name =  "Trung học cơ sở",
-                Active = true
+                Title = "Trung học cơ sở",
+                KeyWord = "trung hoc co so",
+                IsActive = true
             },
             new()
             {
-                Name =  "Trung học phổ thông",
-                Active = true
+                Title = "Trung học phổ thông",
+                KeyWord = "trung hoc pho thong",
+                IsActive = true
             },
         };
     }
-    
+
     private static IEnumerable<Grade> SeedGrade()
     {
         return new List<Grade>()
         {
             new()
             {
-                Name =  "Cấp 1",
-                Active = true,
+                Title = "Cấp 1",
+                KeyWord = "cap 1",
+                IsActive = true,
                 LevelId = 1
             },
             new()
             {
-                Name =  "Cấp 2",
-                Active = true,
+                Title = "Cấp 2",
+                KeyWord = "cap 2",
+                IsActive = true,
                 LevelId = 2
             },
             new()
             {
-                Name =  "Cấp 3",
-                Active = true,
+                Title = "Cấp 3",
+                KeyWord = "cap 3",
+                IsActive = true,
                 LevelId = 3
             },
         };

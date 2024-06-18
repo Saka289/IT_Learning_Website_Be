@@ -5,7 +5,7 @@ namespace LW.Shared.DTOs.Level;
 public class LevelDtoForCreate
 {
     [Required]
-    public string? Name { get; set; }
+    public string? Title { get; set; }
 
-    [Required] public bool Active { get; set; } = true;
+    [Required] public bool IsActive { get; set; } = true;
 }

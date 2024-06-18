@@ -10,5 +10,4 @@ public interface ILevelRepository : IRepositoryBase<Level,int>
    Task<bool> DeleteLevel(int id);
    Task<Level> GetLevelById(int id);
    Task<IEnumerable<Level>> GetAllLevel();
-   Task<bool> UpdateStatusLevel(int id);
 }

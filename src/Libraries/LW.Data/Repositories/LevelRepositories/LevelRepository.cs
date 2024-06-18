@@ -41,16 +41,4 @@ public class LevelRepository : RepositoryBase<Level, int>, ILevelRepository
     {
         return await FindAll().ToListAsync();
     }
-
-    public async Task<bool> UpdateStatusLevel(int id)
-    {
-        var level =  await GetLevelById(id);
-        if (level != null)
-        {
-            level.Active = false;
-            await UpdateAsync(level);
-            return true;
-        }
-        return false;
-    }
 }

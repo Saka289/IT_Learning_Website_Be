@@ -1,15 +1,22 @@
-﻿using System.ComponentModel.DataAnnotations.Schema;
+﻿using System.ComponentModel.DataAnnotations;
+using System.ComponentModel.DataAnnotations.Schema;
 using LW.Contracts.Domains;
 
 namespace LW.Data.Entities;
 
-public class Topic :EntityAuditBase<int>
+public class Topic : EntityAuditBase<int>
 {
-    public string Name { get; set; }
+    [Required]
+    public string Title { get; set; }
+    [Required]
+    public string KeyWord { get; set; }
+    [Required]
+    public string Description { get; set; }
+    [Required]
     public bool IsActive { get; set; }
+    [Required]
     public int DocumentId { get; set; }
-    [ForeignKey("DocumentId")]
-    
+    [ForeignKey(nameof(DocumentId))]
     public virtual Document Document { get; set; }
-    public ICollection<Material> Materials { get; set; }
+    public virtual ICollection<Material> Materials { get; set; }
 }
