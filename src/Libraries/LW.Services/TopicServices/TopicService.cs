@@ -1,6 +1,8 @@
 ﻿using AutoMapper;
 using LW.Data.Entities;
+using LW.Data.Repositories.DocumentRepositories;
 using LW.Data.Repositories.TopicRepositories;
+using LW.Services.DocumentService;
 using LW.Shared.DTOs.Topic;
 using LW.Shared.SeedWork;
 
@@ -12,21 +14,22 @@ public class TopicService : ITopicService
 
     private readonly IMapper _mapper;
 
-    //private readonly IDocumentService _documentService;
+    private readonly IDocumentRepository _documentRepository;
 
-    public TopicService(ITopicRepository topicRepository, IMapper mapper)
+    public TopicService(ITopicRepository topicRepository, IMapper mapper, IDocumentRepository documentRepository)
     {
         _topicRepository = topicRepository;
         _mapper = mapper;
+        _documentRepository = documentRepository;
     }
 
     public async Task<ApiResult<bool>> Create(TopicCreateDto model)
     {
-        // var documentEntity = await _documentService.GetById(model.DocumentId);
-        // if (documentEntity == null)
-        // {
-        //     return new ApiResult<bool>(false, "Document of topic not found !!!");
-        // }
+        var documentEntity = await _documentRepository.GetDocumentById(model.DocumentId);
+        if (documentEntity==null)
+        {
+            return new ApiResult<bool>(false, "Document of topic not found !!!");
+        }
         var topic = _mapper.Map<Topic>(model);
         topic.KeyWord = topic.Title.ToLower();
         await _topicRepository.CreateTopic(topic);
@@ -35,11 +38,11 @@ public class TopicService : ITopicService
 
     public async Task<ApiResult<bool>> Update(TopicUpdateDto model)
     {
-        // var documentEntity = await _documentService.GetById(model.DocumentId);
-        // if (documentEntity == null)
-        // {
-        //     return new ApiResult<bool>(false, "Document of topic not found !!!");
-        // }
+        var documentEntity = await _documentRepository.GetDocumentById(model.DocumentId);
+        if (documentEntity == null)
+        {
+            return new ApiResult<bool>(false, "Document of topic not found !!!");
+        }
         var topicEntity = await _topicRepository.GetTopicById(model.Id);
         if (topicEntity == null)
         {

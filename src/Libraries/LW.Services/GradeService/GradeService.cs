@@ -1,6 +1,7 @@
 ﻿using AutoMapper;
 using LW.Data.Entities;
 using LW.Data.Repositories.GradeRepositories;
+using LW.Data.Repositories.LevelRepositories;
 using LW.Services.LevelServices;
 using LW.Shared.DTOs.Grade;
 using LW.Shared.SeedWork;
@@ -10,14 +11,14 @@ namespace LW.Services.GradeService;
 public class GradeService : IGradeService
 {
     private readonly IGradeRepository _gradeRepository;
-    private readonly ILevelService _levelService;
+    private readonly ILevelRepository _levelRepository;
     private readonly IMapper _mapper;
 
-    public GradeService(IGradeRepository gradeRepository, IMapper mapper, ILevelService levelService)
+    public GradeService(IGradeRepository gradeRepository, IMapper mapper, ILevelRepository levelRepository)
     {
         _gradeRepository = gradeRepository;
         _mapper = mapper;
-        _levelService = levelService;
+        _levelRepository = levelRepository;
     }
 
     public async Task<ApiResult<IEnumerable<GradeDto>>> GetAllGrade()
@@ -46,8 +47,8 @@ public class GradeService : IGradeService
 
     public async Task<ApiResult<GradeDto>> CreateGrade(GradeCreateDto gradeCreateDto)
     {
-        var levelEntity = await _levelService.GetById(gradeCreateDto.LevelId);
-        if (!levelEntity.IsSucceeded)
+        var levelEntity = await _levelRepository.GetByIdAsync(gradeCreateDto.LevelId);
+        if (levelEntity==null)
         {
             return new ApiResult<GradeDto>(false, "LevelId not found !!!");
         }
@@ -62,8 +63,8 @@ public class GradeService : IGradeService
 
     public async Task<ApiResult<GradeDto>> UpdateGrade(GradeUpdateDto gradeUpdateDto)
     {
-        var levelEntity = await _levelService.GetById(gradeUpdateDto.LevelId);
-        if (!levelEntity.IsSucceeded)
+        var levelEntity = await _levelRepository.GetByIdAsync(gradeUpdateDto.LevelId);
+        if (levelEntity==null)
         {
             return new ApiResult<GradeDto>(false, "LevelId not found !!!");
         }
