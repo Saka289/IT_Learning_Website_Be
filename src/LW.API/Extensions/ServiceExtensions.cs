@@ -29,6 +29,8 @@ using Pomelo.EntityFrameworkCore.MySql.Infrastructure;
 using MySqlConnector;
 using LW.Services.DocumentService;
 using LW.Data.Repositories.DocumentRepositories;
+using LW.Data.Repositories.TopicRepositories;
+using LW.Services.TopicServices;
 
 namespace LW.API.Extensions;
 
@@ -192,12 +194,14 @@ public static class ServiceExtensions
         services.AddScoped<ILevelRepository, LevelRepository>();
         services.AddScoped<IGradeRepository, GradeRepository>();
         services.AddScoped<IDocumentRepository, DocumentRepository>();
-        services.AddScoped<IAdminAuthorService, AdminAuthorService>();
+        services.AddScoped<ITopicRepository, TopicRepository>();
         // IService 
+        services.AddScoped<IAdminAuthorService, AdminAuthorService>();
         services.AddScoped<IUserService, UserService>();
         services.AddScoped<ILevelService, LevelService>();
         services.AddScoped<IGradeService, GradeService>();
         services.AddScoped<IDocumentService, DocumentService>();
+        services.AddScoped<ITopicService, TopicService>();
         services.AddScoped<IJwtTokenService, JwtTokenService>();
         services.AddScoped<IFacebookService, FacebookService>();
         services.AddTransient<ISerializeService, SerializeService>();

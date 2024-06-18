@@ -6,6 +6,7 @@ using LW.Shared.DTOs.Level;
 using Microsoft.AspNetCore.Identity;
 using LW.Shared.DTOs.User;
 using LW.Shared.DTOs.Document;
+using LW.Shared.DTOs.Topic;
 
 namespace LW.API;
 
@@ -30,5 +31,9 @@ public class MappingProfile : Profile
         CreateMap<Document, DocumentDto>().ReverseMap();
         CreateMap<Document, DocumentCreateDto>().ReverseMap();
         CreateMap<Document, DocumentUpdateDto>().ReverseMap();
+        //Topic 
+        CreateMap<Topic, TopicDto>().ReverseMap();
+        CreateMap<Topic, TopicCreateDto>().ReverseMap();
+        CreateMap<Topic, TopicUpdateDto>().ReverseMap();
     }
 }

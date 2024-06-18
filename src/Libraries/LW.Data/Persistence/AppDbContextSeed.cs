@@ -22,6 +22,13 @@ public class AppDbContextSeed
             logger.Information("Seeded data for Education DB associated with context {DbContextName}",
                 nameof(AppDbContext));
         }
+        if (!context.Documents.Any())
+        {
+            context.AddRange(SeedDocument());
+            await context.SaveChangesAsync();
+            logger.Information("Seeded data for Education DB associated with context {DbContextName}",
+                nameof(AppDbContext));
+        }
     }
 
     private static IEnumerable<Level> SeedLevel()
@@ -73,6 +80,36 @@ public class AppDbContextSeed
                 KeyWord = "cap 3",
                 IsActive = true,
                 LevelId = 3
+            },
+        };
+    }
+    private static IEnumerable<Document> SeedDocument()
+    {
+        return new List<Document>()
+        {
+            new()
+            {
+                Title = "Sách cánh diều",
+                Description = "Sách cánh diều mô tả",
+                KeyWord = "sach canh dieu",
+                IsActive= true,
+                GradeId =1
+            },
+            new()
+            {
+                Title = "Sách chân trời",
+                Description = "Sách chân trời mô tả",
+                KeyWord = "sach chan troi",
+                IsActive= true,
+                GradeId =2
+            },
+            new()
+            {
+                Title = "Sách kết nối tri chức",
+                Description = "Sách kết nối tri thức mô tả",
+                KeyWord = "sach ket noi tri thuc",
+                IsActive= true,
+                GradeId =3
             },
         };
     }
