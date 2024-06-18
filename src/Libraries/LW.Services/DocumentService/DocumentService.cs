@@ -1,6 +1,7 @@
 ﻿using AutoMapper;
 using LW.Data.Entities;
 using LW.Data.Repositories.DocumentRepositories;
+using LW.Data.Repositories.GradeRepositories;
 using LW.Services.GradeService;
 using LW.Services.LevelServices;
 using LW.Shared.DTOs.Document;
@@ -11,14 +12,14 @@ namespace LW.Services.DocumentService;
 public class DocumentService : IDocumentService
 {
     private readonly IDocumentRepository _documentRepository;
-    private readonly IGradeService _gradeService;
+    private readonly IGradeRepository _gradeRepository;
     private readonly IMapper _mapper;
 
-    public DocumentService(IDocumentRepository documentRepository, IMapper mapper, IGradeService gradeService)
+    public DocumentService(IDocumentRepository documentRepository, IMapper mapper, IGradeRepository gradeRepository)
     {
         _documentRepository = documentRepository;
         _mapper = mapper;
-        _gradeService = gradeService;
+        _gradeRepository = gradeRepository;
     }
 
     public async Task<ApiResult<IEnumerable<DocumentDto>>> GetAllDocument()
@@ -47,8 +48,8 @@ public class DocumentService : IDocumentService
 
     public async Task<ApiResult<DocumentDto>> CreateDocument(DocumentCreateDto documentCreateDto)
     {
-        var levelEntity = await _gradeService.GetGradeById(documentCreateDto.GradeId);
-        if (!levelEntity.IsSucceeded)
+        var gradeEntity = await _gradeRepository.GetGradeById(documentCreateDto.GradeId);
+        if (gradeEntity==null)
         {
             return new ApiResult<DocumentDto>(false, "GradeId not found !!!");
         }
@@ -62,8 +63,8 @@ public class DocumentService : IDocumentService
 
     public async Task<ApiResult<DocumentDto>> UpdateDocument(DocumentUpdateDto documentUpdateDto)
     {
-        var levelEntity = await _gradeService.GetGradeById(documentUpdateDto.GradeId);
-        if (!levelEntity.IsSucceeded)
+        var gradeEntity = await _gradeRepository.GetGradeById(documentUpdateDto.GradeId);
+        if (gradeEntity==null)
         {
             return new ApiResult<DocumentDto>(false, "LevelId not found !!!");
         }
