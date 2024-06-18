@@ -5,6 +5,7 @@ using LW.Shared.DTOs.Grade;
 using LW.Shared.DTOs.Level;
 using Microsoft.AspNetCore.Identity;
 using LW.Shared.DTOs.User;
+using LW.Shared.DTOs.Document;
 
 namespace LW.API;
 
@@ -25,5 +26,9 @@ public class MappingProfile : Profile
         CreateMap<Grade, GradeDto>().ReverseMap();
         CreateMap<Grade, GradeCreateDto>().ReverseMap();
         CreateMap<Grade, GradeUpdateDto>().ReverseMap();
+        //Document 
+        CreateMap<Document, DocumentDto>().ReverseMap();
+        CreateMap<Document, DocumentCreateDto>().ReverseMap();
+        CreateMap<Document, DocumentUpdateDto>().ReverseMap();
     }
 }
