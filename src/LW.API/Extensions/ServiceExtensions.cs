@@ -27,6 +27,8 @@ using Microsoft.IdentityModel.Tokens;
 using Microsoft.OpenApi.Models;
 using Pomelo.EntityFrameworkCore.MySql.Infrastructure;
 using MySqlConnector;
+using LW.Services.DocumentService;
+using LW.Data.Repositories.DocumentRepositories;
 
 namespace LW.API.Extensions;
 
@@ -182,15 +184,20 @@ public static class ServiceExtensions
 
     private static IServiceCollection AddInfrastructureServices(this IServiceCollection services)
     {
+        // IBaseRepository 
         services.AddScoped(typeof(IUnitOfWork), typeof(UnitOfWork));
         services.AddScoped(typeof(IRepositoryBase<,>), typeof(RepositoryBase<,>));
         services.AddScoped(typeof(IRepositoryBase<,>), typeof(RepositoryQueryBase<,>));
+        // IRepository 
         services.AddScoped<ILevelRepository, LevelRepository>();
         services.AddScoped<IGradeRepository, GradeRepository>();
+        services.AddScoped<IDocumentRepository, DocumentRepository>();
         services.AddScoped<IAdminAuthorService, AdminAuthorService>();
+        // IService 
         services.AddScoped<IUserService, UserService>();
         services.AddScoped<ILevelService, LevelService>();
         services.AddScoped<IGradeService, GradeService>();
+        services.AddScoped<IDocumentService, DocumentService>();
         services.AddScoped<IJwtTokenService, JwtTokenService>();
         services.AddScoped<IFacebookService, FacebookService>();
         services.AddTransient<ISerializeService, SerializeService>();
