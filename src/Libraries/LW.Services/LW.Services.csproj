@@ -7,6 +7,7 @@
     </PropertyGroup>
 
     <ItemGroup>
+        <ProjectReference Include="..\..\BuildingBlocks\LW.Infrastructure\LW.Infrastructure.csproj" />
         <ProjectReference Include="..\..\BuildingBlocks\LW.Shared\LW.Shared.csproj" />
         <ProjectReference Include="..\LW.Cache\LW.Cache.csproj" />
         <ProjectReference Include="..\LW.Data\LW.Data.csproj" />

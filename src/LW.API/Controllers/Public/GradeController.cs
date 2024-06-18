@@ -42,14 +42,21 @@ namespace LW.API.Controllers.Public
             var result = await _gradeService.CreateGrade(gradeCreateDto);
             return Ok(result);
         }
-        
+
         [HttpPut("UpdateGrade")]
         public async Task<ActionResult<ApiResult<GradeDto>>> UpdateGrade([FromBody] GradeUpdateDto gradeUpdateDto)
         {
             var result = await _gradeService.UpdateGrade(gradeUpdateDto);
             return Ok(result);
         }
-        
+
+        [HttpPut("UpdateStatusGrade")]
+        public async Task<ActionResult<ApiResult<bool>>> UpdateStatusGrade(int id)
+        {
+            var result = await _gradeService.UpdateGradeStatus(id);
+            return Ok(result);
+        }
+
         [HttpDelete("DeleteGrade/{id}")]
         public async Task<ActionResult<ApiResult<bool>>> DeleteGrade([Required] int id)
         {
