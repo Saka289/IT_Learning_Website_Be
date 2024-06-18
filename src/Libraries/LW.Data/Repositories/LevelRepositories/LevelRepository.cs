@@ -27,14 +27,16 @@ public class LevelRepository : RepositoryBase<Level, int>, ILevelRepository
         var level = await GetLevelById(id);
         if (level != null)
         {
-             await DeleteAsync(level);
-             return true;
+            await DeleteAsync(level);
+            return true;
         }
+
         return false;
     }
-    public Task<Level> GetLevelById(int id)
+
+    public async Task<Level> GetLevelById(int id)
     {
-        return GetByIdAsync(id);
+        return await GetByIdAsync(id);
     }
 
     public async Task<IEnumerable<Level>> GetAllLevel()
