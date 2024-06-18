@@ -32,9 +32,9 @@ public class TopicRepository : RepositoryBase<Topic, int>, ITopicRepository
         }
         return false;
     }
-    public Task<Topic> GetTopicById(int id)
+    public async Task<Topic> GetTopicById(int id)
     {
-        return GetByIdAsync(id);
+        return await GetByIdAsync(id);
     }
 
     public async Task<IEnumerable<Topic>> GetAllTopic()
