@@ -17,10 +17,10 @@ namespace LW.Data.Repositories.DocumentRepositories
         {
         }
 
-        public async Task<Document> CreateDocument(Document Document)
+        public async Task<Document> CreateDocument(Document document)
         {
-            await CreateAsync(Document);
-            return await  Task.FromResult(Document) ;
+            await CreateAsync(document);
+            return await  Task.FromResult(document) ;
         }
 
         public async Task<bool> DeleteDocument(int id)
@@ -46,10 +46,10 @@ namespace LW.Data.Repositories.DocumentRepositories
             return document;
         }
 
-        public async Task<Document> UpdateDocument(Document Document)
+        public async Task<Document> UpdateDocument(Document document)
         {
-            await UpdateAsync(Document);
-            return await Task.FromResult(Document);
+            await UpdateAsync(document);
+            return await Task.FromResult(document);
         }
     }
 }

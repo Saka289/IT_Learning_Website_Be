@@ -18,5 +18,5 @@ public class Topic : EntityAuditBase<int>
     public int DocumentId { get; set; }
     [ForeignKey(nameof(DocumentId))]
     public virtual Document Document { get; set; }
-    public virtual ICollection<Material> Materials { get; set; }
+    public virtual ICollection<Lesson> Lessons { get; set; }
 }
