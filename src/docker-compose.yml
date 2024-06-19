@@ -9,7 +9,12 @@ services:
     image: redis:alpine
   
   #infrastructure section
-  
+  lw_elasticsearch:
+    image: docker.elastic.co/elasticsearch/elasticsearch:7.17.22
+
+  lw_kibana:
+    image: docker.elastic.co/kibana/kibana:7.17.22
+
 #  #api section
 #  lw.api:
 #    image: ${DOCKER_REGISTRY-}lw-api:${PLATFORM:-linux}-${TAG:-latest}
@@ -27,3 +32,7 @@ networks:
 volumes:
   lw_mysql_data:
     name: lw_mysql_data
+  lw_elasticsearch_data:
+    name: lw_elasticsearch_data
+  lw_jaeger_data:
+    name: lw_jaeger_data

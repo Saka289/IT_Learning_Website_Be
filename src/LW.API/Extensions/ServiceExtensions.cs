@@ -1,4 +1,5 @@
 ﻿using System.Text;
+using LW.API.Mappings;
 using LW.Cache;
 using LW.Cache.Interfaces;
 using LW.Contracts.Common;
@@ -31,6 +32,7 @@ using LW.Services.DocumentService;
 using LW.Data.Repositories.DocumentRepositories;
 using LW.Data.Repositories.TopicRepositories;
 using LW.Services.TopicServices;
+using Nest;
 
 namespace LW.API.Extensions;
 
@@ -45,6 +47,9 @@ public static class ServiceExtensions
         var cacheSettings = configuration.GetSection(nameof(CacheSettings)).Get<CacheSettings>();
         services.AddSingleton(cacheSettings);
 
+        var elasticSettings = configuration.GetSection(nameof(ElasticsearchSettings)).Get<ElasticsearchSettings>();
+        services.AddSingleton(elasticSettings);
+
         var googleSettings = services.Configure<GoogleSettings>(configuration.GetSection(nameof(GoogleSettings)));
         services.AddSingleton(googleSettings);
 
@@ -54,7 +59,8 @@ public static class ServiceExtensions
         var jwtSettings = services.Configure<JwtSettings>(configuration.GetSection(nameof(JwtSettings)));
         services.AddSingleton(jwtSettings);
 
-        var confirmEmailSettings = services.Configure<VerifyEmailSettings>(configuration.GetSection(nameof(VerifyEmailSettings)));
+        var confirmEmailSettings =
+            services.Configure<VerifyEmailSettings>(configuration.GetSection(nameof(VerifyEmailSettings)));
         services.AddSingleton(confirmEmailSettings);
 
         var urlBaseSettings = services.Configure<UrlBase>(configuration.GetSection(nameof(UrlBase)));
@@ -111,6 +117,7 @@ public static class ServiceExtensions
         });
         services.ConfigureAppDbContext(configuration);
         services.ConfigureRedis(configuration);
+        services.ConfigureElasticSearch();
         services.AddInfrastructureServices();
         services.AddAutoMapper(cfg => cfg.AddProfile(new MappingProfile()));
 
@@ -184,12 +191,29 @@ public static class ServiceExtensions
         return services;
     }
 
+    private static IServiceCollection ConfigureElasticSearch(this IServiceCollection service)
+    {
+        var settings = service.GetOptions<ElasticsearchSettings>(nameof(ElasticsearchSettings));
+        var settingsElasticSearch = new ConnectionSettings(new Uri(settings.Uri))
+            .BasicAuthentication(settings.Username, settings.Password)
+            .PrettyJson()
+            .DefaultIndex(settings.DefaultIndex);
+        MappingElastic.AddDefaultMappings(settingsElasticSearch);
+        var client = new ElasticClient(settingsElasticSearch);
+        service.AddSingleton<IElasticClient>(client);
+        return service;
+    }
+
     private static IServiceCollection AddInfrastructureServices(this IServiceCollection services)
     {
         // IBaseRepository 
         services.AddScoped(typeof(IUnitOfWork), typeof(UnitOfWork));
         services.AddScoped(typeof(IRepositoryBase<,>), typeof(RepositoryBase<,>));
         services.AddScoped(typeof(IRepositoryBase<,>), typeof(RepositoryQueryBase<,>));
+        services.AddScoped(typeof(ISmtpEmailService), typeof(SmtpEmailService));
+        services.AddScoped(typeof(IElasticSearchService<,>), typeof(ElasticSearchService<,>));
+        services.AddTransient(typeof(IRedisCache<>), typeof(RedisCache<>));
+        services.AddTransient<ISerializeService, SerializeService>();
         // IRepository 
         services.AddScoped<ILevelRepository, LevelRepository>();
         services.AddScoped<IGradeRepository, GradeRepository>();
@@ -204,9 +228,6 @@ public static class ServiceExtensions
         services.AddScoped<ITopicService, TopicService>();
         services.AddScoped<IJwtTokenService, JwtTokenService>();
         services.AddScoped<IFacebookService, FacebookService>();
-        services.AddTransient<ISerializeService, SerializeService>();
-        services.AddScoped(typeof(ISmtpEmailService), typeof(SmtpEmailService));
-        services.AddTransient(typeof(IRedisCache<>), typeof(RedisCache<>));
         return services;
     }
 }

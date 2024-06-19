@@ -20,6 +20,7 @@
 
     <ItemGroup>
         <ProjectReference Include="..\..\BuildingBlocks\LW.Contracts\LW.Contracts.csproj" />
+        <ProjectReference Include="..\..\BuildingBlocks\LW.Infrastructure\LW.Infrastructure.csproj" />
         <ProjectReference Include="..\..\BuildingBlocks\LW.Logging\LW.Logging.csproj" />
     </ItemGroup>
 

@@ -1,33 +1,49 @@
-﻿using LW.Data.Entities;
+﻿using LW.Contracts.Common;
+using LW.Data.Entities;
+using LW.Shared.Constant;
+using Nest;
 using ILogger = Serilog.ILogger;
 
 namespace LW.Data.Persistence;
 
 public class AppDbContextSeed
 {
-    public static async Task SeedDataAsync(AppDbContext context, ILogger logger)
+    public static async Task SeedDataAsync(AppDbContext context, ILogger logger, IElasticClient elasticClient)
     {
         if (!context.Levels.Any())
         {
-            context.AddRange(SeedLevel());
+            var dataLevel = SeedLevel();
+            context.AddRange(dataLevel);
             await context.SaveChangesAsync();
-            logger.Information("Seeded data for Education DB associated with context {DbContextName}",
+            logger.Information("Seeded data Levels for Education DB associated with context {DbContextName}",
                 nameof(AppDbContext));
+            await elasticClient.BulkAsync(b => b.Index(ElasticConstant.ElasticLevels).IndexMany(dataLevel));
+            logger.Information("Seeded data Levels for ElasticSearch associated with {IElasticClient}",
+                nameof(IElasticClient));
         }
 
         if (!context.Grades.Any())
         {
-            context.AddRange(SeedGrade());
+            var dataGrade = SeedGrade();
+            context.AddRange(dataGrade);
             await context.SaveChangesAsync();
-            logger.Information("Seeded data for Education DB associated with context {DbContextName}",
+            logger.Information("Seeded data Grades for Education DB associated with context {DbContextName}",
                 nameof(AppDbContext));
+            await elasticClient.BulkAsync(b => b.Index(ElasticConstant.ElasticGrades).IndexMany(dataGrade));
+            logger.Information("Seeded data Grades for ElasticSearch associated with {IElasticClient}",
+                nameof(IElasticClient));
         }
+
         if (!context.Documents.Any())
         {
-            context.AddRange(SeedDocument());
+            var dataDocument = SeedDocument();
+            context.AddRange(dataDocument);
             await context.SaveChangesAsync();
-            logger.Information("Seeded data for Education DB associated with context {DbContextName}",
+            logger.Information("Seeded data Documents for Education DB associated with context {DbContextName}",
                 nameof(AppDbContext));
+            await elasticClient.BulkAsync(b => b.Index(ElasticConstant.ElasticDocuments).IndexMany(dataDocument));
+            logger.Information("Seeded data Documents for ElasticSearch associated with {IElasticClient}",
+                nameof(IElasticClient));
         }
     }
 
@@ -83,6 +99,7 @@ public class AppDbContextSeed
             },
         };
     }
+
     private static IEnumerable<Document> SeedDocument()
     {
         return new List<Document>()
@@ -92,24 +109,24 @@ public class AppDbContextSeed
                 Title = "Sách cánh diều",
                 Description = "Sách cánh diều mô tả",
                 KeyWord = "sach canh dieu",
-                IsActive= true,
-                GradeId =1
+                IsActive = true,
+                GradeId = 1
             },
             new()
             {
                 Title = "Sách chân trời",
                 Description = "Sách chân trời mô tả",
                 KeyWord = "sach chan troi",
-                IsActive= true,
-                GradeId =2
+                IsActive = true,
+                GradeId = 2
             },
             new()
             {
                 Title = "Sách kết nối tri chức",
                 Description = "Sách kết nối tri thức mô tả",
                 KeyWord = "sach ket noi tri thuc",
-                IsActive= true,
-                GradeId =3
+                IsActive = true,
+                GradeId = 3
             },
         };
     }

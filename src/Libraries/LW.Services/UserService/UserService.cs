@@ -155,8 +155,8 @@ public class UserService : IUserService
 
         var userCreated = new CreateUserFromSocialLogin()
         {
-            FirstName = payload.GivenName,
-            LastName = payload.FamilyName,
+            FirstName = payload.FamilyName,
+            LastName = payload.GivenName,
             Email = payload.Email,
             ProfilePicture = payload.Picture,
             LoginProviderSubject = payload.Subject,
