@@ -3,12 +3,11 @@ using LW.Data.Entities;
 using LW.Shared.DTOs.Admin;
 using LW.Shared.DTOs.Grade;
 using LW.Shared.DTOs.Level;
-using Microsoft.AspNetCore.Identity;
 using LW.Shared.DTOs.User;
 using LW.Shared.DTOs.Document;
 using LW.Shared.DTOs.Topic;
 
-namespace LW.API;
+namespace LW.API.Mappings;
 
 public class MappingProfile : Profile
 {
