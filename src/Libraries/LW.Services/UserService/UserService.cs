@@ -100,8 +100,7 @@ public class UserService : IUserService
 
     public async Task<ApiResult<LoginResponseUserDto>> Login(LoginUserDto loginUserDto)
     {
-        var user = await _userManager.Users.FirstOrDefaultAsync(u =>
-            u.UserName.ToLower().Equals(loginUserDto.UserName) || u.Email.ToLower().Equals(loginUserDto.Email));
+        var user = await _userManager.Users.FirstOrDefaultAsync(u => u.UserName.ToLower().Equals(loginUserDto.EmailOrUserName) || u.Email.ToLower().Equals(loginUserDto.EmailOrUserName));
         if (user == null)
         {
             return new ApiResult<LoginResponseUserDto>(false, "Invalid UserName or Email !!!");
@@ -150,7 +149,7 @@ public class UserService : IUserService
         catch (Exception ex)
         {
             _logger.Error(ex.Message, ex);
-            return new ApiResult<LoginResponseUserDto>(false, "Failed to get a response");
+            return new ApiResult<LoginResponseUserDto>(false, ex.Message);
         }
 
         var userCreated = new CreateUserFromSocialLogin()
