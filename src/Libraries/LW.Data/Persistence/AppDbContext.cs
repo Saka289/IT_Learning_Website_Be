@@ -149,12 +149,14 @@ public class AppDbContext : IdentityDbContext<ApplicationUser>
                         {
                             var tokenHandler = new JwtSecurityTokenHandler();
                             var token = tokenHandler.ReadToken(accessToken) as JwtSecurityToken;
-                            addedUserEntity.CreatedBy = $"{token.Claims.FirstOrDefault(u => u.Type == "firstname").Value} {token.Claims.FirstOrDefault(u => u.Type == "lastname").Value}";
+                            addedUserEntity.CreatedBy = $"{token.Claims.FirstOrDefault(u => u.Type == JwtRegisteredClaimNames.FamilyName).Value} {token.Claims.FirstOrDefault(u => u.Type == JwtRegisteredClaimNames.GivenName).Value}";
                             item.State = EntityState.Added;
                         }
-
-                        addedUserEntity.CreatedBy = RoleConstant.RoleAdmin;
-                        item.State = EntityState.Added;
+                        else
+                        {
+                            addedUserEntity.CreatedBy = RoleConstant.RoleAdmin;
+                            item.State = EntityState.Added; 
+                        }
                     }
 
                     break;
@@ -176,9 +178,11 @@ public class AppDbContext : IdentityDbContext<ApplicationUser>
                             modifiedUserEntity.LastModifiedBy = $"{token.Claims.FirstOrDefault(u => u.Type == "firstname").Value} {token.Claims.FirstOrDefault(u => u.Type == "lastname").Value}";
                             item.State = EntityState.Modified;
                         }
-
-                        modifiedUserEntity.LastModifiedBy = RoleConstant.RoleAdmin;
-                        item.State = EntityState.Modified;
+                        else
+                        {
+                            modifiedUserEntity.LastModifiedBy = RoleConstant.RoleAdmin;
+                            item.State = EntityState.Modified;
+                        }
                     }
 
                     break;

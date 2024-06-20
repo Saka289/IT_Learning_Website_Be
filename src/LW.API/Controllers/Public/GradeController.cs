@@ -35,6 +35,13 @@ namespace LW.API.Controllers.Public
             var result = await _gradeService.GetGradeById(id);
             return Ok(result);
         }
+        
+        [HttpGet("SearchByGrade")]
+        public async Task<ActionResult<ApiResult<GradeDto>>> SearchByGrade([FromQuery] SearchGradeDto searchGradeDto)
+        {
+            var result = await _gradeService.SearchByGrade(searchGradeDto);
+            return Ok(result);
+        }
 
         [HttpPost("CreateGrade")]
         public async Task<ActionResult<ApiResult<GradeDto>>> CreateGrade([FromBody] GradeCreateDto gradeCreateDto)

@@ -8,6 +8,7 @@ public interface IGradeService
 {
     Task<ApiResult<IEnumerable<GradeDto>>> GetAllGrade();
     Task<ApiResult<GradeDto>> GetGradeById(int id);
+    Task<ApiResult<IEnumerable<GradeDto>>> SearchByGrade(SearchGradeDto searchGradeDto);
     Task<ApiResult<GradeDto>> CreateGrade(GradeCreateDto gradeCreateDto);
     Task<ApiResult<GradeDto>> UpdateGrade(GradeUpdateDto gradeUpdateDto);
     Task<ApiResult<bool>> UpdateGradeStatus(int id);

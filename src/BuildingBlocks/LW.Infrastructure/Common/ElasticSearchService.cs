@@ -24,9 +24,9 @@ public class ElasticSearchService<T, K> : IElasticSearchService<T, K> where T : 
                 .MatchAll()
             )
         );
-        if (!response.IsValid)
+        if (!response.IsValid || response.Total == 0)
         {
-            _logger.Error($"Get all failed: {response.OriginalException.Message}");
+            _logger.Error($"Get all failed: {response.IsValid.ToString()}");
             return null;
         }
 
@@ -40,7 +40,7 @@ public class ElasticSearchService<T, K> : IElasticSearchService<T, K> where T : 
         var response = await _elasticClient.IndexAsync(request);
         if (!response.IsValid)
         {
-            _logger.Error($"Failed to index document: {response.OriginalException.Message}");
+            _logger.Error($"Failed to index document: {response.IsValid.ToString()}");
             return response.OriginalException.Message;
         }
 
@@ -56,7 +56,7 @@ public class ElasticSearchService<T, K> : IElasticSearchService<T, K> where T : 
 
         if (!response.IsValid)
         {
-            _logger.Error($"Bulk indexing failed: {response.OriginalException.Message}");
+            _logger.Error($"Bulk indexing failed: {response.IsValid.ToString()}");
             return null;
         }
 
@@ -71,7 +71,7 @@ public class ElasticSearchService<T, K> : IElasticSearchService<T, K> where T : 
         );
         if (!response.IsValid)
         {
-            _logger.Error($"Failed to update index document: {response.OriginalException.Message}");
+            _logger.Error($"Failed to update index document: {response.IsValid.ToString()}");
             return response.OriginalException.Message;
         }
 
@@ -104,9 +104,9 @@ public class ElasticSearchService<T, K> : IElasticSearchService<T, K> where T : 
             .Size(searchRequestParameters.Size)
         );
 
-        if (!response.IsValid)
+        if (!response.IsValid || response.Total == 0)
         {
-            _logger.Information($"Search query failed: {response.OriginalException.Message}");
+            _logger.Information($"Search query failed: {response.IsValid.ToString()}");
             return null;
         }
 
@@ -120,7 +120,7 @@ public class ElasticSearchService<T, K> : IElasticSearchService<T, K> where T : 
         var response = await _elasticClient.DeleteAsync(request);
         if (!response.IsValid)
         {
-            _logger.Error($"Failed to delete document: {response.OriginalException.Message}");
+            _logger.Error($"Failed to delete document: {response.IsValid.ToString()}");
             return response.OriginalException.Message;
         }
 
