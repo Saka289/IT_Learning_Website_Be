@@ -1,4 +1,5 @@
-﻿using LW.Shared.DTOs.Level;
+﻿using System.Collections;
+using LW.Shared.DTOs.Level;
 using LW.Shared.SeedWork;
 
 namespace LW.Services.LevelServices;
@@ -11,5 +12,6 @@ public interface ILevelService
     public Task<ApiResult<bool>> Delete(int id);
     public Task<ApiResult<IEnumerable<LevelDto>>> GetAll();
     public Task<ApiResult<LevelDto>> GetById(int id);
+    public Task<ApiResult<IEnumerable<LevelDto>>> SearchLevel(SearchLevelDto searchLevelDto);
 
 }

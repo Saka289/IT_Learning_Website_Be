@@ -9,5 +9,6 @@ public static class MappingElastic
     {
         settings.DefaultMappingFor<Grade>(m => m.Ignore(g => g.Level));
         settings.DefaultMappingFor<Document>(m => m.Ignore(d => d.Grade));
+        settings.DefaultMappingFor<Topic>(m => m.Ignore(d => d.Document));
     }
 }
