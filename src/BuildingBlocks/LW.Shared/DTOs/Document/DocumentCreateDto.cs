@@ -10,8 +10,7 @@ namespace LW.Shared.DTOs.Document
     {
         public string Title { get; set; }
         public string Description { get; set; }
-        public string KeyWord { get; set; }
-        public bool IsActive { get; set; }
+        public bool IsActive { get; set; } = true;
         public int GradeId { get; set; }
     }
 }
