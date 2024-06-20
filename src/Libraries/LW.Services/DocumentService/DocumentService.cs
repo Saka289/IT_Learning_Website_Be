@@ -1,9 +1,12 @@
 ﻿using AutoMapper;
+using LW.Contracts.Common;
 using LW.Data.Entities;
 using LW.Data.Repositories.DocumentRepositories;
 using LW.Data.Repositories.GradeRepositories;
+using LW.Infrastructure.Extensions;
 using LW.Services.GradeService;
 using LW.Services.LevelServices;
+using LW.Shared.Constant;
 using LW.Shared.DTOs.Document;
 using LW.Shared.SeedWork;
 
@@ -13,13 +16,16 @@ public class DocumentService : IDocumentService
 {
     private readonly IDocumentRepository _documentRepository;
     private readonly IGradeRepository _gradeRepository;
+    private readonly IElasticSearchService<Document, int> _elasticSearchService;
     private readonly IMapper _mapper;
 
-    public DocumentService(IDocumentRepository documentRepository, IMapper mapper, IGradeRepository gradeRepository)
+    public DocumentService(IDocumentRepository documentRepository, IMapper mapper, IGradeRepository gradeRepository,
+        IElasticSearchService<Document, int> elasticSearchService)
     {
         _documentRepository = documentRepository;
         _mapper = mapper;
         _gradeRepository = gradeRepository;
+        _elasticSearchService = elasticSearchService;
     }
 
     public async Task<ApiResult<IEnumerable<DocumentDto>>> GetAllDocument()
@@ -46,17 +52,31 @@ public class DocumentService : IDocumentService
         return new ApiSuccessResult<DocumentDto>(result);
     }
 
+    public async Task<ApiResult<IEnumerable<DocumentDto>>> SearchByDocument(SearchDocumentDto searchDocumentDto)
+    {
+        var documentEntity =
+            await _elasticSearchService.SearchDocumentAsync(ElasticConstant.ElasticDocuments, searchDocumentDto);
+        if (documentEntity is null)
+        {
+            return new ApiResult<IEnumerable<DocumentDto>>(false, $"Document not found by {searchDocumentDto.Key} !!!");
+        }
+
+        var result = _mapper.Map<IEnumerable<DocumentDto>>(documentEntity);
+        return new ApiSuccessResult<IEnumerable<DocumentDto>>(result);
+    }
+
     public async Task<ApiResult<DocumentDto>> CreateDocument(DocumentCreateDto documentCreateDto)
     {
         var gradeEntity = await _gradeRepository.GetGradeById(documentCreateDto.GradeId);
-        if (gradeEntity==null)
+        if (gradeEntity == null)
         {
-            return new ApiResult<DocumentDto>(false, "GradeId not found !!!");
+            return new ApiResult<DocumentDto>(false, "GradeID not found !!!");
         }
 
         var documentEntity = _mapper.Map<Document>(documentCreateDto);
-        documentEntity.IsActive = true;
+        documentEntity.KeyWord = documentEntity.Title.RemoveDiacritics();
         await _documentRepository.CreateDocument(documentEntity);
+        await _elasticSearchService.CreateDocumentAsync(ElasticConstant.ElasticDocuments, documentEntity, g => g.Id);
         var result = _mapper.Map<DocumentDto>(documentEntity);
         return new ApiSuccessResult<DocumentDto>(result);
     }
@@ -64,9 +84,9 @@ public class DocumentService : IDocumentService
     public async Task<ApiResult<DocumentDto>> UpdateDocument(DocumentUpdateDto documentUpdateDto)
     {
         var gradeEntity = await _gradeRepository.GetGradeById(documentUpdateDto.GradeId);
-        if (gradeEntity==null)
+        if (gradeEntity == null)
         {
-            return new ApiResult<DocumentDto>(false, "LevelId not found !!!");
+            return new ApiResult<DocumentDto>(false, "GradeID not found !!!");
         }
 
         var documentEntity = await _documentRepository.GetByIdAsync(documentUpdateDto.Id);
@@ -77,9 +97,24 @@ public class DocumentService : IDocumentService
 
         var model = _mapper.Map(documentUpdateDto, documentEntity);
         var updateDocument = await _documentRepository.UpdateDocument(model);
-
+        await _elasticSearchService.UpdateDocumentAsync(ElasticConstant.ElasticDocuments, updateDocument, documentUpdateDto.Id);
         var result = _mapper.Map<DocumentDto>(updateDocument);
         return new ApiSuccessResult<DocumentDto>(result);
+    }
+
+    public async Task<ApiResult<bool>> UpdateStatusDocument(int id)
+    {
+        var documentEntity = await _documentRepository.GetDocumentById(id);
+        if (documentEntity is null)
+        {
+            return new ApiResult<bool>(false, "Document not found !!!");
+        }
+
+        documentEntity.IsActive = !documentEntity.IsActive;
+        await _documentRepository.UpdateDocument(documentEntity);
+        await _documentRepository.SaveChangesAsync();
+        await _elasticSearchService.UpdateDocumentAsync(ElasticConstant.ElasticDocuments, documentEntity, id);
+        return new ApiSuccessResult<bool>(true, "Grade update successfully !!!");
     }
 
     public async Task<ApiResult<bool>> DeleteDocument(int id)
@@ -95,6 +130,7 @@ public class DocumentService : IDocumentService
         {
             return new ApiResult<bool>(false, "Failed Delete Document not found !!!");
         }
+        await _elasticSearchService.DeleteDocumentAsync(ElasticConstant.ElasticDocuments, id);
 
         return new ApiSuccessResult<bool>(true, "Delete Document Successfully !!!");
     }

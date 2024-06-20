@@ -31,6 +31,13 @@ namespace LW.API.Controllers.Public
             var result = await _documentService.GetDocumentById(id);
             return Ok(result);
         }
+        
+        [HttpGet("SearchByDocument")]
+        public async Task<ActionResult<ApiResult<DocumentDto>>> SearchByDocument([FromQuery] SearchDocumentDto searchDocumentDto)
+        {
+            var result = await _documentService.SearchByDocument(searchDocumentDto);
+            return Ok(result);
+        }
 
         [HttpPost("CreateDocument")]
         public async Task<ActionResult<ApiResult<DocumentDto>>> CreateDocument([FromBody] DocumentCreateDto documentCreateDto)
@@ -43,6 +50,14 @@ namespace LW.API.Controllers.Public
         public async Task<ActionResult<ApiResult<DocumentDto>>> UpdateDocument([FromBody] DocumentUpdateDto documentUpdateDto)
         {
             var result = await _documentService.UpdateDocument(documentUpdateDto);
+            return Ok(result);
+        }
+        
+        
+        [HttpPut("UpdateStatusDocument")]
+        public async Task<ActionResult<ApiResult<bool>>> UpdateStatusDocument(int id)
+        {
+            var result = await _documentService.UpdateStatusDocument(id);
             return Ok(result);
         }
 
