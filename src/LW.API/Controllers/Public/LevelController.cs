@@ -21,7 +21,7 @@ namespace LW.API.Controllers.Public
             _levelService = levelService;
         }
         [HttpGet("GetAllLevel")]
-        public async Task<ActionResult<ApiResult<LevelDto>>> GetAllLevel()
+        public async Task<ActionResult<IEnumerable<LevelDto>>> GetAllLevel()
         {
             var result = await _levelService.GetAll();
             return Ok(result);
@@ -54,6 +54,12 @@ namespace LW.API.Controllers.Public
         public async Task<ActionResult<ApiResult<bool>>> DeleteLevel(int id)
         {
             var result = await _levelService.Delete(id);
+            return Ok(result);
+        }
+        [HttpGet("SearchLevel")]
+        public async Task<ActionResult<IEnumerable<LevelDto>>> SearchLevel([FromQuery]SearchLevelDto searchLevelDto)
+        {
+            var result = await _levelService.SearchLevel(searchLevelDto);
             return Ok(result);
         }
     }

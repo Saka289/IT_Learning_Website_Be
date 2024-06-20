@@ -33,6 +33,12 @@ namespace LW.API.Controllers.Public
             var result = await _topicService.GetById(id);
             return Ok(result);
         }
+        [HttpGet("SearchTopic")]
+        public async Task<ActionResult<IEnumerable<TopicDto>>> SearchTopic([FromQuery] SearchTopicDto searchTopicDto)
+        {
+            var result = await _topicService.SearchTopic(searchTopicDto);
+            return Ok(result);
+        }
         [HttpPost("CreateTopic")]
         public async Task<ActionResult<ApiResult<bool>>> CreateTopic([FromBody] TopicCreateDto model)
         {

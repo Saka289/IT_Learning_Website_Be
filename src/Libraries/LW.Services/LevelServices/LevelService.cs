@@ -1,7 +1,11 @@
 ﻿using System.Text;
 using AutoMapper;
+using LW.Contracts.Common;
 using LW.Data.Entities;
 using LW.Data.Repositories.LevelRepositories;
+using LW.Infrastructure.Extensions;
+using LW.Shared.Constant;
+using LW.Shared.DTOs.Grade;
 using Serilog;
 using LW.Shared.DTOs.Level;
 using LW.Shared.SeedWork;
@@ -13,19 +17,23 @@ public class LevelService : ILevelService
     private readonly ILogger _logger;
     private readonly IMapper _mapper;
     private readonly ILevelRepository _levelRepository;
+    private readonly IElasticSearchService<Level, int> _elasticSearchService;
 
-    public LevelService(ILogger logger, ILevelRepository levelRepository, IMapper mapper)
+    public LevelService(ILogger logger, ILevelRepository levelRepository, IMapper mapper,
+        IElasticSearchService<Level, int> elasticSearchService)
     {
         _logger = logger;
         _levelRepository = levelRepository;
         _mapper = mapper;
+        _elasticSearchService = elasticSearchService;
     }
 
     public async Task<ApiResult<bool>> Create(LevelDtoForCreate model)
     {
         var level = _mapper.Map<Level>(model);
-        level.KeyWord = level.Title.ToLower();
+        level.KeyWord = model.Title.RemoveDiacritics();
         await _levelRepository.CreateLevel(level);
+        await _elasticSearchService.CreateDocumentAsync(ElasticConstant.ElasticLevels, level, g => g.Id);
         return new ApiResult<bool>(true, "Create level successfully");
     }
 
@@ -37,13 +45,15 @@ public class LevelService : ILevelService
         {
             return new ApiResult<bool>(false, "Not found");
         }
+
         var obj = _mapper.Map(model, levelInDb);
         // Sau khi ánh xạ, levelIbDb sẽ có các giá trị từ model:
-        var level = _mapper.Map<Level>(obj);
-        level.KeyWord = level.Title.ToLower();
-        await _levelRepository.UpdateLevel(level);
+        obj.KeyWord = model.Title.RemoveDiacritics();
+        await _levelRepository.UpdateLevel(obj);
+        await _elasticSearchService.UpdateDocumentAsync(ElasticConstant.ElasticLevels, obj, model.Id);
         return new ApiResult<bool>(true, "Update level successfully");
     }
+
     public async Task<ApiResult<bool>> UpdateStatus(int id)
     {
         var objLevel = await _levelRepository.GetLevelById(id);
@@ -51,8 +61,10 @@ public class LevelService : ILevelService
         {
             return new ApiResult<bool>(true, "Not found !");
         }
+
         objLevel.IsActive = !objLevel.IsActive;
         await _levelRepository.UpdateLevel(objLevel);
+        await _elasticSearchService.UpdateDocumentAsync(ElasticConstant.ElasticLevels, objLevel, id);
         return new ApiResult<bool>(true, "Update Status of level successfully");
     }
 
@@ -63,19 +75,22 @@ public class LevelService : ILevelService
         {
             return new ApiResult<bool>(false, "Not found !");
         }
+
         var isDeleted = await _levelRepository.DeleteLevel(id);
         if (!isDeleted)
         {
             return new ApiResult<bool>(false, "Delete level failed");
         }
+
+        await _elasticSearchService.DeleteDocumentAsync(ElasticConstant.ElasticLevels, id);
         return new ApiResult<bool>(true, "Delete level successfully");
     }
 
     public async Task<ApiResult<IEnumerable<LevelDto>>> GetAll()
     {
-        var list =await _levelRepository.GetAllLevel();
+        var list = await _levelRepository.GetAllLevel();
         var result = _mapper.Map<IEnumerable<LevelDto>>(list);
-        return new ApiResult<IEnumerable<LevelDto>>(true,result, "Get all level successfully");
+        return new ApiResult<IEnumerable<LevelDto>>(true, result, "Get all level successfully");
     }
 
     public async Task<ApiResult<LevelDto>> GetById(int id)
@@ -85,7 +100,20 @@ public class LevelService : ILevelService
         {
             return new ApiResult<LevelDto>(false, "Not Found");
         }
+
         var result = _mapper.Map<LevelDto>(level);
-        return new ApiResult<LevelDto>(true,result, "Get level successfully");
+        return new ApiResult<LevelDto>(true, result, "Get level successfully");
+    }
+
+    public async Task<ApiResult<IEnumerable<LevelDto>>> SearchLevel(SearchLevelDto searchLevelDto)
+    {
+        var levels = await _elasticSearchService.SearchDocumentAsync(ElasticConstant.ElasticLevels, searchLevelDto);
+        if (levels is null)
+        {
+            return new ApiResult<IEnumerable<LevelDto>>(false, $"Levels not found by {searchLevelDto.Key} !!!");
+        }
+
+        var result = _mapper.Map<IEnumerable<LevelDto>>(levels);
+        return new ApiSuccessResult<IEnumerable<LevelDto>>(result);
     }
 }

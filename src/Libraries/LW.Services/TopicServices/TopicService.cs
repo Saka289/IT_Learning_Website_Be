@@ -1,8 +1,11 @@
 ﻿using AutoMapper;
+using LW.Contracts.Common;
 using LW.Data.Entities;
 using LW.Data.Repositories.DocumentRepositories;
 using LW.Data.Repositories.TopicRepositories;
+using LW.Infrastructure.Extensions;
 using LW.Services.DocumentService;
+using LW.Shared.Constant;
 using LW.Shared.DTOs.Topic;
 using LW.Shared.SeedWork;
 
@@ -15,12 +18,14 @@ public class TopicService : ITopicService
     private readonly IMapper _mapper;
 
     private readonly IDocumentRepository _documentRepository;
+    private readonly IElasticSearchService<Topic, int> _elasticSearchService;
 
-    public TopicService(ITopicRepository topicRepository, IMapper mapper, IDocumentRepository documentRepository)
+    public TopicService(ITopicRepository topicRepository, IMapper mapper, IDocumentRepository documentRepository, IElasticSearchService<Topic, int> elasticSearchService)
     {
         _topicRepository = topicRepository;
         _mapper = mapper;
         _documentRepository = documentRepository;
+        _elasticSearchService = elasticSearchService;
     }
 
     public async Task<ApiResult<bool>> Create(TopicCreateDto model)
@@ -31,8 +36,9 @@ public class TopicService : ITopicService
             return new ApiResult<bool>(false, "Document of topic not found !!!");
         }
         var topic = _mapper.Map<Topic>(model);
-        topic.KeyWord = topic.Title.ToLower();
+        topic.KeyWord = model.Title.RemoveDiacritics();
         await _topicRepository.CreateTopic(topic);
+        await _elasticSearchService.CreateDocumentAsync(ElasticConstant.ElasticTopics, topic, g => g.Id);
         return new ApiResult<bool>(true, "Create topic successfully");
     }
 
@@ -49,8 +55,9 @@ public class TopicService : ITopicService
             return new ApiResult<bool>(false, "Topic is not found !!!");
         }
         var topicUpdate = _mapper.Map(model, topicEntity);
-        topicUpdate.KeyWord = topicUpdate.Title.ToLower();
+        topicUpdate.KeyWord = model.Title.RemoveDiacritics();
         await _topicRepository.UpdateAsync(topicUpdate);
+        await _elasticSearchService.UpdateDocumentAsync(ElasticConstant.ElasticTopics, topicUpdate, model.Id);
         return new ApiResult<bool>(true, "Update topic successfully");
     }
 
@@ -64,6 +71,7 @@ public class TopicService : ITopicService
 
         obj.IsActive = !obj.IsActive;
         await _topicRepository.UpdateAsync(obj);
+        await _elasticSearchService.UpdateDocumentAsync(ElasticConstant.ElasticTopics, obj, id);
         return new ApiResult<bool>(true, "Update status of topic successfully");
     }
 
@@ -80,7 +88,7 @@ public class TopicService : ITopicService
         {
             return new ApiResult<bool>(false, "Delete topic failed");
         }
-
+        await _elasticSearchService.DeleteDocumentAsync(ElasticConstant.ElasticTopics, id);
         return new ApiResult<bool>(true, "Delete topic successfully");
     }
 
@@ -89,6 +97,18 @@ public class TopicService : ITopicService
         var list = await _topicRepository.GetAllTopic();
         var result = _mapper.Map<IEnumerable<TopicDto>>(list);
         return new ApiResult<IEnumerable<TopicDto>>(true, result, "Get all topic successfully !");
+    }
+
+    public async Task<ApiResult<IEnumerable<TopicDto>>> SearchTopic(SearchTopicDto searchTopicDto)
+    {
+        var topics = await _elasticSearchService.SearchDocumentAsync(ElasticConstant.ElasticTopics, searchTopicDto);
+        if (topics is null)
+        {
+            return new ApiResult<IEnumerable<TopicDto>>(false, $"Topics not found by {searchTopicDto.Key} !!!");
+        }
+
+        var result = _mapper.Map<IEnumerable<TopicDto>>(topics);
+        return new ApiSuccessResult<IEnumerable<TopicDto>>(result);
     }
 
     public async Task<ApiResult<TopicDto>> GetById(int id)
