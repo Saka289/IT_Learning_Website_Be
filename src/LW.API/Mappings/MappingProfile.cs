@@ -5,6 +5,7 @@ using LW.Shared.DTOs.Grade;
 using LW.Shared.DTOs.Level;
 using LW.Shared.DTOs.User;
 using LW.Shared.DTOs.Document;
+using LW.Shared.DTOs.Lesson;
 using LW.Shared.DTOs.Topic;
 
 namespace LW.API.Mappings;
@@ -34,5 +35,9 @@ public class MappingProfile : Profile
         CreateMap<Topic, TopicDto>().ReverseMap();
         CreateMap<Topic, TopicCreateDto>().ReverseMap();
         CreateMap<Topic, TopicUpdateDto>().ReverseMap();
+        //Lesson
+        CreateMap<Lesson, LessonDto>().ReverseMap();
+        CreateMap<Lesson, LessonCreateDto>().ReverseMap();
+        CreateMap<Lesson, LessonUpdateDto>().ReverseMap();
     }
 }

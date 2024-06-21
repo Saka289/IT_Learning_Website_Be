@@ -337,6 +337,10 @@ namespace LW.Data.Persistence.Migrations
                         .Annotation("MySql:CharSet", "utf8mb4"),
                     FilePath = table.Column<string>(type: "longtext", nullable: false)
                         .Annotation("MySql:CharSet", "utf8mb4"),
+                    PublicId = table.Column<string>(type: "longtext", nullable: false)
+                        .Annotation("MySql:CharSet", "utf8mb4"),
+                    UrlDownload = table.Column<string>(type: "longtext", nullable: false)
+                        .Annotation("MySql:CharSet", "utf8mb4"),
                     TopicId = table.Column<int>(type: "int", nullable: false),
                     CreatedDate = table.Column<DateTimeOffset>(type: "datetime(6)", nullable: false),
                     LastModifiedDate = table.Column<DateTimeOffset>(type: "datetime(6)", nullable: true),
@@ -356,34 +360,6 @@ namespace LW.Data.Persistence.Migrations
                         onDelete: ReferentialAction.Cascade);
                 })
                 .Annotation("MySql:CharSet", "utf8mb4");
-
-            migrationBuilder.InsertData(
-                table: "Roles",
-                columns: new[] { "Id", "ConcurrencyStamp", "Name", "NormalizedName" },
-                values: new object[,]
-                {
-                    { "5a72dabb-95fd-43a5-9b58-6c849e8c0f5d", "6f7f61ee-e501-4604-ab12-8ce8c6697644", "Admin", "ADMIN" },
-                    { "ceec47bb-243b-4861-86c6-239f9f5c6d21", "91f65c79-3709-4867-8edf-034031cfbbd7", "User", "USER" }
-                });
-
-            migrationBuilder.InsertData(
-                table: "Users",
-                columns: new[] { "Id", "AccessFailedCount", "ConcurrencyStamp", "Dob", "Email", "EmailConfirmed", "FirstName", "Image", "LastName", "LockoutEnabled", "LockoutEnd", "NormalizedEmail", "NormalizedUserName", "PasswordHash", "PhoneNumber", "PhoneNumberConfirmed", "SecurityStamp", "TwoFactorEnabled", "UserName" },
-                values: new object[,]
-                {
-                    { "3ebb0018-a835-4ed5-ab29-f71ef1a80a45", 0, "7fbee226-66ab-4210-b7e5-b450f66e4059", null, "admin@gmail.com", true, "Frank", null, "Lotus", false, null, "ADMIN@GMAIL.COM", "ADMIN", "AQAAAAEAACcQAAAAEL6KZU62dg4BqQecOrJISCZfjNDwLtvS+d3+DNNgAOHyJPlVW8vsv4FI0ZMbb7Yv6w==", "1234567890", false, "dfcdf654-9eac-4295-a3e1-9a6314e59363", false, "admin" },
-                    { "c8388465-e6b1-4807-9b26-417cb7489c46", 0, "fe9c09fd-eaaf-4d5b-8b77-43acd88c4531", null, "user@gmail.com", true, "Frank", null, "Cadi", false, null, "USER@GMAIL.COM", "USER", "AQAAAAEAACcQAAAAEN5dWmN5eebgvroJGIK4+Ud/9aPJycGYX+rJOnlols6a3ITlYZ6aX8ZpaO/WqVy5dQ==", "1234567890", false, "e8613e0f-b92d-46e2-a570-0ae1aa349ad6", false, "user" }
-                });
-
-            migrationBuilder.InsertData(
-                table: "UserRoles",
-                columns: new[] { "RoleId", "UserId" },
-                values: new object[] { "5a72dabb-95fd-43a5-9b58-6c849e8c0f5d", "3ebb0018-a835-4ed5-ab29-f71ef1a80a45" });
-
-            migrationBuilder.InsertData(
-                table: "UserRoles",
-                columns: new[] { "RoleId", "UserId" },
-                values: new object[] { "ceec47bb-243b-4861-86c6-239f9f5c6d21", "c8388465-e6b1-4807-9b26-417cb7489c46" });
 
             migrationBuilder.CreateIndex(
                 name: "IX_Documents_GradeId",
