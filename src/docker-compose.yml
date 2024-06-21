@@ -15,12 +15,12 @@ services:
   lw_kibana:
     image: docker.elastic.co/kibana/kibana:7.17.22
 
-#  #api section
-#  lw.api:
-#    image: ${DOCKER_REGISTRY-}lw-api:${PLATFORM:-linux}-${TAG:-latest}
-#    build:
-#      context: .
-#      dockerfile: LW.API/Dockerfile
+  #api section
+  lw.api:
+    image: ${DOCKER_REGISTRY-}lw-api:${PLATFORM:-linux}-${TAG:-latest}
+    build:
+      context: .
+      dockerfile: LW.API/Dockerfile
 
 #network section
 networks:

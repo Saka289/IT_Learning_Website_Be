@@ -21,18 +21,18 @@
     </ItemGroup>
 
     <ItemGroup>
-      <Content Include="..\..\.dockerignore">
-        <Link>.dockerignore</Link>
-      </Content>
-    </ItemGroup>
-
-    <ItemGroup>
       <ProjectReference Include="..\BuildingBlocks\LW.Infrastructure\LW.Infrastructure.csproj" />
       <ProjectReference Include="..\BuildingBlocks\LW.Logging\LW.Logging.csproj" />
       <ProjectReference Include="..\BuildingBlocks\LW.Shared\LW.Shared.csproj" />
       <ProjectReference Include="..\Libraries\LW.Cache\LW.Cache.csproj" />
       <ProjectReference Include="..\Libraries\LW.Data\LW.Data.csproj" />
       <ProjectReference Include="..\Libraries\LW.Services\LW.Services.csproj" />
+    </ItemGroup>
+
+    <ItemGroup>
+      <Content Include="..\..\.dockerignore">
+        <Link>.dockerignore</Link>
+      </Content>
     </ItemGroup>
 
 </Project>

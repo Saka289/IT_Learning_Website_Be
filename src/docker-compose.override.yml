@@ -48,15 +48,22 @@ services:
     ports:
       - "5601:5601"
 
-#  #services api section
-#  lw.api:
-#    container_name: lw.api
-#    environment:
-#      - ASPNETCORE_ENVIRONMENT=Development
-#      - ASPNETCORE_URLS=http://+:80
-#      - "ConnectionStrings:DefaultConnectionString=Server=educationDB,Port=3306;Database=Database;Uid=root;Pwd=admin@1234;"
-#    depends_on:
-#      - educationDB
-#    ports:
-#      - "8000:80"
-#    restart: always
+  #services api section
+  lw.api:
+    container_name: lw.api
+    environment:
+      - ASPNETCORE_ENVIRONMENT=Development
+      - ASPNETCORE_URLS=http://+:80
+      - "ConnectionStrings:DefaultConnectionString=Server=educationDB,Port=3306;Database=EducationDB;Uid=root;Pwd=admin@1234;"
+      - "CacheSettings:ConnectionString=cacheDB:6379"
+      - "ElasticsearchSettings:Uri=http://lw_elasticsearch:9200"
+      - "ElasticsearchSettings:DefaultIndex=defaultindex"
+      - "ElasticsearchSettings:Username=elastic"
+      - "ElasticsearchSettings:Password=admin1234"
+    depends_on:
+      - educationDB
+      - lw_elasticsearch
+      - lw_kibana
+    ports:
+      - "8000:80"
+    restart: always
