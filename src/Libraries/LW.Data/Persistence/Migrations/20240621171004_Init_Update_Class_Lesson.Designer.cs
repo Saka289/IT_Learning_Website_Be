@@ -11,8 +11,8 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace LW.Data.Persistence.Migrations
 {
     [DbContext(typeof(AppDbContext))]
-    [Migration("20240618100253_Init_Add_All_Class")]
-    partial class Init_Add_All_Class
+    [Migration("20240621171004_Init_Update_Class_Lesson")]
+    partial class Init_Update_Class_Lesson
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
@@ -97,46 +97,6 @@ namespace LW.Data.Persistence.Migrations
                         .HasDatabaseName("UserNameIndex");
 
                     b.ToTable("Users", (string)null);
-
-                    b.HasData(
-                        new
-                        {
-                            Id = "3ebb0018-a835-4ed5-ab29-f71ef1a80a45",
-                            AccessFailedCount = 0,
-                            ConcurrencyStamp = "7fbee226-66ab-4210-b7e5-b450f66e4059",
-                            Email = "admin@gmail.com",
-                            EmailConfirmed = true,
-                            FirstName = "Frank",
-                            LastName = "Lotus",
-                            LockoutEnabled = false,
-                            NormalizedEmail = "ADMIN@GMAIL.COM",
-                            NormalizedUserName = "ADMIN",
-                            PasswordHash = "AQAAAAEAACcQAAAAEL6KZU62dg4BqQecOrJISCZfjNDwLtvS+d3+DNNgAOHyJPlVW8vsv4FI0ZMbb7Yv6w==",
-                            PhoneNumber = "1234567890",
-                            PhoneNumberConfirmed = false,
-                            SecurityStamp = "dfcdf654-9eac-4295-a3e1-9a6314e59363",
-                            TwoFactorEnabled = false,
-                            UserName = "admin"
-                        },
-                        new
-                        {
-                            Id = "c8388465-e6b1-4807-9b26-417cb7489c46",
-                            AccessFailedCount = 0,
-                            ConcurrencyStamp = "fe9c09fd-eaaf-4d5b-8b77-43acd88c4531",
-                            Email = "user@gmail.com",
-                            EmailConfirmed = true,
-                            FirstName = "Frank",
-                            LastName = "Cadi",
-                            LockoutEnabled = false,
-                            NormalizedEmail = "USER@GMAIL.COM",
-                            NormalizedUserName = "USER",
-                            PasswordHash = "AQAAAAEAACcQAAAAEN5dWmN5eebgvroJGIK4+Ud/9aPJycGYX+rJOnlols6a3ITlYZ6aX8ZpaO/WqVy5dQ==",
-                            PhoneNumber = "1234567890",
-                            PhoneNumberConfirmed = false,
-                            SecurityStamp = "e8613e0f-b92d-46e2-a570-0ae1aa349ad6",
-                            TwoFactorEnabled = false,
-                            UserName = "user"
-                        });
                 });
 
             modelBuilder.Entity("LW.Data.Entities.Document", b =>
@@ -241,7 +201,6 @@ namespace LW.Data.Persistence.Migrations
                         .HasColumnType("datetime(6)");
 
                     b.Property<string>("FilePath")
-                        .IsRequired()
                         .HasColumnType("longtext");
 
                     b.Property<bool>("IsActive")
@@ -257,12 +216,18 @@ namespace LW.Data.Persistence.Migrations
                     b.Property<DateTimeOffset?>("LastModifiedDate")
                         .HasColumnType("datetime(6)");
 
+                    b.Property<string>("PublicId")
+                        .HasColumnType("longtext");
+
                     b.Property<string>("Title")
                         .IsRequired()
                         .HasColumnType("longtext");
 
                     b.Property<int>("TopicId")
                         .HasColumnType("int");
+
+                    b.Property<string>("UrlDownload")
+                        .HasColumnType("longtext");
 
                     b.HasKey("Id");
 
@@ -374,22 +339,6 @@ namespace LW.Data.Persistence.Migrations
                         .HasDatabaseName("RoleNameIndex");
 
                     b.ToTable("Roles", (string)null);
-
-                    b.HasData(
-                        new
-                        {
-                            Id = "ceec47bb-243b-4861-86c6-239f9f5c6d21",
-                            ConcurrencyStamp = "91f65c79-3709-4867-8edf-034031cfbbd7",
-                            Name = "User",
-                            NormalizedName = "USER"
-                        },
-                        new
-                        {
-                            Id = "5a72dabb-95fd-43a5-9b58-6c849e8c0f5d",
-                            ConcurrencyStamp = "6f7f61ee-e501-4604-ab12-8ce8c6697644",
-                            Name = "Admin",
-                            NormalizedName = "ADMIN"
-                        });
                 });
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityRoleClaim<string>", b =>
@@ -473,18 +422,6 @@ namespace LW.Data.Persistence.Migrations
                     b.HasIndex("RoleId");
 
                     b.ToTable("UserRoles", (string)null);
-
-                    b.HasData(
-                        new
-                        {
-                            UserId = "3ebb0018-a835-4ed5-ab29-f71ef1a80a45",
-                            RoleId = "5a72dabb-95fd-43a5-9b58-6c849e8c0f5d"
-                        },
-                        new
-                        {
-                            UserId = "c8388465-e6b1-4807-9b26-417cb7489c46",
-                            RoleId = "ceec47bb-243b-4861-86c6-239f9f5c6d21"
-                        });
                 });
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityUserToken<string>", b =>

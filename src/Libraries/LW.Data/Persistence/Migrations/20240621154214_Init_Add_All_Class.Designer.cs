@@ -3,6 +3,7 @@ using System;
 using LW.Data.Persistence;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
@@ -10,9 +11,10 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace LW.Data.Persistence.Migrations
 {
     [DbContext(typeof(AppDbContext))]
-    partial class AppDbContextModelSnapshot : ModelSnapshot
+    [Migration("20240621154214_Init_Add_All_Class")]
+    partial class Init_Add_All_Class
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -199,6 +201,7 @@ namespace LW.Data.Persistence.Migrations
                         .HasColumnType("datetime(6)");
 
                     b.Property<string>("FilePath")
+                        .IsRequired()
                         .HasColumnType("longtext");
 
                     b.Property<bool>("IsActive")
@@ -215,6 +218,7 @@ namespace LW.Data.Persistence.Migrations
                         .HasColumnType("datetime(6)");
 
                     b.Property<string>("PublicId")
+                        .IsRequired()
                         .HasColumnType("longtext");
 
                     b.Property<string>("Title")
@@ -225,6 +229,7 @@ namespace LW.Data.Persistence.Migrations
                         .HasColumnType("int");
 
                     b.Property<string>("UrlDownload")
+                        .IsRequired()
                         .HasColumnType("longtext");
 
                     b.HasKey("Id");

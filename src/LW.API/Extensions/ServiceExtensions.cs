@@ -30,7 +30,9 @@ using Pomelo.EntityFrameworkCore.MySql.Infrastructure;
 using MySqlConnector;
 using LW.Services.DocumentService;
 using LW.Data.Repositories.DocumentRepositories;
+using LW.Data.Repositories.LessonRepositories;
 using LW.Data.Repositories.TopicRepositories;
+using LW.Services.LessonService;
 using LW.Services.TopicServices;
 using Nest;
 
@@ -222,6 +224,7 @@ public static class ServiceExtensions
         services.AddScoped<IGradeRepository, GradeRepository>();
         services.AddScoped<IDocumentRepository, DocumentRepository>();
         services.AddScoped<ITopicRepository, TopicRepository>();
+        services.AddScoped<ILessonRepository, LessonRepository>();
         // IService 
         services.AddScoped<IAdminAuthorService, AdminAuthorService>();
         services.AddScoped<IUserService, UserService>();
@@ -232,6 +235,7 @@ public static class ServiceExtensions
         services.AddScoped<IJwtTokenService, JwtTokenService>();
         services.AddScoped<IFacebookService, FacebookService>();
         services.AddScoped<ICloudinaryService, CloudinaryService>();
+        services.AddScoped<ILessonService, LessonService>();
         return services;
     }
 }
