@@ -1,20 +1,24 @@
 ﻿FROM mcr.microsoft.com/dotnet/aspnet:6.0 AS base
 WORKDIR /app
 EXPOSE 80
-EXPOSE 443
 
 FROM mcr.microsoft.com/dotnet/sdk:6.0 AS build
-ARG BUILD_CONFIGURATION=Release
 WORKDIR /src
-COPY ["src/LW.API/LW.API.csproj", "src/LW.API/"]
-RUN dotnet restore "src/LW.API/LW.API.csproj"
+COPY ["LW.API/LW.API.csproj", "LW.API/"]
+COPY ["BuildingBlocks/LW.Infrastructure/LW.Infrastructure.csproj", "BuildingBlocks/LW.Infrastructure/"]
+COPY ["BuildingBlocks/LW.Contracts/LW.Contracts.csproj", "BuildingBlocks/LW.Contracts/"]
+COPY ["BuildingBlocks/LW.Shared/LW.Shared.csproj", "BuildingBlocks/LW.Shared/"]
+COPY ["BuildingBlocks/LW.Logging/LW.Logging.csproj", "BuildingBlocks/LW.Logging/"]
+COPY ["Libraries/LW.Cache/LW.Cache.csproj", "Libraries/LW.Cache/"]
+COPY ["Libraries/LW.Data/LW.Data.csproj", "Libraries/LW.Data/"]
+COPY ["Libraries/LW.Services/LW.Services.csproj", "Libraries/LW.Services/"]
+RUN dotnet restore "LW.API/LW.API.csproj"
 COPY . .
-WORKDIR "/src/src/LW.API"
-RUN dotnet build "LW.API.csproj" -c $BUILD_CONFIGURATION -o /app/build
+WORKDIR "/src/LW.API"
+RUN dotnet build "LW.API.csproj" -c Release -o /app/build
 
 FROM build AS publish
-ARG BUILD_CONFIGURATION=Release
-RUN dotnet publish "LW.API.csproj" -c $BUILD_CONFIGURATION -o /app/publish /p:UseAppHost=false
+RUN dotnet publish "LW.API.csproj" -c Release -o /app/publish
 
 FROM base AS final
 WORKDIR /app
