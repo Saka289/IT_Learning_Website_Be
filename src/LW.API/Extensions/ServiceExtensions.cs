@@ -62,6 +62,9 @@ public static class ServiceExtensions
         var confirmEmailSettings =
             services.Configure<VerifyEmailSettings>(configuration.GetSection(nameof(VerifyEmailSettings)));
         services.AddSingleton(confirmEmailSettings);
+        
+        var cloudinarySettings = services.Configure<CloudinarySettings>(configuration.GetSection(nameof(CloudinarySettings)));
+        services.AddSingleton(cloudinarySettings);
 
         var urlBaseSettings = services.Configure<UrlBase>(configuration.GetSection(nameof(UrlBase)));
         services.AddSingleton(urlBaseSettings);
@@ -228,6 +231,7 @@ public static class ServiceExtensions
         services.AddScoped<ITopicService, TopicService>();
         services.AddScoped<IJwtTokenService, JwtTokenService>();
         services.AddScoped<IFacebookService, FacebookService>();
+        services.AddScoped<ICloudinaryService, CloudinaryService>();
         return services;
     }
 }
