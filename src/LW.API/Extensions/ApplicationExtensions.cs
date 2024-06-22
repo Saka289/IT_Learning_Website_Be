@@ -10,6 +10,7 @@ public static class ApplicationExtensions
             app.UseSwagger();
             app.UseSwaggerUI();
         }
+        app.UseCors();
 
         app.UseRouting();
         // for production only 

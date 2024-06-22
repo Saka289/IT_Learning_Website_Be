@@ -64,8 +64,9 @@ public static class ServiceExtensions
         var confirmEmailSettings =
             services.Configure<VerifyEmailSettings>(configuration.GetSection(nameof(VerifyEmailSettings)));
         services.AddSingleton(confirmEmailSettings);
-        
-        var cloudinarySettings = services.Configure<CloudinarySettings>(configuration.GetSection(nameof(CloudinarySettings)));
+
+        var cloudinarySettings =
+            services.Configure<CloudinarySettings>(configuration.GetSection(nameof(CloudinarySettings)));
         services.AddSingleton(cloudinarySettings);
 
         var urlBaseSettings = services.Configure<UrlBase>(configuration.GetSection(nameof(UrlBase)));
@@ -124,6 +125,7 @@ public static class ServiceExtensions
         services.ConfigureRedis(configuration);
         services.ConfigureElasticSearch();
         services.AddInfrastructureServices();
+        services.ConfiguringCors();
         services.AddAutoMapper(cfg => cfg.AddProfile(new MappingProfile()));
 
         return services;
@@ -208,6 +210,19 @@ public static class ServiceExtensions
         MappingElastic.AddDefaultMappings(settingsElasticSearch);
         var client = new ElasticClient(settingsElasticSearch);
         service.AddSingleton<IElasticClient>(client);
+        return service;
+    }
+
+    private static IServiceCollection ConfiguringCors(this IServiceCollection service)
+    {
+        var settings = service.GetOptions<UrlBase>(nameof(UrlBase));
+        service.AddCors(options =>
+        {
+            options.AddDefaultPolicy(builder =>
+            {
+                builder.WithOrigins(settings.ClientUrl).AllowAnyHeader().AllowAnyMethod();
+            });
+        });
         return service;
     }
 
