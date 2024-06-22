@@ -1,5 +1,6 @@
 ﻿using LW.Shared.DTOs.Facebook;
 using LW.Shared.DTOs.Google;
+using LW.Shared.DTOs.Token;
 using LW.Shared.DTOs.User;
 using LW.Shared.SeedWork;
 
@@ -16,4 +17,7 @@ public interface IUserService
     public Task<ApiResult<bool>> ResetPassword(ResetPasswordDto resetPasswordDto);
     public Task<ApiResult<bool>> SendVerifyEmail(string email);
     public Task<ApiResult<bool>> VerifyEmail(string token);
+    public Task<ApiResult<TokenResponseDto>> RefreshToken(TokenRequestDto tokenRequestDto);
+    public Task<ApiResult<bool>> Revoke(string emailOrUserName);
+    public Task<ApiResult<UpdateResponseUserDto>> UpdateUser(UpdateUserDto updateUserDto);
 }

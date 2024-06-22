@@ -7,6 +7,7 @@ using System.Threading.Tasks;
 using LW.Services.UserService;
 using LW.Shared.DTOs.Facebook;
 using LW.Shared.DTOs.Google;
+using LW.Shared.DTOs.Token;
 using LW.Shared.DTOs.User;
 using LW.Shared.SeedWork;
 using Microsoft.AspNetCore.Authentication;
@@ -29,7 +30,8 @@ namespace LW.API.Controllers.Public
         }
 
         [HttpPost("RegisterUser")]
-        public async Task<ActionResult<ApiResult<RegisterResponseUserDto>>> RegisterUser([FromBody] RegisterUserDto registerUserDto)
+        public async Task<ActionResult<ApiResult<RegisterResponseUserDto>>> RegisterUser(
+            [FromBody] RegisterUserDto registerUserDto)
         {
             var result = await _userService.Register(registerUserDto);
             return Ok(result);
@@ -57,14 +59,16 @@ namespace LW.API.Controllers.Public
         }
 
         [HttpPost("GoogleLogin")]
-        public async Task<ActionResult<ApiResult<LoginResponseUserDto>>> GoogleLogin([FromBody] GoogleSignInDto googleSignInDto)
+        public async Task<ActionResult<ApiResult<LoginResponseUserDto>>> GoogleLogin(
+            [FromBody] GoogleSignInDto googleSignInDto)
         {
             var result = await _userService.LoginGoogle(googleSignInDto);
             return Ok(result);
         }
 
         [HttpPost("FacebookLogin")]
-        public async Task<ActionResult<ApiResult<LoginResponseUserDto>>> FacebookLogin([FromBody] FacebookSignInDto facebookSignInDto)
+        public async Task<ActionResult<ApiResult<LoginResponseUserDto>>> FacebookLogin(
+            [FromBody] FacebookSignInDto facebookSignInDto)
         {
             var result = await _userService.LoginFacebook(facebookSignInDto);
             return Ok(result);
@@ -88,6 +92,28 @@ namespace LW.API.Controllers.Public
         public async Task<ActionResult<ApiResult<bool>>> ResetPassword([FromBody] ResetPasswordDto resetPasswordDto)
         {
             var result = await _userService.ResetPassword(resetPasswordDto);
+            return Ok(result);
+        }
+
+        [HttpPost("RefreshToken")]
+        public async Task<ActionResult<ApiResult<TokenResponseDto>>> RefreshToken(
+            [FromBody] TokenRequestDto tokenRequestDto)
+        {
+            var result = await _userService.RefreshToken(tokenRequestDto);
+            return Ok(result);
+        }
+
+        [HttpPost("Revoke")]
+        public async Task<ActionResult<ApiResult<TokenResponseDto>>> RevokeToken([FromBody] string emailOrUserName)
+        {
+            var result = await _userService.Revoke(emailOrUserName);
+            return Ok(result);
+        }
+        
+        [HttpPut("UpdateUser")]
+        public async Task<ActionResult<ApiResult<UpdateResponseUserDto>>> UpdateUser([FromForm] UpdateUserDto updateUserDto)
+        {
+            var result = await _userService.UpdateUser(updateUserDto);
             return Ok(result);
         }
     }

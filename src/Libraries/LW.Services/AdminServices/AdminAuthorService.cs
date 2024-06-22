@@ -99,7 +99,7 @@ public class AdminAuthorService : IAdminAuthorService
 
 
         var roles = await _userManager.GetRolesAsync(user);
-        var token = _jwtTokenService.GenerateToken(user, roles);
+        var token = _jwtTokenService.GenerateAccessToken(user, roles);
 
 
         AdminDto adminDto = new()
