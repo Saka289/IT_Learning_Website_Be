@@ -154,6 +154,8 @@ public static class ServiceExtensions
                 ValidIssuer = settingsJwt.Issuer,
                 ValidAudience = settingsJwt.Audience,
                 ValidateAudience = true,
+                RequireExpirationTime = true,
+                ClockSkew = TimeSpan.Zero,
             };
         }).AddGoogle(x =>
         {

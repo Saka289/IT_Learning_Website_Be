@@ -1,4 +1,5 @@
-﻿using System.Text;
+﻿using System.Globalization;
+using System.Text;
 using AutoMapper;
 using Google.Apis.Auth;
 using LW.Cache.Interfaces;
@@ -13,6 +14,7 @@ using LW.Shared.Constant;
 using LW.Shared.DTOs.Email;
 using LW.Shared.DTOs.Facebook;
 using LW.Shared.DTOs.Google;
+using LW.Shared.DTOs.Token;
 using LW.Shared.DTOs.User;
 using LW.Shared.Enums;
 using LW.Shared.SeedWork;
@@ -22,6 +24,7 @@ using Microsoft.AspNetCore.WebUtilities;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Caching.Distributed;
 using Microsoft.Extensions.Options;
+using Microsoft.IdentityModel.JsonWebTokens;
 using Serilog;
 
 namespace LW.Services.UserService;
@@ -40,12 +43,13 @@ public class UserService : IUserService
     private readonly IJwtTokenService _jwtTokenService;
     private readonly GoogleSettings _googleSettings;
     private readonly IFacebookService _facebookService;
+    private readonly ICloudinaryService _cloudinaryService;
 
     public UserService(UserManager<ApplicationUser> userManager, RoleManager<IdentityRole> roleManager, IMapper mapper,
         ISmtpEmailService emailService, ILogger logger, IOptions<VerifyEmailSettings> verifyEmailSettings,
         IOptions<UrlBase> urlBase, IRedisCache<VerifyEmailTokenDto> redisCacheService,
         ISerializeService serializeService, IJwtTokenService jwtTokenService, IOptions<GoogleSettings> googleSettings,
-        IFacebookService facebookService)
+        IFacebookService facebookService, ICloudinaryService cloudinaryService)
     {
         _roleManager = roleManager ?? throw new ArgumentNullException(nameof(roleManager));
         _mapper = mapper ?? throw new ArgumentNullException(nameof(mapper));
@@ -55,6 +59,7 @@ public class UserService : IUserService
         _serializeService = serializeService ?? throw new ArgumentNullException(nameof(serializeService));
         _jwtTokenService = jwtTokenService ?? throw new ArgumentNullException(nameof(jwtTokenService));
         _facebookService = facebookService ?? throw new ArgumentNullException(nameof(facebookService));
+        _cloudinaryService = cloudinaryService;
         _googleSettings = googleSettings.Value;
         _urlBase = urlBase.Value;
         _verifyEmailSettings = verifyEmailSettings.Value;
@@ -63,8 +68,6 @@ public class UserService : IUserService
 
     public async Task<ApiResult<RegisterResponseUserDto>> Register(RegisterUserDto registerUserDto)
     {
-        var user = _mapper.Map<ApplicationUser>(registerUserDto);
-        user.EmailConfirmed = true;
         var emailExist = await _userManager.Users.AnyAsync(x => x.Email.ToLower() == registerUserDto.Email.ToLower());
         if (emailExist)
         {
@@ -79,6 +82,9 @@ public class UserService : IUserService
             return new ApiResult<RegisterResponseUserDto>(false,
                 $"An existing username is using {registerUserDto.UserName}");
         }
+
+        var user = _mapper.Map<ApplicationUser>(registerUserDto);
+        user.EmailConfirmed = true;
 
         var result = await _userManager.CreateAsync(user, registerUserDto.Password);
         if (!result.Succeeded)
@@ -100,7 +106,9 @@ public class UserService : IUserService
 
     public async Task<ApiResult<LoginResponseUserDto>> Login(LoginUserDto loginUserDto)
     {
-        var user = await _userManager.Users.FirstOrDefaultAsync(u => u.UserName.ToLower().Equals(loginUserDto.EmailOrUserName) || u.Email.ToLower().Equals(loginUserDto.EmailOrUserName));
+        var user = await _userManager.Users.FirstOrDefaultAsync(u =>
+            u.UserName.ToLower().Equals(loginUserDto.EmailOrUserName) ||
+            u.Email.ToLower().Equals(loginUserDto.EmailOrUserName));
         if (user == null)
         {
             return new ApiResult<LoginResponseUserDto>(false, "Invalid UserName or Email !!!");
@@ -114,7 +122,14 @@ public class UserService : IUserService
         }
 
         var roles = await _userManager.GetRolesAsync(user);
-        var token = _jwtTokenService.GenerateToken(user, roles);
+
+        var accessToken = _jwtTokenService.GenerateAccessToken(user, roles);
+        var refreshToken = _jwtTokenService.GenerateRefreshToken();
+
+        user.RefreshToken = refreshToken;
+        user.RefreshTokenExpiryTime = DateTime.Now.AddDays(7);
+
+        await _userManager.UpdateAsync(user);
 
         UserDto userDto = new()
         {
@@ -127,7 +142,8 @@ public class UserService : IUserService
         LoginResponseUserDto loginResponseUserDto = new()
         {
             UserDto = userDto,
-            token = token,
+            AccessToken = accessToken,
+            RefreshToken = refreshToken
         };
         return new ApiResult<LoginResponseUserDto>(true, loginResponseUserDto, "Login successfully !!!");
     }
@@ -163,7 +179,14 @@ public class UserService : IUserService
 
         var user = await _userManager.CreateUserFromSocialLogin(userCreated, ELoginProvider.Google);
         var roles = await _userManager.GetRolesAsync(user);
-        var token = _jwtTokenService.GenerateToken(user, roles);
+
+        var accessToken = _jwtTokenService.GenerateAccessToken(user, roles);
+        var refreshToken = _jwtTokenService.GenerateRefreshToken();
+
+        user.RefreshToken = refreshToken;
+        user.RefreshTokenExpiryTime = DateTime.Now.AddDays(7);
+
+        await _userManager.UpdateAsync(user);
 
         UserDto userDto = new()
         {
@@ -176,7 +199,8 @@ public class UserService : IUserService
         LoginResponseUserDto loginResponseUserDto = new()
         {
             UserDto = userDto,
-            token = token,
+            AccessToken = accessToken,
+            RefreshToken = refreshToken
         };
         return new ApiResult<LoginResponseUserDto>(true, loginResponseUserDto, "Login successfully !!!");
     }
@@ -206,7 +230,14 @@ public class UserService : IUserService
 
         var user = await _userManager.CreateUserFromSocialLogin(userCreated, ELoginProvider.Facebook);
         var roles = await _userManager.GetRolesAsync(user);
-        var token = _jwtTokenService.GenerateToken(user, roles);
+
+        var accessToken = _jwtTokenService.GenerateAccessToken(user, roles);
+        var refreshToken = _jwtTokenService.GenerateRefreshToken();
+
+        user.RefreshToken = refreshToken;
+        user.RefreshTokenExpiryTime = DateTime.Now.AddDays(7);
+
+        await _userManager.UpdateAsync(user);
 
         UserDto userDto = new()
         {
@@ -219,7 +250,8 @@ public class UserService : IUserService
         LoginResponseUserDto loginResponseUserDto = new()
         {
             UserDto = userDto,
-            token = token,
+            AccessToken = accessToken,
+            RefreshToken = refreshToken
         };
         return new ApiResult<LoginResponseUserDto>(true, loginResponseUserDto, "Login successfully !!!");
     }
@@ -339,6 +371,112 @@ public class UserService : IUserService
         {
             return new ApiResult<bool>(false, "An error occurred while verifying your email. Please try again later.");
         }
+    }
+
+    public async Task<ApiResult<TokenResponseDto>> RefreshToken(TokenRequestDto tokenRequestDto)
+    {
+        if (string.IsNullOrEmpty(tokenRequestDto.AccessToken))
+        {
+            return new ApiResult<TokenResponseDto>(false, $"AccessToken is null or empty !!!");
+        }
+
+        var principal = _jwtTokenService.GetPrincipalFromExpiredToken(tokenRequestDto.AccessToken);
+        var userName = principal.Claims.FirstOrDefault(p => p.Type == JwtRegisteredClaimNames.Name).Value;
+        if (userName is null)
+        {
+            return new ApiResult<TokenResponseDto>(false, $"Invalid AccessToken or refresh token !!!");
+        }
+
+        var user = await _userManager.Users.FirstOrDefaultAsync(u => u.UserName.ToLower().Equals(userName));
+        if (user == null || user.RefreshToken != tokenRequestDto.RefreshToken ||
+            user.RefreshTokenExpiryTime <= DateTime.Now)
+        {
+            return new ApiResult<TokenResponseDto>(false, $"Invalid AccessToken or refresh token !!!");
+        }
+
+        var roles = await _userManager.GetRolesAsync(user);
+        var accessToken = _jwtTokenService.GenerateAccessToken(user, roles);
+        var refreshToken = _jwtTokenService.GenerateRefreshToken();
+
+        user.RefreshToken = refreshToken;
+        user.RefreshTokenExpiryTime = DateTime.Now.AddDays(7);
+        await _userManager.UpdateAsync(user);
+
+        var tokenResponse = new TokenResponseDto()
+        {
+            AccessToken = accessToken,
+            RefreshToken = refreshToken
+        };
+
+        return new ApiResult<TokenResponseDto>(true, tokenResponse, "RefreshToken successfully !!!");
+    }
+
+    public async Task<ApiResult<bool>> Revoke(string emailOrUserName)
+    {
+        var user = await _userManager.Users.FirstOrDefaultAsync(u =>
+            u.UserName.ToLower().Equals(emailOrUserName) || u.Email.ToLower().Equals(emailOrUserName));
+        if (user == null)
+        {
+            return new ApiResult<bool>(false, "Invalid UserName or Email !!!");
+        }
+
+        user.RefreshToken = null;
+        user.RefreshTokenExpiryTime = null;
+        await _userManager.UpdateAsync(user);
+        return new ApiSuccessResult<bool>(true, "Revoke successfully !!!");
+    }
+
+    public async Task<ApiResult<UpdateResponseUserDto>> UpdateUser(UpdateUserDto updateUserDto)
+    {
+        var user = await _userManager.Users.FirstOrDefaultAsync(u =>
+            u.Id.ToLower().Equals(updateUserDto.UserId) || u.Email.ToLower().Equals(updateUserDto.Email));
+        if (user == null)
+        {
+            return new ApiResult<UpdateResponseUserDto>(false, $"User Not Found !");
+        }
+
+        user.FirstName = updateUserDto.FirstName;
+        user.LastName = updateUserDto.LastName;
+        user.PhoneNumber = updateUserDto.PhoneNumber;
+        user.Dob = DateOnly.FromDateTime(updateUserDto.Dob);
+
+        if (user.Image == null)
+        {
+            var imageCreatePath =
+                await _cloudinaryService.CreateImageAsync(updateUserDto.Image, CloudinaryConstant.FolderUserImage);
+
+            user.Image = imageCreatePath.Url;
+            user.PublicId = imageCreatePath.PublicId;
+
+            await _userManager.UpdateAsync(user);
+
+            var userResponseCreate = new UpdateResponseUserDto()
+            {
+                Email = user.Email,
+                FullName = user.FirstName + " " + user.LastName,
+                PhoneNumber = user.PhoneNumber,
+                Image = user.Image
+            };
+
+            return new ApiResult<UpdateResponseUserDto>(true, userResponseCreate, $"Update User Successfully !");
+        }
+
+        var imageUpdatePath = await _cloudinaryService.UpdateImageAsync(user.PublicId, updateUserDto.Image);
+
+        user.Image = imageUpdatePath.Url;
+        user.PublicId = imageUpdatePath.PublicId;
+
+        await _userManager.UpdateAsync(user);
+
+        var userResponseUpdate = new UpdateResponseUserDto()
+        {
+            Email = user.Email,
+            FullName = user.FirstName + " " + user.LastName,
+            PhoneNumber = user.PhoneNumber,
+            Image = user.Image
+        };
+
+        return new ApiResult<UpdateResponseUserDto>(true, userResponseUpdate, $"Update User Successfully !");
     }
 
     private async Task SendConfirmEmailAsync(string email, string token, CancellationToken cancellationToken)

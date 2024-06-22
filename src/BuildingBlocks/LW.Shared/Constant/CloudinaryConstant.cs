@@ -6,5 +6,6 @@ public class CloudinaryConstant
     public const string File = "FILE-";
     public const string FolderLevelImage = "LevelImage";
     public const string FolderGradeImage = "GradeImage";
+    public const string FolderUserImage = "UserImage";
     public const string FolderLessonFile = "LessonFile";
 }
