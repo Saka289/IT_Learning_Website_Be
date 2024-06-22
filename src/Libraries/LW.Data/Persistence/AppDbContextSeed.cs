@@ -61,7 +61,7 @@ public class AppDbContextSeed
             await context.SaveChangesAsync();
             logger.Information("Seeded data Topics for Education DB associated with context {DbContextName}",
                 nameof(AppDbContext));
-            await elasticClient.BulkAsync(b => b.Index(ElasticConstant.ElasticDocuments).IndexMany(dataTopic));
+            await elasticClient.BulkAsync(b => b.Index(ElasticConstant.ElasticTopics).IndexMany(dataTopic));
             logger.Information("Seeded data dataTopic for ElasticSearch associated with {IElasticClient}",
                 nameof(IElasticClient));
         }
