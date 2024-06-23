@@ -39,6 +39,6 @@ public class TopicRepository : RepositoryBase<Topic, int>, ITopicRepository
 
     public async Task<IEnumerable<Topic>> GetAllTopic()
     {
-        return await FindAll().ToListAsync();
+        return await FindAll().Include(d =>d.Document).ToListAsync();
     }
 }
