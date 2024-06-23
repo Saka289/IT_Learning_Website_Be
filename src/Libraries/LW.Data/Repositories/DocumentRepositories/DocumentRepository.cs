@@ -20,24 +20,31 @@ namespace LW.Data.Repositories.DocumentRepositories
         public async Task<Document> CreateDocument(Document document)
         {
             await CreateAsync(document);
-            return await  Task.FromResult(document) ;
+            return await Task.FromResult(document);
         }
 
         public async Task<bool> DeleteDocument(int id)
         {
             var document = await GetByIdAsync(id);
-            if(document == null)
+            if (document == null)
             {
-                return false; 
+                return false;
             }
+
             await DeleteAsync(document);
             return true;
         }
 
         public async Task<IEnumerable<Document>> GetAllDocument()
         {
-            var documents = await FindAll().ToListAsync();
+            var documents = await FindAll().Include(g => g.Grade).ToListAsync();
             return documents;
+        }
+
+        public Task<IQueryable<Document>> GetAllDocumentPagination()
+        {
+            var result = FindAll();
+            return Task.FromResult(result);
         }
 
         public async Task<Document> GetDocumentById(int id)

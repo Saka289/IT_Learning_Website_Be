@@ -6,6 +6,7 @@ namespace LW.Data.Repositories.DocumentRepositories;
 public interface IDocumentRepository : IRepositoryBase<Document, int>
 {
     Task<IEnumerable<Document>> GetAllDocument();
+    Task<IQueryable<Document>> GetAllDocumentPagination();
     Task<Document> GetDocumentById(int id);
     Task<Document> CreateDocument(Document document);
     Task<Document> UpdateDocument(Document document);
