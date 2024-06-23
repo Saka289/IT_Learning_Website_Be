@@ -241,14 +241,17 @@ public class AppDbContextSeed
                 Title = "Toán học",
                 KeyWord = "toan hoc",
                 Description = "Môn học về toán học",
+                Objectives ="Làm chủ về môn toán học",
                 IsActive = true,
-                DocumentId = 1  
+                DocumentId = 1,
+                
             },
             new Topic()
             {
                 Title = "Văn học",
                 KeyWord = "van hoc",
                 Description = "Môn học về văn học",
+                Objectives ="Làm chủ về môn văn học",
                 IsActive = true,
                 DocumentId = 2  
             },
@@ -257,6 +260,7 @@ public class AppDbContextSeed
                 Title = "Khoa học tự nhiên",
                 KeyWord = "khoa hoc tu nhien",
                 Description = "Môn học về khoa học tự nhiên",
+                Objectives ="Làm chủ về môn khoa học tự nhiên",
                 IsActive = true,
                 DocumentId = 3  
             }

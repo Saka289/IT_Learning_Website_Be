@@ -30,8 +30,10 @@ public class TopicRepository : RepositoryBase<Topic, int>, ITopicRepository
             await DeleteAsync(topic);
             return true;
         }
+
         return false;
     }
+
     public async Task<Topic> GetTopicById(int id)
     {
         return await GetByIdAsync(id);
@@ -39,6 +41,12 @@ public class TopicRepository : RepositoryBase<Topic, int>, ITopicRepository
 
     public async Task<IEnumerable<Topic>> GetAllTopic()
     {
-        return await FindAll().Include(d =>d.Document).ToListAsync();
+        return await FindAll().Include(d => d.Document).ToListAsync();
+    }
+
+    public Task<IQueryable<Topic>> GetAllTopicPagination()
+    {
+        var result = FindAll();
+        return Task.FromResult(result);
     }
 }

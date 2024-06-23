@@ -98,6 +98,20 @@ public class TopicService : ITopicService
         var result = _mapper.Map<IEnumerable<TopicDto>>(list);
         return new ApiResult<IEnumerable<TopicDto>>(true, result, "Get all topic successfully !");
     }
+    
+    public async Task<ApiResult<PagedList<TopicDto>>> GetAllTopicPagination(PagingRequestParameters pagingRequestParameters)
+    {
+        var topics = await _topicRepository.GetAllTopicPagination();
+        if (topics == null)
+        {
+            return new ApiResult<PagedList<TopicDto>>(false, "Grade is null !!!");
+        }
+        var result = _mapper.ProjectTo<TopicDto>(topics);
+        var pagedResult = await PagedList<TopicDto>.ToPageList(result, pagingRequestParameters.PageIndex, pagingRequestParameters.PageSize);
+
+        return new ApiSuccessResult<PagedList<TopicDto>>(pagedResult);
+    }
+    
 
     public async Task<ApiResult<IEnumerable<TopicDto>>> SearchTopic(SearchTopicDto searchTopicDto)
     {
