@@ -6,6 +6,7 @@ namespace LW.Services.LessonService;
 public interface ILessonService
 {
     Task<ApiResult<IEnumerable<LessonDto>>> GetAllLesson();
+    Task<ApiResult<PagedList<LessonDto>>> GetAllLessonPagination(PagingRequestParameters pagingRequestParameters);
     Task<ApiResult<LessonDto>> GetLessonById(int id);
     Task<ApiResult<IEnumerable<LessonDto>>> SearchByLesson(SearchLessonDto searchLessonDto);
     Task<ApiResult<LessonDto>> CreateLesson(LessonCreateDto lessonCreateDto);

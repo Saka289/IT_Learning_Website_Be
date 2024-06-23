@@ -40,6 +40,21 @@ public class LessonService : ILessonService
         return new ApiSuccessResult<IEnumerable<LessonDto>>(result);
     }
 
+    public async Task<ApiResult<PagedList<LessonDto>>> GetAllLessonPagination(PagingRequestParameters pagingRequestParameters)
+    {
+        var lessonList = await _lessonRepository.GetAllLessonPagination();
+        if (lessonList == null)
+        {
+            return new ApiResult<PagedList<LessonDto>>(false, "Lesson is null !!!");
+        }
+
+        var result = _mapper.ProjectTo<LessonDto>(lessonList);
+        var pagedResult = await PagedList<LessonDto>.ToPageList(result, pagingRequestParameters.PageIndex,
+            pagingRequestParameters.PageSize);
+
+        return new ApiSuccessResult<PagedList<LessonDto>>(pagedResult);
+    }
+
     public async Task<ApiResult<LessonDto>> GetLessonById(int id)
     {
         var lessonEntity = await _lessonRepository.GetLessonById(id);

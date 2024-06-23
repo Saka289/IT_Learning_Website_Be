@@ -17,6 +17,12 @@ public class LessonRepository : RepositoryBase<Lesson, int>, ILessonRepository
         return await FindAll().ToListAsync();
     }
 
+    public Task<IQueryable<Lesson>> GetAllLessonPagination()
+    {
+        var result = FindAll();
+        return Task.FromResult(result);
+    }
+
     public async Task<Lesson> GetLessonById(int id)
     {
         return await GetByIdAsync(id);
