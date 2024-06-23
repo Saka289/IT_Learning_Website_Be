@@ -220,7 +220,7 @@ public static class ServiceExtensions
         {
             options.AddDefaultPolicy(builder =>
             {
-                builder.WithOrigins(settings.ClientUrl).AllowAnyHeader().AllowAnyMethod();
+                builder.WithOrigins(settings.ClientUrl).AllowAnyHeader().AllowAnyMethod().WithExposedHeaders("X-Pagination");
             });
         });
         return service;
