@@ -31,8 +31,8 @@ docker-compose -f docker-compose.yml -f docker-compose.override.yml up -d --remo
 - Customer API: http://localhost:6001/api/customers
 
 ## Docker Application URLs - LOCAL Environment (Docker Container):
-- Portainer: http://localhost:9000 - username: admin ; pass: admin1234
-- Kibana: http://localhost:5601 - username: elastic ; pass: admin
+- Elasticsearch: http://localhost:9200 - username: elastic ; pass: admin1234
+- Kibana: http://localhost:5601 - username: elastic ; pass: admin1234
 - RabbitMQ: http://localhost:15672 - username: guest ; pass: guest
 
 2. Using Visual Studio 2022
@@ -74,6 +74,6 @@ docker-compose down
 - dotnet build
 - Migration commands for Sample API:
   - cd into Sample folder
-  - dotnet ef migrations add "SampleMigration" -p Sample.Infrastructure --startup-project Sample.API --output-dir Persistence/Migrations
-  - dotnet ef migrations remove -p Sample.Infrastructure --startup-project Sample.API
-  - dotnet ef database update -p Sample.Infrastructure --startup-project Sample.API
+  - dotnet ef migrations add "SampleMigration" -p Libraries/Sample.Data --startup-project Sample.API --output-dir Persistence/Migrations
+  - dotnet ef migrations remove -p Libraries/Sample.Data --startup-project Sample.API
+  - dotnet ef database update -p Libraries/Sample.Data --startup-project Sample.API

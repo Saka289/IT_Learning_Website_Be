@@ -1,5 +1,7 @@
 using LW.API.Extensions;
+using LW.Data.Persistence;
 using LW.Logging;
+using Nest;
 using Serilog;
 
 Log.Logger = new LoggerConfiguration().WriteTo.Console().CreateBootstrapLogger();
@@ -15,11 +17,19 @@ try
 
     builder.Services.AddInfrastructure(builder.Configuration);
 
+    builder.Services.AddConfigurationSettings(builder.Configuration);
+
+    builder.AddAppAuthentication();
+
     var app = builder.Build();
 
     app.UseInfrastructure(builder.Environment);
 
-    app.Run();
+    app.MigrateDatabase<AppDbContext>((context, _) =>
+    {
+        var elasticClient = app.Services.GetRequiredService<IElasticClient>();
+        AppDbContextSeed.SeedDataAsync(context, Log.Logger, elasticClient).Wait();
+    }).Run();
 }
 catch (Exception ex)
 {
