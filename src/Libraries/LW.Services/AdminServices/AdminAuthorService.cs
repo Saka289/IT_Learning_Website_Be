@@ -150,15 +150,6 @@ public class AdminAuthorService : IAdminAuthorService
 
     public async Task<ApiResult<UpdateAdminDto>> UpdateAdminAsync(UpdateAdminDto updateAdminDto)
     {
-        var checkEmail =
-            await _userManager.Users.AnyAsync(
-                x => x.Email.Equals(updateAdminDto.Email) && x.Id != updateAdminDto.UserId);
-        if (checkEmail)
-        {
-            return new ApiResult<UpdateAdminDto>(false,
-                $"An existing account is using {updateAdminDto.Email}, email address. Please try with another email address");
-        }
-
         var user = await _userManager.FindByIdAsync(updateAdminDto.UserId);
         if (user == null)
         {
@@ -169,8 +160,8 @@ public class AdminAuthorService : IAdminAuthorService
         user.FirstName = updateAdminDto.FirstName;
         user.LastName = updateAdminDto.LastName;
         user.PhoneNumber = updateAdminDto.PhoneNumber;
-        user.Email = updateAdminDto.Email;
-        user.UserName = updateAdminDto.UserName;
+        user.Dob = DateOnly.FromDateTime(updateAdminDto.Dob);
+
         //upload image to cloudinary
         if (updateAdminDto.Image != null && updateAdminDto.Image.Length > 0)
         {
@@ -372,4 +363,74 @@ public class AdminAuthorService : IAdminAuthorService
 
         return new ApiResult<bool>(true, "Reset password successfully !!!");
     }
+
+    //Role manage
+    public async Task<ApiResult<bool>> CreateRoleAsync(string roleName)
+    {
+        if (await _roleManager.RoleExistsAsync(roleName))
+        {
+            return new ApiResult<bool>(false, "Role already exists");
+        }
+
+        var result = await _roleManager.CreateAsync(new IdentityRole(roleName));
+        if (result.Succeeded)
+        {
+            return new ApiResult<bool>(true, "Role created successfully");
+        }
+
+        return new ApiResult<bool>(false, result.Errors.FirstOrDefault()?.Description ?? "Failed to create role");
+    }
+
+    public async Task<ApiResult<bool>> UpdateRoleAsync(string roleId, string newRoleName)
+    {
+        var role = await _roleManager.FindByIdAsync(roleId);
+        if (role == null)
+        {
+            return new ApiResult<bool>(false, "Role not found");
+        }
+
+        role.Name = newRoleName;
+        var result = await _roleManager.UpdateAsync(role);
+        if (result.Succeeded)
+        {
+            return new ApiResult<bool>(true, "Role updated successfully");
+        }
+
+        return new ApiResult<bool>(false, result.Errors.FirstOrDefault()?.Description ?? "Fail to update role");
+    }
+
+    public async Task<ApiResult<bool>> DeleteRoleAsync(string roleId)
+    {
+        var role = await _roleManager.FindByIdAsync(roleId);
+        if (role == null)
+        {
+            return new ApiResult<bool>(false, "Role not found");
+        }
+        var result = await _roleManager.DeleteAsync(role);
+        if (result.Succeeded)
+        {
+            return new ApiResult<bool>(true, "Delete role successfully");
+        }
+
+        return new ApiResult<bool>(false, result.Errors.FirstOrDefault()?.Description ?? "Fail to delete role");
+    }
+    public async Task<ApiResult<IEnumerable<RoleDto>>> GetAllRolesAsync()
+    {
+        var roles = await _roleManager.Roles.ToListAsync();
+        var roleDtos = _mapper.Map<IEnumerable<RoleDto>>(roles);
+        return new ApiResult<IEnumerable<RoleDto>>(true, roleDtos, "Roles retrieved successfully");
+    }
+
+    public async Task<ApiResult<RoleDto>> GetRoleByIdAsync(string roleId)
+    {
+        var role = await _roleManager.FindByIdAsync(roleId);
+        if (role == null)
+        {
+            return new ApiResult<RoleDto>(false, null, "Role not found");
+        }
+
+        var roleDto = _mapper.Map<RoleDto>(role);
+        return new ApiResult<RoleDto>(true, roleDto, "Role retrieved successfully");
+    }
+    
 }

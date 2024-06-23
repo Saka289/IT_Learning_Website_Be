@@ -21,5 +21,10 @@ public interface IAdminAuthorService
     public Task<ApiResult<bool>> ChangePasswordAsync(ChangePasswordAdminDto changePasswordAdminDto);
     public Task<ApiResult<bool>> ForgotPasswordAsync(string email);
     public Task<ApiResult<bool>> ResetPasswordAsync(ResetPasswordAdminDto resetPasswordAdminDto);
+    public  Task<ApiResult<bool>> CreateRoleAsync(string roleName);
+    public Task<ApiResult<bool>> UpdateRoleAsync(string roleId, string newRoleName);
+    public Task<ApiResult<bool>> DeleteRoleAsync(string roleId);
+    public Task<ApiResult<RoleDto>> GetRoleByIdAsync(string roleId);
+    public Task<ApiResult<IEnumerable<RoleDto>>> GetAllRolesAsync();
 
 }
