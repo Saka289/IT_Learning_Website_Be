@@ -500,7 +500,7 @@ public class UserService : IUserService
 
     private async Task SendConfirmEmailAsync(string email, string token, CancellationToken cancellationToken)
     {
-        var url = $"{_urlBase.ClientUrl}/{_verifyEmailSettings.VerifyEmailPath}?token={token}";
+        var url = $"{_urlBase.ClientUrl}/{_verifyEmailSettings.VerifyEmailPath}?token={token}&email={email}";
         var emailRequest = new MailRequest()
         {
             ToAddress = email,
