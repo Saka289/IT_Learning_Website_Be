@@ -13,6 +13,8 @@ public class Topic : EntityAuditBase<int>
     [Required]
     public string Description { get; set; }
     [Required]
+    public string Objectives { get; set; }
+    [Required]
     public bool IsActive { get; set; }
     [Required]
     public int DocumentId { get; set; }

@@ -39,7 +39,10 @@ public class MappingProfile : Profile
         CreateMap<Document, DocumentCreateDto>().ReverseMap();
         CreateMap<Document, DocumentUpdateDto>().ReverseMap();
         //Topic 
-        CreateMap<Topic, TopicDto>().ReverseMap();
+        CreateMap<Topic, TopicDto>()
+            .ForMember(x => x.DocumentId, y => y.MapFrom(src => src.DocumentId))
+            .ForMember(x => x.DocumentTitle, y => y.MapFrom(src => src.Document.Title))
+            .ReverseMap();
         CreateMap<Topic, TopicCreateDto>().ReverseMap();
         CreateMap<Topic, TopicUpdateDto>().ReverseMap();
         //Lesson

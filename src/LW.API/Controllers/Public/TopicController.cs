@@ -8,6 +8,7 @@ using LW.Shared.DTOs.Topic;
 using LW.Shared.SeedWork;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
+using Newtonsoft.Json;
 
 namespace LW.API.Controllers.Public
 {
@@ -28,7 +29,17 @@ namespace LW.API.Controllers.Public
             var result = await _topicService.GetAll();
             return Ok(result);
         }
-
+        [HttpGet("GetAllTopicPagination")]
+        public async Task<ActionResult<ApiResult<PagedList<TopicDto>>>> GetAllTopicPagination([FromQuery]PagingRequestParameters pagingRequestParameters)
+        {
+            var result = await _topicService.GetAllTopicPagination(pagingRequestParameters);
+            if (!result.IsSucceeded)
+            {
+                return NotFound(result);
+            }
+            Response.Headers.Add("X-Pagination", JsonConvert.SerializeObject(result.Data.GetMetaData()));
+            return Ok(result);
+        }
         [HttpGet("GetTopicById")]
         public async Task<ActionResult<ApiResult<TopicDto>>> GetTopicById(int id)
         {
