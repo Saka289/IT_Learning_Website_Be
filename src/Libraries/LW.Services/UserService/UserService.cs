@@ -68,6 +68,17 @@ public class UserService : IUserService
 
     public async Task<ApiResult<RegisterResponseUserDto>> Register(RegisterUserDto registerUserDto)
     {
+        var verifyEmail = await _redisCacheService.GetStringKey(registerUserDto.Email);
+        if (verifyEmail == null)
+        {
+            return new ApiResult<RegisterResponseUserDto>(false, "Your email verification link has expired. Please request a new one.");
+        }
+
+        if (!verifyEmail.IsVerifyEmail)
+        {
+            return new ApiResult<RegisterResponseUserDto>(false, "An error occurred while verifying your email. Please try again later.");
+        }
+        
         var emailExist = await _userManager.Users.AnyAsync(x => x.Email.ToLower() == registerUserDto.Email.ToLower());
         if (emailExist)
         {
@@ -357,7 +368,11 @@ public class UserService : IUserService
 
             if (verifyEmailDecode.Id.Equals(result.Id))
             {
-                await _redisCacheService.RemoveStringKey(result.Email);
+                verifyEmailDecode.IsVerifyEmail = true;
+                var options = new DistributedCacheEntryOptions()
+                    .SetAbsoluteExpiration(DateTime.Now.AddMinutes(5))
+                    .SetSlidingExpiration(TimeSpan.FromMinutes(2));
+                await _redisCacheService.SetStringKey(verifyEmailDecode.Email, verifyEmailDecode, options);
                 return new ApiResult<bool>(true, "Email verified successfully.");
             }
 
