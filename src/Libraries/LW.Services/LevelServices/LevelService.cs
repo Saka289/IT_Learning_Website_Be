@@ -33,7 +33,7 @@ public class LevelService : ILevelService
         var level = _mapper.Map<Level>(model);
         level.KeyWord = model.Title.RemoveDiacritics();
         await _levelRepository.CreateLevel(level);
-        await _elasticSearchService.CreateDocumentAsync(ElasticConstant.ElasticLevels, level, g => g.Id);
+        _elasticSearchService.CreateDocumentAsync(ElasticConstant.ElasticLevels, level, g => g.Id);
         return new ApiResult<bool>(true, "Create level successfully");
     }
 
@@ -50,7 +50,7 @@ public class LevelService : ILevelService
         // Sau khi ánh xạ, levelIbDb sẽ có các giá trị từ model:
         obj.KeyWord = model.Title.RemoveDiacritics();
         await _levelRepository.UpdateLevel(obj);
-        await _elasticSearchService.UpdateDocumentAsync(ElasticConstant.ElasticLevels, obj, model.Id);
+        _elasticSearchService.UpdateDocumentAsync(ElasticConstant.ElasticLevels, obj, model.Id);
         return new ApiResult<bool>(true, "Update level successfully");
     }
 
@@ -64,7 +64,7 @@ public class LevelService : ILevelService
 
         objLevel.IsActive = !objLevel.IsActive;
         await _levelRepository.UpdateLevel(objLevel);
-        await _elasticSearchService.UpdateDocumentAsync(ElasticConstant.ElasticLevels, objLevel, id);
+        _elasticSearchService.UpdateDocumentAsync(ElasticConstant.ElasticLevels, objLevel, id);
         return new ApiResult<bool>(true, "Update Status of level successfully");
     }
 
@@ -82,7 +82,7 @@ public class LevelService : ILevelService
             return new ApiResult<bool>(false, "Delete level failed");
         }
 
-        await _elasticSearchService.DeleteDocumentAsync(ElasticConstant.ElasticLevels, id);
+        _elasticSearchService.DeleteDocumentAsync(ElasticConstant.ElasticLevels, id);
         return new ApiResult<bool>(true, "Delete level successfully");
     }
 
