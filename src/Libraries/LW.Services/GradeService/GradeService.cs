@@ -7,6 +7,7 @@ using LW.Infrastructure.Extensions;
 using LW.Shared.Constant;
 using LW.Shared.DTOs.Grade;
 using LW.Shared.SeedWork;
+using Microsoft.EntityFrameworkCore;
 
 namespace LW.Services.GradeService;
 
@@ -17,7 +18,8 @@ public class GradeService : IGradeService
     private readonly IElasticSearchService<Grade, int> _elasticSearchService;
     private readonly IMapper _mapper;
 
-    public GradeService(IGradeRepository gradeRepository, IMapper mapper, ILevelRepository levelRepository, IElasticSearchService<Grade, int> elasticSearchService)
+    public GradeService(IGradeRepository gradeRepository, IMapper mapper, ILevelRepository levelRepository,
+        IElasticSearchService<Grade, int> elasticSearchService)
     {
         _gradeRepository = gradeRepository;
         _mapper = mapper;
@@ -37,6 +39,19 @@ public class GradeService : IGradeService
         return new ApiSuccessResult<IEnumerable<GradeDto>>(result);
     }
 
+    public async Task<ApiResult<PagedList<GradeDto>>> GetAllGradePagination(PagingRequestParameters pagingRequestParameters)
+    {
+        var gradeList = await _gradeRepository.GetAllGradePagination();
+        if (gradeList == null)
+        {
+            return new ApiResult<PagedList<GradeDto>>(false, "Grade is null !!!");
+        }
+        var result = _mapper.ProjectTo<GradeDto>(gradeList);
+        var pagedResult = await PagedList<GradeDto>.ToPageList(result, pagingRequestParameters.PageIndex, pagingRequestParameters.PageSize);
+
+        return new ApiSuccessResult<PagedList<GradeDto>>(pagedResult);
+    }
+
     public async Task<ApiResult<GradeDto>> GetGradeById(int id)
     {
         var gradeEntity = await _gradeRepository.GetGradeById(id);
@@ -51,7 +66,8 @@ public class GradeService : IGradeService
 
     public async Task<ApiResult<IEnumerable<GradeDto>>> SearchByGrade(SearchGradeDto searchGradeDto)
     {
-        var gradeEntity = await _elasticSearchService.SearchDocumentAsync(ElasticConstant.ElasticGrades, searchGradeDto);
+        var gradeEntity =
+            await _elasticSearchService.SearchDocumentAsync(ElasticConstant.ElasticGrades, searchGradeDto);
         if (gradeEntity is null)
         {
             return new ApiResult<IEnumerable<GradeDto>>(false, $"Grade not found by {searchGradeDto.Key} !!!");
@@ -129,6 +145,7 @@ public class GradeService : IGradeService
         {
             return new ApiResult<bool>(false, "Failed Delete Grade not found !!!");
         }
+
         await _elasticSearchService.DeleteDocumentAsync(ElasticConstant.ElasticGrades, id);
 
         return new ApiSuccessResult<bool>(true, "Delete Grade Successfully !!!");

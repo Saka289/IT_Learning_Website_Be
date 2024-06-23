@@ -8,6 +8,7 @@ using LW.Shared.DTOs.Grade;
 using LW.Shared.SeedWork;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
+using Newtonsoft.Json;
 
 namespace LW.API.Controllers.Public
 {
@@ -26,6 +27,18 @@ namespace LW.API.Controllers.Public
         public async Task<ActionResult<ApiResult<IEnumerable<GradeDto>>>> GetAllGrade()
         {
             var result = await _gradeService.GetAllGrade();
+            return Ok(result);
+        }
+        
+        [HttpGet("GetAllGradePagination")]
+        public async Task<ActionResult<ApiResult<PagedList<GradeDto>>>> GetAllGradePagination([FromQuery]PagingRequestParameters pagingRequestParameters)
+        {
+            var result = await _gradeService.GetAllGradePagination(pagingRequestParameters);
+            if (!result.IsSucceeded)
+            {
+                return NotFound(result);
+            }
+            Response.Headers.Add("X-Pagination", JsonConvert.SerializeObject(result.Data.GetMetaData()));
             return Ok(result);
         }
 
