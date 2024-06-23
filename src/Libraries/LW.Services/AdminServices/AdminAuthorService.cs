@@ -33,7 +33,7 @@ public class AdminAuthorService : IAdminAuthorService
 
     public AdminAuthorService(UserManager<ApplicationUser> userManager, RoleManager<IdentityRole> roleManager,
         IOptions<UrlBase> urlBase,
-        IOptions<VerifyEmailSettings> verifyEmailSettings ,
+        IOptions<VerifyEmailSettings> verifyEmailSettings,
         ILogger logger,
         ISmtpEmailService emailService,
         IMapper mapper, IJwtTokenService jwtTokenService, ICloudinaryService cloudinaryService)
@@ -172,15 +172,34 @@ public class AdminAuthorService : IAdminAuthorService
         user.Email = updateAdminDto.Email;
         user.UserName = updateAdminDto.UserName;
         //upload image to cloudinary
-        var rs =  _cloudinaryService.CreateImageAsync(updateAdminDto.Image, CloudinaryConstant.FolderUserImage);
-        if (rs == null)
+        if (updateAdminDto.Image != null && updateAdminDto.Image.Length > 0)
         {
-            return new ApiResult<UpdateAdminDto>(false,
-                $"Upload Image Fail !");
+            if (user.Image == null)
+            {
+                var rs1 = _cloudinaryService.CreateImageAsync(updateAdminDto.Image, CloudinaryConstant.FolderUserImage);
+                if (rs1 == null)
+                {
+                    return new ApiResult<UpdateAdminDto>(false,
+                        $"Upload Image Fail !");
+                }
+
+                user.PublicId = rs1.Result.PublicId;
+                user.Image = rs1.Result.Url;
+            }
+            else
+            {
+                var rs2 = _cloudinaryService.UpdateImageAsync(user.PublicId, updateAdminDto.Image);
+                if (rs2 == null)
+                {
+                    return new ApiResult<UpdateAdminDto>(false,
+                        $"Upload Image Fail !");
+                }
+
+                user.PublicId = rs2.Result.PublicId;
+                user.Image = rs2.Result.Url;
+            }
         }
-        user.PublicId = rs.Result.PublicId;
-        user.Image = rs.Result.Url;
-        
+
         await _userManager.UpdateAsync(user);
 
         return new ApiResult<UpdateAdminDto>(false, updateAdminDto,
@@ -274,6 +293,7 @@ public class AdminAuthorService : IAdminAuthorService
         {
             return new ApiResult<bool>(false, "The email you entered is incorrect .");
         }
+
         // check pass
         var password = await _userManager.CheckPasswordAsync(user, changePasswordAdminDto.Password);
         if (password == false)
@@ -306,6 +326,7 @@ public class AdminAuthorService : IAdminAuthorService
 
         return new ApiResult<bool>(true, $"Send email to: {email}");
     }
+
     private async Task SendForgotPasswordEmail(ApplicationUser user, string token, CancellationToken cancellationToken)
     {
         var url = $"{_urlBase.ClientUrl}/{_verifyEmailSettings.ResetPasswordPath}?token={token}&email={user.Email}";
@@ -332,6 +353,7 @@ public class AdminAuthorService : IAdminAuthorService
                 $"Forgot Password your email {user.Email} failed due to an error with the email service: {ex.Message}");
         }
     }
+
     public async Task<ApiResult<bool>> ResetPasswordAsync(ResetPasswordAdminDto resetPasswordAdminDto)
     {
         var user = await _userManager.FindByEmailAsync(resetPasswordAdminDto.Email);
@@ -350,5 +372,4 @@ public class AdminAuthorService : IAdminAuthorService
 
         return new ApiResult<bool>(true, "Reset password successfully !!!");
     }
-    
 }

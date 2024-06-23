@@ -21,14 +21,12 @@ namespace LW.API.Controllers.Admin
         private readonly IAdminAuthorService _adminAuthorService;
         private readonly UserManager<ApplicationUser> _userManager;
         private readonly SignInManager<ApplicationUser> _signInManager;
-        private readonly ICloudinaryService _cloudinaryService;
 
-        public AdminController(IAdminAuthorService adminAuthorService, UserManager<ApplicationUser> userManager,SignInManager<ApplicationUser> signInManager, ICloudinaryService cloudinaryService)
+        public AdminController(IAdminAuthorService adminAuthorService, UserManager<ApplicationUser> userManager,SignInManager<ApplicationUser> signInManager)
         {
             _adminAuthorService = adminAuthorService;
             _userManager = userManager;
             _signInManager = signInManager;
-            _cloudinaryService = cloudinaryService;
         }
 
         [HttpPost("register")]
