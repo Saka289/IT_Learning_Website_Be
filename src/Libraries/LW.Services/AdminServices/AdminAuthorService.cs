@@ -89,40 +89,6 @@ public class AdminAuthorService : IAdminAuthorService
             "Register successfully");
     }
 
-    public async Task<ApiResult<LoginAdminResponseDto>> LoginAdminAsync(LoginAdminDto model)
-    {
-        var user = await _userManager.FindByEmailAsync(model.Email);
-        bool isValid = await _userManager.CheckPasswordAsync(user, model.Password);
-        //bool IsEmailConfirmed = await _userManager.IsEmailConfirmedAsync(user);
-
-        if (user == null || isValid == false)
-        {
-            return new ApiResult<LoginAdminResponseDto>(false,
-                "The password you entered is incorrect. Please try again.");
-        }
-
-
-        var roles = await _userManager.GetRolesAsync(user);
-        var token = _jwtTokenService.GenerateAccessToken(user, roles);
-
-
-        AdminDto adminDto = new()
-        {
-            Email = user.Email,
-            ID = user.Id,
-            Name = user.FirstName + " " + user.LastName,
-            PhoneNumber = user.PhoneNumber,
-        };
-
-        LoginAdminResponseDto loginResponseDto = new LoginAdminResponseDto()
-        {
-            Admin = adminDto,
-            Token = token,
-        };
-        return new ApiResult<LoginAdminResponseDto>(true, loginResponseDto,
-            "Login Successfully");
-    }
-
     public async Task<ApiResult<bool>> AssignRoleAsync(string email, string roleName)
     {
         var user = await _userManager.FindByEmailAsync(email);
@@ -141,12 +107,6 @@ public class AdminAuthorService : IAdminAuthorService
         return new ApiResult<bool>(false,
             "Don't find user with email " + email);
     }
-
-    public Task<ApiResult<bool>> UpdateRoleAsync(UpdateRoleDto updateRoleDto)
-    {
-        throw new NotImplementedException();
-    }
-
 
     public async Task<ApiResult<UpdateAdminDto>> UpdateAdminAsync(UpdateAdminDto updateAdminDto)
     {
@@ -167,27 +127,27 @@ public class AdminAuthorService : IAdminAuthorService
         {
             if (user.Image == null)
             {
-                var rs1 = _cloudinaryService.CreateImageAsync(updateAdminDto.Image, CloudinaryConstant.FolderUserImage);
-                if (rs1 == null)
+                var createImage =await _cloudinaryService.CreateImageAsync(updateAdminDto.Image, CloudinaryConstant.FolderUserImage);
+                if (createImage == null)
                 {
                     return new ApiResult<UpdateAdminDto>(false,
                         $"Upload Image Fail !");
                 }
 
-                user.PublicId = rs1.Result.PublicId;
-                user.Image = rs1.Result.Url;
+                user.PublicId = createImage.PublicId;
+                user.Image = createImage.Url;
             }
             else
             {
-                var rs2 = _cloudinaryService.UpdateImageAsync(user.PublicId, updateAdminDto.Image);
-                if (rs2 == null)
+                var updateImage = await _cloudinaryService.UpdateImageAsync(user.PublicId, updateAdminDto.Image);
+                if (updateImage == null)
                 {
                     return new ApiResult<UpdateAdminDto>(false,
                         $"Upload Image Fail !");
                 }
 
-                user.PublicId = rs2.Result.PublicId;
-                user.Image = rs2.Result.Url;
+                user.PublicId = updateImage.PublicId;
+                user.Image = updateImage.Url;
             }
         }
 

@@ -8,9 +8,7 @@ namespace LW.Services.AdminServices;
 public interface IAdminAuthorService
 {
     public  Task<ApiResult<RegisterAdminResponseDto>> RegisterAdminAsync(RegisterAdminDto model);
-    public Task<ApiResult<LoginAdminResponseDto>> LoginAdminAsync(LoginAdminDto model);
     public Task<ApiResult<bool>> AssignRoleAsync(string email, string roleName);
-    public Task<ApiResult<bool>> UpdateRoleAsync(UpdateRoleDto updateRoleDto);
     public Task<ApiResult<UpdateAdminDto>> UpdateAdminAsync(UpdateAdminDto updateAdminDto);
     public Task<ApiResult<bool>> DeleteAsync(string userId);
     public Task<ApiResult<bool>> LockMemberAsync(string userId);
