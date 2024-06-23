@@ -1,9 +1,11 @@
 ﻿using System.Text;
 using AutoMapper;
+using LW.Contracts.Common;
 using LW.Contracts.Services;
 using LW.Data.Entities;
 using LW.Services.JwtTokenService;
 using LW.Shared.Configurations;
+using LW.Shared.Constant;
 using LW.Shared.DTOs.Admin;
 using LW.Shared.SeedWork;
 using LW.Shared.Services.Email;
@@ -27,13 +29,14 @@ public class AdminAuthorService : IAdminAuthorService
     private readonly VerifyEmailSettings _verifyEmailSettings;
     private readonly ISmtpEmailService _emailService;
     private readonly ILogger _logger;
+    private readonly ICloudinaryService _cloudinaryService;
 
     public AdminAuthorService(UserManager<ApplicationUser> userManager, RoleManager<IdentityRole> roleManager,
         IOptions<UrlBase> urlBase,
-        IOptions<VerifyEmailSettings> verifyEmailSettings ,
+        IOptions<VerifyEmailSettings> verifyEmailSettings,
         ILogger logger,
         ISmtpEmailService emailService,
-        IMapper mapper, IJwtTokenService jwtTokenService)
+        IMapper mapper, IJwtTokenService jwtTokenService, ICloudinaryService cloudinaryService)
     {
         _userManager = userManager;
         _mapper = mapper;
@@ -42,6 +45,7 @@ public class AdminAuthorService : IAdminAuthorService
         _logger = logger ?? throw new ArgumentNullException(nameof(logger));
         _verifyEmailSettings = verifyEmailSettings.Value;
         _jwtTokenService = jwtTokenService ?? throw new ArgumentNullException(nameof(jwtTokenService));
+        _cloudinaryService = cloudinaryService;
         _emailService = emailService;
     }
 
@@ -85,40 +89,6 @@ public class AdminAuthorService : IAdminAuthorService
             "Register successfully");
     }
 
-    public async Task<ApiResult<LoginAdminResponseDto>> LoginAdminAsync(LoginAdminDto model)
-    {
-        var user = await _userManager.FindByEmailAsync(model.Email);
-        bool isValid = await _userManager.CheckPasswordAsync(user, model.Password);
-        //bool IsEmailConfirmed = await _userManager.IsEmailConfirmedAsync(user);
-
-        if (user == null || isValid == false)
-        {
-            return new ApiResult<LoginAdminResponseDto>(false,
-                "The password you entered is incorrect. Please try again.");
-        }
-
-
-        var roles = await _userManager.GetRolesAsync(user);
-        var token = _jwtTokenService.GenerateAccessToken(user, roles);
-
-
-        AdminDto adminDto = new()
-        {
-            Email = user.Email,
-            ID = user.Id,
-            Name = user.FirstName + " " + user.LastName,
-            PhoneNumber = user.PhoneNumber,
-        };
-
-        LoginAdminResponseDto loginResponseDto = new LoginAdminResponseDto()
-        {
-            Admin = adminDto,
-            Token = token,
-        };
-        return new ApiResult<LoginAdminResponseDto>(true, loginResponseDto,
-            "Login Successfully");
-    }
-
     public async Task<ApiResult<bool>> AssignRoleAsync(string email, string roleName)
     {
         var user = await _userManager.FindByEmailAsync(email);
@@ -138,23 +108,8 @@ public class AdminAuthorService : IAdminAuthorService
             "Don't find user with email " + email);
     }
 
-    public Task<ApiResult<bool>> UpdateRoleAsync(UpdateRoleDto updateRoleDto)
-    {
-        throw new NotImplementedException();
-    }
-
-
     public async Task<ApiResult<UpdateAdminDto>> UpdateAdminAsync(UpdateAdminDto updateAdminDto)
     {
-        var checkEmail =
-            await _userManager.Users.AnyAsync(
-                x => x.Email.Equals(updateAdminDto.Email) && x.Id != updateAdminDto.UserId);
-        if (checkEmail)
-        {
-            return new ApiResult<UpdateAdminDto>(false,
-                $"An existing account is using {updateAdminDto.Email}, email address. Please try with another email address");
-        }
-
         var user = await _userManager.FindByIdAsync(updateAdminDto.UserId);
         if (user == null)
         {
@@ -165,8 +120,36 @@ public class AdminAuthorService : IAdminAuthorService
         user.FirstName = updateAdminDto.FirstName;
         user.LastName = updateAdminDto.LastName;
         user.PhoneNumber = updateAdminDto.PhoneNumber;
-        user.Email = updateAdminDto.Email;
-        user.UserName = updateAdminDto.UserName;
+        user.Dob = DateOnly.FromDateTime(updateAdminDto.Dob);
+
+        //upload image to cloudinary
+        if (updateAdminDto.Image != null && updateAdminDto.Image.Length > 0)
+        {
+            if (user.Image == null)
+            {
+                var createImage =await _cloudinaryService.CreateImageAsync(updateAdminDto.Image, CloudinaryConstant.FolderUserImage);
+                if (createImage == null)
+                {
+                    return new ApiResult<UpdateAdminDto>(false,
+                        $"Upload Image Fail !");
+                }
+
+                user.PublicId = createImage.PublicId;
+                user.Image = createImage.Url;
+            }
+            else
+            {
+                var updateImage = await _cloudinaryService.UpdateImageAsync(user.PublicId, updateAdminDto.Image);
+                if (updateImage == null)
+                {
+                    return new ApiResult<UpdateAdminDto>(false,
+                        $"Upload Image Fail !");
+                }
+
+                user.PublicId = updateImage.PublicId;
+                user.Image = updateImage.Url;
+            }
+        }
 
         await _userManager.UpdateAsync(user);
 
@@ -261,6 +244,7 @@ public class AdminAuthorService : IAdminAuthorService
         {
             return new ApiResult<bool>(false, "The email you entered is incorrect .");
         }
+
         // check pass
         var password = await _userManager.CheckPasswordAsync(user, changePasswordAdminDto.Password);
         if (password == false)
@@ -293,6 +277,7 @@ public class AdminAuthorService : IAdminAuthorService
 
         return new ApiResult<bool>(true, $"Send email to: {email}");
     }
+
     private async Task SendForgotPasswordEmail(ApplicationUser user, string token, CancellationToken cancellationToken)
     {
         var url = $"{_urlBase.ClientUrl}/{_verifyEmailSettings.ResetPasswordPath}?token={token}&email={user.Email}";
@@ -319,6 +304,7 @@ public class AdminAuthorService : IAdminAuthorService
                 $"Forgot Password your email {user.Email} failed due to an error with the email service: {ex.Message}");
         }
     }
+
     public async Task<ApiResult<bool>> ResetPasswordAsync(ResetPasswordAdminDto resetPasswordAdminDto)
     {
         var user = await _userManager.FindByEmailAsync(resetPasswordAdminDto.Email);
@@ -336,6 +322,75 @@ public class AdminAuthorService : IAdminAuthorService
         }
 
         return new ApiResult<bool>(true, "Reset password successfully !!!");
+    }
+
+    //Role manage
+    public async Task<ApiResult<bool>> CreateRoleAsync(string roleName)
+    {
+        if (await _roleManager.RoleExistsAsync(roleName))
+        {
+            return new ApiResult<bool>(false, "Role already exists");
+        }
+
+        var result = await _roleManager.CreateAsync(new IdentityRole(roleName));
+        if (result.Succeeded)
+        {
+            return new ApiResult<bool>(true, "Role created successfully");
+        }
+
+        return new ApiResult<bool>(false, result.Errors.FirstOrDefault()?.Description ?? "Failed to create role");
+    }
+
+    public async Task<ApiResult<bool>> UpdateRoleAsync(string roleId, string newRoleName)
+    {
+        var role = await _roleManager.FindByIdAsync(roleId);
+        if (role == null)
+        {
+            return new ApiResult<bool>(false, "Role not found");
+        }
+
+        role.Name = newRoleName;
+        var result = await _roleManager.UpdateAsync(role);
+        if (result.Succeeded)
+        {
+            return new ApiResult<bool>(true, "Role updated successfully");
+        }
+
+        return new ApiResult<bool>(false, result.Errors.FirstOrDefault()?.Description ?? "Fail to update role");
+    }
+
+    public async Task<ApiResult<bool>> DeleteRoleAsync(string roleId)
+    {
+        var role = await _roleManager.FindByIdAsync(roleId);
+        if (role == null)
+        {
+            return new ApiResult<bool>(false, "Role not found");
+        }
+        var result = await _roleManager.DeleteAsync(role);
+        if (result.Succeeded)
+        {
+            return new ApiResult<bool>(true, "Delete role successfully");
+        }
+
+        return new ApiResult<bool>(false, result.Errors.FirstOrDefault()?.Description ?? "Fail to delete role");
+    }
+    public async Task<ApiResult<IEnumerable<RoleDto>>> GetAllRolesAsync()
+    {
+        var roles = await _roleManager.Roles.ToListAsync();
+        var roleDtos = _mapper.Map<IEnumerable<RoleDto>>(roles);
+        return new ApiResult<IEnumerable<RoleDto>>(true, roleDtos, "Roles retrieved successfully");
+    }
+
+    public async Task<ApiResult<RoleDto>> GetRoleByIdAsync(string roleId)
+    {
+        var role = await _roleManager.FindByIdAsync(roleId);
+        if (role == null)
+        {
+            return new ApiResult<RoleDto>(false, null, "Role not found");
+        }
+
+        var roleDto = _mapper.Map<RoleDto>(role);
+        return new ApiResult<RoleDto>(true, roleDto, "Role retrieved successfully");
     }
     
 }

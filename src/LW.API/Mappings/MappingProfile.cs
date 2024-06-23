@@ -7,6 +7,7 @@ using LW.Shared.DTOs.User;
 using LW.Shared.DTOs.Document;
 using LW.Shared.DTOs.Lesson;
 using LW.Shared.DTOs.Topic;
+using Microsoft.AspNetCore.Identity;
 
 namespace LW.API.Mappings;
 
@@ -45,5 +46,8 @@ public class MappingProfile : Profile
         CreateMap<Lesson, LessonDto>().ReverseMap();
         CreateMap<Lesson, LessonCreateDto>().ReverseMap();
         CreateMap<Lesson, LessonUpdateDto>().ReverseMap();
+        //Role
+        CreateMap<IdentityRole, RoleDto>().ReverseMap();
+
     }
 }

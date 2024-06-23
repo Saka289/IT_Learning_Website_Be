@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using LW.Contracts.Common;
 using LW.Data.Entities;
 using LW.Services.AdminServices;
 using LW.Shared.DTOs.Admin;
@@ -18,27 +19,16 @@ namespace LW.API.Controllers.Admin
     public class AdminController : ControllerBase
     {
         private readonly IAdminAuthorService _adminAuthorService;
-        private readonly UserManager<ApplicationUser> _userManager;
-        private readonly SignInManager<ApplicationUser> _signInManager;
 
-        public AdminController(IAdminAuthorService adminAuthorService, UserManager<ApplicationUser> userManager,SignInManager<ApplicationUser> signInManager )
+        public AdminController(IAdminAuthorService adminAuthorService)
         {
             _adminAuthorService = adminAuthorService;
-            _userManager = userManager;
-            _signInManager = signInManager;
         }
 
         [HttpPost("register")]
         public async Task<ActionResult<ApiResult<RegisterAdminResponseDto>>> Register([FromBody] RegisterAdminDto registerAdminDto)
         {
             var result = await _adminAuthorService.RegisterAdminAsync(registerAdminDto);
-            return Ok(result);
-        }
-        
-        [HttpPost("login")]
-        public async Task<ActionResult<ApiResult<RegisterAdminResponseDto>>> Login([FromBody] LoginAdminDto loginAdminDto)
-        {
-            var result = await _adminAuthorService.LoginAdminAsync(loginAdminDto);
             return Ok(result);
         }
        
@@ -50,7 +40,7 @@ namespace LW.API.Controllers.Admin
         }
         
         [HttpPut("update")]
-        public async Task<ActionResult<ApiResult<UpdateAdminDto>>> UpdateAdmin([FromBody] UpdateAdminDto updateAdminDto)
+        public async Task<ActionResult<ApiResult<UpdateAdminDto>>> UpdateAdmin([FromForm] UpdateAdminDto updateAdminDto)
         {
             var result = await _adminAuthorService.UpdateAdminAsync(updateAdminDto);
             return Ok(result);
@@ -72,13 +62,6 @@ namespace LW.API.Controllers.Admin
         public async Task<ActionResult<ApiResult<bool>>> UnlockMember(string UserId)
         {
             var result = await _adminAuthorService.UnLockMemberAsync(UserId);
-            return Ok(result);
-        }
-        
-        [HttpPut]
-        public async Task<ActionResult<ApiResult<bool>>> UpdateRole([FromBody] UpdateRoleDto updateRoleDto)
-        {
-            var result = await _adminAuthorService.UpdateRoleAsync(updateRoleDto);
             return Ok(result);
         }
 
