@@ -1,4 +1,6 @@
-﻿namespace LW.Shared.SeedWork;
+﻿using Microsoft.EntityFrameworkCore;
+
+namespace LW.Shared.SeedWork;
 
 public class PagedList<T> : List<T>
 {
@@ -19,5 +21,15 @@ public class PagedList<T> : List<T>
     public MetaData GetMetaData()
     {
         return _metaData;
+    }
+
+    public static async Task<PagedList<T>> ToPageList(IQueryable<T> source, int pageIndex, int pageSize)
+    {
+        var count = await source.CountAsync();
+        var items = await source
+            .Skip((pageIndex - 1) * pageSize)
+            .Take(pageSize)
+            .ToListAsync();
+        return new PagedList<T>(items, count, pageIndex, pageSize);
     }
 }
