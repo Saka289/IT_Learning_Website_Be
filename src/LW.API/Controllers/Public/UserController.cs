@@ -116,5 +116,12 @@ namespace LW.API.Controllers.Public
             var result = await _userService.UpdateUser(updateUserDto);
             return Ok(result);
         }
+        
+        [HttpGet("GetUser/{userId}")]
+        public async Task<ActionResult<ApiResult<UserResponseDto>>> GetUser([Required] string userId)
+        {
+            var result = await _userService.GetUserByUserId(userId);
+            return Ok(result);
+        }
     }
 }

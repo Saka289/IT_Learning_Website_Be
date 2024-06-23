@@ -20,4 +20,5 @@ public interface IUserService
     public Task<ApiResult<TokenResponseDto>> RefreshToken(TokenRequestDto tokenRequestDto);
     public Task<ApiResult<bool>> Revoke(string emailOrUserName);
     public Task<ApiResult<UpdateResponseUserDto>> UpdateUser(UpdateUserDto updateUserDto);
+    public Task<ApiResult<UserResponseDto>> GetUserByUserId(string userId);
 }

@@ -473,10 +473,29 @@ public class UserService : IUserService
             Email = user.Email,
             FullName = user.FirstName + " " + user.LastName,
             PhoneNumber = user.PhoneNumber,
-            Image = user.Image
+            Image = user.Image,
+            Dob = user.Dob.ToString()
         };
 
         return new ApiResult<UpdateResponseUserDto>(true, userResponseUpdate, $"Update User Successfully !");
+    }
+
+    public async Task<ApiResult<UserResponseDto>> GetUserByUserId(string userId)
+    {
+        if (string.IsNullOrEmpty(userId))
+        {
+            return new ApiResult<UserResponseDto>(false, "UserId is null or empty !!!");
+        }
+
+        var user = await _userManager.Users.FirstOrDefaultAsync(u => u.Id == userId);
+        if (user == null)
+        {
+            return new ApiResult<UserResponseDto>(false, "User not found !!!");
+        }
+
+        var result = _mapper.Map<UserResponseDto>(user);
+
+        return new ApiSuccessResult<UserResponseDto>(result);
     }
 
     private async Task SendConfirmEmailAsync(string email, string token, CancellationToken cancellationToken)

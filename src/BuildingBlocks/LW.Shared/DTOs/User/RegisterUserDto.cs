@@ -12,8 +12,8 @@ public class RegisterUserDto
     public string FirstName{ get; set; }
     [Required]
     public string LastName{ get; set; }
-    [Required, Phone]
-    public string PhoneNumber { get; set; }
+    [Phone]
+    public string? PhoneNumber { get; set; }
     [Required]
     public string Password { get; set; }
 }

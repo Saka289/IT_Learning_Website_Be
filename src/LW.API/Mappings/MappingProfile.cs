@@ -19,6 +19,9 @@ public class MappingProfile : Profile
             .ForMember(x => x.Name, y => y.MapFrom(src => src.FirstName + " " + src.LastName))
             .ReverseMap();
         CreateMap<ApplicationUser, RegisterUserDto>().ReverseMap();
+        CreateMap<ApplicationUser, UserResponseDto>().ReverseMap()
+            .ForMember(x => x.Dob, y => y.MapFrom(src => src.Dob.ToString()))
+            .ReverseMap();
         // level
         CreateMap<Level, LevelDtoForCreate>().ReverseMap();
         CreateMap<Level, LevelDtoForUpdate>().ReverseMap();
