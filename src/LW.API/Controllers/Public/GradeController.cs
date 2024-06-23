@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.Linq;
 using System.Threading.Tasks;
+using LW.API.Application.Validators.GradeValidator;
 using LW.Services.GradeService;
 using LW.Shared.DTOs.Grade;
 using LW.Shared.SeedWork;
@@ -27,17 +28,24 @@ namespace LW.API.Controllers.Public
         public async Task<ActionResult<ApiResult<IEnumerable<GradeDto>>>> GetAllGrade()
         {
             var result = await _gradeService.GetAllGrade();
+            if (!result.IsSucceeded)
+            {
+                return NotFound(result);
+            }
+
             return Ok(result);
         }
-        
+
         [HttpGet("GetAllGradePagination")]
-        public async Task<ActionResult<ApiResult<PagedList<GradeDto>>>> GetAllGradePagination([FromQuery]PagingRequestParameters pagingRequestParameters)
+        public async Task<ActionResult<ApiResult<PagedList<GradeDto>>>> GetAllGradePagination(
+            [FromQuery] PagingRequestParameters pagingRequestParameters)
         {
             var result = await _gradeService.GetAllGradePagination(pagingRequestParameters);
             if (!result.IsSucceeded)
             {
                 return NotFound(result);
             }
+
             Response.Headers.Add("X-Pagination", JsonConvert.SerializeObject(result.Data.GetMetaData()));
             return Ok(result);
         }
@@ -46,27 +54,59 @@ namespace LW.API.Controllers.Public
         public async Task<ActionResult<ApiResult<GradeDto>>> GetGradeById([Required] int id)
         {
             var result = await _gradeService.GetGradeById(id);
+            if (!result.IsSucceeded)
+            {
+                return NotFound(result);
+            }
+
             return Ok(result);
         }
-        
+
         [HttpGet("SearchByGrade")]
         public async Task<ActionResult<ApiResult<GradeDto>>> SearchByGrade([FromQuery] SearchGradeDto searchGradeDto)
         {
             var result = await _gradeService.SearchByGrade(searchGradeDto);
+            if (!result.IsSucceeded)
+            {
+                return NotFound(result);
+            }
+
             return Ok(result);
         }
 
         [HttpPost("CreateGrade")]
         public async Task<ActionResult<ApiResult<GradeDto>>> CreateGrade([FromBody] GradeCreateDto gradeCreateDto)
         {
+            var validationResult = await new CreateGradeCommandValidator().ValidateAsync(gradeCreateDto);
+            if (!validationResult.IsValid)
+            {
+                return BadRequest(validationResult);
+            }
+
             var result = await _gradeService.CreateGrade(gradeCreateDto);
+            if (!result.IsSucceeded)
+            {
+                return BadRequest(result);
+            }
+
             return Ok(result);
         }
 
         [HttpPut("UpdateGrade")]
         public async Task<ActionResult<ApiResult<GradeDto>>> UpdateGrade([FromBody] GradeUpdateDto gradeUpdateDto)
         {
+            var validationResult = await new UpdateGradeCommandValidator().ValidateAsync(gradeUpdateDto);
+            if (!validationResult.IsValid)
+            {
+                return BadRequest(validationResult);
+            }
+
             var result = await _gradeService.UpdateGrade(gradeUpdateDto);
+            if (!result.IsSucceeded)
+            {
+                return BadRequest(result);
+            }
+
             return Ok(result);
         }
 
@@ -74,6 +114,11 @@ namespace LW.API.Controllers.Public
         public async Task<ActionResult<ApiResult<bool>>> UpdateStatusGrade(int id)
         {
             var result = await _gradeService.UpdateGradeStatus(id);
+            if (!result.IsSucceeded)
+            {
+                return NotFound(result);
+            }
+
             return Ok(result);
         }
 
@@ -81,6 +126,11 @@ namespace LW.API.Controllers.Public
         public async Task<ActionResult<ApiResult<bool>>> DeleteGrade([Required] int id)
         {
             var result = await _gradeService.DeleteGrade(id);
+            if (!result.IsSucceeded)
+            {
+                return NotFound(result);
+            }
+
             return Ok(result);
         }
     }
