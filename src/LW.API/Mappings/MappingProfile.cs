@@ -19,7 +19,7 @@ public class MappingProfile : Profile
             .ForMember(x => x.Name, y => y.MapFrom(src => src.FirstName + " " + src.LastName))
             .ReverseMap();
         CreateMap<ApplicationUser, RegisterUserDto>().ReverseMap();
-        CreateMap<ApplicationUser, UserResponseDto>().ReverseMap()
+        CreateMap<ApplicationUser, UserResponseDto>()
             .ForMember(x => x.Dob, y => y.MapFrom(src => src.Dob.ToString()))
             .ReverseMap();
         // level
@@ -31,7 +31,10 @@ public class MappingProfile : Profile
         CreateMap<Grade, GradeCreateDto>().ReverseMap();
         CreateMap<Grade, GradeUpdateDto>().ReverseMap();
         //Document 
-        CreateMap<Document, DocumentDto>().ReverseMap();
+        CreateMap<Document, DocumentDto>()
+            .ForMember(x => x.GradeId, y => y.MapFrom(src => src.GradeId))
+            .ForMember(x => x.GradeTitle, y => y.MapFrom(src => src.Grade.Title))
+            .ReverseMap();
         CreateMap<Document, DocumentCreateDto>().ReverseMap();
         CreateMap<Document, DocumentUpdateDto>().ReverseMap();
         //Topic 

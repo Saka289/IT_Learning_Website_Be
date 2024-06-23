@@ -40,6 +40,19 @@ public class DocumentService : IDocumentService
         return new ApiSuccessResult<IEnumerable<DocumentDto>>(result);
     }
 
+    public async Task<ApiResult<PagedList<DocumentDto>>> GetAllDocumentPagination(PagingRequestParameters pagingRequestParameters)
+    {
+        var documentList = await _documentRepository.GetAllDocumentPagination();
+        if (documentList == null)
+        {
+            return new ApiResult<PagedList<DocumentDto>>(false, "Document is null !!!");
+        }
+        var result = _mapper.ProjectTo<DocumentDto>(documentList);
+        var pagedResult = await PagedList<DocumentDto>.ToPageList(result, pagingRequestParameters.PageIndex, pagingRequestParameters.PageSize);
+
+        return new ApiSuccessResult<PagedList<DocumentDto>>(pagedResult);
+    }
+
     public async Task<ApiResult<DocumentDto>> GetDocumentById(int id)
     {
         var documentEntity = await _documentRepository.GetDocumentById(id);
