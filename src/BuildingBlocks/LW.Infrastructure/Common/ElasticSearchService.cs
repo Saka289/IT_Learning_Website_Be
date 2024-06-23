@@ -114,16 +114,16 @@ public class ElasticSearchService<T, K> : IElasticSearchService<T, K> where T : 
         return result;
     }
 
-    public async Task<string> DeleteDocumentAsync(string indexName, K documentId)
+    public async Task<bool> DeleteDocumentAsync(string indexName, K documentId)
     {
         var request = new DeleteRequest<T>(indexName, Convert.ToString(documentId));
         var response = await _elasticClient.DeleteAsync(request);
         if (!response.IsValid)
         {
             _logger.Error($"Failed to delete document: {response.IsValid.ToString()}");
-            return response.OriginalException.Message;
+            return false;
         }
 
-        return response.Id;
+        return true;
     }
 }

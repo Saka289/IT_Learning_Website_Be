@@ -82,7 +82,7 @@ public class LessonService : ILessonService
         lessonEntity.UrlDownload = filePath.UrlDownload;
         await _lessonRepository.CreateLesson(lessonEntity);
         await _lessonRepository.SaveChangesAsync();
-        await _elasticSearchService.CreateDocumentAsync(ElasticConstant.ElasticLessons, lessonEntity, g => g.Id);
+        _elasticSearchService.CreateDocumentAsync(ElasticConstant.ElasticLessons, lessonEntity, g => g.Id);
         var result = _mapper.Map<LessonDto>(lessonEntity);
         return new ApiSuccessResult<LessonDto>(result);
     }
@@ -111,7 +111,7 @@ public class LessonService : ILessonService
             model.UrlDownload = filePath.UrlDownload;
             var updateLessonFile = await _lessonRepository.UpdateLesson(model);
             await _lessonRepository.SaveChangesAsync();
-            await _elasticSearchService.UpdateDocumentAsync(ElasticConstant.ElasticLessons, updateLessonFile,
+            _elasticSearchService.UpdateDocumentAsync(ElasticConstant.ElasticLessons, updateLessonFile,
                 lessonUpdateDto.Id);
             var resultFile = _mapper.Map<LessonDto>(updateLessonFile);
             return new ApiSuccessResult<LessonDto>(resultFile);
@@ -119,7 +119,7 @@ public class LessonService : ILessonService
 
         var updateLesson = await _lessonRepository.UpdateLesson(model);
         await _lessonRepository.SaveChangesAsync();
-        await _elasticSearchService.UpdateDocumentAsync(ElasticConstant.ElasticLessons, updateLesson,
+        _elasticSearchService.UpdateDocumentAsync(ElasticConstant.ElasticLessons, updateLesson,
             lessonUpdateDto.Id);
         var result = _mapper.Map<LessonDto>(updateLesson);
         return new ApiSuccessResult<LessonDto>(result);
@@ -136,7 +136,7 @@ public class LessonService : ILessonService
         lessonEntity.IsActive = !lessonEntity.IsActive;
         await _lessonRepository.UpdateLesson(lessonEntity);
         await _lessonRepository.SaveChangesAsync();
-        await _elasticSearchService.UpdateDocumentAsync(ElasticConstant.ElasticLessons, lessonEntity, id);
+        _elasticSearchService.UpdateDocumentAsync(ElasticConstant.ElasticLessons, lessonEntity, id);
         return new ApiSuccessResult<bool>(true, "Lesson update successfully !!!");
     }
 
@@ -153,9 +153,9 @@ public class LessonService : ILessonService
         {
             return new ApiResult<bool>(false, "Failed Delete Lesson not found !!!");
         }
-        
+
         await _cloudinaryService.DeleteFileAsync(lessonEntity.PublicId);
-        await _elasticSearchService.DeleteDocumentAsync(ElasticConstant.ElasticLessons, id);
+        _elasticSearchService.DeleteDocumentAsync(ElasticConstant.ElasticLessons, id);
 
         return new ApiSuccessResult<bool>(true, "Delete Lesson Successfully !!!");
     }

@@ -40,15 +40,18 @@ public class DocumentService : IDocumentService
         return new ApiSuccessResult<IEnumerable<DocumentDto>>(result);
     }
 
-    public async Task<ApiResult<PagedList<DocumentDto>>> GetAllDocumentPagination(PagingRequestParameters pagingRequestParameters)
+    public async Task<ApiResult<PagedList<DocumentDto>>> GetAllDocumentPagination(
+        PagingRequestParameters pagingRequestParameters)
     {
         var documentList = await _documentRepository.GetAllDocumentPagination();
         if (documentList == null)
         {
             return new ApiResult<PagedList<DocumentDto>>(false, "Document is null !!!");
         }
+
         var result = _mapper.ProjectTo<DocumentDto>(documentList);
-        var pagedResult = await PagedList<DocumentDto>.ToPageList(result, pagingRequestParameters.PageIndex, pagingRequestParameters.PageSize);
+        var pagedResult = await PagedList<DocumentDto>.ToPageList(result, pagingRequestParameters.PageIndex,
+            pagingRequestParameters.PageSize);
 
         return new ApiSuccessResult<PagedList<DocumentDto>>(pagedResult);
     }
@@ -89,7 +92,7 @@ public class DocumentService : IDocumentService
         var documentEntity = _mapper.Map<Document>(documentCreateDto);
         documentEntity.KeyWord = documentEntity.Title.RemoveDiacritics();
         await _documentRepository.CreateDocument(documentEntity);
-        await _elasticSearchService.CreateDocumentAsync(ElasticConstant.ElasticDocuments, documentEntity, g => g.Id);
+        _elasticSearchService.CreateDocumentAsync(ElasticConstant.ElasticDocuments, documentEntity, g => g.Id);
         var result = _mapper.Map<DocumentDto>(documentEntity);
         return new ApiSuccessResult<DocumentDto>(result);
     }
@@ -110,7 +113,7 @@ public class DocumentService : IDocumentService
 
         var model = _mapper.Map(documentUpdateDto, documentEntity);
         var updateDocument = await _documentRepository.UpdateDocument(model);
-        await _elasticSearchService.UpdateDocumentAsync(ElasticConstant.ElasticDocuments, updateDocument, documentUpdateDto.Id);
+        _elasticSearchService.UpdateDocumentAsync(ElasticConstant.ElasticDocuments, updateDocument, documentUpdateDto.Id);
         var result = _mapper.Map<DocumentDto>(updateDocument);
         return new ApiSuccessResult<DocumentDto>(result);
     }
@@ -126,7 +129,7 @@ public class DocumentService : IDocumentService
         documentEntity.IsActive = !documentEntity.IsActive;
         await _documentRepository.UpdateDocument(documentEntity);
         await _documentRepository.SaveChangesAsync();
-        await _elasticSearchService.UpdateDocumentAsync(ElasticConstant.ElasticDocuments, documentEntity, id);
+        _elasticSearchService.UpdateDocumentAsync(ElasticConstant.ElasticDocuments, documentEntity, id);
         return new ApiSuccessResult<bool>(true, "Grade update successfully !!!");
     }
 
@@ -143,7 +146,8 @@ public class DocumentService : IDocumentService
         {
             return new ApiResult<bool>(false, "Failed Delete Document not found !!!");
         }
-        await _elasticSearchService.DeleteDocumentAsync(ElasticConstant.ElasticDocuments, id);
+
+        _elasticSearchService.DeleteDocumentAsync(ElasticConstant.ElasticDocuments, id);
 
         return new ApiSuccessResult<bool>(true, "Delete Document Successfully !!!");
     }

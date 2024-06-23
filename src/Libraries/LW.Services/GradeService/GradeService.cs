@@ -39,15 +39,18 @@ public class GradeService : IGradeService
         return new ApiSuccessResult<IEnumerable<GradeDto>>(result);
     }
 
-    public async Task<ApiResult<PagedList<GradeDto>>> GetAllGradePagination(PagingRequestParameters pagingRequestParameters)
+    public async Task<ApiResult<PagedList<GradeDto>>> GetAllGradePagination(
+        PagingRequestParameters pagingRequestParameters)
     {
         var gradeList = await _gradeRepository.GetAllGradePagination();
         if (gradeList == null)
         {
             return new ApiResult<PagedList<GradeDto>>(false, "Grade is null !!!");
         }
+
         var result = _mapper.ProjectTo<GradeDto>(gradeList);
-        var pagedResult = await PagedList<GradeDto>.ToPageList(result, pagingRequestParameters.PageIndex, pagingRequestParameters.PageSize);
+        var pagedResult = await PagedList<GradeDto>.ToPageList(result, pagingRequestParameters.PageIndex,
+            pagingRequestParameters.PageSize);
 
         return new ApiSuccessResult<PagedList<GradeDto>>(pagedResult);
     }
@@ -89,7 +92,7 @@ public class GradeService : IGradeService
         gradeEntity.KeyWord = gradeCreateDto.Title.RemoveDiacritics();
         await _gradeRepository.CreateGrade(gradeEntity);
         await _gradeRepository.SaveChangesAsync();
-        await _elasticSearchService.CreateDocumentAsync(ElasticConstant.ElasticGrades, gradeEntity, g => g.Id);
+        _elasticSearchService.CreateDocumentAsync(ElasticConstant.ElasticGrades, gradeEntity, g => g.Id);
         var result = _mapper.Map<GradeDto>(gradeEntity);
         return new ApiSuccessResult<GradeDto>(result);
     }
@@ -112,7 +115,7 @@ public class GradeService : IGradeService
         model.KeyWord = gradeUpdateDto.Title.RemoveDiacritics();
         var updateGrade = await _gradeRepository.UpdateGrade(model);
         await _gradeRepository.SaveChangesAsync();
-        await _elasticSearchService.UpdateDocumentAsync(ElasticConstant.ElasticGrades, updateGrade, gradeUpdateDto.Id);
+        _elasticSearchService.UpdateDocumentAsync(ElasticConstant.ElasticGrades, updateGrade, gradeUpdateDto.Id);
         var result = _mapper.Map<GradeDto>(updateGrade);
         return new ApiSuccessResult<GradeDto>(result);
     }
@@ -128,7 +131,7 @@ public class GradeService : IGradeService
         gradeEntity.IsActive = !gradeEntity.IsActive;
         await _gradeRepository.UpdateGrade(gradeEntity);
         await _gradeRepository.SaveChangesAsync();
-        await _elasticSearchService.UpdateDocumentAsync(ElasticConstant.ElasticGrades, gradeEntity, id);
+        _elasticSearchService.UpdateDocumentAsync(ElasticConstant.ElasticGrades, gradeEntity, id);
         return new ApiSuccessResult<bool>(true, "Grade update successfully !!!");
     }
 
@@ -146,7 +149,7 @@ public class GradeService : IGradeService
             return new ApiResult<bool>(false, "Failed Delete Grade not found !!!");
         }
 
-        await _elasticSearchService.DeleteDocumentAsync(ElasticConstant.ElasticGrades, id);
+        _elasticSearchService.DeleteDocumentAsync(ElasticConstant.ElasticGrades, id);
 
         return new ApiSuccessResult<bool>(true, "Delete Grade Successfully !!!");
     }
