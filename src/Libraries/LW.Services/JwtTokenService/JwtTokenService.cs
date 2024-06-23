@@ -24,15 +24,16 @@ public class JwtTokenService : IJwtTokenService
 
         var key = Encoding.ASCII.GetBytes(_jwtSettings.Secret);
 
-        var signingCredentials = new SigningCredentials(new SymmetricSecurityKey(key), SecurityAlgorithms.HmacSha512Signature);
+        var signingCredentials =
+            new SigningCredentials(new SymmetricSecurityKey(key), SecurityAlgorithms.HmacSha512Signature);
 
         var claimList = new List<Claim>
         {
             new Claim(JwtRegisteredClaimNames.Email, applicationUser.Email),
             new Claim(JwtRegisteredClaimNames.Sub, applicationUser.Id),
             new Claim(JwtRegisteredClaimNames.Name, applicationUser.UserName),
-            new Claim(JwtRegisteredClaimNames.FamilyName, applicationUser.FirstName),
-            new Claim(JwtRegisteredClaimNames.GivenName, applicationUser.LastName),
+            new Claim(JwtRegisteredClaimNames.FamilyName, applicationUser.FirstName ?? string.Empty),
+            new Claim(JwtRegisteredClaimNames.GivenName, applicationUser.LastName ?? string.Empty),
             new Claim("picture", applicationUser.Image ?? string.Empty),
         };
 
@@ -59,6 +60,7 @@ public class JwtTokenService : IJwtTokenService
         {
             numberGenerator.GetBytes(randomNumber);
         }
+
         return Convert.ToBase64String(randomNumber);
     }
 
@@ -74,10 +76,12 @@ public class JwtTokenService : IJwtTokenService
             IssuerSigningKey = new SymmetricSecurityKey(key),
             ValidateLifetime = false
         };
-        
+
         var tokenHandler = new JwtSecurityTokenHandler();
         var principal = tokenHandler.ValidateToken(token, tokenValidationParameters, out SecurityToken securityToken);
-        if (securityToken is not JwtSecurityToken jwtSecurityToken || !jwtSecurityToken.Header.Alg.Equals(SecurityAlgorithms.HmacSha512, StringComparison.InvariantCultureIgnoreCase))
+        if (securityToken is not JwtSecurityToken jwtSecurityToken ||
+            !jwtSecurityToken.Header.Alg.Equals(SecurityAlgorithms.HmacSha512,
+                StringComparison.InvariantCultureIgnoreCase))
         {
             throw new SecurityTokenException("Invalid token");
         }
