@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using LW.Contracts.Common;
 using LW.Data.Entities;
 using LW.Services.AdminServices;
 using LW.Shared.DTOs.Admin;
@@ -20,12 +21,14 @@ namespace LW.API.Controllers.Admin
         private readonly IAdminAuthorService _adminAuthorService;
         private readonly UserManager<ApplicationUser> _userManager;
         private readonly SignInManager<ApplicationUser> _signInManager;
+        private readonly ICloudinaryService _cloudinaryService;
 
-        public AdminController(IAdminAuthorService adminAuthorService, UserManager<ApplicationUser> userManager,SignInManager<ApplicationUser> signInManager )
+        public AdminController(IAdminAuthorService adminAuthorService, UserManager<ApplicationUser> userManager,SignInManager<ApplicationUser> signInManager, ICloudinaryService cloudinaryService)
         {
             _adminAuthorService = adminAuthorService;
             _userManager = userManager;
             _signInManager = signInManager;
+            _cloudinaryService = cloudinaryService;
         }
 
         [HttpPost("register")]
@@ -50,7 +53,7 @@ namespace LW.API.Controllers.Admin
         }
         
         [HttpPut("update")]
-        public async Task<ActionResult<ApiResult<UpdateAdminDto>>> UpdateAdmin([FromBody] UpdateAdminDto updateAdminDto)
+        public async Task<ActionResult<ApiResult<UpdateAdminDto>>> UpdateAdmin([FromForm] UpdateAdminDto updateAdminDto)
         {
             var result = await _adminAuthorService.UpdateAdminAsync(updateAdminDto);
             return Ok(result);

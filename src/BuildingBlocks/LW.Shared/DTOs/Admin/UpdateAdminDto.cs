@@ -1,4 +1,6 @@
-﻿namespace LW.Shared.DTOs.Admin;
+﻿using Microsoft.AspNetCore.Http;
+
+namespace LW.Shared.DTOs.Admin;
 
 public class UpdateAdminDto
 {
@@ -8,4 +10,6 @@ public class UpdateAdminDto
     public string UserName { get; set; }
     public string LastName { get; set; }
     public string PhoneNumber { get; set; } 
+    
+    public IFormFile Image { get; set; }
 }

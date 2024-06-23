@@ -1,9 +1,11 @@
 ﻿using System.Text;
 using AutoMapper;
+using LW.Contracts.Common;
 using LW.Contracts.Services;
 using LW.Data.Entities;
 using LW.Services.JwtTokenService;
 using LW.Shared.Configurations;
+using LW.Shared.Constant;
 using LW.Shared.DTOs.Admin;
 using LW.Shared.SeedWork;
 using LW.Shared.Services.Email;
@@ -27,13 +29,14 @@ public class AdminAuthorService : IAdminAuthorService
     private readonly VerifyEmailSettings _verifyEmailSettings;
     private readonly ISmtpEmailService _emailService;
     private readonly ILogger _logger;
+    private readonly ICloudinaryService _cloudinaryService;
 
     public AdminAuthorService(UserManager<ApplicationUser> userManager, RoleManager<IdentityRole> roleManager,
         IOptions<UrlBase> urlBase,
         IOptions<VerifyEmailSettings> verifyEmailSettings ,
         ILogger logger,
         ISmtpEmailService emailService,
-        IMapper mapper, IJwtTokenService jwtTokenService)
+        IMapper mapper, IJwtTokenService jwtTokenService, ICloudinaryService cloudinaryService)
     {
         _userManager = userManager;
         _mapper = mapper;
@@ -42,6 +45,7 @@ public class AdminAuthorService : IAdminAuthorService
         _logger = logger ?? throw new ArgumentNullException(nameof(logger));
         _verifyEmailSettings = verifyEmailSettings.Value;
         _jwtTokenService = jwtTokenService ?? throw new ArgumentNullException(nameof(jwtTokenService));
+        _cloudinaryService = cloudinaryService;
         _emailService = emailService;
     }
 
@@ -167,7 +171,16 @@ public class AdminAuthorService : IAdminAuthorService
         user.PhoneNumber = updateAdminDto.PhoneNumber;
         user.Email = updateAdminDto.Email;
         user.UserName = updateAdminDto.UserName;
-
+        //upload image to cloudinary
+        var rs =  _cloudinaryService.CreateImageAsync(updateAdminDto.Image, CloudinaryConstant.FolderUserImage);
+        if (rs == null)
+        {
+            return new ApiResult<UpdateAdminDto>(false,
+                $"Upload Image Fail !");
+        }
+        user.PublicId = rs.Result.PublicId;
+        user.Image = rs.Result.Url;
+        
         await _userManager.UpdateAsync(user);
 
         return new ApiResult<UpdateAdminDto>(false, updateAdminDto,
