@@ -129,19 +129,6 @@ public class ElasticSearchService<T, K> : IElasticSearchService<T, K> where T : 
 
     public async Task<bool> DeleteDocumentRangeAsync(string indexName, IEnumerable<K> documentId)
     {
-        // foreach (var itemDocument in documentId)
-        // {
-        //     var request = new DeleteRequest<T>(indexName, Convert.ToString(itemDocument));
-        //     var response = await _elasticClient.DeleteAsync(request);
-        //     if (!response.IsValid)
-        //     {
-        //         _logger.Error($"Failed to delete document: {response.IsValid.ToString()}");
-        //         return false;
-        //     }
-        // }
-        //
-        // return true;
-
         var bulkDescriptor = new BulkDescriptor();
 
         foreach (var itemDocument in documentId)
