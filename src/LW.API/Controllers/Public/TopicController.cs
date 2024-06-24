@@ -25,7 +25,7 @@ namespace LW.API.Controllers.Public
         }
 
         [HttpGet("GetAllTopic")]
-        public async Task<ActionResult<ApiResult<TopicDto>>> GetAllLevel()
+        public async Task<ActionResult<ApiResult<TopicDto>>> GetAllTopic()
         {
             var result = await _topicService.GetAll();
             if (!result.IsSucceeded)
