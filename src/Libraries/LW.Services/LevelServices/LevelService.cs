@@ -126,7 +126,7 @@ public class LevelService : ILevelService
         }
 
         var result = _mapper.ProjectTo<LevelDto>(levels);
-        var pagedResult = await PagedList<LevelDto>.ToPageList(result, pagingRequestParameters.PageIndex,
+        var pagedResult = await PagedList<LevelDto>.ToPageListAsync(result, pagingRequestParameters.PageIndex,
             pagingRequestParameters.PageSize);
         return new ApiSuccessResult<PagedList<LevelDto>>(pagedResult);    }
 }

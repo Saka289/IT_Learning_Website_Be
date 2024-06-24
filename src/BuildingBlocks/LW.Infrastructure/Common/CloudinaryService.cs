@@ -59,13 +59,26 @@ public class CloudinaryService : ICloudinaryService
 
     public async Task<FileImageDto> UpdateImageAsync(string publicId, IFormFile file)
     {
+        string decodedUrl = string.Empty;
         if (file == null || file.Length == 0)
         {
             _logger.Error("File cannot be null or empty.");
             return null;
         }
+        
+        if (string.IsNullOrEmpty(publicId))
+        {
+            var creteFile = await CreateImageAsync(file, CloudinaryConstant.FolderUserImage);
+            var createFileImage = new FileImageDto()
+            {
+                PublicId = creteFile.PublicId,
+                Url = creteFile.Url
+            };
 
-        string decodedUrl = Uri.UnescapeDataString(publicId);
+            return createFileImage;
+        }
+        
+        decodedUrl = Uri.UnescapeDataString(publicId);
         await _cloudinary.DestroyAsync(new DeletionParams(decodedUrl));
 
         var result = new ImageUploadResult();
@@ -141,13 +154,19 @@ public class CloudinaryService : ICloudinaryService
 
     public async Task<FileDto> UpdateFileAsync(string publicId, IFormFile file)
     {
+        string decodedUrl = string.Empty;
         if (file == null || file.Length == 0)
         {
             _logger.Error("File cannot be null or empty.");
             return null;
         }
-
-        string decodedUrl = Uri.UnescapeDataString(publicId);
+        
+        if (string.IsNullOrEmpty(publicId))
+        {
+            return null;
+        }
+        
+        decodedUrl = Uri.UnescapeDataString(publicId);
         await _cloudinary.DeleteResourcesAsync(ResourceType.Raw, decodedUrl);
 
         var result = new RawUploadResult();
