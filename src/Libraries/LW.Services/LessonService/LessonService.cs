@@ -116,7 +116,7 @@ public class LessonService : ILessonService
             return new ApiResult<LessonDto>(false, "TopicId not found !!!");
         }
 
-        var lessonEntity = await _lessonRepository.GetByIdAsync(lessonUpdateDto.Id);
+        var lessonEntity = await _lessonRepository.GetLessonById(lessonUpdateDto.Id);
         if (lessonEntity is null)
         {
             return new ApiResult<LessonDto>(false, "Lesson not found !!!");

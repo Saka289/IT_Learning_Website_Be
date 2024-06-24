@@ -1,3 +1,4 @@
+using AutoMapper;
 using LW.API.Extensions;
 using LW.Data.Persistence;
 using LW.Logging;
