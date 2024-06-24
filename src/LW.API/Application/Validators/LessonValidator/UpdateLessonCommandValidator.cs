@@ -10,8 +10,7 @@ public class UpdateLessonCommandValidator : AbstractValidator<LessonUpdateDto>
         RuleFor(x => x.Id).NotNull().NotEmpty().GreaterThan(0);
         RuleFor(x => x.Title).NotNull().NotEmpty();
         RuleFor(x => x.Content).NotNull().NotEmpty();
-        RuleFor(x => x.IsActive).NotEmpty();
-        RuleFor(x => x.FilePath).NotNull().NotEmpty();
+        RuleFor(x => x.IsActive).NotNull();
         RuleFor(x => x.TopicId).NotNull().NotEmpty().GreaterThan(0);
     }
 }

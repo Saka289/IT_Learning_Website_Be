@@ -51,7 +51,9 @@ public class MappingProfile : Profile
             .ForMember(x => x.TopicTitle, y => y.MapFrom(src => src.Topic.Title))
             .ReverseMap();
         CreateMap<Lesson, LessonCreateDto>().ReverseMap();
-        CreateMap<Lesson, LessonUpdateDto>().ReverseMap();
+        CreateMap<LessonUpdateDto, Lesson>()
+            .ForMember(x => x.FilePath, y => y.Ignore())
+            .ReverseMap();
         //Role
         CreateMap<IdentityRole, RoleDto>().ReverseMap();
     }
