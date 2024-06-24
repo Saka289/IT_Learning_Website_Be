@@ -28,7 +28,10 @@ public class MappingProfile : Profile
         CreateMap<Level, LevelDtoForUpdate>().ReverseMap();
         CreateMap<Level, LevelDto>().ReverseMap();
         //Grade
-        CreateMap<Grade, GradeDto>().ReverseMap();
+        CreateMap<Grade, GradeDto>()
+            .ForMember(x => x.LevelId, y => y.MapFrom(src => src.LevelId))
+            .ForMember(x => x.LevelTitle, y => y.MapFrom(src => src.Level.Title))
+            .ReverseMap();
         CreateMap<Grade, GradeCreateDto>().ReverseMap();
         CreateMap<Grade, GradeUpdateDto>().ReverseMap();
         //Document 
