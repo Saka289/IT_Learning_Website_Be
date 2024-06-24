@@ -1,6 +1,11 @@
 ﻿using LW.Contracts.Common;
 using LW.Data.Entities;
 using LW.Shared.Constant;
+using LW.Shared.DTOs.Document;
+using LW.Shared.DTOs.Grade;
+using LW.Shared.DTOs.Lesson;
+using LW.Shared.DTOs.Level;
+using LW.Shared.DTOs.Topic;
 using Microsoft.AspNetCore.Identity;
 using Nest;
 using ILogger = Serilog.ILogger;
@@ -148,9 +153,9 @@ public class AppDbContextSeed
         );
     }
 
-    private static IEnumerable<Level> SeedLevel()
+    private static IEnumerable<LevelDto> SeedLevel()
     {
-        return new List<Level>()
+        return new List<LevelDto>()
         {
             new()
             {
@@ -173,37 +178,48 @@ public class AppDbContextSeed
         };
     }
 
-    private static IEnumerable<Grade> SeedGrade()
+    private static IEnumerable<GradeDto> SeedGrade()
     {
-        return new List<Grade>()
+        return new List<GradeDto>()
         {
             new()
             {
-                Title = "Cấp 1",
-                KeyWord = "cap 1",
+                Title = "Lớp 3",
+                KeyWord = "lop 3",
                 IsActive = true,
-                LevelId = 1
+                LevelId = 1,
+                LevelTitle = "Tiểu học"
             },
             new()
             {
-                Title = "Cấp 2",
-                KeyWord = "cap 2",
+                Title = "Lớp 4",
+                KeyWord = "lop 4",
                 IsActive = true,
-                LevelId = 2
+                LevelId = 1,
+                LevelTitle = "Tiểu học"
             },
             new()
             {
-                Title = "Cấp 3",
-                KeyWord = "cap 3",
+                Title = "Lớp 5",
+                KeyWord = "lop 5",
                 IsActive = true,
-                LevelId = 3
+                LevelId = 1,
+                LevelTitle = "Tiểu học"
+            },
+            new()
+            {
+                Title = "Lớp 6",
+                KeyWord = "lop 6",
+                IsActive = true,
+                LevelId = 2,
+                LevelTitle = "Trung học cơ sở"
             },
         };
     }
 
-    private static IEnumerable<Document> SeedDocument()
+    private static IEnumerable<DocumentDto> SeedDocument()
     {
-        return new List<Document>()
+        return new List<DocumentDto>()
         {
             new()
             {
@@ -211,7 +227,8 @@ public class AppDbContextSeed
                 Description = "Sách cánh diều mô tả",
                 KeyWord = "sach canh dieu",
                 IsActive = true,
-                GradeId = 1
+                GradeId = 1,
+                GradeTitle = "Lớp 3"
             },
             new()
             {
@@ -219,24 +236,26 @@ public class AppDbContextSeed
                 Description = "Sách chân trời mô tả",
                 KeyWord = "sach chan troi",
                 IsActive = true,
-                GradeId = 2
+                GradeId = 2,
+                GradeTitle = "Lớp 4"
             },
             new()
             {
-                Title = "Sách kết nối tri chức",
+                Title = "Sách kết nối tri thức",
                 Description = "Sách kết nối tri thức mô tả",
                 KeyWord = "sach ket noi tri thuc",
                 IsActive = true,
-                GradeId = 3
+                GradeId = 3,
+                GradeTitle = "Lớp 5"
             },
         };
     }
     
-    private static IEnumerable<Topic> SeedTopic()
+    private static IEnumerable<TopicDto> SeedTopic()
     {
-        return new List<Topic>()
+        return new List<TopicDto>()
         {
-            new Topic()
+            new TopicDto()
             {
                 Title = "Toán học",
                 KeyWord = "toan hoc",
@@ -244,34 +263,39 @@ public class AppDbContextSeed
                 Objectives ="Làm chủ về môn toán học",
                 IsActive = true,
                 DocumentId = 1,
+                DocumentTitle = "Sách cánh diều",
+
                 
             },
-            new Topic()
+            new TopicDto()
             {
                 Title = "Văn học",
                 KeyWord = "van hoc",
                 Description = "Môn học về văn học",
                 Objectives ="Làm chủ về môn văn học",
                 IsActive = true,
-                DocumentId = 2  
+                DocumentId = 2,
+                DocumentTitle = "Sách chân trời",
+
             },
-            new Topic()
+            new TopicDto()
             {
                 Title = "Khoa học tự nhiên",
                 KeyWord = "khoa hoc tu nhien",
                 Description = "Môn học về khoa học tự nhiên",
                 Objectives ="Làm chủ về môn khoa học tự nhiên",
                 IsActive = true,
-                DocumentId = 3  
+                DocumentId = 3,
+                DocumentTitle = "Sách kết nối tri thức"
             }
         };
     }
     
-    private static IEnumerable<Lesson> SeedLesson()
+    private static IEnumerable<LessonDto> SeedLesson()
     {
-        return new List<Lesson>()
+        return new List<LessonDto>()
         {
-            new Lesson()
+            new LessonDto()
             {
                 Title = "Lesson 1",
                 KeyWord = "lesson 1",
@@ -280,9 +304,10 @@ public class AppDbContextSeed
                 FilePath = "https://res.cloudinary.com/itsupport18/raw/upload/v1718987928/LessonFile/FILE-5a5f56e6-6081-47d3-81db-fa35f3a898e0.pdf",
                 PublicId = "FILE-5a5f56e6-6081-47d3-81db-fa35f3a898e0.pdf",
                 UrlDownload = "https://res.cloudinary.com/itsupport18/raw/upload/fl_attachment/v1/LessonFile/FILE-5a5f56e6-6081-47d3-81db-fa35f3a898e0.pdf",
-                TopicId = 1
+                TopicId = 1,
+                TopicTitle = "Toán học"
             },
-            new Lesson()
+            new LessonDto()
             {
                 Title = "Lesson 2",
                 KeyWord = "lesson 2",
@@ -291,9 +316,10 @@ public class AppDbContextSeed
                 FilePath = "https://res.cloudinary.com/itsupport18/raw/upload/v1718987951/LessonFile/FILE-a662a89a-8bc1-4ba9-98dc-3580b5ae1782.pdf",
                 PublicId = "LessonFile/FILE-a662a89a-8bc1-4ba9-98dc-3580b5ae1782.pdf",
                 UrlDownload = "https://res.cloudinary.com/itsupport18/raw/upload/fl_attachment/v1/LessonFile/FILE-a662a89a-8bc1-4ba9-98dc-3580b5ae1782.pdf",
-                TopicId = 2 
+                TopicId = 2,
+                TopicTitle = "Văn học"
             },
-            new Lesson()
+            new LessonDto()
             {
                 Title = "Lesson 3",
                 KeyWord = "lesson 3",
@@ -302,7 +328,8 @@ public class AppDbContextSeed
                 FilePath = "https://res.cloudinary.com/itsupport18/raw/upload/v1718987972/LessonFile/FILE-3a204b73-f357-490d-9a42-f11b42318ca5.pdf",
                 PublicId = "LessonFile/FILE-3a204b73-f357-490d-9a42-f11b42318ca5.pdf",
                 UrlDownload = "https://res.cloudinary.com/itsupport18/raw/upload/fl_attachment/v1/LessonFile/FILE-3a204b73-f357-490d-9a42-f11b42318ca5.pdf",
-                TopicId = 3
+                TopicId = 3,
+                TopicTitle = "Khoa học tự nhiên"
             }
         };
     }
