@@ -56,14 +56,15 @@ namespace LW.API.Controllers.Public
             return Ok(result);
         }
 
-        [HttpGet("SearchTopic")]
-        public async Task<ActionResult<ApiResult<IEnumerable<TopicDto>>>> SearchTopic([FromQuery] SearchTopicDto searchTopicDto)
+        [HttpGet("SearchByTopicPagination")]
+        public async Task<ActionResult<ApiResult<PagedList<TopicDto>>>> SearchByTopicPagination([FromQuery] SearchTopicDto searchTopicDto)
         {
-            var result = await _topicService.SearchTopic(searchTopicDto);
+            var result = await _topicService.SearchTopicPagination(searchTopicDto);
             if (!result.IsSucceeded)
             {
                 return NotFound(result);
             }
+            Response.Headers.Add("X-Pagination", JsonConvert.SerializeObject(result.Data.GetMetaData()));
             return Ok(result);
         }
 
