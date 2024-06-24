@@ -11,7 +11,7 @@ public interface ITopicService
     public Task<ApiResult<bool>> UpdateStatus(int id);
     public Task<ApiResult<bool>> Delete(int id);
     public Task<ApiResult<IEnumerable<TopicDto>>> GetAll();
-    public Task<ApiResult<IEnumerable<TopicDto>>> SearchTopic(SearchTopicDto searchTopicDto);
+    public Task<ApiResult<PagedList<TopicDto>>> SearchTopicPagination(SearchTopicDto searchTopicDto);
     public Task<ApiResult<TopicDto>> GetById(int id);
 
     public Task<ApiResult<PagedList<TopicDto>>> GetAllTopicPagination(

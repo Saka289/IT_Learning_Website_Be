@@ -10,4 +10,7 @@ public class TopicDto
     public bool IsActive { get; set; }
     public int DocumentId { get; set; }
     public string DocumentTitle { get; set; }
+    
+    public DateTimeOffset CreatedDate { get; set; }
+    public DateTimeOffset? LastModifiedDate { get; set; }
 }

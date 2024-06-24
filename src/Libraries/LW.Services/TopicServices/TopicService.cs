@@ -8,6 +8,7 @@ using LW.Services.DocumentService;
 using LW.Shared.Constant;
 using LW.Shared.DTOs.Topic;
 using LW.Shared.SeedWork;
+using MockQueryable.Moq;
 
 namespace LW.Services.TopicServices;
 
@@ -16,10 +17,10 @@ public class TopicService : ITopicService
     private readonly ITopicRepository _topicRepository;
     private readonly IMapper _mapper;
     private readonly IDocumentRepository _documentRepository;
-    private readonly IElasticSearchService<Topic, int> _elasticSearchService;
+    private readonly IElasticSearchService<TopicDto, int> _elasticSearchService;
 
     public TopicService(ITopicRepository topicRepository, IMapper mapper, IDocumentRepository documentRepository,
-        IElasticSearchService<Topic, int> elasticSearchService)
+        IElasticSearchService<TopicDto, int> elasticSearchService)
     {
         _topicRepository = topicRepository;
         _mapper = mapper;
@@ -38,7 +39,9 @@ public class TopicService : ITopicService
         var topic = _mapper.Map<Topic>(model);
         topic.KeyWord = model.Title.RemoveDiacritics();
         await _topicRepository.CreateTopic(topic);
-        _elasticSearchService.CreateDocumentAsync(ElasticConstant.ElasticTopics, topic, g => g.Id);
+        topic.Document = documentEntity;
+        var result = _mapper.Map<TopicDto>(topic);
+        _elasticSearchService.CreateDocumentAsync(ElasticConstant.ElasticTopics, result, g => g.Id);
         return new ApiResult<bool>(true, "Create topic successfully");
     }
 
@@ -59,7 +62,10 @@ public class TopicService : ITopicService
         var topicUpdate = _mapper.Map(model, topicEntity);
         topicUpdate.KeyWord = model.Title.RemoveDiacritics();
         await _topicRepository.UpdateAsync(topicUpdate);
-        _elasticSearchService.UpdateDocumentAsync(ElasticConstant.ElasticTopics, topicUpdate, model.Id);
+
+        topicUpdate.Document = documentEntity;
+        var result = _mapper.Map<TopicDto>(topicUpdate);
+        _elasticSearchService.UpdateDocumentAsync(ElasticConstant.ElasticTopics, result, model.Id);
         return new ApiResult<bool>(true, "Update topic successfully");
     }
 
@@ -71,9 +77,14 @@ public class TopicService : ITopicService
             return new ApiResult<bool>(false, "Not found !");
         }
 
+        var documentEntity = await _documentRepository.GetDocumentById(obj.DocumentId);
+
         obj.IsActive = !obj.IsActive;
         await _topicRepository.UpdateAsync(obj);
-        _elasticSearchService.UpdateDocumentAsync(ElasticConstant.ElasticTopics, obj, id);
+
+        obj.Document = documentEntity;
+        var result = _mapper.Map<TopicDto>(obj);
+        _elasticSearchService.UpdateDocumentAsync(ElasticConstant.ElasticTopics, result, id);
         return new ApiResult<bool>(true, "Update status of topic successfully");
     }
 
@@ -98,6 +109,11 @@ public class TopicService : ITopicService
     public async Task<ApiResult<IEnumerable<TopicDto>>> GetAll()
     {
         var list = await _topicRepository.GetAllTopic();
+        if (list == null)
+        {
+            return new ApiResult<IEnumerable<TopicDto>>(false, "List topic is null !!!");
+        }
+
         var result = _mapper.Map<IEnumerable<TopicDto>>(list);
         return new ApiResult<IEnumerable<TopicDto>>(true, result, "Get all topic successfully !");
     }
@@ -119,16 +135,18 @@ public class TopicService : ITopicService
     }
 
 
-    public async Task<ApiResult<IEnumerable<TopicDto>>> SearchTopic(SearchTopicDto searchTopicDto)
+    public async Task<ApiResult<PagedList<TopicDto>>> SearchTopicPagination(SearchTopicDto searchTopicDto)
     {
         var topics = await _elasticSearchService.SearchDocumentAsync(ElasticConstant.ElasticTopics, searchTopicDto);
         if (topics is null)
         {
-            return new ApiResult<IEnumerable<TopicDto>>(false, $"Topics not found by {searchTopicDto.Key} !!!");
+            return new ApiResult<PagedList<TopicDto>>(false, $"Topics not found by {searchTopicDto.Key} !!!");
         }
 
         var result = _mapper.Map<IEnumerable<TopicDto>>(topics);
-        return new ApiSuccessResult<IEnumerable<TopicDto>>(result);
+        var pagedResult = await PagedList<TopicDto>.ToPageListAsync(result.AsQueryable().BuildMock(),
+            searchTopicDto.PageIndex, searchTopicDto.PageSize);
+        return new ApiSuccessResult<PagedList<TopicDto>>(pagedResult);
     }
 
     public async Task<ApiResult<TopicDto>> GetById(int id)
@@ -140,6 +158,6 @@ public class TopicService : ITopicService
         }
 
         var result = _mapper.Map<TopicDto>(obj);
-        return new ApiResult<TopicDto>(false, result, "Get topic by id successfully !");
+        return new ApiResult<TopicDto>(true, result, "Get topic by id successfully !");
     }
 }
