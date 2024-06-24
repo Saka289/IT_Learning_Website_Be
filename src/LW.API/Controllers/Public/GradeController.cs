@@ -62,15 +62,16 @@ namespace LW.API.Controllers.Public
             return Ok(result);
         }
 
-        [HttpGet("SearchByGrade")]
-        public async Task<ActionResult<ApiResult<GradeDto>>> SearchByGrade([FromQuery] SearchGradeDto searchGradeDto)
+        [HttpGet("SearchByGradePagination")]
+        public async Task<ActionResult<ApiResult<PagedList<GradeDto>>>> SearchByGradePagination([FromQuery] SearchGradeDto searchGradeDto)
         {
-            var result = await _gradeService.SearchByGrade(searchGradeDto);
+            var result = await _gradeService.SearchByGradePagination(searchGradeDto);
             if (!result.IsSucceeded)
             {
                 return NotFound(result);
             }
-
+            
+            Response.Headers.Add("X-Pagination", JsonConvert.SerializeObject(result.Data.GetMetaData()));
             return Ok(result);
         }
 
