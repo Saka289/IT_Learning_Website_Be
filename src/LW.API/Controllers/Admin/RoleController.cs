@@ -30,30 +30,50 @@ namespace LW.API.Controllers.Admin
         public async Task<ActionResult<ApiResult<IEnumerable<RoleDto>>>> GetAllRoles()
         {
             var result = await _adminAuthorService.GetAllRolesAsync();
+            if (!result.IsSucceeded)
+            {
+                return NotFound(result);
+            }
             return Ok(result);
         }
         [HttpGet("getRoleById/{id}")] 
         public async Task<ActionResult<ApiResult<RoleDto>>> GetRoleById(string id)
         {
             var result = await _adminAuthorService.GetRoleByIdAsync(id);
+            if (!result.IsSucceeded)
+            {
+                return NotFound(result);
+            }
             return Ok(result);
         }
         [HttpPost("createRole/{roleName}")] 
         public async Task<ActionResult<ApiResult<bool>>> CreateRole(string roleName)
         {
             var result = await _adminAuthorService.CreateRoleAsync(roleName);
+            if (!result.IsSucceeded)
+            {
+                return BadRequest(result);
+            }
             return Ok(result);
         }
         [HttpPut("updateRole/{id}/{newRoleName}")] 
         public async Task<ActionResult<ApiResult<bool>>> CreateRole(string id, string newRoleName)
         {
             var result = await _adminAuthorService.UpdateRoleAsync(id, newRoleName);
+            if (!result.IsSucceeded)
+            {
+                return BadRequest(result);
+            }
             return Ok(result);
         }
         [HttpDelete("deleteRole/{id}")] 
         public async Task<ActionResult<ApiResult<bool>>> DeleteRole(string id)
         {
             var result = await _adminAuthorService.DeleteRoleAsync(id);
+            if (!result.IsSucceeded)
+            {
+                return NotFound(result);
+            }
             return Ok(result);
         }
         

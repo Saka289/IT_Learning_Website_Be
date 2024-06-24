@@ -54,11 +54,11 @@ public class AdminAuthorService : IAdminAuthorService
         return await _userManager.Users.AnyAsync(x => x.Email == email.ToLower());
     }
 
-    public async Task<ApiResult<RegisterAdminResponseDto>> RegisterAdminAsync(RegisterAdminDto model)
+    public async Task<ApiResult<RegisterMemberResponseDto>> RegisterMemberAsync(RegisterMemberDto model)
     {
         if (await CheckEmailExistsAsync(model.Email))
         {
-            return new ApiResult<RegisterAdminResponseDto>(false, new RegisterAdminResponseDto(),
+            return new ApiResult<RegisterMemberResponseDto>(false, new RegisterMemberResponseDto(),
                 "Email existed");
         }
 
@@ -84,8 +84,8 @@ public class AdminAuthorService : IAdminAuthorService
             await _userManager.AddToRoleAsync(user, model.RoleString);
         }
 
-        var adminDto = _mapper.Map<RegisterAdminResponseDto>(user);
-        return new ApiResult<RegisterAdminResponseDto>(true, adminDto,
+        var adminDto = _mapper.Map<RegisterMemberResponseDto>(user);
+        return new ApiResult<RegisterMemberResponseDto>(true, adminDto,
             "Register successfully");
     }
 
@@ -153,7 +153,7 @@ public class AdminAuthorService : IAdminAuthorService
 
         await _userManager.UpdateAsync(user);
 
-        return new ApiResult<UpdateAdminDto>(false, updateAdminDto,
+        return new ApiResult<UpdateAdminDto>(true, updateAdminDto,
             $"Update Successfully !");
     }
 
