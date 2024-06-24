@@ -7,6 +7,9 @@ using LW.Infrastructure.Extensions;
 using LW.Shared.Constant;
 using LW.Shared.DTOs.Lesson;
 using LW.Shared.SeedWork;
+using Microsoft.EntityFrameworkCore;
+using MockQueryable.Moq;
+using Serilog;
 
 namespace LW.Services.LessonService;
 
@@ -14,18 +17,20 @@ public class LessonService : ILessonService
 {
     private readonly ILessonRepository _lessonRepository;
     private readonly ITopicRepository _topicRepository;
-    private readonly IElasticSearchService<Lesson, int> _elasticSearchService;
+    private readonly IElasticSearchService<LessonDto, int> _elasticSearchService;
     private readonly ICloudinaryService _cloudinaryService;
     private readonly IMapper _mapper;
+    private readonly ILogger _logger;
 
     public LessonService(ILessonRepository lessonRepository, ITopicRepository topicRepository, IMapper mapper,
-        IElasticSearchService<Lesson, int> elasticSearchService, ICloudinaryService cloudinaryService)
+        IElasticSearchService<LessonDto, int> elasticSearchService, ICloudinaryService cloudinaryService, ILogger logger)
     {
         _lessonRepository = lessonRepository;
         _topicRepository = topicRepository;
         _mapper = mapper;
         _elasticSearchService = elasticSearchService;
         _cloudinaryService = cloudinaryService;
+        _logger = logger;
     }
 
     public async Task<ApiResult<IEnumerable<LessonDto>>> GetAllLesson()
@@ -40,7 +45,8 @@ public class LessonService : ILessonService
         return new ApiSuccessResult<IEnumerable<LessonDto>>(result);
     }
 
-    public async Task<ApiResult<PagedList<LessonDto>>> GetAllLessonPagination(PagingRequestParameters pagingRequestParameters)
+    public async Task<ApiResult<PagedList<LessonDto>>> GetAllLessonPagination(
+        PagingRequestParameters pagingRequestParameters)
     {
         var lessonList = await _lessonRepository.GetAllLessonPagination();
         if (lessonList == null)
@@ -49,9 +55,7 @@ public class LessonService : ILessonService
         }
 
         var result = _mapper.ProjectTo<LessonDto>(lessonList);
-        var pagedResult = await PagedList<LessonDto>.ToPageList(result, pagingRequestParameters.PageIndex,
-            pagingRequestParameters.PageSize);
-
+        var pagedResult = await PagedList<LessonDto>.ToPageListAsync(result, pagingRequestParameters.PageIndex, pagingRequestParameters.PageSize);
         return new ApiSuccessResult<PagedList<LessonDto>>(pagedResult);
     }
 
@@ -67,17 +71,18 @@ public class LessonService : ILessonService
         return new ApiSuccessResult<LessonDto>(result);
     }
 
-    public async Task<ApiResult<IEnumerable<LessonDto>>> SearchByLesson(SearchLessonDto searchLessonDto)
+    public async Task<ApiResult<PagedList<LessonDto>>> SearchByLessonPagination(SearchLessonDto searchLessonDto)
     {
         var lessonEntity =
             await _elasticSearchService.SearchDocumentAsync(ElasticConstant.ElasticLessons, searchLessonDto);
         if (lessonEntity is null)
         {
-            return new ApiResult<IEnumerable<LessonDto>>(false, $"Lesson not found by {searchLessonDto.Key} !!!");
+            return new ApiResult<PagedList<LessonDto>>(false, $"Lesson not found by {searchLessonDto.Key} !!!");
         }
 
         var result = _mapper.Map<IEnumerable<LessonDto>>(lessonEntity);
-        return new ApiSuccessResult<IEnumerable<LessonDto>>(result);
+        var pagedResult = await PagedList<LessonDto>.ToPageListAsync(result.AsQueryable().BuildMock(), searchLessonDto.PageIndex, searchLessonDto.PageSize);
+        return new ApiSuccessResult<PagedList<LessonDto>>(pagedResult);
     }
 
     public async Task<ApiResult<LessonDto>> CreateLesson(LessonCreateDto lessonCreateDto)
@@ -97,8 +102,9 @@ public class LessonService : ILessonService
         lessonEntity.UrlDownload = filePath.UrlDownload;
         await _lessonRepository.CreateLesson(lessonEntity);
         await _lessonRepository.SaveChangesAsync();
-        _elasticSearchService.CreateDocumentAsync(ElasticConstant.ElasticLessons, lessonEntity, g => g.Id);
+        lessonEntity.Topic = topicEntity;
         var result = _mapper.Map<LessonDto>(lessonEntity);
+        _elasticSearchService.CreateDocumentAsync(ElasticConstant.ElasticLessons, result, g => g.Id);
         return new ApiSuccessResult<LessonDto>(result);
     }
 
@@ -126,17 +132,17 @@ public class LessonService : ILessonService
             model.UrlDownload = filePath.UrlDownload;
             var updateLessonFile = await _lessonRepository.UpdateLesson(model);
             await _lessonRepository.SaveChangesAsync();
-            _elasticSearchService.UpdateDocumentAsync(ElasticConstant.ElasticLessons, updateLessonFile,
-                lessonUpdateDto.Id);
+            model.Topic = topicEntity;
             var resultFile = _mapper.Map<LessonDto>(updateLessonFile);
+            _elasticSearchService.UpdateDocumentAsync(ElasticConstant.ElasticLessons, resultFile, lessonUpdateDto.Id);
             return new ApiSuccessResult<LessonDto>(resultFile);
         }
 
         var updateLesson = await _lessonRepository.UpdateLesson(model);
         await _lessonRepository.SaveChangesAsync();
-        _elasticSearchService.UpdateDocumentAsync(ElasticConstant.ElasticLessons, updateLesson,
-            lessonUpdateDto.Id);
+        model.Topic = topicEntity;
         var result = _mapper.Map<LessonDto>(updateLesson);
+        _elasticSearchService.UpdateDocumentAsync(ElasticConstant.ElasticLessons, result, lessonUpdateDto.Id);
         return new ApiSuccessResult<LessonDto>(result);
     }
 
@@ -148,10 +154,14 @@ public class LessonService : ILessonService
             return new ApiResult<bool>(false, "Lesson not found !!!");
         }
 
+        var topicEntity = await _topicRepository.GetTopicById(lessonEntity.TopicId);
+
         lessonEntity.IsActive = !lessonEntity.IsActive;
         await _lessonRepository.UpdateLesson(lessonEntity);
         await _lessonRepository.SaveChangesAsync();
-        _elasticSearchService.UpdateDocumentAsync(ElasticConstant.ElasticLessons, lessonEntity, id);
+        lessonEntity.Topic = topicEntity;
+        var result = _mapper.Map<LessonDto>(lessonEntity);
+        _elasticSearchService.UpdateDocumentAsync(ElasticConstant.ElasticLessons, result, id);
         return new ApiSuccessResult<bool>(true, "Lesson update successfully !!!");
     }
 
@@ -173,5 +183,28 @@ public class LessonService : ILessonService
         _elasticSearchService.DeleteDocumentAsync(ElasticConstant.ElasticLessons, id);
 
         return new ApiSuccessResult<bool>(true, "Delete Lesson Successfully !!!");
+    }
+
+    public async Task<ApiResult<bool>> DeleteRangeLesson(IEnumerable<int> ids)
+    {
+        var listId = new List<Lesson>();
+        foreach (var itemId in ids)
+        {
+            var lessonEntity = await _lessonRepository.GetLessonById(itemId);
+            if (lessonEntity is null)
+            {
+                _logger.Information($"Lesson not found with id {itemId} !!!");
+            }
+            listId.Add(lessonEntity);
+        }
+        var lesson = await _lessonRepository.DeleteRangeLesson(listId);
+        if (!lesson)
+        {
+            return new ApiResult<bool>(false, "Failed Delete Lesson not found !!!");
+        }
+        await _cloudinaryService.DeleteRangeFileAsync(listId.Select(l => l.PublicId).ToList());
+        _elasticSearchService.DeleteDocumentRangeAsync(ElasticConstant.ElasticLessons, ids);
+
+        return new ApiSuccessResult<bool>(true, "Delete Lessons Successfully !!!");
     }
 }

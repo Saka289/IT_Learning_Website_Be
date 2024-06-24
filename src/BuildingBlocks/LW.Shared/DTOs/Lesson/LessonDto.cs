@@ -9,4 +9,7 @@ public class LessonDto
     public string FilePath { get; set; }
     public string UrlDownload { get; set; }
     public int TopicId { get; set; }
+    public string TopicTitle { get; set; }
+    public DateTimeOffset CreatedDate { get; set; }
+    public DateTimeOffset? LastModifiedDate { get; set; }
 }

@@ -1,4 +1,5 @@
 ﻿using LW.Data.Entities;
+using LW.Shared.Constant;
 using Nest;
 
 namespace LW.API.Mappings;

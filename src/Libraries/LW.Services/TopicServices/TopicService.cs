@@ -112,7 +112,7 @@ public class TopicService : ITopicService
         }
 
         var result = _mapper.ProjectTo<TopicDto>(topics);
-        var pagedResult = await PagedList<TopicDto>.ToPageList(result, pagingRequestParameters.PageIndex,
+        var pagedResult = await PagedList<TopicDto>.ToPageListAsync(result, pagingRequestParameters.PageIndex,
             pagingRequestParameters.PageSize);
 
         return new ApiSuccessResult<PagedList<TopicDto>>(pagedResult);
