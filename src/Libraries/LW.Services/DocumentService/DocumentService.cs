@@ -9,6 +9,7 @@ using LW.Services.LevelServices;
 using LW.Shared.Constant;
 using LW.Shared.DTOs.Document;
 using LW.Shared.SeedWork;
+using MockQueryable.Moq;
 
 namespace LW.Services.DocumentService;
 
@@ -16,11 +17,11 @@ public class DocumentService : IDocumentService
 {
     private readonly IDocumentRepository _documentRepository;
     private readonly IGradeRepository _gradeRepository;
-    private readonly IElasticSearchService<Document, int> _elasticSearchService;
+    private readonly IElasticSearchService<DocumentDto, int> _elasticSearchService;
     private readonly IMapper _mapper;
 
     public DocumentService(IDocumentRepository documentRepository, IMapper mapper, IGradeRepository gradeRepository,
-        IElasticSearchService<Document, int> elasticSearchService)
+        IElasticSearchService<DocumentDto, int> elasticSearchService)
     {
         _documentRepository = documentRepository;
         _mapper = mapper;
@@ -68,17 +69,18 @@ public class DocumentService : IDocumentService
         return new ApiSuccessResult<DocumentDto>(result);
     }
 
-    public async Task<ApiResult<IEnumerable<DocumentDto>>> SearchByDocument(SearchDocumentDto searchDocumentDto)
+    public async Task<ApiResult<PagedList<DocumentDto>>> SearchByDocumentPagination(SearchDocumentDto searchDocumentDto)
     {
         var documentEntity =
             await _elasticSearchService.SearchDocumentAsync(ElasticConstant.ElasticDocuments, searchDocumentDto);
         if (documentEntity is null)
         {
-            return new ApiResult<IEnumerable<DocumentDto>>(false, $"Document not found by {searchDocumentDto.Key} !!!");
+            return new ApiResult<PagedList<DocumentDto>>(false, $"Document not found by {searchDocumentDto.Key} !!!");
         }
 
         var result = _mapper.Map<IEnumerable<DocumentDto>>(documentEntity);
-        return new ApiSuccessResult<IEnumerable<DocumentDto>>(result);
+        var pagedResult = await PagedList<DocumentDto>.ToPageListAsync(result.AsQueryable().BuildMock(), searchDocumentDto.PageIndex, searchDocumentDto.PageSize);
+        return new ApiSuccessResult<PagedList<DocumentDto>>(pagedResult);
     }
 
     public async Task<ApiResult<DocumentDto>> CreateDocument(DocumentCreateDto documentCreateDto)
@@ -92,8 +94,9 @@ public class DocumentService : IDocumentService
         var documentEntity = _mapper.Map<Document>(documentCreateDto);
         documentEntity.KeyWord = documentEntity.Title.RemoveDiacritics();
         await _documentRepository.CreateDocument(documentEntity);
-        _elasticSearchService.CreateDocumentAsync(ElasticConstant.ElasticDocuments, documentEntity, g => g.Id);
+        documentEntity.Grade = gradeEntity;
         var result = _mapper.Map<DocumentDto>(documentEntity);
+        _elasticSearchService.CreateDocumentAsync(ElasticConstant.ElasticDocuments, result, g => g.Id);
         return new ApiSuccessResult<DocumentDto>(result);
     }
 
@@ -113,8 +116,9 @@ public class DocumentService : IDocumentService
 
         var model = _mapper.Map(documentUpdateDto, documentEntity);
         var updateDocument = await _documentRepository.UpdateDocument(model);
-        _elasticSearchService.UpdateDocumentAsync(ElasticConstant.ElasticDocuments, updateDocument, documentUpdateDto.Id);
+        updateDocument.Grade = gradeEntity;
         var result = _mapper.Map<DocumentDto>(updateDocument);
+        _elasticSearchService.UpdateDocumentAsync(ElasticConstant.ElasticDocuments, result, documentUpdateDto.Id);
         return new ApiSuccessResult<DocumentDto>(result);
     }
 
@@ -125,11 +129,14 @@ public class DocumentService : IDocumentService
         {
             return new ApiResult<bool>(false, "Document not found !!!");
         }
+        var gradeEntity = await _gradeRepository.GetGradeById(documentEntity.GradeId);
 
         documentEntity.IsActive = !documentEntity.IsActive;
         await _documentRepository.UpdateDocument(documentEntity);
         await _documentRepository.SaveChangesAsync();
-        _elasticSearchService.UpdateDocumentAsync(ElasticConstant.ElasticDocuments, documentEntity, id);
+        documentEntity.Grade = gradeEntity;
+        var result = _mapper.Map<DocumentDto>(documentEntity);
+        _elasticSearchService.UpdateDocumentAsync(ElasticConstant.ElasticDocuments, result, id);
         return new ApiSuccessResult<bool>(true, "Grade update successfully !!!");
     }
 

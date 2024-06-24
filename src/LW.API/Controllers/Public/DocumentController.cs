@@ -56,15 +56,16 @@ namespace LW.API.Controllers.Public
             return Ok(result);
         }
         
-        [HttpGet("SearchByDocument")]
-        public async Task<ActionResult<ApiResult<DocumentDto>>> SearchByDocument([FromQuery] SearchDocumentDto searchDocumentDto)
+        [HttpGet("SearchByDocumentPagination")]
+        public async Task<ActionResult<ApiResult<PagedList<DocumentDto>>>> SearchByDocumentPagination([FromQuery] SearchDocumentDto searchDocumentDto)
         {
-            var result = await _documentService.SearchByDocument(searchDocumentDto);
+            var result = await _documentService.SearchByDocumentPagination(searchDocumentDto);
             if (!result.IsSucceeded)
             {
                 return NotFound(result);
             }
-
+            
+            Response.Headers.Add("X-Pagination", JsonConvert.SerializeObject(result.Data.GetMetaData()));
             return Ok(result);
         }
 
