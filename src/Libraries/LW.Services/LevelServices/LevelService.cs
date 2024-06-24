@@ -116,4 +116,17 @@ public class LevelService : ILevelService
         var result = _mapper.Map<IEnumerable<LevelDto>>(levels);
         return new ApiSuccessResult<IEnumerable<LevelDto>>(result);
     }
+
+    public  async Task<ApiResult<PagedList<LevelDto>>> GetAllLevelPagination(PagingRequestParameters pagingRequestParameters)
+    {
+        var levels = await _levelRepository.GetAllLevelPagination();
+        if (levels == null)
+        {
+            return new ApiResult<PagedList<LevelDto>>(false, "Levels is null !!!");
+        }
+
+        var result = _mapper.ProjectTo<LevelDto>(levels);
+        var pagedResult = await PagedList<LevelDto>.ToPageList(result, pagingRequestParameters.PageIndex,
+            pagingRequestParameters.PageSize);
+        return new ApiSuccessResult<PagedList<LevelDto>>(pagedResult);    }
 }

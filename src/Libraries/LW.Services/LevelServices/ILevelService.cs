@@ -13,5 +13,6 @@ public interface ILevelService
     public Task<ApiResult<IEnumerable<LevelDto>>> GetAll();
     public Task<ApiResult<LevelDto>> GetById(int id);
     public Task<ApiResult<IEnumerable<LevelDto>>> SearchLevel(SearchLevelDto searchLevelDto);
-
+    public Task<ApiResult<PagedList<LevelDto>>> GetAllLevelPagination(
+        PagingRequestParameters pagingRequestParameters);
 }

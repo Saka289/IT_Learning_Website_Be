@@ -43,4 +43,9 @@ public class LevelRepository : RepositoryBase<Level, int>, ILevelRepository
     {
         return await FindAll().ToListAsync();
     }
+
+    public Task<IQueryable<Level>> GetAllLevelPagination()
+    {
+        var result = FindAll();
+        return Task.FromResult(result);    }
 }
