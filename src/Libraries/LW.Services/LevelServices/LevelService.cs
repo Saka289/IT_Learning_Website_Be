@@ -113,7 +113,7 @@ public class LevelService : ILevelService
         return new ApiResult<LevelDto>(true, result, "Get level successfully");
     }
 
-    public async Task<ApiResult<PagedList<LevelDto>>> SearchLevel(SearchLevelDto searchLevelDto)
+    public async Task<ApiResult<PagedList<LevelDto>>> SearchByLevelPagination(SearchLevelDto searchLevelDto)
     {
         var levels = await _elasticSearchService.SearchDocumentAsync(ElasticConstant.ElasticLevels, searchLevelDto);
         if (levels is null)
@@ -138,4 +138,9 @@ public class LevelService : ILevelService
         var pagedResult = await PagedList<LevelDto>.ToPageListAsync(result, pagingRequestParameters.PageIndex,
             pagingRequestParameters.PageSize);
         return new ApiSuccessResult<PagedList<LevelDto>>(pagedResult);    }
+
+    public Task<ApiResult<bool>> DeleteRangeLevel(IEnumerable<int> ids)
+    {
+        throw new NotImplementedException();
+    }
 }

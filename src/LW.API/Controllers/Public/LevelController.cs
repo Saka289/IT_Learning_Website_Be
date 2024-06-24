@@ -114,11 +114,12 @@ namespace LW.API.Controllers.Public
         public async Task<ActionResult<ApiResult<IEnumerable<LevelDto>>>> SearchLevel(
             [FromQuery] SearchLevelDto searchLevelDto)
         {
-            var result = await _levelService.SearchLevel(searchLevelDto);
+            var result = await _levelService.SearchByLevelPagination(searchLevelDto);
             if (!result.IsSucceeded)
             {
                 return NotFound(result);
             }
+            Response.Headers.Add("X-Pagination", JsonConvert.SerializeObject(result.Data.GetMetaData()));
             return Ok(result);
         }
     }
