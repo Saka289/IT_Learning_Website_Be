@@ -46,11 +46,13 @@ public class MappingProfile : Profile
         CreateMap<Topic, TopicCreateDto>().ReverseMap();
         CreateMap<Topic, TopicUpdateDto>().ReverseMap();
         //Lesson
-        CreateMap<Lesson, LessonDto>().ReverseMap();
+        CreateMap<Lesson, LessonDto>()
+            .ForMember(x => x.TopicId, y => y.MapFrom(src => src.TopicId))
+            .ForMember(x => x.TopicTitle, y => y.MapFrom(src => src.Topic.Title))
+            .ReverseMap();
         CreateMap<Lesson, LessonCreateDto>().ReverseMap();
         CreateMap<Lesson, LessonUpdateDto>().ReverseMap();
         //Role
         CreateMap<IdentityRole, RoleDto>().ReverseMap();
-
     }
 }

@@ -11,5 +11,6 @@ public interface ICloudinaryService
     Task<FileDto> CreateFileAsync(IFormFile file, string folderName);
     Task<FileDto> UpdateFileAsync(string publicId, IFormFile file);
     Task<bool> DeleteFileAsync(string publicId);
+    Task<bool> DeleteRangeFileAsync(IEnumerable<string> publicIds);
     Task<bool> DeleteFolderAsync(string folderName);
 }

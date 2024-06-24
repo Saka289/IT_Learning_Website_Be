@@ -14,7 +14,7 @@ public class LessonRepository : RepositoryBase<Lesson, int>, ILessonRepository
 
     public async Task<IEnumerable<Lesson>> GetAllLesson()
     {
-        return await FindAll().ToListAsync();
+        return await FindAll().Include(t => t.Topic).ToListAsync();
     }
 
     public Task<IQueryable<Lesson>> GetAllLessonPagination()
@@ -49,6 +49,17 @@ public class LessonRepository : RepositoryBase<Lesson, int>, ILessonRepository
         }
 
         await DeleteAsync(grade);
+        return true;
+    }
+
+    public async Task<bool> DeleteRangeLesson(IEnumerable<Lesson> lessons)
+    {
+        lessons = lessons.Where(l => l != null);
+        if (!lessons.Any())
+        {
+            return false;
+        }
+        await DeleteListAsync(lessons);
         return true;
     }
 }

@@ -11,4 +11,5 @@ public interface ILessonRepository : IRepositoryBase<Lesson, int>
     Task<Lesson> CreateLesson(Lesson lesson);
     Task<Lesson> UpdateLesson(Lesson lesson);
     Task<bool> DeleteLesson(int id);
+    Task<bool> DeleteRangeLesson(IEnumerable<Lesson> lessons);
 }

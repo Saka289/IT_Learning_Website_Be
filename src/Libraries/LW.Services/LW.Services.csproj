@@ -21,6 +21,7 @@
         <PackageReference Include="Microsoft.AspNetCore.Authentication.Google" Version="6.0.30" />
         <PackageReference Include="Microsoft.AspNetCore.Authentication.JwtBearer" Version="6.0.30" />
         <PackageReference Include="Microsoft.OpenApi" Version="1.6.14" />
+        <PackageReference Include="MockQueryable.Moq" Version="6.0.1" />
     </ItemGroup>
 
 </Project>

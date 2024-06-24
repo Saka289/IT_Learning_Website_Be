@@ -189,6 +189,19 @@ public class CloudinaryService : ICloudinaryService
         return true;
     }
 
+    public async Task<bool> DeleteRangeFileAsync(IEnumerable<string> publicIds)
+    {
+        var decodedUrl = publicIds.Select(Uri.UnescapeDataString).ToArray();
+        var result = await _cloudinary.DeleteResourcesAsync(ResourceType.Raw, decodedUrl);
+        if (result.StatusCode != HttpStatusCode.OK)
+        {
+            _logger.Error(result.Error.Message);
+            return false;
+        }
+
+        return true;
+    }
+
     public async Task<bool> DeleteFolderAsync(string folderName)
     {
         string decodedUrl = Uri.UnescapeDataString(folderName);

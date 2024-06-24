@@ -23,7 +23,7 @@ public class PagedList<T> : List<T>
         return _metaData;
     }
 
-    public static async Task<PagedList<T>> ToPageList(IQueryable<T> source, int pageIndex, int pageSize)
+    public static async Task<PagedList<T>> ToPageListAsync(IQueryable<T> source, int pageIndex, int pageSize)
     {
         var count = await source.CountAsync();
         var items = await source

@@ -61,14 +61,15 @@ namespace LW.API.Controllers.Public
             return Ok(result);
         }
         
-        [HttpGet("SearchByLesson")]
-        public async Task<ActionResult<ApiResult<LessonDto>>> SearchByLesson([FromQuery] SearchLessonDto searchLessonDto)
+        [HttpGet("SearchByLessonPagination")]
+        public async Task<ActionResult<ApiResult<PagedList<LessonDto>>>> SearchByLessonPagination([FromQuery] SearchLessonDto searchLessonDto)
         {
-            var result = await _lessonService.SearchByLesson(searchLessonDto);
+            var result = await _lessonService.SearchByLessonPagination(searchLessonDto);
             if (!result.IsSucceeded)
             {
                 return NotFound(result);
             }
+            Response.Headers.Add("X-Pagination", JsonConvert.SerializeObject(result.Data.GetMetaData()));
             return Ok(result);
         }
 
@@ -122,6 +123,18 @@ namespace LW.API.Controllers.Public
         public async Task<ActionResult<ApiResult<bool>>> DeleteLesson([Required] int id)
         {
             var result = await _lessonService.DeleteLesson(id);
+            if (!result.IsSucceeded)
+            {
+                return NotFound(result);
+            }
+            
+            return Ok(result);
+        }
+        
+        [HttpDelete("DeleteRangeLesson")]
+        public async Task<ActionResult<ApiResult<bool>>> DeleteRangeLesson([Required] IEnumerable<int> ids)
+        {
+            var result = await _lessonService.DeleteRangeLesson(ids);
             if (!result.IsSucceeded)
             {
                 return NotFound(result);

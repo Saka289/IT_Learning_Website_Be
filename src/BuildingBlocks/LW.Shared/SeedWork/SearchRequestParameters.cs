@@ -2,7 +2,7 @@
 
 namespace LW.Shared.SeedWork;
 
-public class SearchRequestParameters
+public class SearchRequestParameters : PagingRequestParameters
 {
     public virtual string? Key { get; set; }
     [Required]

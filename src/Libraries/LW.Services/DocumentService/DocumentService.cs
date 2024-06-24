@@ -50,7 +50,7 @@ public class DocumentService : IDocumentService
         }
 
         var result = _mapper.ProjectTo<DocumentDto>(documentList);
-        var pagedResult = await PagedList<DocumentDto>.ToPageList(result, pagingRequestParameters.PageIndex,
+        var pagedResult = await PagedList<DocumentDto>.ToPageListAsync(result, pagingRequestParameters.PageIndex,
             pagingRequestParameters.PageSize);
 
         return new ApiSuccessResult<PagedList<DocumentDto>>(pagedResult);
