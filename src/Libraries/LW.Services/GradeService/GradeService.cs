@@ -50,8 +50,7 @@ public class GradeService : IGradeService
         }
 
         var result = _mapper.ProjectTo<GradeDto>(gradeList);
-        var pagedResult = await PagedList<GradeDto>.ToPageListAsync(result, pagingRequestParameters.PageIndex,
-            pagingRequestParameters.PageSize);
+        var pagedResult = await PagedList<GradeDto>.ToPageListAsync(result, pagingRequestParameters.PageIndex, pagingRequestParameters.PageSize, pagingRequestParameters.OrderBy, pagingRequestParameters.IsAscending);
 
         return new ApiSuccessResult<PagedList<GradeDto>>(pagedResult);
     }

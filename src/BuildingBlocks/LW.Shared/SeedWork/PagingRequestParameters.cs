@@ -24,4 +24,5 @@ public class PagingRequestParameters
     }
 
     public string? OrderBy { get; set; }
+    public bool IsAscending { get; set; } = true;
 }
