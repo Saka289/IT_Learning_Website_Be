@@ -1,4 +1,5 @@
-﻿using LW.Contracts.Common;
+﻿using AutoMapper;
+using LW.Contracts.Common;
 using LW.Data.Entities;
 using LW.Shared.Constant;
 using LW.Shared.DTOs.Document;
@@ -7,6 +8,7 @@ using LW.Shared.DTOs.Lesson;
 using LW.Shared.DTOs.Level;
 using LW.Shared.DTOs.Topic;
 using Microsoft.AspNetCore.Identity;
+using Microsoft.EntityFrameworkCore;
 using Nest;
 using ILogger = Serilog.ILogger;
 
@@ -14,7 +16,7 @@ namespace LW.Data.Persistence;
 
 public class AppDbContextSeed
 {
-    public static async Task SeedDataAsync(AppDbContext context, ILogger logger, IElasticClient elasticClient)
+    public static async Task SeedDataAsync(AppDbContext context, ILogger logger, IElasticClient elasticClient, IMapper mapper)
     {
         if (!context.Users.Any() && !context.Roles.Any())
         {
@@ -26,7 +28,8 @@ public class AppDbContextSeed
         if (!context.Levels.Any())
         {
             var dataLevel = SeedLevel();
-            await context.Levels.AddRangeAsync(dataLevel);
+            var result = mapper.Map<IEnumerable<Level>>(dataLevel);
+            await context.Levels.AddRangeAsync(result);
             await context.SaveChangesAsync();
             logger.Information("Seeded data Levels for Education DB associated with context {DbContextName}",
                 nameof(AppDbContext));
@@ -38,7 +41,8 @@ public class AppDbContextSeed
         if (!context.Grades.Any())
         {
             var dataGrade = SeedGrade();
-            await context.Grades.AddRangeAsync(dataGrade);
+            var result = mapper.Map<IEnumerable<Grade>>(dataGrade).AsQueryable().AsNoTracking();
+            await context.Grades.AddRangeAsync(result);
             await context.SaveChangesAsync();
             logger.Information("Seeded data Grades for Education DB associated with context {DbContextName}",
                 nameof(AppDbContext));
@@ -50,7 +54,8 @@ public class AppDbContextSeed
         if (!context.Documents.Any())
         {
             var dataDocument = SeedDocument();
-            await context.Documents.AddRangeAsync(dataDocument);
+            var result = mapper.Map<IEnumerable<Document>>(dataDocument);
+            await context.Documents.AddRangeAsync(result);
             await context.SaveChangesAsync();
             logger.Information("Seeded data Documents for Education DB associated with context {DbContextName}",
                 nameof(AppDbContext));
@@ -62,7 +67,8 @@ public class AppDbContextSeed
         if (!context.Topics.Any())
         {
             var dataTopic = SeedTopic();
-            await context.Topics.AddRangeAsync(dataTopic);
+            var result = mapper.Map<IEnumerable<Topic>>(dataTopic);
+            await context.Topics.AddRangeAsync(result);
             await context.SaveChangesAsync();
             logger.Information("Seeded data Topics for Education DB associated with context {DbContextName}",
                 nameof(AppDbContext));
@@ -74,7 +80,8 @@ public class AppDbContextSeed
         if (!context.Lessons.Any())
         {
             var dataLesson = SeedLesson();
-            await context.Lessons.AddRangeAsync(dataLesson);
+            var result = mapper.Map<IEnumerable<Lesson>>(dataLesson);
+            await context.Lessons.AddRangeAsync(result);
             await context.SaveChangesAsync();
             logger.Information("Seeded data Lessons for Education DB associated with context {DbContextName}",
                 nameof(AppDbContext));
@@ -302,7 +309,7 @@ public class AppDbContextSeed
                 IsActive = true,
                 Content = "Content of Lesson 1",
                 FilePath = "https://res.cloudinary.com/itsupport18/raw/upload/v1718987928/LessonFile/FILE-5a5f56e6-6081-47d3-81db-fa35f3a898e0.pdf",
-                PublicId = "FILE-5a5f56e6-6081-47d3-81db-fa35f3a898e0.pdf",
+                PublicId = "LessonFile/FILE-5a5f56e6-6081-47d3-81db-fa35f3a898e0.pdf",
                 UrlDownload = "https://res.cloudinary.com/itsupport18/raw/upload/fl_attachment/v1/LessonFile/FILE-5a5f56e6-6081-47d3-81db-fa35f3a898e0.pdf",
                 TopicId = 1,
                 TopicTitle = "Toán học"

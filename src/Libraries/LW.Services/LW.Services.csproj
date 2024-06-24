@@ -14,8 +14,6 @@
     </ItemGroup>
 
     <ItemGroup>
-        <PackageReference Include="AutoMapper" Version="12.0.0" />
-        <PackageReference Include="AutoMapper.Extensions.Microsoft.DependencyInjection" Version="12.0.0" />
         <PackageReference Include="Google.Apis.Auth" Version="1.68.0" />
         <PackageReference Include="Microsoft.AspNetCore.Authentication.Facebook" Version="6.0.30" />
         <PackageReference Include="Microsoft.AspNetCore.Authentication.Google" Version="6.0.30" />
