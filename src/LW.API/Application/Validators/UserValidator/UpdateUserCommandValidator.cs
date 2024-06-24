@@ -13,6 +13,5 @@ public class UpdateUserCommandValidator : AbstractValidator<UpdateUserDto>
         RuleFor(x => x.LastName).NotEmpty().NotNull();
         RuleFor(x => x.PhoneNumber).NotEmpty().NotNull();
         RuleFor(x => x.Dob).NotEmpty().NotNull();
-        RuleFor(x => x.Image).NotEmpty().NotNull();
     }
 }

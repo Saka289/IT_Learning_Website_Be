@@ -71,14 +71,16 @@ public class UserService : IUserService
         var verifyEmail = await _redisCacheService.GetStringKey(registerUserDto.Email);
         if (verifyEmail == null)
         {
-            return new ApiResult<RegisterResponseUserDto>(false, "Your email verification link has expired. Please request a new one.");
+            return new ApiResult<RegisterResponseUserDto>(false,
+                "Your email verification link has expired. Please request a new one.");
         }
 
         if (!verifyEmail.IsVerifyEmail)
         {
-            return new ApiResult<RegisterResponseUserDto>(false, "An error occurred while verifying your email. Please try again later.");
+            return new ApiResult<RegisterResponseUserDto>(false,
+                "An error occurred while verifying your email. Please try again later.");
         }
-        
+
         var emailExist = await _userManager.Users.AnyAsync(x => x.Email.ToLower() == registerUserDto.Email.ToLower());
         if (emailExist)
         {
@@ -455,7 +457,7 @@ public class UserService : IUserService
         user.PhoneNumber = updateUserDto.PhoneNumber;
         user.Dob = DateOnly.FromDateTime(updateUserDto.Dob);
 
-        if (user.Image == null)
+        if (user.Image == null && updateUserDto.Image != null)
         {
             var imageCreatePath =
                 await _cloudinaryService.CreateImageAsync(updateUserDto.Image, CloudinaryConstant.FolderUserImage);
@@ -463,6 +465,21 @@ public class UserService : IUserService
             user.Image = imageCreatePath.Url;
             user.PublicId = imageCreatePath.PublicId;
 
+            await _userManager.UpdateAsync(user);
+
+            var userResponseCreate = new UpdateResponseUserDto()
+            {
+                Email = user.Email,
+                FullName = user.FirstName + " " + user.LastName,
+                PhoneNumber = user.PhoneNumber,
+                Image = user.Image
+            };
+
+            return new ApiResult<UpdateResponseUserDto>(true, userResponseCreate, $"Update User Successfully !");
+        }
+
+        if (updateUserDto.Image == null)
+        {
             await _userManager.UpdateAsync(user);
 
             var userResponseCreate = new UpdateResponseUserDto()
