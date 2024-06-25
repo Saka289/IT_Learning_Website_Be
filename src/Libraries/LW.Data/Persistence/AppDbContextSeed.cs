@@ -1,7 +1,14 @@
-﻿using LW.Contracts.Common;
+﻿using AutoMapper;
+using LW.Contracts.Common;
 using LW.Data.Entities;
 using LW.Shared.Constant;
+using LW.Shared.DTOs.Document;
+using LW.Shared.DTOs.Grade;
+using LW.Shared.DTOs.Lesson;
+using LW.Shared.DTOs.Level;
+using LW.Shared.DTOs.Topic;
 using Microsoft.AspNetCore.Identity;
+using Microsoft.EntityFrameworkCore;
 using Nest;
 using ILogger = Serilog.ILogger;
 
@@ -9,25 +16,26 @@ namespace LW.Data.Persistence;
 
 public class AppDbContextSeed
 {
-    public static async Task SeedDataAsync(AppDbContext context, ILogger logger, IElasticClient elasticClient)
+    public static async Task SeedDataAsync(AppDbContext context, ILogger logger, IElasticClient elasticClient,
+        IMapper mapper)
     {
         if (!context.Users.Any() && !context.Roles.Any())
         {
             SeedDataUserRoles(context);
             await context.SaveChangesAsync();
-            logger.Information("Seeded data User and Roles for Education DB associated with context {DbContextName}", nameof(AppDbContext));
+            logger.Information("Seeded data User and Roles for Education DB associated with context {DbContextName}",
+                nameof(AppDbContext));
         }
-        
+
         if (!context.Levels.Any())
         {
             var dataLevel = SeedLevel();
             await context.Levels.AddRangeAsync(dataLevel);
             await context.SaveChangesAsync();
-            logger.Information("Seeded data Levels for Education DB associated with context {DbContextName}",
-                nameof(AppDbContext));
-            await elasticClient.BulkAsync(b => b.Index(ElasticConstant.ElasticLevels).IndexMany(dataLevel));
-            logger.Information("Seeded data Levels for ElasticSearch associated with {IElasticClient}",
-                nameof(IElasticClient));
+            var result = mapper.Map<IEnumerable<LevelDto>>(dataLevel);
+            logger.Information("Seeded data Levels for Education DB associated with context {DbContextName}", nameof(AppDbContext));
+            await elasticClient.BulkAsync(b => b.Index(ElasticConstant.ElasticLevels).IndexMany(result));
+            logger.Information("Seeded data Levels for ElasticSearch associated with {IElasticClient}", nameof(IElasticClient));
         }
 
         if (!context.Grades.Any())
@@ -35,11 +43,10 @@ public class AppDbContextSeed
             var dataGrade = SeedGrade();
             await context.Grades.AddRangeAsync(dataGrade);
             await context.SaveChangesAsync();
-            logger.Information("Seeded data Grades for Education DB associated with context {DbContextName}",
-                nameof(AppDbContext));
-            await elasticClient.BulkAsync(b => b.Index(ElasticConstant.ElasticGrades).IndexMany(dataGrade));
-            logger.Information("Seeded data Grades for ElasticSearch associated with {IElasticClient}",
-                nameof(IElasticClient));
+            var result = mapper.Map<IEnumerable<GradeDto>>(dataGrade);
+            logger.Information("Seeded data Grades for Education DB associated with context {DbContextName}", nameof(AppDbContext));
+            await elasticClient.BulkAsync(b => b.Index(ElasticConstant.ElasticGrades).IndexMany(result));
+            logger.Information("Seeded data Grades for ElasticSearch associated with {IElasticClient}", nameof(IElasticClient));
         }
 
         if (!context.Documents.Any())
@@ -47,35 +54,32 @@ public class AppDbContextSeed
             var dataDocument = SeedDocument();
             await context.Documents.AddRangeAsync(dataDocument);
             await context.SaveChangesAsync();
-            logger.Information("Seeded data Documents for Education DB associated with context {DbContextName}",
-                nameof(AppDbContext));
-            await elasticClient.BulkAsync(b => b.Index(ElasticConstant.ElasticDocuments).IndexMany(dataDocument));
-            logger.Information("Seeded data Documents for ElasticSearch associated with {IElasticClient}",
-                nameof(IElasticClient));
+            var result = mapper.Map<IEnumerable<DocumentDto>>(dataDocument);
+            logger.Information("Seeded data Documents for Education DB associated with context {DbContextName}", nameof(AppDbContext));
+            await elasticClient.BulkAsync(b => b.Index(ElasticConstant.ElasticDocuments).IndexMany(result));
+            logger.Information("Seeded data Documents for ElasticSearch associated with {IElasticClient}", nameof(IElasticClient));
         }
-        
+
         if (!context.Topics.Any())
         {
             var dataTopic = SeedTopic();
             await context.Topics.AddRangeAsync(dataTopic);
             await context.SaveChangesAsync();
-            logger.Information("Seeded data Topics for Education DB associated with context {DbContextName}",
-                nameof(AppDbContext));
-            await elasticClient.BulkAsync(b => b.Index(ElasticConstant.ElasticTopics).IndexMany(dataTopic));
-            logger.Information("Seeded data dataTopic for ElasticSearch associated with {IElasticClient}",
-                nameof(IElasticClient));
+            var result = mapper.Map<IEnumerable<TopicDto>>(dataTopic);
+            logger.Information("Seeded data Topics for Education DB associated with context {DbContextName}", nameof(AppDbContext));
+            await elasticClient.BulkAsync(b => b.Index(ElasticConstant.ElasticTopics).IndexMany(result));
+            logger.Information("Seeded data dataTopic for ElasticSearch associated with {IElasticClient}", nameof(IElasticClient));
         }
-        
+
         if (!context.Lessons.Any())
         {
             var dataLesson = SeedLesson();
             await context.Lessons.AddRangeAsync(dataLesson);
             await context.SaveChangesAsync();
-            logger.Information("Seeded data Lessons for Education DB associated with context {DbContextName}",
-                nameof(AppDbContext));
-            await elasticClient.BulkAsync(b => b.Index(ElasticConstant.ElasticLessons).IndexMany(dataLesson));
-            logger.Information("Seeded data Lessons for ElasticSearch associated with {IElasticClient}",
-                nameof(IElasticClient));
+            var result = mapper.Map<IEnumerable<LessonDto>>(dataLesson);
+            logger.Information("Seeded data Lessons for Education DB associated with context {DbContextName}", nameof(AppDbContext));
+            await elasticClient.BulkAsync(b => b.Index(ElasticConstant.ElasticLessons).IndexMany(result));
+            logger.Information("Seeded data Lessons for ElasticSearch associated with {IElasticClient}", nameof(IElasticClient));
         }
     }
 
@@ -179,24 +183,31 @@ public class AppDbContextSeed
         {
             new()
             {
-                Title = "Cấp 1",
-                KeyWord = "cap 1",
+                Title = "Lớp 3",
+                KeyWord = "lop 3",
                 IsActive = true,
-                LevelId = 1
+                LevelId = 1,
             },
             new()
             {
-                Title = "Cấp 2",
-                KeyWord = "cap 2",
+                Title = "Lớp 4",
+                KeyWord = "lop 4",
                 IsActive = true,
-                LevelId = 2
+                LevelId = 1,
             },
             new()
             {
-                Title = "Cấp 3",
-                KeyWord = "cap 3",
+                Title = "Lớp 5",
+                KeyWord = "lop 5",
                 IsActive = true,
-                LevelId = 3
+                LevelId = 1,
+            },
+            new()
+            {
+                Title = "Lớp 6",
+                KeyWord = "lop 6",
+                IsActive = true,
+                LevelId = 2,
             },
         };
     }
@@ -211,7 +222,7 @@ public class AppDbContextSeed
                 Description = "Sách cánh diều mô tả",
                 KeyWord = "sach canh dieu",
                 IsActive = true,
-                GradeId = 1
+                GradeId = 1,
             },
             new()
             {
@@ -219,79 +230,82 @@ public class AppDbContextSeed
                 Description = "Sách chân trời mô tả",
                 KeyWord = "sach chan troi",
                 IsActive = true,
-                GradeId = 2
+                GradeId = 2,
             },
             new()
             {
-                Title = "Sách kết nối tri chức",
+                Title = "Sách kết nối tri thức",
                 Description = "Sách kết nối tri thức mô tả",
                 KeyWord = "sach ket noi tri thuc",
                 IsActive = true,
-                GradeId = 3
+                GradeId = 3,
             },
         };
     }
-    
+
     private static IEnumerable<Topic> SeedTopic()
     {
         return new List<Topic>()
         {
-            new Topic()
+            new()
             {
                 Title = "Toán học",
                 KeyWord = "toan hoc",
                 Description = "Môn học về toán học",
-                Objectives ="Làm chủ về môn toán học",
+                Objectives = "Làm chủ về môn toán học",
                 IsActive = true,
                 DocumentId = 1,
-                
             },
-            new Topic()
+            new()
             {
                 Title = "Văn học",
                 KeyWord = "van hoc",
                 Description = "Môn học về văn học",
-                Objectives ="Làm chủ về môn văn học",
+                Objectives = "Làm chủ về môn văn học",
                 IsActive = true,
-                DocumentId = 2  
+                DocumentId = 2,
             },
-            new Topic()
+            new()
             {
                 Title = "Khoa học tự nhiên",
                 KeyWord = "khoa hoc tu nhien",
                 Description = "Môn học về khoa học tự nhiên",
-                Objectives ="Làm chủ về môn khoa học tự nhiên",
+                Objectives = "Làm chủ về môn khoa học tự nhiên",
                 IsActive = true,
-                DocumentId = 3  
+                DocumentId = 3,
             }
         };
     }
-    
+
     private static IEnumerable<Lesson> SeedLesson()
     {
         return new List<Lesson>()
         {
-            new Lesson()
+            new()
             {
                 Title = "Lesson 1",
                 KeyWord = "lesson 1",
                 IsActive = true,
                 Content = "Content of Lesson 1",
-                FilePath = "https://res.cloudinary.com/itsupport18/raw/upload/v1718987928/LessonFile/FILE-5a5f56e6-6081-47d3-81db-fa35f3a898e0.pdf",
-                PublicId = "FILE-5a5f56e6-6081-47d3-81db-fa35f3a898e0.pdf",
-                UrlDownload = "https://res.cloudinary.com/itsupport18/raw/upload/fl_attachment/v1/LessonFile/FILE-5a5f56e6-6081-47d3-81db-fa35f3a898e0.pdf",
-                TopicId = 1
+                FilePath =
+                    "https://res.cloudinary.com/itsupport18/raw/upload/v1718987928/LessonFile/FILE-5a5f56e6-6081-47d3-81db-fa35f3a898e0.pdf",
+                PublicId = "LessonFile/FILE-5a5f56e6-6081-47d3-81db-fa35f3a898e0.pdf",
+                UrlDownload =
+                    "https://res.cloudinary.com/itsupport18/raw/upload/fl_attachment/v1/LessonFile/FILE-5a5f56e6-6081-47d3-81db-fa35f3a898e0.pdf",
+                TopicId = 1,
             },
-            new Lesson()
+            new()
             {
                 Title = "Lesson 2",
                 KeyWord = "lesson 2",
                 IsActive = true,
                 Content = "Content of Lesson 2",
-                FilePath = "https://res.cloudinary.com/itsupport18/raw/upload/v1718987951/LessonFile/FILE-a662a89a-8bc1-4ba9-98dc-3580b5ae1782.pdf",
+                FilePath =
+                    "https://res.cloudinary.com/itsupport18/raw/upload/v1718987951/LessonFile/FILE-a662a89a-8bc1-4ba9-98dc-3580b5ae1782.pdf",
                 PublicId = "LessonFile/FILE-a662a89a-8bc1-4ba9-98dc-3580b5ae1782.pdf",
-                UrlDownload = "https://res.cloudinary.com/itsupport18/raw/upload/fl_attachment/v1/LessonFile/FILE-a662a89a-8bc1-4ba9-98dc-3580b5ae1782.pdf",
-                TopicId = 2 
+                UrlDownload =
+                    "https://res.cloudinary.com/itsupport18/raw/upload/fl_attachment/v1/LessonFile/FILE-a662a89a-8bc1-4ba9-98dc-3580b5ae1782.pdf",
+                TopicId = 2,
             },
             new Lesson()
             {
@@ -299,10 +313,12 @@ public class AppDbContextSeed
                 KeyWord = "lesson 3",
                 IsActive = true,
                 Content = "Content of Lesson 3",
-                FilePath = "https://res.cloudinary.com/itsupport18/raw/upload/v1718987972/LessonFile/FILE-3a204b73-f357-490d-9a42-f11b42318ca5.pdf",
+                FilePath =
+                    "https://res.cloudinary.com/itsupport18/raw/upload/v1718987972/LessonFile/FILE-3a204b73-f357-490d-9a42-f11b42318ca5.pdf",
                 PublicId = "LessonFile/FILE-3a204b73-f357-490d-9a42-f11b42318ca5.pdf",
-                UrlDownload = "https://res.cloudinary.com/itsupport18/raw/upload/fl_attachment/v1/LessonFile/FILE-3a204b73-f357-490d-9a42-f11b42318ca5.pdf",
-                TopicId = 3
+                UrlDownload =
+                    "https://res.cloudinary.com/itsupport18/raw/upload/fl_attachment/v1/LessonFile/FILE-3a204b73-f357-490d-9a42-f11b42318ca5.pdf",
+                TopicId = 3,
             }
         };
     }

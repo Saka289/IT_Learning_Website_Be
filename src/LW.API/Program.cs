@@ -29,7 +29,8 @@ try
     app.MigrateDatabase<AppDbContext>((context, _) =>
     {
         var elasticClient = app.Services.GetRequiredService<IElasticClient>();
-        AppDbContextSeed.SeedDataAsync(context, Log.Logger, elasticClient).Wait();
+        var mapper = app.Services.GetRequiredService<IMapper>();
+        AppDbContextSeed.SeedDataAsync(context, Log.Logger, elasticClient, mapper).Wait();
     }).Run();
 }
 catch (Exception ex)

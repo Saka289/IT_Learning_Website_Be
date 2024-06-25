@@ -8,6 +8,7 @@ public class LessonDto
     public bool IsActive { get; set; }
     public string Content { get; set; }
     public string FilePath { get; set; }
+    public string PublicId { get; set; }
     public string UrlDownload { get; set; }
     public int TopicId { get; set; }
     public string TopicTitle { get; set; }
