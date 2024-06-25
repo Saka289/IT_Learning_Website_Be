@@ -62,6 +62,11 @@ public class GradeService : IGradeService
         {
             return new ApiResult<GradeDto>(false, "Grade is null !!!");
         }
+        var levelEntity = await _levelRepository.GetLevelById(gradeEntity.LevelId);
+        if (levelEntity != null)
+        {
+            gradeEntity.Level = levelEntity;
+        }
 
         var result = _mapper.Map<GradeDto>(gradeEntity);
         return new ApiSuccessResult<GradeDto>(result);

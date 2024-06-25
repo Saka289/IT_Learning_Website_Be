@@ -66,6 +66,11 @@ public class LessonService : ILessonService
         {
             return new ApiResult<LessonDto>(false, "Lesson is null !!!");
         }
+        var topicEntity = await _topicRepository.GetTopicById(lessonEntity.TopicId);
+        if (topicEntity is not null)
+        {
+            lessonEntity.Topic = topicEntity;
+        }
 
         var result = _mapper.Map<LessonDto>(lessonEntity);
         return new ApiSuccessResult<LessonDto>(result);
