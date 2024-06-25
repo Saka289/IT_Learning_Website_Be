@@ -157,10 +157,10 @@ public class TopicService : ITopicService
             return new ApiResult<TopicDto>(false, "Not found !");
         }
 
-        var document = _documentRepository.GetDocumentById(obj.DocumentId);
+        var document = await _documentRepository.GetDocumentById(obj.DocumentId);
         if (document != null)
         {
-            obj.Document = document.Result;
+            obj.Document = document;
         }
         var result = _mapper.Map<TopicDto>(obj);
         return new ApiResult<TopicDto>(true, result, "Get topic by id successfully !");
