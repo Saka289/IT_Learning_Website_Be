@@ -63,6 +63,11 @@ public class DocumentService : IDocumentService
         {
             return new ApiResult<DocumentDto>(false, "Document is null !!!");
         }
+        var gradeEntity = await _gradeRepository.GetGradeById(documentEntity.GradeId);
+        if (gradeEntity != null)
+        {
+            documentEntity.Grade = gradeEntity;
+        }
 
         var result = _mapper.Map<DocumentDto>(documentEntity);
         return new ApiSuccessResult<DocumentDto>(result);

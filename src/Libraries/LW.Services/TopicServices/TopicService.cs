@@ -154,7 +154,6 @@ public class TopicService : ITopicService
         {
             return new ApiResult<TopicDto>(false, "Not found !");
         }
-
         var document = await _documentRepository.GetDocumentById(obj.DocumentId);
         if (document != null)
         {
