@@ -9,6 +9,7 @@ using LW.Shared.Constant;
 using LW.Shared.DTOs.Topic;
 using LW.Shared.SeedWork;
 using MockQueryable.Moq;
+using Serilog;
 
 namespace LW.Services.TopicServices;
 
@@ -18,14 +19,16 @@ public class TopicService : ITopicService
     private readonly IMapper _mapper;
     private readonly IDocumentRepository _documentRepository;
     private readonly IElasticSearchService<TopicDto, int> _elasticSearchService;
+    private readonly ILogger _logger;
 
     public TopicService(ITopicRepository topicRepository, IMapper mapper, IDocumentRepository documentRepository,
-        IElasticSearchService<TopicDto, int> elasticSearchService)
+        IElasticSearchService<TopicDto, int> elasticSearchService, ILogger logger)
     {
         _topicRepository = topicRepository;
         _mapper = mapper;
         _documentRepository = documentRepository;
         _elasticSearchService = elasticSearchService;
+        _logger = logger;
     }
 
     public async Task<ApiResult<bool>> Create(TopicCreateDto model)
@@ -106,6 +109,35 @@ public class TopicService : ITopicService
         return new ApiResult<bool>(true, "Delete topic successfully");
     }
 
+    public async Task<ApiResult<bool>> DeleteRange(IEnumerable<int> ids)
+    {
+        var listTopicValid = new List<Topic>();
+        
+        foreach (var topicId in ids)
+        {
+            var topicObj = await _topicRepository.GetTopicById(topicId);
+            if (topicObj is null)
+            {
+                _logger.Information($"Lesson not found with id {topicId} !!!");
+            }
+            else
+            {
+                listTopicValid.Add(topicObj);
+            }
+        }
+
+        foreach (var obj in listTopicValid)
+        {
+            var documentEntity = await _documentRepository.GetDocumentById(obj.DocumentId);
+            obj.IsActive = false;
+            await _topicRepository.UpdateAsync(obj);
+            obj.Document = documentEntity;
+            var result = _mapper.Map<TopicDto>(obj);
+            _elasticSearchService.UpdateDocumentAsync(ElasticConstant.ElasticTopics, result, obj.Id);
+        }
+        return new ApiSuccessResult<bool>(true, "Delete Range Topics Successfully !!!");
+    }
+
     public async Task<ApiResult<IEnumerable<TopicDto>>> GetAll()
     {
         var list = await _topicRepository.GetAllTopic();
@@ -128,7 +160,8 @@ public class TopicService : ITopicService
         }
 
         var result = _mapper.ProjectTo<TopicDto>(topics);
-        var pagedResult = await PagedList<TopicDto>.ToPageListAsync(result, pagingRequestParameters.PageIndex, pagingRequestParameters.PageSize, pagingRequestParameters.OrderBy, pagingRequestParameters.IsAscending);
+        var pagedResult = await PagedList<TopicDto>.ToPageListAsync(result, pagingRequestParameters.PageIndex,
+            pagingRequestParameters.PageSize, pagingRequestParameters.OrderBy, pagingRequestParameters.IsAscending);
 
         return new ApiSuccessResult<PagedList<TopicDto>>(pagedResult);
     }
@@ -143,7 +176,8 @@ public class TopicService : ITopicService
         }
 
         var result = _mapper.Map<IEnumerable<TopicDto>>(topics);
-        var pagedResult = await PagedList<TopicDto>.ToPageListAsync(result.AsQueryable().BuildMock(), searchTopicDto.PageIndex, searchTopicDto.PageSize, searchTopicDto.OrderBy, searchTopicDto.IsAscending);
+        var pagedResult = await PagedList<TopicDto>.ToPageListAsync(result.AsQueryable().BuildMock(),
+            searchTopicDto.PageIndex, searchTopicDto.PageSize, searchTopicDto.OrderBy, searchTopicDto.IsAscending);
         return new ApiSuccessResult<PagedList<TopicDto>>(pagedResult);
     }
 
@@ -160,6 +194,7 @@ public class TopicService : ITopicService
         {
             obj.Document = document;
         }
+
         var result = _mapper.Map<TopicDto>(obj);
         return new ApiResult<TopicDto>(true, result, "Get topic by id successfully !");
     }
