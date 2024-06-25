@@ -17,6 +17,11 @@ public class LessonRepository : RepositoryBase<Lesson, int>, ILessonRepository
         return await FindAll().Include(t => t.Topic).ToListAsync();
     }
 
+    public async Task<IEnumerable<Lesson>> GetAllLessonByTopic(int id)
+    {
+        return await FindAll().Include(t => t.Topic).Where(x => x.TopicId == id).ToListAsync();
+    }
+
     public Task<IQueryable<Lesson>> GetAllLessonPagination()
     {
         var result = FindAll();
@@ -59,6 +64,7 @@ public class LessonRepository : RepositoryBase<Lesson, int>, ILessonRepository
         {
             return false;
         }
+
         await DeleteListAsync(lessons);
         return true;
     }

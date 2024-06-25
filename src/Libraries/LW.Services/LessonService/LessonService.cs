@@ -23,7 +23,8 @@ public class LessonService : ILessonService
     private readonly ILogger _logger;
 
     public LessonService(ILessonRepository lessonRepository, ITopicRepository topicRepository, IMapper mapper,
-        IElasticSearchService<LessonDto, int> elasticSearchService, ICloudinaryService cloudinaryService, ILogger logger)
+        IElasticSearchService<LessonDto, int> elasticSearchService, ICloudinaryService cloudinaryService,
+        ILogger logger)
     {
         _lessonRepository = lessonRepository;
         _topicRepository = topicRepository;
@@ -45,6 +46,18 @@ public class LessonService : ILessonService
         return new ApiSuccessResult<IEnumerable<LessonDto>>(result);
     }
 
+    public async Task<ApiResult<IEnumerable<LessonDto>>> GetAllLessonByTopic(int id)
+    {
+        var lessonList = await _lessonRepository.GetAllLessonByTopic(id);
+        if (lessonList == null)
+        {
+            return new ApiResult<IEnumerable<LessonDto>>(false, "Lesson is null !!!");
+        }
+
+        var result = _mapper.Map<IEnumerable<LessonDto>>(lessonList);
+        return new ApiSuccessResult<IEnumerable<LessonDto>>(result);
+    }
+
     public async Task<ApiResult<PagedList<LessonDto>>> GetAllLessonPagination(
         PagingRequestParameters pagingRequestParameters)
     {
@@ -55,7 +68,8 @@ public class LessonService : ILessonService
         }
 
         var result = _mapper.ProjectTo<LessonDto>(lessonList);
-        var pagedResult = await PagedList<LessonDto>.ToPageListAsync(result, pagingRequestParameters.PageIndex, pagingRequestParameters.PageSize, pagingRequestParameters.OrderBy, pagingRequestParameters.IsAscending);
+        var pagedResult = await PagedList<LessonDto>.ToPageListAsync(result, pagingRequestParameters.PageIndex,
+            pagingRequestParameters.PageSize, pagingRequestParameters.OrderBy, pagingRequestParameters.IsAscending);
         return new ApiSuccessResult<PagedList<LessonDto>>(pagedResult);
     }
 
@@ -66,6 +80,7 @@ public class LessonService : ILessonService
         {
             return new ApiResult<LessonDto>(false, "Lesson is null !!!");
         }
+
         var topicEntity = await _topicRepository.GetTopicById(lessonEntity.TopicId);
         if (topicEntity is not null)
         {
@@ -86,7 +101,8 @@ public class LessonService : ILessonService
         }
 
         var result = _mapper.Map<IEnumerable<LessonDto>>(lessonEntity);
-        var pagedResult = await PagedList<LessonDto>.ToPageListAsync(result.AsQueryable().BuildMock(), searchLessonDto.PageIndex, searchLessonDto.PageSize, searchLessonDto.OrderBy, searchLessonDto.IsAscending);
+        var pagedResult = await PagedList<LessonDto>.ToPageListAsync(result.AsQueryable().BuildMock(),
+            searchLessonDto.PageIndex, searchLessonDto.PageSize, searchLessonDto.OrderBy, searchLessonDto.IsAscending);
         return new ApiSuccessResult<PagedList<LessonDto>>(pagedResult);
     }
 
@@ -200,13 +216,16 @@ public class LessonService : ILessonService
             {
                 _logger.Information($"Lesson not found with id {itemId} !!!");
             }
+
             listId.Add(lessonEntity);
         }
+
         var lesson = await _lessonRepository.DeleteRangeLesson(listId);
         if (!lesson)
         {
             return new ApiResult<bool>(false, "Failed Delete Lesson not found !!!");
         }
+
         await _cloudinaryService.DeleteRangeFileAsync(listId.Select(l => l.PublicId).ToList());
         _elasticSearchService.DeleteDocumentRangeAsync(ElasticConstant.ElasticLessons, ids);
 

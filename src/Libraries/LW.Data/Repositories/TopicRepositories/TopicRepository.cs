@@ -44,6 +44,11 @@ public class TopicRepository : RepositoryBase<Topic, int>, ITopicRepository
         return await FindAll().Include(d => d.Document).ToListAsync();
     }
 
+    public async Task<IEnumerable<Topic>> GetAllTopicByDocument(int id)
+    {
+        return await FindAll().Include(d => d.Document).Where(x => x.DocumentId == id).ToListAsync();
+    }
+
     public Task<IQueryable<Topic>> GetAllTopicPagination()
     {
         var result = FindAll();

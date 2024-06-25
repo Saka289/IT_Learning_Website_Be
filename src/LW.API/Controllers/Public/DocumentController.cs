@@ -32,6 +32,18 @@ namespace LW.API.Controllers.Public
             return Ok(result);
         }
         
+        [HttpGet("GetAllDocumentByGrade/{gradeId}")]
+        public async Task<ActionResult<ApiResult<IEnumerable<DocumentDto>>>> GetAllDocumentByGrade(int gradeId)
+        {
+            var result = await _documentService.GetAllDocumentByGrade(gradeId);
+            if (!result.IsSucceeded)
+            {
+                return NotFound(result);
+            }
+
+            return Ok(result);
+        }
+        
         [HttpGet("GetAllDocumentPagination")]
         public async Task<ActionResult<ApiResult<PagedList<DocumentDto>>>> GetAllDocumentPagination([FromQuery]PagingRequestParameters pagingRequestParameters)
         {

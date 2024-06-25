@@ -41,6 +41,11 @@ namespace LW.Data.Repositories.DocumentRepositories
             return documents;
         }
 
+        public async Task<IEnumerable<Document>> GetAllDocumentByGrade(int id)
+        {
+            return await FindAll().Include(g => g.Grade).Where(x => x.GradeId == id).ToListAsync();
+        }
+
         public Task<IQueryable<Document>> GetAllDocumentPagination()
         {
             var result = FindAll();

@@ -41,6 +41,18 @@ public class DocumentService : IDocumentService
         return new ApiSuccessResult<IEnumerable<DocumentDto>>(result);
     }
 
+    public async Task<ApiResult<IEnumerable<DocumentDto>>> GetAllDocumentByGrade(int id)
+    {
+        var documentList = await _documentRepository.GetAllDocumentByGrade(id);
+        if (documentList == null)
+        {
+            return new ApiResult<IEnumerable<DocumentDto>>(false, "Document is null !!!");
+        }
+
+        var result = _mapper.Map<IEnumerable<DocumentDto>>(documentList);
+        return new ApiSuccessResult<IEnumerable<DocumentDto>>(result);
+    }
+
     public async Task<ApiResult<PagedList<DocumentDto>>> GetAllDocumentPagination(
         PagingRequestParameters pagingRequestParameters)
     {
@@ -51,7 +63,8 @@ public class DocumentService : IDocumentService
         }
 
         var result = _mapper.ProjectTo<DocumentDto>(documentList);
-        var pagedResult = await PagedList<DocumentDto>.ToPageListAsync(result, pagingRequestParameters.PageIndex, pagingRequestParameters.PageSize, pagingRequestParameters.OrderBy, pagingRequestParameters.IsAscending);
+        var pagedResult = await PagedList<DocumentDto>.ToPageListAsync(result, pagingRequestParameters.PageIndex,
+            pagingRequestParameters.PageSize, pagingRequestParameters.OrderBy, pagingRequestParameters.IsAscending);
 
         return new ApiSuccessResult<PagedList<DocumentDto>>(pagedResult);
     }
@@ -63,6 +76,7 @@ public class DocumentService : IDocumentService
         {
             return new ApiResult<DocumentDto>(false, "Document is null !!!");
         }
+
         var gradeEntity = await _gradeRepository.GetGradeById(documentEntity.GradeId);
         if (gradeEntity != null)
         {
@@ -83,7 +97,9 @@ public class DocumentService : IDocumentService
         }
 
         var result = _mapper.Map<IEnumerable<DocumentDto>>(documentEntity);
-        var pagedResult = await PagedList<DocumentDto>.ToPageListAsync(result.AsQueryable().BuildMock(), searchDocumentDto.PageIndex, searchDocumentDto.PageSize, searchDocumentDto.OrderBy, searchDocumentDto.IsAscending);
+        var pagedResult = await PagedList<DocumentDto>.ToPageListAsync(result.AsQueryable().BuildMock(),
+            searchDocumentDto.PageIndex, searchDocumentDto.PageSize, searchDocumentDto.OrderBy,
+            searchDocumentDto.IsAscending);
         return new ApiSuccessResult<PagedList<DocumentDto>>(pagedResult);
     }
 
@@ -133,6 +149,7 @@ public class DocumentService : IDocumentService
         {
             return new ApiResult<bool>(false, "Document not found !!!");
         }
+
         var gradeEntity = await _gradeRepository.GetGradeById(documentEntity.GradeId);
 
         documentEntity.IsActive = !documentEntity.IsActive;
