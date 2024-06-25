@@ -7,6 +7,7 @@ namespace LW.Services.DocumentService;
 public interface IDocumentService
 {
     Task<ApiResult<IEnumerable<DocumentDto>>> GetAllDocument();
+    Task<ApiResult<IEnumerable<DocumentDto>>> GetAllDocumentByGrade(int id);
     Task<ApiResult<PagedList<DocumentDto>>> GetAllDocumentPagination(PagingRequestParameters pagingRequestParameters);
     Task<ApiResult<DocumentDto>> GetDocumentById(int id);
     Task<ApiResult<PagedList<DocumentDto>>> SearchByDocumentPagination(SearchDocumentDto searchDocumentDto);

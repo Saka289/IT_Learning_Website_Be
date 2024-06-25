@@ -118,6 +118,18 @@ public class TopicService : ITopicService
         return new ApiResult<IEnumerable<TopicDto>>(true, result, "Get all topic successfully !");
     }
 
+    public async Task<ApiResult<IEnumerable<TopicDto>>> GetAllTopicByDocument(int id)
+    {
+        var list = await _topicRepository.GetAllTopicByDocument(id);
+        if (list == null)
+        {
+            return new ApiResult<IEnumerable<TopicDto>>(false, "List topic is null !!!");
+        }
+
+        var result = _mapper.Map<IEnumerable<TopicDto>>(list);
+        return new ApiResult<IEnumerable<TopicDto>>(true, result, "Get all topic successfully !");
+    }
+
     public async Task<ApiResult<PagedList<TopicDto>>> GetAllTopicPagination(
         PagingRequestParameters pagingRequestParameters)
     {
@@ -128,7 +140,8 @@ public class TopicService : ITopicService
         }
 
         var result = _mapper.ProjectTo<TopicDto>(topics);
-        var pagedResult = await PagedList<TopicDto>.ToPageListAsync(result, pagingRequestParameters.PageIndex, pagingRequestParameters.PageSize, pagingRequestParameters.OrderBy, pagingRequestParameters.IsAscending);
+        var pagedResult = await PagedList<TopicDto>.ToPageListAsync(result, pagingRequestParameters.PageIndex,
+            pagingRequestParameters.PageSize, pagingRequestParameters.OrderBy, pagingRequestParameters.IsAscending);
 
         return new ApiSuccessResult<PagedList<TopicDto>>(pagedResult);
     }
@@ -143,7 +156,8 @@ public class TopicService : ITopicService
         }
 
         var result = _mapper.Map<IEnumerable<TopicDto>>(topics);
-        var pagedResult = await PagedList<TopicDto>.ToPageListAsync(result.AsQueryable().BuildMock(), searchTopicDto.PageIndex, searchTopicDto.PageSize, searchTopicDto.OrderBy, searchTopicDto.IsAscending);
+        var pagedResult = await PagedList<TopicDto>.ToPageListAsync(result.AsQueryable().BuildMock(),
+            searchTopicDto.PageIndex, searchTopicDto.PageSize, searchTopicDto.OrderBy, searchTopicDto.IsAscending);
         return new ApiSuccessResult<PagedList<TopicDto>>(pagedResult);
     }
 
@@ -154,11 +168,13 @@ public class TopicService : ITopicService
         {
             return new ApiResult<TopicDto>(false, "Not found !");
         }
+
         var document = await _documentRepository.GetDocumentById(obj.DocumentId);
         if (document != null)
         {
             obj.Document = document;
         }
+
         var result = _mapper.Map<TopicDto>(obj);
         return new ApiResult<TopicDto>(true, result, "Get topic by id successfully !");
     }

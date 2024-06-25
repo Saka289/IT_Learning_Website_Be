@@ -6,6 +6,7 @@ namespace LW.Data.Repositories.GradeRepositories;
 public interface IGradeRepository : IRepositoryBase<Grade, int>
 {
     Task<IEnumerable<Grade>> GetAllGrade();
+    Task<IEnumerable<Grade>> GetAllGradeByLevel(int id);
     Task<IQueryable<Grade>> GetAllGradePagination();
     Task<Grade> GetGradeById(int id);
     Task<Grade> CreateGrade(Grade grade);

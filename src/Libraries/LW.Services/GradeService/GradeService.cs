@@ -40,6 +40,18 @@ public class GradeService : IGradeService
         return new ApiSuccessResult<IEnumerable<GradeDto>>(result);
     }
 
+    public async Task<ApiResult<IEnumerable<GradeDto>>> GetAllGradeByLevel(int id)
+    {
+        var gradeList = await _gradeRepository.GetAllGradeByLevel(id);
+        if (gradeList == null)
+        {
+            return new ApiResult<IEnumerable<GradeDto>>(false, "Grade is null !!!");
+        }
+
+        var result = _mapper.Map<IEnumerable<GradeDto>>(gradeList);
+        return new ApiSuccessResult<IEnumerable<GradeDto>>(result);
+    }
+
     public async Task<ApiResult<PagedList<GradeDto>>> GetAllGradePagination(
         PagingRequestParameters pagingRequestParameters)
     {
