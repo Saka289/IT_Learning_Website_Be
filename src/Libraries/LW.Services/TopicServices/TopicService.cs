@@ -2,10 +2,12 @@
 using LW.Contracts.Common;
 using LW.Data.Entities;
 using LW.Data.Repositories.DocumentRepositories;
+using LW.Data.Repositories.LessonRepositories;
 using LW.Data.Repositories.TopicRepositories;
 using LW.Infrastructure.Extensions;
 using LW.Services.DocumentService;
 using LW.Shared.Constant;
+using LW.Shared.DTOs.Lesson;
 using LW.Shared.DTOs.Topic;
 using LW.Shared.SeedWork;
 using MockQueryable.Moq;
@@ -19,16 +21,19 @@ public class TopicService : ITopicService
     private readonly IMapper _mapper;
     private readonly IDocumentRepository _documentRepository;
     private readonly IElasticSearchService<TopicDto, int> _elasticSearchService;
+    private readonly IElasticSearchService<LessonDto, int> _elasticSearchLessonService;
     private readonly ILogger _logger;
-
+    private readonly ILessonRepository _lessonRepository;
     public TopicService(ITopicRepository topicRepository, IMapper mapper, IDocumentRepository documentRepository,
-        IElasticSearchService<TopicDto, int> elasticSearchService, ILogger logger)
+        IElasticSearchService<TopicDto, int> elasticSearchService, ILogger logger, ILessonRepository lessonRepository, IElasticSearchService<LessonDto, int> elasticSearchLessonService)
     {
         _topicRepository = topicRepository;
         _mapper = mapper;
         _documentRepository = documentRepository;
         _elasticSearchService = elasticSearchService;
         _logger = logger;
+        _lessonRepository = lessonRepository;
+        _elasticSearchLessonService = elasticSearchLessonService;
     }
 
     public async Task<ApiResult<bool>> Create(TopicCreateDto model)
@@ -134,6 +139,19 @@ public class TopicService : ITopicService
             obj.Document = documentEntity;
             var result = _mapper.Map<TopicDto>(obj);
             _elasticSearchService.UpdateDocumentAsync(ElasticConstant.ElasticTopics, result, obj.Id);
+            // delete soft all the lesson of this topic
+            var lessons = await _lessonRepository.GetAllLessonByTopic(obj.Id);
+            if(lessons!=null){
+                foreach (var lesson in lessons)
+                {
+                    lesson.IsActive = false;
+                    await _lessonRepository.UpdateLesson(lesson);
+                    await _lessonRepository.SaveChangesAsync();
+                    lesson.Topic = obj;
+                    var result2 = _mapper.Map<LessonDto>(lesson);
+                    _elasticSearchLessonService.UpdateDocumentAsync(ElasticConstant.ElasticLessons, result2, lesson.Id);
+                }
+            }
         }
         return new ApiSuccessResult<bool>(true, "Delete Range Topics Successfully !!!");
     }
