@@ -128,8 +128,7 @@ public class TopicService : ITopicService
         }
 
         var result = _mapper.ProjectTo<TopicDto>(topics);
-        var pagedResult = await PagedList<TopicDto>.ToPageListAsync(result, pagingRequestParameters.PageIndex,
-            pagingRequestParameters.PageSize);
+        var pagedResult = await PagedList<TopicDto>.ToPageListAsync(result, pagingRequestParameters.PageIndex, pagingRequestParameters.PageSize, pagingRequestParameters.OrderBy, pagingRequestParameters.IsAscending);
 
         return new ApiSuccessResult<PagedList<TopicDto>>(pagedResult);
     }
@@ -144,8 +143,7 @@ public class TopicService : ITopicService
         }
 
         var result = _mapper.Map<IEnumerable<TopicDto>>(topics);
-        var pagedResult = await PagedList<TopicDto>.ToPageListAsync(result.AsQueryable().BuildMock(),
-            searchTopicDto.PageIndex, searchTopicDto.PageSize);
+        var pagedResult = await PagedList<TopicDto>.ToPageListAsync(result.AsQueryable().BuildMock(), searchTopicDto.PageIndex, searchTopicDto.PageSize, searchTopicDto.OrderBy, searchTopicDto.IsAscending);
         return new ApiSuccessResult<PagedList<TopicDto>>(pagedResult);
     }
 

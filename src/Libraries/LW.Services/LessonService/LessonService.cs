@@ -55,7 +55,7 @@ public class LessonService : ILessonService
         }
 
         var result = _mapper.ProjectTo<LessonDto>(lessonList);
-        var pagedResult = await PagedList<LessonDto>.ToPageListAsync(result, pagingRequestParameters.PageIndex, pagingRequestParameters.PageSize);
+        var pagedResult = await PagedList<LessonDto>.ToPageListAsync(result, pagingRequestParameters.PageIndex, pagingRequestParameters.PageSize, pagingRequestParameters.OrderBy, pagingRequestParameters.IsAscending);
         return new ApiSuccessResult<PagedList<LessonDto>>(pagedResult);
     }
 
@@ -81,7 +81,7 @@ public class LessonService : ILessonService
         }
 
         var result = _mapper.Map<IEnumerable<LessonDto>>(lessonEntity);
-        var pagedResult = await PagedList<LessonDto>.ToPageListAsync(result.AsQueryable().BuildMock(), searchLessonDto.PageIndex, searchLessonDto.PageSize);
+        var pagedResult = await PagedList<LessonDto>.ToPageListAsync(result.AsQueryable().BuildMock(), searchLessonDto.PageIndex, searchLessonDto.PageSize, searchLessonDto.OrderBy, searchLessonDto.IsAscending);
         return new ApiSuccessResult<PagedList<LessonDto>>(pagedResult);
     }
 

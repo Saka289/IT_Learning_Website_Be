@@ -51,8 +51,7 @@ public class DocumentService : IDocumentService
         }
 
         var result = _mapper.ProjectTo<DocumentDto>(documentList);
-        var pagedResult = await PagedList<DocumentDto>.ToPageListAsync(result, pagingRequestParameters.PageIndex,
-            pagingRequestParameters.PageSize);
+        var pagedResult = await PagedList<DocumentDto>.ToPageListAsync(result, pagingRequestParameters.PageIndex, pagingRequestParameters.PageSize, pagingRequestParameters.OrderBy, pagingRequestParameters.IsAscending);
 
         return new ApiSuccessResult<PagedList<DocumentDto>>(pagedResult);
     }
@@ -79,7 +78,7 @@ public class DocumentService : IDocumentService
         }
 
         var result = _mapper.Map<IEnumerable<DocumentDto>>(documentEntity);
-        var pagedResult = await PagedList<DocumentDto>.ToPageListAsync(result.AsQueryable().BuildMock(), searchDocumentDto.PageIndex, searchDocumentDto.PageSize);
+        var pagedResult = await PagedList<DocumentDto>.ToPageListAsync(result.AsQueryable().BuildMock(), searchDocumentDto.PageIndex, searchDocumentDto.PageSize, searchDocumentDto.OrderBy, searchDocumentDto.IsAscending);
         return new ApiSuccessResult<PagedList<DocumentDto>>(pagedResult);
     }
 

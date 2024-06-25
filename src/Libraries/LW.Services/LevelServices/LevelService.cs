@@ -122,7 +122,7 @@ public class LevelService : ILevelService
         }
 
         var result = _mapper.Map<IEnumerable<LevelDto>>(levels);
-        var pagedResult = await PagedList<LevelDto>.ToPageListAsync(result.AsQueryable().BuildMock(), searchLevelDto.PageIndex, searchLevelDto.PageSize);
+        var pagedResult = await PagedList<LevelDto>.ToPageListAsync(result.AsQueryable().BuildMock(), searchLevelDto.PageIndex, searchLevelDto.PageSize, searchLevelDto.OrderBy, searchLevelDto.IsAscending);
         return new ApiSuccessResult<PagedList<LevelDto>>(pagedResult);
     }
 
@@ -135,8 +135,7 @@ public class LevelService : ILevelService
         }
 
         var result = _mapper.ProjectTo<LevelDto>(levels);
-        var pagedResult = await PagedList<LevelDto>.ToPageListAsync(result, pagingRequestParameters.PageIndex,
-            pagingRequestParameters.PageSize);
+        var pagedResult = await PagedList<LevelDto>.ToPageListAsync(result, pagingRequestParameters.PageIndex, pagingRequestParameters.PageSize ,pagingRequestParameters.OrderBy, pagingRequestParameters.IsAscending);
         return new ApiSuccessResult<PagedList<LevelDto>>(pagedResult);    }
 
     public Task<ApiResult<bool>> DeleteRangeLevel(IEnumerable<int> ids)

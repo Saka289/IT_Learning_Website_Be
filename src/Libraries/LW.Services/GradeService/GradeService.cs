@@ -76,7 +76,7 @@ public class GradeService : IGradeService
         }
 
         var result = _mapper.Map<IEnumerable<GradeDto>>(gradeEntity);
-        var pagedResult = await PagedList<GradeDto>.ToPageListAsync(result.AsQueryable().BuildMock(), searchGradeDto.PageIndex, searchGradeDto.PageSize);
+        var pagedResult = await PagedList<GradeDto>.ToPageListAsync(result.AsQueryable().BuildMock(), searchGradeDto.PageIndex, searchGradeDto.PageSize, searchGradeDto.OrderBy, searchGradeDto.IsAscending);
         return new ApiSuccessResult<PagedList<GradeDto>>(pagedResult);
     }
 
