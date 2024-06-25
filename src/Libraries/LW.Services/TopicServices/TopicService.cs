@@ -148,8 +148,8 @@ public class TopicService : ITopicService
                     await _lessonRepository.UpdateLesson(lesson);
                     await _lessonRepository.SaveChangesAsync();
                     lesson.Topic = obj;
-                    var result2 = _mapper.Map<LessonDto>(lesson);
-                    _elasticSearchLessonService.UpdateDocumentAsync(ElasticConstant.ElasticLessons, result2, lesson.Id);
+                    var resultLesson = _mapper.Map<LessonDto>(lesson);
+                    _elasticSearchLessonService.UpdateDocumentAsync(ElasticConstant.ElasticLessons, resultLesson, lesson.Id);
                 }
             }
         }
