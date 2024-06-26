@@ -10,7 +10,7 @@ using LW.Shared.SeedWork;
 using Microsoft.EntityFrameworkCore;
 using MockQueryable.Moq;
 
-namespace LW.Services.GradeService;
+namespace LW.Services.GradeServices;
 
 public class GradeService : IGradeService
 {

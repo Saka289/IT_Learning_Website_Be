@@ -1,6 +1,6 @@
 ﻿using LW.Shared.SeedWork;
 
-namespace LW.Services.FacebookService;
+namespace LW.Services.FacebookServices;
 
 public interface IFacebookService
 {

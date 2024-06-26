@@ -2,7 +2,7 @@
 using LW.Shared.DTOs.Document;
 using LW.Shared.SeedWork;
 
-namespace LW.Services.DocumentService;
+namespace LW.Services.DocumentServices;
 
 public interface IDocumentService
 {

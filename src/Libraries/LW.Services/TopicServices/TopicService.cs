@@ -4,7 +4,6 @@ using LW.Data.Entities;
 using LW.Data.Repositories.DocumentRepositories;
 using LW.Data.Repositories.TopicRepositories;
 using LW.Infrastructure.Extensions;
-using LW.Services.DocumentService;
 using LW.Shared.Constant;
 using LW.Shared.DTOs.Topic;
 using LW.Shared.SeedWork;

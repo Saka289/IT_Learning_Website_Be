@@ -4,14 +4,12 @@ using LW.Data.Entities;
 using LW.Data.Repositories.DocumentRepositories;
 using LW.Data.Repositories.GradeRepositories;
 using LW.Infrastructure.Extensions;
-using LW.Services.GradeService;
-using LW.Services.LevelServices;
 using LW.Shared.Constant;
 using LW.Shared.DTOs.Document;
 using LW.Shared.SeedWork;
 using MockQueryable.Moq;
 
-namespace LW.Services.DocumentService;
+namespace LW.Services.DocumentServices;
 
 public class DocumentService : IDocumentService
 {
@@ -96,6 +94,11 @@ public class DocumentService : IDocumentService
             return new ApiResult<PagedList<DocumentDto>>(false, $"Document not found by {searchDocumentDto.Key} !!!");
         }
 
+        if (searchDocumentDto.GradeId > 0)
+        {
+            documentEntity = documentEntity.Where(d => d.GradeId == searchDocumentDto.GradeId).ToList();
+        }
+
         var result = _mapper.Map<IEnumerable<DocumentDto>>(documentEntity);
         var pagedResult = await PagedList<DocumentDto>.ToPageListAsync(result.AsQueryable().BuildMock(),
             searchDocumentDto.PageIndex, searchDocumentDto.PageSize, searchDocumentDto.OrderBy,
@@ -163,7 +166,7 @@ public class DocumentService : IDocumentService
 
     public async Task<ApiResult<bool>> DeleteDocument(int id)
     {
-        var documentEntity = await _documentRepository.GetByIdAsync(id);
+        var documentEntity = await _documentRepository.GetDocumentById(id);
         if (documentEntity is null)
         {
             return new ApiResult<bool>(false, "Document not found !!!");

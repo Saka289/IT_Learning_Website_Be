@@ -4,7 +4,7 @@ using LW.Shared.SeedWork;
 using Microsoft.Extensions.Options;
 using Serilog;
 
-namespace LW.Services.FacebookService;
+namespace LW.Services.FacebookServices;
 
 public class FacebookService : IFacebookService
 {

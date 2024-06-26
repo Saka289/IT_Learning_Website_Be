@@ -4,7 +4,7 @@ using LW.Shared.DTOs.Token;
 using LW.Shared.DTOs.User;
 using LW.Shared.SeedWork;
 
-namespace LW.Services.UserService;
+namespace LW.Services.UserServices;
 
 public interface IUserService
 {

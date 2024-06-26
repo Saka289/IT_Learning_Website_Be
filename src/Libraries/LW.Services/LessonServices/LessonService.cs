@@ -11,7 +11,7 @@ using Microsoft.EntityFrameworkCore;
 using MockQueryable.Moq;
 using Serilog;
 
-namespace LW.Services.LessonService;
+namespace LW.Services.LessonServices;
 
 public class LessonService : ILessonService
 {

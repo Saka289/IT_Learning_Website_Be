@@ -7,8 +7,8 @@ using LW.Contracts.Common;
 using LW.Contracts.Services;
 using LW.Data.Entities;
 using LW.Data.Persistence;
-using LW.Services.FacebookService;
-using LW.Services.JwtTokenService;
+using LW.Services.FacebookServices;
+using LW.Services.JwtTokenServices;
 using LW.Shared.Configurations;
 using LW.Shared.Constant;
 using LW.Shared.DTOs.Email;
@@ -27,7 +27,7 @@ using Microsoft.Extensions.Options;
 using Microsoft.IdentityModel.JsonWebTokens;
 using Serilog;
 
-namespace LW.Services.UserService;
+namespace LW.Services.UserServices;
 
 public class UserService : IUserService
 {

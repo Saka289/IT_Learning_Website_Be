@@ -1,7 +1,7 @@
 ﻿using LW.Shared.DTOs.Lesson;
 using LW.Shared.SeedWork;
 
-namespace LW.Services.LessonService;
+namespace LW.Services.LessonServices;
 
 public interface ILessonService
 {

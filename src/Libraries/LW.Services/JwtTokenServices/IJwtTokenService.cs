@@ -1,7 +1,7 @@
 ﻿using System.Security.Claims;
 using LW.Data.Entities;
 
-namespace LW.Services.JwtTokenService;
+namespace LW.Services.JwtTokenServices;
 
 public interface IJwtTokenService
 {
