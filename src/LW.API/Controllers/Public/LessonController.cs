@@ -35,6 +35,17 @@ namespace LW.API.Controllers.Public
             return Ok(result);
         }
         
+        [HttpGet("GetAllLessonByTopic/{topicId}")]
+        public async Task<ActionResult<ApiResult<IEnumerable<LessonDto>>>> GetAllLessonByTopic(int topicId)
+        {
+            var result = await _lessonService.GetAllLessonByTopic(topicId);
+            if (!result.IsSucceeded)
+            {
+                return NotFound(result);
+            }
+            return Ok(result);
+        }
+        
         [HttpGet("GetAllLessonPagination")]
         public async Task<ActionResult<ApiResult<PagedList<LessonDto>>>> GetAllLessonPagination(
             [FromQuery] PagingRequestParameters pagingRequestParameters)

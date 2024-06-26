@@ -12,9 +12,8 @@ public interface ITopicService
     public Task<ApiResult<bool>> Delete(int id);
     public Task<ApiResult<bool>> DeleteRange(IEnumerable<int> ids);
     public Task<ApiResult<IEnumerable<TopicDto>>> GetAll();
+    public Task<ApiResult<IEnumerable<TopicDto>>> GetAllTopicByDocument(int id);
     public Task<ApiResult<PagedList<TopicDto>>> SearchTopicPagination(SearchTopicDto searchTopicDto);
     public Task<ApiResult<TopicDto>> GetById(int id);
-
-    public Task<ApiResult<PagedList<TopicDto>>> GetAllTopicPagination(
-        PagingRequestParameters pagingRequestParameters);
+    public Task<ApiResult<PagedList<TopicDto>>> GetAllTopicPagination(PagingRequestParameters pagingRequestParameters);
 }

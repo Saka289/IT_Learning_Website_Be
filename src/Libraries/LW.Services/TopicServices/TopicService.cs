@@ -168,6 +168,18 @@ public class TopicService : ITopicService
         return new ApiResult<IEnumerable<TopicDto>>(true, result, "Get all topic successfully !");
     }
 
+    public async Task<ApiResult<IEnumerable<TopicDto>>> GetAllTopicByDocument(int id)
+    {
+        var list = await _topicRepository.GetAllTopicByDocument(id);
+        if (list == null)
+        {
+            return new ApiResult<IEnumerable<TopicDto>>(false, "List topic is null !!!");
+        }
+
+        var result = _mapper.Map<IEnumerable<TopicDto>>(list);
+        return new ApiResult<IEnumerable<TopicDto>>(true, result, "Get all topic successfully !");
+    }
+
     public async Task<ApiResult<PagedList<TopicDto>>> GetAllTopicPagination(
         PagingRequestParameters pagingRequestParameters)
     {

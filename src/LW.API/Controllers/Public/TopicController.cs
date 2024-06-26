@@ -36,7 +36,18 @@ namespace LW.API.Controllers.Public
 
             return Ok(result);
         }
-
+        
+        [HttpGet("GetAllTopicByDocument/{documentId}")]
+        public async Task<ActionResult<ApiResult<TopicDto>>> GetAllTopicByDocument(int documentId)
+        {
+            var result = await _topicService.GetAllTopicByDocument(documentId);
+            if (!result.IsSucceeded)
+            {
+                return NotFound(result);
+            }
+            return Ok(result);
+        }
+        
         [HttpGet("GetAllTopicPagination")]
         public async Task<ActionResult<ApiResult<PagedList<TopicDto>>>> GetAllTopicPagination(
             [FromQuery] PagingRequestParameters pagingRequestParameters)

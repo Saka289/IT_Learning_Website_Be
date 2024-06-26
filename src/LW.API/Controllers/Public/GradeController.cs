@@ -35,6 +35,18 @@ namespace LW.API.Controllers.Public
 
             return Ok(result);
         }
+        
+        [HttpGet("GetAllGradeByLevel/{levelId}")]
+        public async Task<ActionResult<ApiResult<IEnumerable<GradeDto>>>> GetAllGrade([Required] int levelId)
+        {
+            var result = await _gradeService.GetAllGradeByLevel(levelId);
+            if (!result.IsSucceeded)
+            {
+                return NotFound(result);
+            }
+
+            return Ok(result);
+        }
 
         [HttpGet("GetAllGradePagination")]
         public async Task<ActionResult<ApiResult<PagedList<GradeDto>>>> GetAllGradePagination(
