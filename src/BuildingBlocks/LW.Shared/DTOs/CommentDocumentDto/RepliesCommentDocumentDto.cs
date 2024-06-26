@@ -1,6 +1,6 @@
 ﻿namespace LW.Shared.DTOs.CommentDocumentDto;
 
-public class CommentDocumentDto
+public class RepliesCommentDocumentDto
 {
     public int Id { get; set; }
     public string Note { get; set; }
@@ -8,7 +8,6 @@ public class CommentDocumentDto
     public int? ParentId { get; set; }
     public int DocumentId { get; set; }
     public string UserId { get; set; }
-    public IEnumerable<RepliesCommentDocumentDto> Replies { get; set; }
     public DateTimeOffset CreatedDate { get; set; }
     public DateTimeOffset? LastModifiedDate { get; set; }
     public string CreatedBy { get; set; }

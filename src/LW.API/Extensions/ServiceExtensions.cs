@@ -8,6 +8,7 @@ using LW.Data.Common;
 using LW.Data.Common.Interfaces;
 using LW.Data.Entities;
 using LW.Data.Persistence;
+using LW.Data.Repositories.CommentDocumentRepositories;
 using LW.Data.Repositories.GradeRepositories;
 using LW.Data.Repositories.LevelRepositories;
 using LW.Infrastructure.Common;
@@ -32,6 +33,7 @@ using LW.Services.DocumentServices;
 using LW.Data.Repositories.DocumentRepositories;
 using LW.Data.Repositories.LessonRepositories;
 using LW.Data.Repositories.TopicRepositories;
+using LW.Services.CommentDocumentServices;
 using LW.Services.LessonServices;
 using LW.Services.TopicServices;
 using Nest;
@@ -242,6 +244,7 @@ public static class ServiceExtensions
         services.AddScoped<IDocumentRepository, DocumentRepository>();
         services.AddScoped<ITopicRepository, TopicRepository>();
         services.AddScoped<ILessonRepository, LessonRepository>();
+        services.AddScoped<ICommentDocumentRepository, CommentDocumentRepository>();
         // IService 
         services.AddScoped<IAdminAuthorService, AdminAuthorService>();
         services.AddScoped<IUserService, UserService>();
@@ -253,6 +256,7 @@ public static class ServiceExtensions
         services.AddScoped<IFacebookService, FacebookService>();
         services.AddScoped<ICloudinaryService, CloudinaryService>();
         services.AddScoped<ILessonService, LessonService>();
+        services.AddScoped<ICommentDocumentService, CommentDocumentService>();
         return services;
     }
 }

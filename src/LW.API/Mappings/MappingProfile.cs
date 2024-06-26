@@ -1,6 +1,7 @@
 ﻿using AutoMapper;
 using LW.Data.Entities;
 using LW.Shared.DTOs.Admin;
+using LW.Shared.DTOs.CommentDocumentDto;
 using LW.Shared.DTOs.Grade;
 using LW.Shared.DTOs.Level;
 using LW.Shared.DTOs.User;
@@ -59,5 +60,10 @@ public class MappingProfile : Profile
             .ReverseMap();
         //Role
         CreateMap<IdentityRole, RoleDto>().ReverseMap();
+        //CommentDocument
+        CreateMap<CommentDocument, CommentDocumentDto>().ReverseMap();
+        CreateMap<CommentDocument, CommentDocumentUpdateDto>().ReverseMap();
+        CreateMap<CommentDocument, CommentDocumentCreateDto>().ReverseMap();
+        CreateMap<CommentDocument, RepliesCommentDocumentDto>().ReverseMap();
     }
 }
