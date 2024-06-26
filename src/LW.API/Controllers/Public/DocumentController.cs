@@ -1,4 +1,4 @@
-﻿using LW.Services.DocumentService;
+﻿using LW.Services.DocumentServices;
 using LW.Shared.DTOs.Document;
 using LW.Shared.SeedWork;
 using Microsoft.AspNetCore.Http;

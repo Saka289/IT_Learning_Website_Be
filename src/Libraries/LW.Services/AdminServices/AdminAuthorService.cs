@@ -3,7 +3,7 @@ using AutoMapper;
 using LW.Contracts.Common;
 using LW.Contracts.Services;
 using LW.Data.Entities;
-using LW.Services.JwtTokenService;
+using LW.Services.JwtTokenServices;
 using LW.Shared.Configurations;
 using LW.Shared.Constant;
 using LW.Shared.DTOs.Admin;

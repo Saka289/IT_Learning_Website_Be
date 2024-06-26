@@ -5,7 +5,6 @@ using LW.Data.Repositories.DocumentRepositories;
 using LW.Data.Repositories.LessonRepositories;
 using LW.Data.Repositories.TopicRepositories;
 using LW.Infrastructure.Extensions;
-using LW.Services.DocumentService;
 using LW.Shared.Constant;
 using LW.Shared.DTOs.Lesson;
 using LW.Shared.DTOs.Topic;

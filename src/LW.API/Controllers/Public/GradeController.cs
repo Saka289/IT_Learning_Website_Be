@@ -4,7 +4,7 @@ using System.ComponentModel.DataAnnotations;
 using System.Linq;
 using System.Threading.Tasks;
 using LW.API.Application.Validators.GradeValidator;
-using LW.Services.GradeService;
+using LW.Services.GradeServices;
 using LW.Shared.DTOs.Grade;
 using LW.Shared.SeedWork;
 using Microsoft.AspNetCore.Http;

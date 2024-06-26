@@ -1,4 +1,4 @@
-﻿namespace LW.Services.UserService;
+﻿namespace LW.Services.UserServices;
 
 public class CreateUserFromSocialLogin
 {

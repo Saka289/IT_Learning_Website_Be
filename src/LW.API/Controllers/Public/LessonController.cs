@@ -4,7 +4,7 @@ using System.ComponentModel.DataAnnotations;
 using System.Linq;
 using System.Threading.Tasks;
 using LW.API.Application.Validators.LessonValidator;
-using LW.Services.LessonService;
+using LW.Services.LessonServices;
 using LW.Shared.DTOs.Lesson;
 using LW.Shared.SeedWork;
 using Microsoft.AspNetCore.Http;

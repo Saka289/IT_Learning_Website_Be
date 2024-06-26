@@ -6,7 +6,7 @@ using Microsoft.OpenApi.Extensions;
 
 using Microsoft.AspNetCore.Identity;
 
-namespace LW.Services.UserService;
+namespace LW.Services.UserServices;
 
 public static class CreateUserFromSocialLoginExtension
 {

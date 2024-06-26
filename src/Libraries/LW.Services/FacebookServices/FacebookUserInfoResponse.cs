@@ -1,6 +1,6 @@
 ﻿using Newtonsoft.Json;
 
-namespace LW.Services.FacebookService;
+namespace LW.Services.FacebookServices;
 
 public class FacebookUserInfoResponse
 {

@@ -28,6 +28,7 @@ public class AppDbContext : IdentityDbContext<ApplicationUser>
     public DbSet<Document> Documents { get; set; }
     public DbSet<Topic> Topics { get; set; }
     public DbSet<Lesson> Lessons { get; set; }
+    public DbSet<CommentDocument> CommentDocuments { get; set; }
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {

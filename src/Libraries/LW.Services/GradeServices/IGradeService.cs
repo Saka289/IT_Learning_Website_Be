@@ -2,7 +2,7 @@
 using LW.Shared.DTOs.Grade;
 using LW.Shared.SeedWork;
 
-namespace LW.Services.GradeService;
+namespace LW.Services.GradeServices;
 
 public interface IGradeService
 {

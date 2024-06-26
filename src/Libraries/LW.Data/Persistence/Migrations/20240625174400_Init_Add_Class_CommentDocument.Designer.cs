@@ -3,6 +3,7 @@ using System;
 using LW.Data.Persistence;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
@@ -10,9 +11,10 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace LW.Data.Persistence.Migrations
 {
     [DbContext(typeof(AppDbContext))]
-    partial class AppDbContextModelSnapshot : ModelSnapshot
+    [Migration("20240625174400_Init_Add_Class_CommentDocument")]
+    partial class Init_Add_Class_CommentDocument
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -130,9 +132,6 @@ namespace LW.Data.Persistence.Migrations
                         .IsRequired()
                         .HasColumnType("longtext");
 
-                    b.Property<int?>("ParentId")
-                        .HasColumnType("int");
-
                     b.Property<int>("Rating")
                         .HasColumnType("int");
 
@@ -143,8 +142,6 @@ namespace LW.Data.Persistence.Migrations
                     b.HasKey("Id");
 
                     b.HasIndex("DocumentId");
-
-                    b.HasIndex("ParentId");
 
                     b.HasIndex("UserId");
 
@@ -507,10 +504,6 @@ namespace LW.Data.Persistence.Migrations
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.HasOne("LW.Data.Entities.CommentDocument", "ParentComment")
-                        .WithMany("Replies")
-                        .HasForeignKey("ParentId");
-
                     b.HasOne("LW.Data.Entities.ApplicationUser", "ApplicationUser")
                         .WithMany()
                         .HasForeignKey("UserId")
@@ -520,8 +513,6 @@ namespace LW.Data.Persistence.Migrations
                     b.Navigation("ApplicationUser");
 
                     b.Navigation("Document");
-
-                    b.Navigation("ParentComment");
                 });
 
             modelBuilder.Entity("LW.Data.Entities.Document", b =>
@@ -617,11 +608,6 @@ namespace LW.Data.Persistence.Migrations
                         .HasForeignKey("UserId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
-                });
-
-            modelBuilder.Entity("LW.Data.Entities.CommentDocument", b =>
-                {
-                    b.Navigation("Replies");
                 });
 
             modelBuilder.Entity("LW.Data.Entities.Document", b =>

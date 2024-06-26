@@ -5,7 +5,7 @@ using System.Linq;
 using System.Security.Claims;
 using System.Threading.Tasks;
 using LW.API.Application.Validators.UserValidator;
-using LW.Services.UserService;
+using LW.Services.UserServices;
 using LW.Shared.DTOs.Facebook;
 using LW.Shared.DTOs.Google;
 using LW.Shared.DTOs.Token;
