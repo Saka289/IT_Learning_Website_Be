@@ -87,26 +87,44 @@ public class ElasticSearchService<T, K> : IElasticSearchService<T, K> where T : 
             searchValue = intValue;
         }
 
-        var response = await _elasticClient.SearchAsync<T>(s => s
-            .Index(indexName)
-            .Query(q => q
-                .Bool(b => b
-                    .Must(m => m
-                        .QueryString(d => d
-                            .Query(searchValue is int ? searchValue.ToString() : '*' + searchValue.ToString() + '*')
-                            .Fields(f => f
-                                .Field(searchRequestParameters.Key)
+        if (searchValue != null)
+        {
+            var responseSearch = await _elasticClient.SearchAsync<T>(s => s
+                .Index(indexName)
+                .Query(q => q
+                    .Bool(b => b
+                        .Must(m => m
+                            .QueryString(d => d
+                                .Query(searchValue is int ? searchValue.ToString() : '*' + searchValue.ToString() + '*')
+                                .Fields(f => f
+                                    .Field(searchRequestParameters.Key)
+                                )
                             )
                         )
                     )
                 )
-            )
-            .Size(searchRequestParameters.Size)
-        );
+                .Size(searchRequestParameters.Size)
+            );
+            if (!responseSearch.IsValid || responseSearch.Total == 0)
+            {
+                _logger.Information($"Search query failed: {responseSearch.IsValid.ToString()}");
+                return null;
+            }
 
+            var resultSearch = responseSearch.Hits.Select(hit => hit.Source).ToList();
+            return resultSearch;
+        }
+
+        var response = await _elasticClient.SearchAsync<T>(s => s
+            .Index(indexName)
+            .Query(q => q
+                .MatchAll()
+            )
+        );
+        
         if (!response.IsValid || response.Total == 0)
         {
-            _logger.Information($"Search query failed: {response.IsValid.ToString()}");
+            _logger.Error($"Get all failed: {response.IsValid.ToString()}");
             return null;
         }
 

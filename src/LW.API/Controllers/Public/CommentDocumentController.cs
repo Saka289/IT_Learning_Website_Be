@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.Linq;
 using System.Threading.Tasks;
+using LW.API.Application.Validators.CommentDocumentValidator;
 using LW.Services.CommentDocumentServices;
 using LW.Shared.DTOs.CommentDocumentDto;
 using LW.Shared.SeedWork;
@@ -22,12 +23,14 @@ namespace LW.API.Controllers.Public
             _commentDocumentService = commentDocumentService;
         }
 
-        [HttpGet("GetAllCommentByDocumentIdPagination/{documentId}")]
+        [HttpGet("GetAllCommentByDocumentIdPagination")]
         public async Task<ActionResult<ApiResult<PagedList<PagedList<CommentDocumentDto>>>>>
-            GetAllCommentByDocumentIdPagination([FromQuery] int documentId,
+            GetAllCommentByDocumentIdPagination([FromQuery] int commentDocumentId,
                 [FromQuery] PagingRequestParameters pagingRequestParameters)
         {
-            var result = await _commentDocumentService.GetAllCommentByDocumentIdPagination(documentId, pagingRequestParameters);
+            var result =
+                await _commentDocumentService.GetAllCommentByDocumentIdPagination(commentDocumentId,
+                    pagingRequestParameters);
             if (!result.IsSucceeded)
             {
                 return NotFound(result);
@@ -35,13 +38,14 @@ namespace LW.API.Controllers.Public
 
             return Ok(result);
         }
-        
-        [HttpGet("GetAllCommentDocumentByUserIdPagination/{userId}")]
+
+        [HttpGet("GetAllCommentDocumentByUserIdPagination")]
         public async Task<ActionResult<ApiResult<PagedList<PagedList<CommentDocumentDto>>>>>
             GetAllCommentDocumentByUserIdPagination([FromQuery] string userId,
                 [FromQuery] PagingRequestParameters pagingRequestParameters)
         {
-            var result = await _commentDocumentService.GetAllCommentDocumentByUserIdPagination(userId, pagingRequestParameters);
+            var result =
+                await _commentDocumentService.GetAllCommentDocumentByUserIdPagination(userId, pagingRequestParameters);
             if (!result.IsSucceeded)
             {
                 return NotFound(result);
@@ -50,10 +54,11 @@ namespace LW.API.Controllers.Public
             return Ok(result);
         }
 
-        [HttpGet("GetCommentDocumentById/{documentId}")]
-        public async Task<ActionResult<ApiResult<CommentDocumentDto>>> GetCommentDocumentById([Required] int documentId)
+        [HttpGet("GetCommentDocumentById/{commentDocumentId}")]
+        public async Task<ActionResult<ApiResult<CommentDocumentDto>>> GetCommentDocumentById(
+            [Required] int commentDocumentId)
         {
-            var result = await _commentDocumentService.GetCommentDocumentById(documentId);
+            var result = await _commentDocumentService.GetCommentDocumentById(commentDocumentId);
             if (!result.IsSucceeded)
             {
                 return NotFound(result);
@@ -62,10 +67,56 @@ namespace LW.API.Controllers.Public
             return Ok(result);
         }
 
-        // public async Task<ActionResult<ApiResult<CommentDocumentDto>>> CreateCommentDocument(
-        //     CommentDocumentCreateDto commentDocumentCreateDto)
-        // {
-        //     return Ok();
-        // }
+        [HttpPost("CreateCommentDocument")]
+        public async Task<ActionResult<ApiResult<CommentDocumentDto>>> CreateCommentDocument(
+            CommentDocumentCreateDto commentDocumentCreateDto)
+        {
+            var validationResult =
+                await new CreateCommentDocumentCommandValidator().ValidateAsync(commentDocumentCreateDto);
+            if (!validationResult.IsValid)
+            {
+                return BadRequest(validationResult);
+            }
+
+            var result = await _commentDocumentService.CreateCommentDocument(commentDocumentCreateDto);
+            if (!result.IsSucceeded)
+            {
+                return BadRequest(result);
+            }
+
+            return Ok(result);
+        }
+
+        [HttpPut("UpdateCommentDocument")]
+        public async Task<ActionResult<ApiResult<CommentDocumentDto>>> UpdateCommentDocument(
+            CommentDocumentUpdateDto commentDocumentUpdateDto)
+        {
+            var validationResult =
+                await new UpdateCommentDocumentCommandValidator().ValidateAsync(commentDocumentUpdateDto);
+            if (!validationResult.IsValid)
+            {
+                return BadRequest(validationResult);
+            }
+
+            var result = await _commentDocumentService.UpdateCommentDocument(commentDocumentUpdateDto);
+            if (!result.IsSucceeded)
+            {
+                return BadRequest(result);
+            }
+
+            return Ok(result);
+        }
+
+        [HttpDelete("DeleteCommentDocument/{commentDocumentId}")]
+        public async Task<ActionResult<ApiResult<bool>>> DeleteCommentDocument([Required] int commentDocumentId)
+        {
+            var result = await _commentDocumentService.DeleteCommentDocument(commentDocumentId);
+            if (!result.IsSucceeded)
+            {
+                return NotFound(result);
+            }
+
+            return Ok(result);
+        }
     }
 }
