@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.ComponentModel.DataAnnotations;
 using System.Linq;
 using System.Threading.Tasks;
 using LW.API.Application.Validators.TopicValidator;
@@ -32,6 +33,7 @@ namespace LW.API.Controllers.Public
             {
                 return NotFound(result);
             }
+
             return Ok(result);
         }
         
@@ -47,16 +49,19 @@ namespace LW.API.Controllers.Public
         }
         
         [HttpGet("GetAllTopicPagination")]
-        public async Task<ActionResult<ApiResult<PagedList<TopicDto>>>> GetAllTopicPagination([FromQuery]PagingRequestParameters pagingRequestParameters)
+        public async Task<ActionResult<ApiResult<PagedList<TopicDto>>>> GetAllTopicPagination(
+            [FromQuery] PagingRequestParameters pagingRequestParameters)
         {
             var result = await _topicService.GetAllTopicPagination(pagingRequestParameters);
             if (!result.IsSucceeded)
             {
                 return NotFound(result);
             }
+
             Response.Headers.Add("X-Pagination", JsonConvert.SerializeObject(result.Data.GetMetaData()));
             return Ok(result);
         }
+
         [HttpGet("GetTopicById")]
         public async Task<ActionResult<ApiResult<TopicDto>>> GetTopicById(int id)
         {
@@ -65,17 +70,20 @@ namespace LW.API.Controllers.Public
             {
                 return NotFound(result);
             }
+
             return Ok(result);
         }
 
         [HttpGet("SearchByTopicPagination")]
-        public async Task<ActionResult<ApiResult<PagedList<TopicDto>>>> SearchByTopicPagination([FromQuery] SearchTopicDto searchTopicDto)
+        public async Task<ActionResult<ApiResult<PagedList<TopicDto>>>> SearchByTopicPagination(
+            [FromQuery] SearchTopicDto searchTopicDto)
         {
             var result = await _topicService.SearchTopicPagination(searchTopicDto);
             if (!result.IsSucceeded)
             {
                 return NotFound(result);
             }
+
             Response.Headers.Add("X-Pagination", JsonConvert.SerializeObject(result.Data.GetMetaData()));
             return Ok(result);
         }
@@ -88,11 +96,13 @@ namespace LW.API.Controllers.Public
             {
                 return BadRequest(validationResult);
             }
+
             var result = await _topicService.Create(model);
             if (!result.IsSucceeded)
             {
                 return BadRequest(result);
             }
+
             return Ok(result);
         }
 
@@ -104,11 +114,13 @@ namespace LW.API.Controllers.Public
             {
                 return BadRequest(validationResult);
             }
+
             var result = await _topicService.Update(model);
             if (!result.IsSucceeded)
             {
                 return BadRequest(result);
             }
+
             return Ok(result);
         }
 
@@ -120,6 +132,7 @@ namespace LW.API.Controllers.Public
             {
                 return NotFound(result);
             }
+
             return Ok(result);
         }
 
@@ -130,6 +143,18 @@ namespace LW.API.Controllers.Public
             if (!result.IsSucceeded)
             {
                 return NotFound(result);
+            }
+
+            return Ok(result);
+        }
+
+        [HttpPut("DeleteRangeTopic")]
+        public async Task<ActionResult<ApiResult<bool>>> DeleteRangeTopic([Required] IEnumerable<int> ids)
+        {
+            var result = await _topicService.DeleteRange(ids);
+            if (!result.IsSucceeded)
+            {
+                return BadRequest();
             }
             return Ok(result);
         }
