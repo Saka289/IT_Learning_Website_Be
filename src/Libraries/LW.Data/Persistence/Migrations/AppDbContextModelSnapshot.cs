@@ -502,7 +502,7 @@ namespace LW.Data.Persistence.Migrations
             modelBuilder.Entity("LW.Data.Entities.CommentDocument", b =>
                 {
                     b.HasOne("LW.Data.Entities.Document", "Document")
-                        .WithMany()
+                        .WithMany("CommentDocuments")
                         .HasForeignKey("DocumentId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
@@ -626,6 +626,8 @@ namespace LW.Data.Persistence.Migrations
 
             modelBuilder.Entity("LW.Data.Entities.Document", b =>
                 {
+                    b.Navigation("CommentDocuments");
+
                     b.Navigation("Topics");
                 });
 

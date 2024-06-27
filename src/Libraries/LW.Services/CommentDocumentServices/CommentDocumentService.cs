@@ -14,14 +14,16 @@ public class CommentDocumentService : ICommentDocumentService
     private readonly UserManager<ApplicationUser> _userManager;
     private readonly IMapper _mapper;
 
-    public CommentDocumentService(ICommentDocumentRepository commentDocumentRepository, IMapper mapper, UserManager<ApplicationUser> userManager)
+    public CommentDocumentService(ICommentDocumentRepository commentDocumentRepository, IMapper mapper,
+        UserManager<ApplicationUser> userManager)
     {
         _commentDocumentRepository = commentDocumentRepository;
         _mapper = mapper;
         _userManager = userManager;
     }
-    
-    public async Task<ApiResult<PagedList<CommentDocumentDto>>> GetAllCommentByDocumentIdPagination(int id, PagingRequestParameters pagingRequestParameters)
+
+    public async Task<ApiResult<PagedList<CommentDocumentDto>>> GetAllCommentByDocumentIdPagination(int id,
+        PagingRequestParameters pagingRequestParameters)
     {
         var commentList = await _commentDocumentRepository.GetAllCommentByDocumentIdPagination(id);
         if (commentList == null)
@@ -30,12 +32,14 @@ public class CommentDocumentService : ICommentDocumentService
         }
 
         var result = _mapper.ProjectTo<CommentDocumentDto>(commentList);
-        var pagedResult = await PagedList<CommentDocumentDto>.ToPageListAsync(result, pagingRequestParameters.PageIndex, pagingRequestParameters.PageSize, pagingRequestParameters.OrderBy, pagingRequestParameters.IsAscending);
+        var pagedResult = await PagedList<CommentDocumentDto>.ToPageListAsync(result, pagingRequestParameters.PageIndex,
+            pagingRequestParameters.PageSize, pagingRequestParameters.OrderBy, pagingRequestParameters.IsAscending);
 
         return new ApiSuccessResult<PagedList<CommentDocumentDto>>(pagedResult);
     }
 
-    public async Task<ApiResult<PagedList<CommentDocumentDto>>> GetAllCommentDocumentByUserIdPagination(string id, PagingRequestParameters pagingRequestParameters)
+    public async Task<ApiResult<PagedList<CommentDocumentDto>>> GetAllCommentDocumentByUserIdPagination(string id,
+        PagingRequestParameters pagingRequestParameters)
     {
         var commentList = await _commentDocumentRepository.GetAllCommentByUserIdPagination(id);
         if (commentList == null)
@@ -44,7 +48,8 @@ public class CommentDocumentService : ICommentDocumentService
         }
 
         var result = _mapper.ProjectTo<CommentDocumentDto>(commentList);
-        var pagedResult = await PagedList<CommentDocumentDto>.ToPageListAsync(result, pagingRequestParameters.PageIndex, pagingRequestParameters.PageSize, pagingRequestParameters.OrderBy, pagingRequestParameters.IsAscending);
+        var pagedResult = await PagedList<CommentDocumentDto>.ToPageListAsync(result, pagingRequestParameters.PageIndex,
+            pagingRequestParameters.PageSize, pagingRequestParameters.OrderBy, pagingRequestParameters.IsAscending);
 
         return new ApiSuccessResult<PagedList<CommentDocumentDto>>(pagedResult);
     }
@@ -57,13 +62,21 @@ public class CommentDocumentService : ICommentDocumentService
             return new ApiResult<CommentDocumentDto>(false, "Comment is null !!!");
         }
 
+        var repliesEntity = await _commentDocumentRepository.GetAllParentCommentById(commentEntity.Id);
+        if (repliesEntity != null)
+        {
+            commentEntity.Replies = repliesEntity.ToList();
+        }
+
         var result = _mapper.Map<CommentDocumentDto>(commentEntity);
         return new ApiSuccessResult<CommentDocumentDto>(result);
     }
 
-    public async Task<ApiResult<CommentDocumentDto>> CreateCommentDocument(CommentDocumentCreateDto commentDocumentCreateDto)
+    public async Task<ApiResult<CommentDocumentDto>> CreateCommentDocument(
+        CommentDocumentCreateDto commentDocumentCreateDto)
     {
-        var userEntity = await _userManager.Users.FirstOrDefaultAsync(u => u.Id.Equals(commentDocumentCreateDto.UserId));
+        var userEntity =
+            await _userManager.Users.FirstOrDefaultAsync(u => u.Id.Equals(commentDocumentCreateDto.UserId));
         if (userEntity == null)
         {
             return new ApiResult<CommentDocumentDto>(false, "UserId not found !!!");
@@ -75,20 +88,31 @@ public class CommentDocumentService : ICommentDocumentService
         return new ApiSuccessResult<CommentDocumentDto>(result);
     }
 
-    public async Task<ApiResult<CommentDocumentDto>> UpdateCommentDocument(CommentDocumentUpdateDto commentDocumentUpdateDto)
+    public async Task<ApiResult<CommentDocumentDto>> UpdateCommentDocument(
+        CommentDocumentUpdateDto commentDocumentUpdateDto)
     {
-        var commentEntity = await _commentDocumentRepository.GetCommentById(commentDocumentUpdateDto.DocumentId);
+        var commentEntity = await _commentDocumentRepository.GetCommentById(commentDocumentUpdateDto.Id);
         if (commentEntity == null)
         {
             return new ApiResult<CommentDocumentDto>(false, "DocumentId not found !!!");
         }
+
         var userEntity = await _userManager.Users.FirstOrDefaultAsync(u => u.Id.Equals(commentDocumentUpdateDto.UserId));
         if (userEntity == null)
         {
             return new ApiResult<CommentDocumentDto>(false, "UserId not found !!!");
         }
 
-        var model = _mapper.Map(commentDocumentUpdateDto, commentEntity); 
+        if (commentDocumentUpdateDto.ParentId > 0 && commentDocumentUpdateDto.ParentId != null)
+        {
+            var repliesEntity = await _commentDocumentRepository.GetParentCommentById(commentDocumentUpdateDto.Id,commentEntity.ParentId);
+            var modelReplies = _mapper.Map(commentDocumentUpdateDto, repliesEntity);
+            await _commentDocumentRepository.UpdateComment(modelReplies);
+            var resultReplies = _mapper.Map<CommentDocumentDto>(modelReplies);
+            return new ApiSuccessResult<CommentDocumentDto>(resultReplies);
+        }
+
+        var model = _mapper.Map(commentDocumentUpdateDto, commentEntity);
         await _commentDocumentRepository.UpdateComment(model);
         var result = _mapper.Map<CommentDocumentDto>(model);
         return new ApiSuccessResult<CommentDocumentDto>(result);

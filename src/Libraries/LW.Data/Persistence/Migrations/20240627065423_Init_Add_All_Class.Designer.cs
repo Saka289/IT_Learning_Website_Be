@@ -11,8 +11,8 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace LW.Data.Persistence.Migrations
 {
     [DbContext(typeof(AppDbContext))]
-    [Migration("20240625185300_Init_Update_Class_CommentDocument")]
-    partial class Init_Update_Class_CommentDocument
+    [Migration("20240627065423_Init_Add_All_Class")]
+    partial class Init_Add_All_Class
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
@@ -504,7 +504,7 @@ namespace LW.Data.Persistence.Migrations
             modelBuilder.Entity("LW.Data.Entities.CommentDocument", b =>
                 {
                     b.HasOne("LW.Data.Entities.Document", "Document")
-                        .WithMany()
+                        .WithMany("CommentDocuments")
                         .HasForeignKey("DocumentId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
@@ -628,6 +628,8 @@ namespace LW.Data.Persistence.Migrations
 
             modelBuilder.Entity("LW.Data.Entities.Document", b =>
                 {
+                    b.Navigation("CommentDocuments");
+
                     b.Navigation("Topics");
                 });
 

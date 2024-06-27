@@ -65,10 +65,15 @@ namespace LW.Data.Persistence.Migrations
                     Dob = table.Column<DateOnly>(type: "date", nullable: true),
                     Image = table.Column<string>(type: "longtext", nullable: true)
                         .Annotation("MySql:CharSet", "utf8mb4"),
-                    FirstName = table.Column<string>(type: "longtext", nullable: false)
+                    PublicId = table.Column<string>(type: "longtext", nullable: true)
                         .Annotation("MySql:CharSet", "utf8mb4"),
-                    LastName = table.Column<string>(type: "longtext", nullable: false)
+                    FirstName = table.Column<string>(type: "longtext", nullable: true)
                         .Annotation("MySql:CharSet", "utf8mb4"),
+                    LastName = table.Column<string>(type: "longtext", nullable: true)
+                        .Annotation("MySql:CharSet", "utf8mb4"),
+                    RefreshToken = table.Column<string>(type: "longtext", nullable: true)
+                        .Annotation("MySql:CharSet", "utf8mb4"),
+                    RefreshTokenExpiryTime = table.Column<DateTime>(type: "datetime(6)", nullable: true),
                     UserName = table.Column<string>(type: "varchar(256)", maxLength: 256, nullable: true)
                         .Annotation("MySql:CharSet", "utf8mb4"),
                     NormalizedUserName = table.Column<string>(type: "varchar(256)", maxLength: 256, nullable: true)
@@ -290,6 +295,49 @@ namespace LW.Data.Persistence.Migrations
                 .Annotation("MySql:CharSet", "utf8mb4");
 
             migrationBuilder.CreateTable(
+                name: "CommentDocuments",
+                columns: table => new
+                {
+                    Id = table.Column<int>(type: "int", nullable: false)
+                        .Annotation("MySql:ValueGenerationStrategy", MySqlValueGenerationStrategy.IdentityColumn),
+                    Note = table.Column<string>(type: "longtext", nullable: false)
+                        .Annotation("MySql:CharSet", "utf8mb4"),
+                    Rating = table.Column<int>(type: "int", nullable: false),
+                    ParentId = table.Column<int>(type: "int", nullable: true),
+                    DocumentId = table.Column<int>(type: "int", nullable: false),
+                    UserId = table.Column<string>(type: "varchar(255)", nullable: false)
+                        .Annotation("MySql:CharSet", "utf8mb4"),
+                    CreatedDate = table.Column<DateTimeOffset>(type: "datetime(6)", nullable: false),
+                    LastModifiedDate = table.Column<DateTimeOffset>(type: "datetime(6)", nullable: true),
+                    CreatedBy = table.Column<string>(type: "longtext", nullable: false)
+                        .Annotation("MySql:CharSet", "utf8mb4"),
+                    LastModifiedBy = table.Column<string>(type: "longtext", nullable: true)
+                        .Annotation("MySql:CharSet", "utf8mb4")
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_CommentDocuments", x => x.Id);
+                    table.ForeignKey(
+                        name: "FK_CommentDocuments_CommentDocuments_ParentId",
+                        column: x => x.ParentId,
+                        principalTable: "CommentDocuments",
+                        principalColumn: "Id");
+                    table.ForeignKey(
+                        name: "FK_CommentDocuments_Documents_DocumentId",
+                        column: x => x.DocumentId,
+                        principalTable: "Documents",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
+                    table.ForeignKey(
+                        name: "FK_CommentDocuments_Users_UserId",
+                        column: x => x.UserId,
+                        principalTable: "Users",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
+                })
+                .Annotation("MySql:CharSet", "utf8mb4");
+
+            migrationBuilder.CreateTable(
                 name: "Topics",
                 columns: table => new
                 {
@@ -300,6 +348,8 @@ namespace LW.Data.Persistence.Migrations
                     KeyWord = table.Column<string>(type: "longtext", nullable: false)
                         .Annotation("MySql:CharSet", "utf8mb4"),
                     Description = table.Column<string>(type: "longtext", nullable: false)
+                        .Annotation("MySql:CharSet", "utf8mb4"),
+                    Objectives = table.Column<string>(type: "longtext", nullable: false)
                         .Annotation("MySql:CharSet", "utf8mb4"),
                     IsActive = table.Column<bool>(type: "tinyint(1)", nullable: false),
                     DocumentId = table.Column<int>(type: "int", nullable: false),
@@ -335,11 +385,11 @@ namespace LW.Data.Persistence.Migrations
                     IsActive = table.Column<bool>(type: "tinyint(1)", nullable: false),
                     Content = table.Column<string>(type: "longtext", nullable: false)
                         .Annotation("MySql:CharSet", "utf8mb4"),
-                    FilePath = table.Column<string>(type: "longtext", nullable: false)
+                    FilePath = table.Column<string>(type: "longtext", nullable: true)
                         .Annotation("MySql:CharSet", "utf8mb4"),
-                    PublicId = table.Column<string>(type: "longtext", nullable: false)
+                    PublicId = table.Column<string>(type: "longtext", nullable: true)
                         .Annotation("MySql:CharSet", "utf8mb4"),
-                    UrlDownload = table.Column<string>(type: "longtext", nullable: false)
+                    UrlDownload = table.Column<string>(type: "longtext", nullable: true)
                         .Annotation("MySql:CharSet", "utf8mb4"),
                     TopicId = table.Column<int>(type: "int", nullable: false),
                     CreatedDate = table.Column<DateTimeOffset>(type: "datetime(6)", nullable: false),
@@ -360,6 +410,21 @@ namespace LW.Data.Persistence.Migrations
                         onDelete: ReferentialAction.Cascade);
                 })
                 .Annotation("MySql:CharSet", "utf8mb4");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_CommentDocuments_DocumentId",
+                table: "CommentDocuments",
+                column: "DocumentId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_CommentDocuments_ParentId",
+                table: "CommentDocuments",
+                column: "ParentId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_CommentDocuments_UserId",
+                table: "CommentDocuments",
+                column: "UserId");
 
             migrationBuilder.CreateIndex(
                 name: "IX_Documents_GradeId",
@@ -421,6 +486,9 @@ namespace LW.Data.Persistence.Migrations
 
         protected override void Down(MigrationBuilder migrationBuilder)
         {
+            migrationBuilder.DropTable(
+                name: "CommentDocuments");
+
             migrationBuilder.DropTable(
                 name: "Lessons");
 

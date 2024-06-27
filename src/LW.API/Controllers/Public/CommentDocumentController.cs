@@ -25,11 +25,11 @@ namespace LW.API.Controllers.Public
 
         [HttpGet("GetAllCommentByDocumentIdPagination")]
         public async Task<ActionResult<ApiResult<PagedList<PagedList<CommentDocumentDto>>>>>
-            GetAllCommentByDocumentIdPagination([FromQuery] int commentDocumentId,
+            GetAllCommentByDocumentIdPagination([FromQuery] int documentId,
                 [FromQuery] PagingRequestParameters pagingRequestParameters)
         {
             var result =
-                await _commentDocumentService.GetAllCommentByDocumentIdPagination(commentDocumentId,
+                await _commentDocumentService.GetAllCommentByDocumentIdPagination(documentId,
                     pagingRequestParameters);
             if (!result.IsSucceeded)
             {
