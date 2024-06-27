@@ -11,8 +11,8 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace LW.Data.Persistence.Migrations
 {
     [DbContext(typeof(AppDbContext))]
-    [Migration("20240627030315_Init_Update_Class_Document_Replies")]
-    partial class Init_Update_Class_Document_Replies
+    [Migration("20240627065423_Init_Add_All_Class")]
+    partial class Init_Add_All_Class
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
