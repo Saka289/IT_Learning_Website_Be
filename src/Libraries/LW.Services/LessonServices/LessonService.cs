@@ -100,6 +100,11 @@ public class LessonService : ILessonService
             return new ApiResult<PagedList<LessonDto>>(false, $"Lesson not found by {searchLessonDto.Key} !!!");
         }
 
+        if (searchLessonDto.TopicId > 0)
+        {
+            lessonEntity = lessonEntity.Where(t => t.TopicId == searchLessonDto.TopicId).ToList();
+        }
+
         var result = _mapper.Map<IEnumerable<LessonDto>>(lessonEntity);
         var pagedResult = await PagedList<LessonDto>.ToPageListAsync(result.AsQueryable().BuildMock(),
             searchLessonDto.PageIndex, searchLessonDto.PageSize, searchLessonDto.OrderBy, searchLessonDto.IsAscending);

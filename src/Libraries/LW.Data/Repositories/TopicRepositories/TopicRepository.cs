@@ -54,4 +54,9 @@ public class TopicRepository : RepositoryBase<Topic, int>, ITopicRepository
         var result = FindAll();
         return Task.FromResult(result);
     }
+
+    public async Task<Topic> GetAllTopicIndex(int id)
+    {
+        return await FindAll().Include(d => d.Document).Include(l => l.Lessons).FirstOrDefaultAsync(t => t.Id == id);
+    }
 }

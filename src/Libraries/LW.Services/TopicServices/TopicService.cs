@@ -204,6 +204,11 @@ public class TopicService : ITopicService
             return new ApiResult<PagedList<TopicDto>>(false, $"Topics not found by {searchTopicDto.Key} !!!");
         }
 
+        if (searchTopicDto.DocumentId > 0)
+        {
+            topics = topics.Where(d => d.DocumentId == searchTopicDto.DocumentId).ToList();
+        }
+
         var result = _mapper.Map<IEnumerable<TopicDto>>(topics);
         var pagedResult = await PagedList<TopicDto>.ToPageListAsync(result.AsQueryable().BuildMock(),
             searchTopicDto.PageIndex, searchTopicDto.PageSize, searchTopicDto.OrderBy, searchTopicDto.IsAscending);

@@ -91,6 +91,12 @@ public class GradeService : IGradeService
         {
             return new ApiResult<PagedList<GradeDto>>(false, $"Grade not found by {searchGradeDto.Key} !!!");
         }
+        
+        if (searchGradeDto.LevelId > 0)
+        {
+            gradeEntity = gradeEntity.Where(d => d.LevelId == searchGradeDto.LevelId).ToList();
+        }
+
 
         var result = _mapper.Map<IEnumerable<GradeDto>>(gradeEntity);
         var pagedResult = await PagedList<GradeDto>.ToPageListAsync(result.AsQueryable().BuildMock(), searchGradeDto.PageIndex, searchGradeDto.PageSize, searchGradeDto.OrderBy, searchGradeDto.IsAscending);

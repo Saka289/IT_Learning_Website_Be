@@ -6,6 +6,7 @@ using LW.Shared.DTOs.Grade;
 using LW.Shared.DTOs.Level;
 using LW.Shared.DTOs.User;
 using LW.Shared.DTOs.Document;
+using LW.Shared.DTOs.Index;
 using LW.Shared.DTOs.Lesson;
 using LW.Shared.DTOs.Topic;
 using Microsoft.AspNetCore.Identity;
@@ -65,5 +66,31 @@ public class MappingProfile : Profile
         CreateMap<CommentDocument, CommentDocumentUpdateDto>().ReverseMap();
         CreateMap<CommentDocument, CommentDocumentCreateDto>().ReverseMap();
         CreateMap<CommentDocument, RepliesCommentDocumentDto>().ReverseMap();
+        //IndexDocument
+        CreateMap<Document, DocumentIndexByDocumentDto>().ReverseMap();
+        CreateMap<Topic, TopicIndexByDocumentDto>().ReverseMap();
+        CreateMap<Lesson, LessonIndexByDocumentDto>().ReverseMap();
+        //IndexLesson
+        CreateMap<Document, DocumentIndexByLessonDto>().ReverseMap();
+        CreateMap<Topic, TopicIndexByLessonDto>().ReverseMap();
+        CreateMap<Lesson, LessonIndexByLessonDto>().ReverseMap();
+        CreateMap<DocumentIndexByLessonDto, Lesson>()
+            .ForMember(x => x.Id, y => y.MapFrom(y => y.Topic.Lesson.Id))
+            .ForMember(x => x.Title, y => y.MapFrom(y => y.Topic.Lesson.Title))
+            .ForMember(x => x.Topic, y => y.MapFrom(y => y.Topic))
+            .ForPath(x => x.Topic.Document.Id, y => y.MapFrom(y => y.Id))
+            .ForPath(x => x.Topic.Document.Title, y => y.MapFrom(y => y.Title))
+            .ReverseMap();
+        //IndexTopic
+        CreateMap<Document, DocumentIndexByTopicDto>().ReverseMap();
+        CreateMap<Topic, TopicIndexByTopicDto>().ReverseMap();
+        CreateMap<Lesson, LessonIndexByTopicDto>().ReverseMap();
+        CreateMap<DocumentIndexByTopicDto, Topic>()
+            .ForMember(x => x.Id, y => y.MapFrom(y => y.Topic.Id))
+            .ForMember(x => x.Title, y => y.MapFrom(y => y.Topic.Title))
+            .ForPath(x => x.Document.Id, y => y.MapFrom(y => y.Id))
+            .ForPath(x => x.Document.Title, y => y.MapFrom(y => y.Title))
+            .ForMember(x => x.Lessons, y => y.MapFrom(y => y.Topic.Lessons))
+            .ReverseMap();
     }
 }
