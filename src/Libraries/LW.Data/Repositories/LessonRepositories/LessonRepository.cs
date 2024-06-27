@@ -68,4 +68,9 @@ public class LessonRepository : RepositoryBase<Lesson, int>, ILessonRepository
         await DeleteListAsync(lessons);
         return true;
     }
+
+    public async Task<Lesson> GetAllLessonIndex(int id)
+    {
+        return await FindAll().Include(t => t.Topic).ThenInclude(d => d.Document).FirstOrDefaultAsync(l => l.Id == id);
+    }
 }

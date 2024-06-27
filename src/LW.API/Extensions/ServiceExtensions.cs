@@ -34,6 +34,7 @@ using LW.Data.Repositories.DocumentRepositories;
 using LW.Data.Repositories.LessonRepositories;
 using LW.Data.Repositories.TopicRepositories;
 using LW.Services.CommentDocumentServices;
+using LW.Services.IndexServices;
 using LW.Services.LessonServices;
 using LW.Services.TopicServices;
 using Nest;
@@ -185,6 +186,7 @@ public static class ServiceExtensions
             {
                 e.MigrationsAssembly(typeof(AppDbContext).Assembly.FullName);
                 e.SchemaBehavior(MySqlSchemaBehavior.Ignore);
+                e.UseQuerySplittingBehavior(QuerySplittingBehavior.SplitQuery);
             }));
 
         return services;
@@ -257,6 +259,7 @@ public static class ServiceExtensions
         services.AddScoped<ICloudinaryService, CloudinaryService>();
         services.AddScoped<ILessonService, LessonService>();
         services.AddScoped<ICommentDocumentService, CommentDocumentService>();
+        services.AddScoped<IIndexService, IndexService>();
         return services;
     }
 }

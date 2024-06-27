@@ -12,4 +12,5 @@ public interface IDocumentRepository : IRepositoryBase<Document, int>
     Task<Document> CreateDocument(Document document);
     Task<Document> UpdateDocument(Document document);
     Task<bool> DeleteDocument(int id);
+    Task<Document> GetAllDocumentIndex(int id);
 }

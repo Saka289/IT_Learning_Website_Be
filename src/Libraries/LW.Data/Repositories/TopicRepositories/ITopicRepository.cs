@@ -12,5 +12,5 @@ public interface ITopicRepository:IRepositoryBase<Topic, int>
     Task<IEnumerable<Topic>> GetAllTopic();
     Task<IEnumerable<Topic>> GetAllTopicByDocument(int id);
     Task<IQueryable<Topic>> GetAllTopicPagination();
-
+    Task<Topic> GetAllTopicIndex(int id);
 }

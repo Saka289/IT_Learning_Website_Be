@@ -63,5 +63,9 @@ namespace LW.Data.Repositories.DocumentRepositories
             await UpdateAsync(document);
             return await Task.FromResult(document);
         }
+        public async Task<Document> GetAllDocumentIndex(int id)
+        {
+            return FindAll().Include(t => t.Topics).ThenInclude(l => l.Lessons).FirstOrDefault(d => d.Id == id);
+        }
     }
 }
