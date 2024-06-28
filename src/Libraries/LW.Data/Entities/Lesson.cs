@@ -13,7 +13,7 @@ public class Lesson : EntityAuditBase<int>
     [Required] 
     public bool IsActive { get; set; }
     [Required]
-    public string Content { get; set; }
+    public string? Content { get; set; }
     public string? FilePath { get; set; }
     public string? PublicId { get; set; }
     public string? UrlDownload { get; set; }

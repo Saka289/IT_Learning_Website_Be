@@ -68,5 +68,12 @@ namespace LW.API.Controllers.Admin
             var result = await _cloudinaryService.DeleteFolderAsync(folderName);
             return Ok(result);
         }
+
+        [HttpPost("ConvertFile")]
+        public async Task<IActionResult> ConvertFile([FromBody] string htmlContent, string fileName, string folderName)
+        {
+            var result = await _cloudinaryService.ConvertHtmlToPdf(htmlContent, fileName, folderName);
+            return Ok(result);
+        }
     }
 }
