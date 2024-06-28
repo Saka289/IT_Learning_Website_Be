@@ -16,4 +16,7 @@ public class TopicUpdateDto
     public int DocumentId { get; set; }
     [Required] 
     public bool IsActive { get; set; }
+    
+    public int? ParentId { get; set; }
+
 }
