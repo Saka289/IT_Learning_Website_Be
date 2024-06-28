@@ -11,7 +11,7 @@ public class UpdateTopicCommandValidator:AbstractValidator<TopicUpdateDto>
         RuleFor(x => x.Title).NotNull().NotEmpty();
         RuleFor(x => x.Description).NotNull().NotEmpty();
         RuleFor(x => x.Objectives).NotNull().NotEmpty();
-        RuleFor(x => x.IsActive).NotEmpty();
+        RuleFor(x => x.IsActive).NotNull();
         RuleFor(x => x.DocumentId).NotNull().NotEmpty().GreaterThan(0);
     }
 }

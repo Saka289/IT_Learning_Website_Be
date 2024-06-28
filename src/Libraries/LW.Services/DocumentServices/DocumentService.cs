@@ -138,6 +138,7 @@ public class DocumentService : IDocumentService
         }
 
         var model = _mapper.Map(documentUpdateDto, documentEntity);
+        model.KeyWord = documentUpdateDto.Title.RemoveDiacritics();
         var updateDocument = await _documentRepository.UpdateDocument(model);
         updateDocument.Grade = gradeEntity;
         var result = _mapper.Map<DocumentDto>(updateDocument);

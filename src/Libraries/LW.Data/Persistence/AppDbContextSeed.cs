@@ -209,36 +209,109 @@ public class AppDbContextSeed
                 IsActive = true,
                 LevelId = 2,
             },
+            new()
+            {
+                Title = "Lớp 7",
+                KeyWord = "lop 7",
+                IsActive = true,
+                LevelId = 2,
+            },
+            new()
+            {
+                Title = "Lớp 8",
+                KeyWord = "lop 8",
+                IsActive = true,
+                LevelId = 2,
+            },
+            new()
+            {
+                Title = "Lớp 9",
+                KeyWord = "lop 9",
+                IsActive = true,
+                LevelId = 2,
+            },
+            new()
+            {
+                Title = "Lớp 10",
+                KeyWord = "lop 10",
+                IsActive = true,
+                LevelId = 3,
+            },
+            new()
+            {
+                Title = "Lớp 11",
+                KeyWord = "lop 11",
+                IsActive = true,
+                LevelId = 3,
+            },
+            new()
+            {
+                Title = "Lớp 12",
+                KeyWord = "lop 12",
+                IsActive = true,
+                LevelId = 3,
+            },
         };
     }
-
     private static IEnumerable<Document> SeedDocument()
     {
         return new List<Document>()
         {
             new()
             {
-                Title = "Sách cánh diều",
-                Description = "Sách cánh diều mô tả",
-                KeyWord = "sach canh dieu",
-                IsActive = true,
+                Code = "CD0301",
+                Title = "Sách giáo khoa tin học lớp 3 Cánh diều",
+                BookCollection = "Cánh diều",
+                Description = "Sách giáo khoa Tin học lớp 3 - Cánh diều là một công cụ hữu ích và phổ biến trong việc giáo dục cơ bản tại Việt Nam, dành cho học sinh ở cấp tiểu học. Cuốn sách này được thiết kế để trang bị kiến thức và kỹ năng cơ bản về máy tính và công nghệ thông tin cho học sinh, từ đó giúp các em hòa nhập tốt hơn vào môi trường giáo dục hiện đại và thế giới ngày càng kỹ thuật số. Cuốn sách gồm nhiều chủ đề được chia thành các phần và bài học cụ thể, giúp học sinh có thể dễ dàng theo dõi và tích lũy kiến thức từng bước một",
+                KeyWord = "sach giao khoa tin học lop 3 canh dieu",
                 GradeId = 1,
+                Author = "Hồ Sĩ Đàm",
+                PublicationYear = 2022,
+                Edition = 1,
+                TypeOfBook = "Sách giáo khoa",
+                IsActive = true,
             },
             new()
             {
-                Title = "Sách chân trời",
-                Description = "Sách chân trời mô tả",
-                KeyWord = "sach chan troi",
-                IsActive = true,
+                Code = "CD0402",
+                Title = "Sách giáo khoa tin học lớp 4 Cánh diều",
+                BookCollection = "Cánh diều",
+                Description = "Sách giáo khoa Tin học lớp 4 Cánh diều được biên soạn theo chương trình giáo dục phổ thông 2018, với mục tiêu giúp học sinh hình thành và phát triển năng lực sử dụng máy tính và công nghệ thông tin một cách hiệu quả.",
+                KeyWord = "sach giao khoa tin học lop 4 canh dieu",
                 GradeId = 2,
+                Author = "Hồ Sĩ Đàm, Hồ Cẩm Hà",
+                PublicationYear = 2022,
+                Edition = 1,
+                TypeOfBook = "Sách giáo khoa",
+                IsActive = true,
             },
             new()
             {
-                Title = "Sách kết nối tri thức",
-                Description = "Sách kết nối tri thức mô tả",
-                KeyWord = "sach ket noi tri thuc",
-                IsActive = true,
+                Code = "CD0503",
+                Title = "Sách giáo khoa tin học lớp 5 Cánh diều",
+                BookCollection = "Cánh diều",
+                Description = "Sách giáo khoa Tin học lớp 5 Cánh diều được biên soạn theo chương trình giáo dục phổ thông 2018, với mục tiêu giúp học sinh hình thành và phát triển năng lực sử dụng máy tính và công nghệ thông tin một cách hiệu quả.",
+                KeyWord = "sach giao khoa tin học lop 5 canh dieu",
                 GradeId = 3,
+                Author = "Hồ Sĩ Đàm, Hồ Cẩm Hà",
+                PublicationYear = 2022,
+                Edition = 1,
+                TypeOfBook = "Sách giáo khoa",
+                IsActive = true,
+            },
+            new()
+            {
+                Code = "CD0604",
+                Title = "Sách giáo khoa tin học lớp 6 Cánh diều",
+                BookCollection = "Cánh Diều",
+                Description = "Sách giáo khoa Tin học lớp 6 Cánh diều được biên soạn theo chương trình giáo dục phổ thông 2018, với mục tiêu giúp học sinh hình thành và phát triển năng lực sử dụng máy tính và công nghệ thông tin một cách hiệu quả.",
+                KeyWord = "sach giao khoa tin học lop 6 canh dieu",
+                GradeId = 4,
+                Author = "Hồ Sĩ Đàm, Hồ Cẩm Hà",
+                PublicationYear = 2022,
+                Edition = 1,
+                TypeOfBook = "Sách giáo khoa",
+                IsActive = true,
             },
         };
     }
@@ -249,31 +322,97 @@ public class AppDbContextSeed
         {
             new()
             {
-                Title = "Toán học",
-                KeyWord = "toan hoc",
-                Description = "Môn học về toán học",
-                Objectives = "Làm chủ về môn toán học",
+                //1
+                Title = "Chủ đề A Máy tính và em",
+                KeyWord = "chu de a may tinh va em",
+                Description = "Chủ đề A máy tính và em trong sách giáo khoa Tin học lớp 3 của bộ sách Cánh Diều thường bao gồm các nội dung cơ bản về máy tính và cách sử dụng chúng. Dưới đây là một mô tả tổng quan về những gì có thể được bao gồm trong chủ đề này",
+                Objectives = "Hiểu biết cơ bản về máy tính, Sử dụng máy tính, Làm việc với hệ điểu hành, Sử dụng phần mềm cơ bản",
                 IsActive = true,
                 DocumentId = 1,
+                ParentId = null,
             },
             new()
             {
-                Title = "Văn học",
-                KeyWord = "van hoc",
-                Description = "Môn học về văn học",
-                Objectives = "Làm chủ về môn văn học",
+                //2
+                Title = "Chủ đề B Mạng máy tính và Internet",
+                KeyWord = "chu de b mang may tinh va internet",
+                Description = "Chủ đề B mạng máy tính và internet trong sách giáo khoa Tin học lớp 3 của bộ sách Cánh Diều thường bao gồm các nội dung cơ bản về mạng máy tính và Internet. Dưới đây là một mô tả tổng quan về những gì có thể được bao gồm trong chủ đề này: Giới thiệu về mạng máy tính,Kết nối mạng máy tính,Internet là gì?",
+                Objectives = "Giúp học sinh hiểu khái niệm cơ bản về mạng máy tính và Internet, nhận biết các loại mạng và thành phần chính, cũng như cách kết nối và sử dụng mạng. Học sinh sẽ biết cách sử dụng trình duyệt web để tìm kiếm thông tin, sử dụng email, và nhận thức được tầm quan trọng của an toàn mạng, bao gồm bảo vệ thông tin cá nhân và quyền riêng tư trực tuyến",
                 IsActive = true,
-                DocumentId = 2,
+                DocumentId = 1,
+                ParentId = null,
             },
             new()
             {
-                Title = "Khoa học tự nhiên",
-                KeyWord = "khoa hoc tu nhien",
-                Description = "Môn học về khoa học tự nhiên",
-                Objectives = "Làm chủ về môn khoa học tự nhiên",
+                //3
+                Title = "Chủ đề C Tổ chức lưu trữ, tìm kiếm và trao đổi thông tin",
+                KeyWord = "chu de d dao duc, phap luat va van hoa trong moi truong so",
+                Description = "Chủ đề này cũng nhấn mạnh vai trò của giáo dục và hướng nghiệp trong việc sử dụng công nghệ một cách có trách nhiệm và mang tính xây dựng cho cá nhân và cộng đồng.",
+                Objectives = "Hiểu và áp dụng các giá trị đạo đức và đạo lý khi sử dụng công nghệ và Internet.",
                 IsActive = true,
-                DocumentId = 3,
-            }
+                DocumentId = 1,
+                ParentId = null
+            },
+            new()
+            {
+                //4
+
+                Title = "Chủ đề D Đạo đức, Pháp luật và Văn hóa trong môi trường số",
+                KeyWord = "chu de d dao duc, phap luat va van hoa trong moi truong so",
+                Description = "Chủ đề này cũng nhấn mạnh vai trò của giáo dục và hướng nghiệp trong việc sử dụng công nghệ một cách có trách nhiệm và mang tính xây dựng cho cá nhân và cộng đồng.",
+                Objectives = "Hiểu và áp dụng các giá trị đạo đức và đạo lý khi sử dụng công nghệ và Internet.",
+                IsActive = true,
+                DocumentId = 1,
+                ParentId = null
+            },
+            new()
+            {
+                //5
+
+                Title = "Chủ đề E Ứng dụng tin học",
+                KeyWord = "chu de e ung dung tin hoc",
+                Description = "Chủ đề này giới thiệu cho học sinh về các ứng dụng cụ thể của tin học trong cuộc sống hàng ngày. Học sinh sẽ được hướng dẫn cách sử dụng các phần mềm và công cụ tin học để giải quyết các vấn đề thực tế và hỗ trợ trong học tập.",
+                Objectives = "Hiểu và áp dụng các ứng dụng cụ thể của tin học trong đời sống hàng ngày, như việc sử dụng phần mềm văn phòng (word, excel), các ứng dụng học tập và giải trí.",
+                IsActive = true,
+                DocumentId = 1,
+                ParentId = null
+            },
+            new()
+            {
+                //6
+
+                Title = "Chủ đề A1 Khám phá máy tính",
+                KeyWord = "chu de e ung dung tin hoc",
+                Description = "Chủ đề này giới thiệu cho học sinh về các ứng dụng cụ thể của tin học trong cuộc sống hàng ngày. Học sinh sẽ được hướng dẫn cách sử dụng các phần mềm và công cụ tin học để giải quyết các vấn đề thực tế và hỗ trợ trong học tập.",
+                Objectives = "Hiểu và áp dụng các ứng dụng cụ thể của tin học trong đời sống hàng ngày, như việc sử dụng phần mềm văn phòng (word, excel), các ứng dụng học tập và giải trí.",
+                IsActive = true,
+                DocumentId = 1,
+                ParentId = 1
+            },
+            new()
+            {
+                //7
+
+                Title = "Chủ đề A2 Thông tin và xử lý thông tin",
+                KeyWord = "chu de e ung dung tin hoc",
+                Description = "Chủ đề này giới thiệu cho học sinh về các ứng dụng cụ thể của tin học trong cuộc sống hàng ngày. Học sinh sẽ được hướng dẫn cách sử dụng các phần mềm và công cụ tin học để giải quyết các vấn đề thực tế và hỗ trợ trong học tập.",
+                Objectives = "Hiểu và áp dụng các ứng dụng cụ thể của tin học trong đời sống hàng ngày, như việc sử dụng phần mềm văn phòng (word, excel), các ứng dụng học tập và giải trí.",
+                IsActive = true,
+                DocumentId = 1,
+                ParentId = 1
+            },
+            new()
+            {
+                //8
+
+                Title = "Chủ đề A3 Làm quen với cách gõ bàn phím",
+                KeyWord = "chu de e ung dung tin hoc",
+                Description = "Chủ đề này giới thiệu cho học sinh về các ứng dụng cụ thể của tin học trong cuộc sống hàng ngày. Học sinh sẽ được hướng dẫn cách sử dụng các phần mềm và công cụ tin học để giải quyết các vấn đề thực tế và hỗ trợ trong học tập.",
+                Objectives = "Hiểu và áp dụng các ứng dụng cụ thể của tin học trong đời sống hàng ngày, như việc sử dụng phần mềm văn phòng (word, excel), các ứng dụng học tập và giải trí.",
+                IsActive = true,
+                DocumentId = 1,
+                ParentId = 1
+            },
         };
     }
 
@@ -283,8 +422,8 @@ public class AppDbContextSeed
         {
             new()
             {
-                Title = "Lesson 1",
-                KeyWord = "lesson 1",
+                Title = "Bài 1 Các thành phần của máy tính",
+                KeyWord = "bai 1 cac thanh phan cua may tinh",
                 IsActive = true,
                 Content = "Content of Lesson 1",
                 FilePath =
@@ -292,12 +431,12 @@ public class AppDbContextSeed
                 PublicId = "LessonFile/FILE-5a5f56e6-6081-47d3-81db-fa35f3a898e0.pdf",
                 UrlDownload =
                     "https://res.cloudinary.com/itsupport18/raw/upload/fl_attachment/v1/LessonFile/FILE-5a5f56e6-6081-47d3-81db-fa35f3a898e0.pdf",
-                TopicId = 1,
+                TopicId = 6,
             },
             new()
             {
-                Title = "Lesson 2",
-                KeyWord = "lesson 2",
+                Title = "Bài 2 Những máy tính thông dụng",
+                KeyWord = "bai 2 nhung may tinh thong dung",
                 IsActive = true,
                 Content = "Content of Lesson 2",
                 FilePath =
@@ -305,12 +444,12 @@ public class AppDbContextSeed
                 PublicId = "LessonFile/FILE-a662a89a-8bc1-4ba9-98dc-3580b5ae1782.pdf",
                 UrlDownload =
                     "https://res.cloudinary.com/itsupport18/raw/upload/fl_attachment/v1/LessonFile/FILE-a662a89a-8bc1-4ba9-98dc-3580b5ae1782.pdf",
-                TopicId = 2,
+                TopicId = 6,
             },
             new Lesson()
             {
-                Title = "Lesson 3",
-                KeyWord = "lesson 3",
+                Title = "Bài 3: Em tập sử dụng chuột",
+                KeyWord = "bai 3: em tap su dung chuot",
                 IsActive = true,
                 Content = "Content of Lesson 3",
                 FilePath =
@@ -318,7 +457,7 @@ public class AppDbContextSeed
                 PublicId = "LessonFile/FILE-3a204b73-f357-490d-9a42-f11b42318ca5.pdf",
                 UrlDownload =
                     "https://res.cloudinary.com/itsupport18/raw/upload/fl_attachment/v1/LessonFile/FILE-3a204b73-f357-490d-9a42-f11b42318ca5.pdf",
-                TopicId = 3,
+                TopicId = 6,
             }
         };
     }

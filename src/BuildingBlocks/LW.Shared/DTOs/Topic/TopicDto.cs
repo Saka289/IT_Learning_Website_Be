@@ -8,6 +8,8 @@ public class TopicDto
     public string Objectives { get; set; }
     public string? Description { get; set; }
     public bool IsActive { get; set; }
+    public int? ParentId { get; set; }
+
     public int DocumentId { get; set; }
     public string DocumentTitle { get; set; }
     

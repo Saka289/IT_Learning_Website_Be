@@ -13,5 +13,9 @@ public class TopicCreateDto
     [Required]
     public int DocumentId { get; set; }
     [Required] 
+    
     public bool IsActive { get; set; } = true;
+    
+    public int? ParentId { get; set; }
+
 }

@@ -16,6 +16,8 @@ public class Topic : EntityAuditBase<int>
     public string Objectives { get; set; }
     [Required]
     public bool IsActive { get; set; }
+    
+    public int? ParentId { get; set; }
     [Required]
     public int DocumentId { get; set; }
     [ForeignKey(nameof(DocumentId))]
