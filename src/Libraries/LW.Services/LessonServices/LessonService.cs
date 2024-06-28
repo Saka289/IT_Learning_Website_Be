@@ -5,6 +5,7 @@ using LW.Data.Repositories.LessonRepositories;
 using LW.Data.Repositories.TopicRepositories;
 using LW.Infrastructure.Extensions;
 using LW.Shared.Constant;
+using LW.Shared.DTOs.File;
 using LW.Shared.DTOs.Lesson;
 using LW.Shared.SeedWork;
 using Microsoft.EntityFrameworkCore;
@@ -120,8 +121,15 @@ public class LessonService : ILessonService
         }
 
         var lessonEntity = _mapper.Map<Lesson>(lessonCreateDto);
-        var filePath =
-            await _cloudinaryService.CreateFileAsync(lessonCreateDto.FilePath, CloudinaryConstant.FolderLessonFile);
+        var filePath = new FileDto();
+        if (string.IsNullOrEmpty(lessonEntity.Content) || lessonEntity.Content == null)
+        {
+            filePath = await _cloudinaryService.CreateFileAsync(lessonCreateDto.FilePath, CloudinaryConstant.FolderLessonFile);
+        }
+        else
+        {
+            filePath = await _cloudinaryService.ConvertHtmlToPdf(lessonCreateDto.Content, lessonCreateDto.Title, CloudinaryConstant.FolderLessonFile);
+        }
         lessonEntity.KeyWord = lessonCreateDto.Title.RemoveDiacritics();
         lessonEntity.FilePath = filePath.Url;
         lessonEntity.PublicId = filePath.PublicId;
@@ -152,7 +160,15 @@ public class LessonService : ILessonService
         model.KeyWord = lessonUpdateDto.Title.RemoveDiacritics();
         if (lessonUpdateDto.FilePath != null && lessonUpdateDto.FilePath.Length > 0)
         {
-            var filePath = await _cloudinaryService.UpdateFileAsync(lessonEntity.PublicId, lessonUpdateDto.FilePath);
+            var filePath = new FileDto();
+            if (string.IsNullOrEmpty(lessonEntity.Content) || lessonEntity.Content == null)
+            {
+                filePath = await _cloudinaryService.CreateFileAsync(lessonUpdateDto.FilePath, CloudinaryConstant.FolderLessonFile);
+            }
+            else
+            {
+                filePath = await _cloudinaryService.ConvertHtmlToPdf(lessonUpdateDto.Content, lessonUpdateDto.Title, CloudinaryConstant.FolderLessonFile);
+            }
             model.FilePath = filePath.Url;
             model.PublicId = filePath.PublicId;
             model.UrlDownload = filePath.UrlDownload;

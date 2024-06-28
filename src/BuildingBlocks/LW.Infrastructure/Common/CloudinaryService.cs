@@ -7,7 +7,10 @@ using LW.Shared.Constant;
 using LW.Shared.DTOs.File;
 using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Options;
+using PuppeteerSharp;
+using PuppeteerSharp.Media;
 using Serilog;
+using ResourceType = CloudinaryDotNet.Actions.ResourceType;
 
 namespace LW.Infrastructure.Common;
 
@@ -65,7 +68,7 @@ public class CloudinaryService : ICloudinaryService
             _logger.Error("File cannot be null or empty.");
             return null;
         }
-        
+
         if (string.IsNullOrEmpty(publicId))
         {
             var creteFile = await CreateImageAsync(file, CloudinaryConstant.FolderUserImage);
@@ -77,7 +80,7 @@ public class CloudinaryService : ICloudinaryService
 
             return createFileImage;
         }
-        
+
         decodedUrl = Uri.UnescapeDataString(publicId);
         await _cloudinary.DestroyAsync(new DeletionParams(decodedUrl));
 
@@ -160,12 +163,12 @@ public class CloudinaryService : ICloudinaryService
             _logger.Error("File cannot be null or empty.");
             return null;
         }
-        
+
         if (string.IsNullOrEmpty(publicId))
         {
             return null;
         }
-        
+
         decodedUrl = Uri.UnescapeDataString(publicId);
         await _cloudinary.DeleteResourcesAsync(ResourceType.Raw, decodedUrl);
 
@@ -232,5 +235,59 @@ public class CloudinaryService : ICloudinaryService
         }
 
         return true;
+    }
+
+    public async Task<FileDto> ConvertHtmlToPdf(string htmlContent, string fileName, string folderName)
+    {
+        if (string.IsNullOrEmpty(htmlContent) || string.IsNullOrEmpty(fileName))
+        {
+            _logger.Information("htmlContent or fileName is null or empty !!!");
+            return null;
+        }
+
+        if (!fileName.Trim().EndsWith(".pdf", StringComparison.OrdinalIgnoreCase))
+        {
+            fileName += ".pdf";
+        }
+
+        await new BrowserFetcher().DownloadAsync();
+        await using var browser = await Puppeteer.LaunchAsync(new LaunchOptions
+        {
+            Headless = true
+        });
+        await using var page = await browser.NewPageAsync();
+        await page.SetContentAsync(htmlContent);
+        var pdfStream = await page.PdfStreamAsync(new PdfOptions()
+        {
+            Format = PaperFormat.A4,
+            DisplayHeaderFooter = true,
+            MarginOptions = new MarginOptions
+            {
+                Top = "20px",
+                Right = "20px",
+                Bottom = "20px",
+                Left = "20px"
+            },
+        });
+        _logger.Information("Convert file HTML to PDF successfully !!!");
+        if (pdfStream != null && pdfStream.Length > 0)
+        {
+            await using (var ms = new MemoryStream())
+            {
+                await pdfStream.CopyToAsync(ms);
+                ms.Position = 0;
+
+                IFormFile formFile = new FormFile(ms, 0, ms.Length, "pdfName", fileName)
+                {
+                    Headers = new HeaderDictionary(),
+                    ContentType = "application/pdf"
+                };
+                var result = await CreateFileAsync(formFile, folderName);
+                _logger.Information("Upload file successfully !!!");
+                return result;
+            }
+        }
+
+        return null;
     }
 }
