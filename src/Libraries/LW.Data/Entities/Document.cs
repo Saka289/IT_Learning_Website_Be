@@ -34,7 +34,6 @@ public class Document : EntityAuditBase<int>
     public int GradeId { get; set; }
     [ForeignKey(nameof(GradeId))] 
     public virtual Grade Grade { get; set; }
-    
     public virtual ICollection<Topic> Topics { get; set; }
     public virtual ICollection<CommentDocument> CommentDocuments { get; set; }
 }
