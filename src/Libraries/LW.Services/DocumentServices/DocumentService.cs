@@ -131,7 +131,7 @@ public class DocumentService : IDocumentService
             return new ApiResult<DocumentDto>(false, "GradeID not found !!!");
         }
 
-        var documentEntity = await _documentRepository.GetByIdAsync(documentUpdateDto.Id);
+        var documentEntity = await _documentRepository.GetDocumentById(documentUpdateDto.Id);
         if (documentEntity is null)
         {
             return new ApiResult<DocumentDto>(false, "Document not found !!!");

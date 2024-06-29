@@ -129,7 +129,7 @@ public class GradeService : IGradeService
             return new ApiResult<GradeDto>(false, "LevelId not found !!!");
         }
 
-        var gradeEntity = await _gradeRepository.GetByIdAsync(gradeUpdateDto.Id);
+        var gradeEntity = await _gradeRepository.GetGradeById(gradeUpdateDto.Id);
         if (gradeEntity is null)
         {
             return new ApiResult<GradeDto>(false, "Grade not found !!!");

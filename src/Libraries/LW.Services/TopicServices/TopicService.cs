@@ -68,7 +68,7 @@ public class TopicService : ITopicService
 
         var topicUpdate = _mapper.Map(model, topicEntity);
         topicUpdate.KeyWord = model.Title.RemoveDiacritics();
-        await _topicRepository.UpdateAsync(topicUpdate);
+        await _topicRepository.UpdateTopic(topicUpdate);
 
         topicUpdate.Document = documentEntity;
         var result = _mapper.Map<TopicDto>(topicUpdate);
@@ -87,7 +87,7 @@ public class TopicService : ITopicService
         var documentEntity = await _documentRepository.GetDocumentById(obj.DocumentId);
 
         obj.IsActive = !obj.IsActive;
-        await _topicRepository.UpdateAsync(obj);
+        await _topicRepository.UpdateTopic(obj);
 
         obj.Document = documentEntity;
         var result = _mapper.Map<TopicDto>(obj);
@@ -134,7 +134,7 @@ public class TopicService : ITopicService
         {
             var documentEntity = await _documentRepository.GetDocumentById(obj.DocumentId);
             obj.IsActive = false;
-            await _topicRepository.UpdateAsync(obj);
+            await _topicRepository.UpdateTopic(obj);
             obj.Document = documentEntity;
             var result = _mapper.Map<TopicDto>(obj);
             _elasticSearchService.UpdateDocumentAsync(ElasticConstant.ElasticTopics, result, obj.Id);
@@ -217,7 +217,7 @@ public class TopicService : ITopicService
 
     public async Task<ApiResult<TopicDto>> GetById(int id)
     {
-        var obj = await _topicRepository.GetByIdAsync(id);
+        var obj = await _topicRepository.GetTopicById(id);
         if (obj == null)
         {
             return new ApiResult<TopicDto>(false, "Not found !");
