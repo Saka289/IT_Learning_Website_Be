@@ -21,5 +21,5 @@ public class CommentDocument : EntityAuditBase<int>
     public virtual ApplicationUser ApplicationUser { get; set; }
     [ForeignKey(nameof(ParentId))]
     public virtual CommentDocument ParentComment { get; set; }
-    public virtual ICollection<CommentDocument> Replies { get; set; }
+    public virtual ICollection<CommentDocument> ChildCommentDocuments { get; set; }
 }

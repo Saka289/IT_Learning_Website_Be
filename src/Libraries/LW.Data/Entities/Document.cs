@@ -9,13 +9,10 @@ public class Document : EntityAuditBase<int>
 {
     [Required]
     public string Code { get; set; }
-    
     [Required] 
     public string Title { get; set; }
-    
     [Required] 
     public string BookCollection { get; set; }
-    
     [Required] 
     public string Description { get; set; }
     [Required] 

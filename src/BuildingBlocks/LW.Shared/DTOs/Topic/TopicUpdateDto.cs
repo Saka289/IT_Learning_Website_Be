@@ -12,11 +12,10 @@ public class TopicUpdateDto
     public string Description { get; set; }
     [Required] 
     public string Objectives { get; set; }
+    
+    public int? ParentId { get; set; }
     [Required]
     public int DocumentId { get; set; }
     [Required] 
     public bool IsActive { get; set; }
-    
-    public int? ParentId { get; set; }
-
 }

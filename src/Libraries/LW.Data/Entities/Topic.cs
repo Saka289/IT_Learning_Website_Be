@@ -16,11 +16,14 @@ public class Topic : EntityAuditBase<int>
     public string Objectives { get; set; }
     [Required]
     public bool IsActive { get; set; }
-    
     public int? ParentId { get; set; }
     [Required]
     public int DocumentId { get; set; }
     [ForeignKey(nameof(DocumentId))]
     public virtual Document Document { get; set; }
+    
+    [ForeignKey(nameof(ParentId))]
+    public virtual Topic ParentTopic { get; set; }
     public virtual ICollection<Lesson> Lessons { get; set; }
+    public virtual ICollection<Topic> ChildTopics { get; set; }
 }

@@ -8,7 +8,7 @@ public class CommentDocumentDto
     public int? ParentId { get; set; }
     public int DocumentId { get; set; }
     public string UserId { get; set; }
-    public IEnumerable<RepliesCommentDocumentDto> Replies { get; set; }
+    public IEnumerable<RepliesCommentDocumentDto> ChildCommentDocuments { get; set; }
     public DateTimeOffset CreatedDate { get; set; }
     public DateTimeOffset? LastModifiedDate { get; set; }
     public string CreatedBy { get; set; }

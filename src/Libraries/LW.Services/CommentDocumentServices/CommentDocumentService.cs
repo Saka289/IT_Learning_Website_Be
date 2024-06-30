@@ -62,12 +62,6 @@ public class CommentDocumentService : ICommentDocumentService
             return new ApiResult<CommentDocumentDto>(false, "Comment is null !!!");
         }
 
-        var repliesEntity = await _commentDocumentRepository.GetAllParentCommentById(commentEntity.Id);
-        if (repliesEntity != null)
-        {
-            commentEntity.Replies = repliesEntity.ToList();
-        }
-
         var result = _mapper.Map<CommentDocumentDto>(commentEntity);
         return new ApiSuccessResult<CommentDocumentDto>(result);
     }

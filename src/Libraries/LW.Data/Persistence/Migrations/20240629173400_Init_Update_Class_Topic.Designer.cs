@@ -3,6 +3,7 @@ using System;
 using LW.Data.Persistence;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
@@ -10,9 +11,10 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace LW.Data.Persistence.Migrations
 {
     [DbContext(typeof(AppDbContext))]
-    partial class AppDbContextModelSnapshot : ModelSnapshot
+    [Migration("20240629173400_Init_Update_Class_Topic")]
+    partial class Init_Update_Class_Topic
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -535,7 +537,7 @@ namespace LW.Data.Persistence.Migrations
                         .IsRequired();
 
                     b.HasOne("LW.Data.Entities.CommentDocument", "ParentComment")
-                        .WithMany("ChildCommentDocuments")
+                        .WithMany("Replies")
                         .HasForeignKey("ParentId");
 
                     b.HasOne("LW.Data.Entities.ApplicationUser", "ApplicationUser")
@@ -654,7 +656,7 @@ namespace LW.Data.Persistence.Migrations
 
             modelBuilder.Entity("LW.Data.Entities.CommentDocument", b =>
                 {
-                    b.Navigation("ChildCommentDocuments");
+                    b.Navigation("Replies");
                 });
 
             modelBuilder.Entity("LW.Data.Entities.Document", b =>

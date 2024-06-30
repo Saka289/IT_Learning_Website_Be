@@ -48,6 +48,10 @@ public class MappingProfile : Profile
             .ForMember(x => x.DocumentId, y => y.MapFrom(src => src.DocumentId))
             .ForMember(x => x.DocumentTitle, y => y.MapFrom(src => src.Document.Title))
             .ReverseMap();
+        CreateMap<Topic, ChildTopicDto>()
+            .ForMember(x => x.DocumentId, y => y.MapFrom(src => src.DocumentId))
+            .ForMember(x => x.DocumentTitle, y => y.MapFrom(src => src.Document.Title))
+            .ReverseMap();
         CreateMap<Topic, TopicCreateDto>().ReverseMap();
         CreateMap<Topic, TopicUpdateDto>().ReverseMap();
         //Lesson
@@ -67,23 +71,43 @@ public class MappingProfile : Profile
         CreateMap<CommentDocument, CommentDocumentCreateDto>().ReverseMap();
         CreateMap<CommentDocument, RepliesCommentDocumentDto>().ReverseMap();
         //IndexDocument
-        CreateMap<Document, DocumentIndexByDocumentDto>().ReverseMap();
+        CreateMap<Document, DocumentIndexByDocumentDto>()
+            .ReverseMap();
         CreateMap<Topic, TopicIndexByDocumentDto>().ReverseMap();
+        CreateMap<Topic, ChildTopicIndexByDocumentDto>().ReverseMap();
         CreateMap<Lesson, LessonIndexByDocumentDto>().ReverseMap();
         //IndexLesson
         CreateMap<Document, DocumentIndexByLessonDto>().ReverseMap();
         CreateMap<Topic, TopicIndexByLessonDto>().ReverseMap();
+        CreateMap<Topic, ChildTopicIndexByLessonDto>().ReverseMap();
         CreateMap<Lesson, LessonIndexByLessonDto>().ReverseMap();
         CreateMap<DocumentIndexByLessonDto, Lesson>()
             .ForMember(x => x.Id, y => y.MapFrom(y => y.Topic.Lesson.Id))
             .ForMember(x => x.Title, y => y.MapFrom(y => y.Topic.Lesson.Title))
-            .ForMember(x => x.Topic, y => y.MapFrom(y => y.Topic))
+            .ForPath(x => x.Topic, y => y.MapFrom(y => y.Topic))
+            .ForPath(x => x.Topic.Document.Id, y => y.MapFrom(y => y.Id))
+            .ForPath(x => x.Topic.Document.Title, y => y.MapFrom(y => y.Title))
+            .ReverseMap();
+        //IndexLessonTopicParent
+        CreateMap<Document, DocumentIndexByLessonParentTopicDto>().ReverseMap();
+        CreateMap<Topic, TopicIndexByLessonParentTopicDto>().ReverseMap();
+        CreateMap<Topic, ChildTopicIndexByLessonDto>().ReverseMap();
+        CreateMap<Lesson, LessonIndexByLessonParentTopicDto>().ReverseMap();
+        CreateMap<DocumentIndexByLessonParentTopicDto, Lesson>()
+            .ForMember(x => x.Id, y => y.MapFrom(y => y.Topic.ParentTopic.Lesson.Id))
+            .ForMember(x => x.Title, y => y.MapFrom(y => y.Topic.ParentTopic.Lesson.Title))
+            .ForPath(x => x.Topic.Id, y => y.MapFrom(y => y.Topic.ParentTopic.Id))
+            .ForPath(x => x.Topic.Title, y => y.MapFrom(y => y.Topic.ParentTopic.Title))
+            .ForPath(x => x.Topic.ParentTopic.Id, y => y.MapFrom(y => y.Topic.Id))
+            .ForPath(x => x.Topic.ParentTopic.Title, y => y.MapFrom(y => y.Topic.Title))
+            .ForPath(x => x.Topic.ParentTopic.Lessons, y => y.MapFrom(y => y.Topic.Lessons))
             .ForPath(x => x.Topic.Document.Id, y => y.MapFrom(y => y.Id))
             .ForPath(x => x.Topic.Document.Title, y => y.MapFrom(y => y.Title))
             .ReverseMap();
         //IndexTopic
         CreateMap<Document, DocumentIndexByTopicDto>().ReverseMap();
         CreateMap<Topic, TopicIndexByTopicDto>().ReverseMap();
+        CreateMap<Topic, ChildTopicIndexByTopicDto>().ReverseMap();
         CreateMap<Lesson, LessonIndexByTopicDto>().ReverseMap();
         CreateMap<DocumentIndexByTopicDto, Topic>()
             .ForMember(x => x.Id, y => y.MapFrom(y => y.Topic.Id))
@@ -91,6 +115,22 @@ public class MappingProfile : Profile
             .ForPath(x => x.Document.Id, y => y.MapFrom(y => y.Id))
             .ForPath(x => x.Document.Title, y => y.MapFrom(y => y.Title))
             .ForMember(x => x.Lessons, y => y.MapFrom(y => y.Topic.Lessons))
+            .ForMember(x => x.ChildTopics, y => y.MapFrom(y => y.Topic.ChildTopics))
+            .ReverseMap();
+        //IndexTopicParent
+        CreateMap<Document, DocumentIndexByTopicParentDto>().ReverseMap();
+        CreateMap<Topic, TopicIndexByTopicParentDto>().ReverseMap();
+        CreateMap<Topic, ChildTopicIndexByTopicDto>().ReverseMap();
+        CreateMap<Lesson, LessonIndexByTopicParentDto>().ReverseMap();
+        CreateMap<DocumentIndexByTopicParentDto, Topic>()
+            .ForPath(x => x.ParentTopic.Id, y => y.MapFrom(y => y.Topic.Id))
+            .ForPath(x => x.ParentTopic.Title, y => y.MapFrom(y => y.Topic.Title))
+            .ForPath(x => x.Document.Id, y => y.MapFrom(y => y.Id))
+            .ForPath(x => x.Document.Title, y => y.MapFrom(y => y.Title))
+            .ForMember(x => x.Lessons, y => y.MapFrom(y => y.Topic.ParentTopic.Lessons))
+            .ForMember(x => x.Id, y => y.MapFrom(y => y.Topic.ParentTopic.Id))
+            .ForMember(x => x.Title, y => y.MapFrom(y => y.Topic.ParentTopic.Title))
+            .ForPath(x => x.ParentTopic.Lessons, y => y.MapFrom(y => y.Topic.Lessons))
             .ReverseMap();
     }
 }
