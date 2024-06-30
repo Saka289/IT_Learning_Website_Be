@@ -36,17 +36,29 @@ public class TopicRepository : RepositoryBase<Topic, int>, ITopicRepository
 
     public async Task<Topic> GetTopicById(int id)
     {
+        return await FindByCondition(x => x.Id == id, false, c => c.ChildTopics).FirstOrDefaultAsync();
+    }
+    
+    public async Task<Topic> GetTopicByAllId(int id)
+    {
         return await GetByIdAsync(id);
     }
 
     public async Task<IEnumerable<Topic>> GetAllTopic()
     {
-        return await FindAll().Include(d => d.Document).ToListAsync();
+        return await FindAll()
+            .Include(d => d.Document)
+            .Include(c => c.ChildTopics)
+            .Where(t => t.ParentId == null)
+            .ToListAsync();
     }
 
     public async Task<IEnumerable<Topic>> GetAllTopicByDocument(int id)
     {
-        return await FindAll().Include(d => d.Document).Where(x => x.DocumentId == id).ToListAsync();
+        return await FindAll()
+            .Include(d => d.Document)
+            .Include(c => c.ChildTopics)
+            .Where(x => x.DocumentId == id && x.ParentId == null).ToListAsync();
     }
 
     public Task<IQueryable<Topic>> GetAllTopicPagination()
@@ -57,6 +69,13 @@ public class TopicRepository : RepositoryBase<Topic, int>, ITopicRepository
 
     public async Task<Topic> GetAllTopicIndex(int id)
     {
-        return await FindAll().Include(d => d.Document).Include(l => l.Lessons).FirstOrDefaultAsync(t => t.Id == id);
+        return await FindAll()
+            .Include(d => d.Document)
+            .Include(c => c.ChildTopics)
+            .ThenInclude(l => l.Lessons)
+            .Include(p => p.ParentTopic)
+            .ThenInclude(l => l.Lessons)
+            .Include(l => l.Lessons)
+            .FirstOrDefaultAsync(t => t.Id == id);
     }
 }

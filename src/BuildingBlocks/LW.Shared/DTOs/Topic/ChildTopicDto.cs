@@ -1,6 +1,6 @@
 ﻿namespace LW.Shared.DTOs.Topic;
 
-public class TopicDto
+public class ChildTopicDto
 {
     public int Id { get; set; }
     public string? Title { get; set; }
@@ -11,7 +11,7 @@ public class TopicDto
     public int? ParentId { get; set; }
     public int DocumentId { get; set; }
     public string DocumentTitle { get; set; }
-    public IEnumerable<ChildTopicDto> ChildTopics { get; set; }
+    
     public DateTimeOffset CreatedDate { get; set; }
     public DateTimeOffset? LastModifiedDate { get; set; }
 }

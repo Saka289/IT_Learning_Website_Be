@@ -71,6 +71,12 @@ public class LessonRepository : RepositoryBase<Lesson, int>, ILessonRepository
 
     public async Task<Lesson> GetAllLessonIndex(int id)
     {
-        return await FindAll().Include(t => t.Topic).ThenInclude(d => d.Document).FirstOrDefaultAsync(l => l.Id == id);
+        return await FindAll()
+            .Include(t => t.Topic)
+            .ThenInclude(c => c.ParentTopic)
+            .ThenInclude(l => l.Lessons)
+            .Include(t => t.Topic)
+            .ThenInclude(d => d.Document)
+            .FirstOrDefaultAsync(l => l.Id == id);
     }
 }

@@ -6,5 +6,6 @@ public class TopicIndexByDocumentDto
 {
     public int Id { get; set; }
     public string Title { get; set; }
+    public IEnumerable<ChildTopicIndexByDocumentDto> ChildTopics { get; set; }
     public IEnumerable<LessonIndexByDocumentDto> Lessons { get; set; }
 }
