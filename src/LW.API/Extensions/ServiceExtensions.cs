@@ -34,6 +34,7 @@ using LW.Data.Repositories.DocumentRepositories;
 using LW.Data.Repositories.LessonRepositories;
 using LW.Data.Repositories.TopicRepositories;
 using LW.Services.CommentDocumentServices;
+using LW.Services.EnumServices;
 using LW.Services.IndexServices;
 using LW.Services.LessonServices;
 using LW.Services.TopicServices;
@@ -260,6 +261,7 @@ public static class ServiceExtensions
         services.AddScoped<ILessonService, LessonService>();
         services.AddScoped<ICommentDocumentService, CommentDocumentService>();
         services.AddScoped<IIndexService, IndexService>();
+        services.AddScoped<IEnumService, EnumService>();
         return services;
     }
 }

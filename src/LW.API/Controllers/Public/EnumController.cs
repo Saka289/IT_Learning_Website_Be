@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using LW.Services.EnumServices;
 using LW.Shared.DTOs.Enum;
 using LW.Shared.Enums;
 using Microsoft.AspNetCore.Http;
@@ -15,28 +16,30 @@ namespace LW.API.Controllers.Public
     [ApiController]
     public class EnumController : ControllerBase
     {
-        [HttpGet("GetAllBookCollection")]
-        public ActionResult<IEnumerable<EnumDto>> GetBookCollection()
+        private readonly IEnumService _enumService;
+        public EnumController(IEnumService enumService)
         {
-            var enumValues = Enum.GetValues(typeof(EBookCollection)).Cast<EBookCollection>();
-            var result = enumValues.Select(e => new EnumDto
+            _enumService = enumService;
+        }
+        [HttpGet("GetAllBookCollection")]
+        public async Task<ActionResult<ActionResult<IEnumerable<EnumDto>>>> GetBookCollection()
+        {
+            var result = await _enumService.GetAllBookCollection();
+            if (!result.IsSucceeded)
             {
-                Value = (int)e,
-                Name = EnumExtensions.GetDisplayName(e) ?? e.ToString()
-            }).ToList();
+                return NotFound(result);
+            }
             return Ok(result);
         }
 
         [HttpGet("GetAllBookType")]
-        public ActionResult<IEnumerable<EnumDto>> GetAllBookType()
+        public async Task<ActionResult<ActionResult<IEnumerable<EnumDto>>>> GetBookType()
         {
-            var enumValues = Enum.GetValues(typeof(EBookType)).Cast<EBookType>();
-            var result = enumValues.Select(e => new EnumDto
+            var result = await _enumService.GetAllBookType();
+            if (!result.IsSucceeded)
             {
-                Value = (int)e,
-                Name = EnumExtensions.GetDisplayName(e) ?? e.ToString()
-            }).ToList();
-            return Ok(result);
-        }
+                return NotFound(result);
+            }
+            return Ok(result);        }
     }
 }
