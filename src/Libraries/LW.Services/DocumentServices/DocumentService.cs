@@ -114,27 +114,6 @@ public class DocumentService : IDocumentService
             return new ApiResult<DocumentDto>(false, "GradeID not found !!!");
         }
         var documentEntity = _mapper.Map<Document>(documentCreateDto);
-        // checkbookCollection and BookType
-        switch (documentCreateDto.BookCollection)
-        {
-           case 1: documentEntity.BookCollection = BookCollectionConstant.KetNoiTriThuc;
-               break;
-           case 2: documentEntity.BookCollection = BookCollectionConstant.CanhDieu;
-               break;
-           case 3: documentEntity.BookCollection = BookCollectionConstant.ChanTroiSangTao;
-               break;
-        }
-        switch (documentCreateDto.TypeOfBook)
-        {
-            case 1: documentEntity.TypeOfBook = BookTypeConstant.SGK;
-                break;
-            case 2: documentEntity.TypeOfBook = BookTypeConstant.SBT;
-                break;
-            case 3: documentEntity.TypeOfBook = BookTypeConstant.SGV;
-                break;
-            case 4: documentEntity.TypeOfBook = BookTypeConstant.TLTK;
-                break;
-        }
         documentEntity.KeyWord = documentEntity.Title.RemoveDiacritics();
         await _documentRepository.CreateDocument(documentEntity);
         documentEntity.Grade = gradeEntity;
@@ -158,27 +137,6 @@ public class DocumentService : IDocumentService
         }
 
         var model = _mapper.Map(documentUpdateDto, documentEntity);
-        // checkbookCollection and BookType
-        switch (documentUpdateDto.BookCollection)
-        {
-            case 1: model.BookCollection = BookCollectionConstant.KetNoiTriThuc;
-                break;
-            case 2: model.BookCollection = BookCollectionConstant.CanhDieu;
-                break;
-            case 3: model.BookCollection = BookCollectionConstant.ChanTroiSangTao;
-                break;
-        }
-        switch (documentUpdateDto.TypeOfBook)
-        {
-            case 1: model.TypeOfBook = BookTypeConstant.SGK;
-                break;
-            case 2: model.TypeOfBook = BookTypeConstant.SBT;
-                break;
-            case 3: model.TypeOfBook = BookTypeConstant.SGV;
-                break;
-            case 4: model.TypeOfBook = BookTypeConstant.TLTK;
-                break;
-        }
         model.KeyWord = documentUpdateDto.Title.RemoveDiacritics();
         var updateDocument = await _documentRepository.UpdateDocument(model);
         updateDocument.Grade = gradeEntity;

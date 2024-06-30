@@ -9,7 +9,10 @@ using LW.Shared.DTOs.Document;
 using LW.Shared.DTOs.Index;
 using LW.Shared.DTOs.Lesson;
 using LW.Shared.DTOs.Topic;
+using LW.Shared.Enums;
 using Microsoft.AspNetCore.Identity;
+using Microsoft.OpenApi.Extensions;
+using ConfigurationExtensions = LW.Infrastructure.Extensions.ConfigurationExtensions;
 
 namespace LW.API.Mappings;
 
@@ -40,6 +43,8 @@ public class MappingProfile : Profile
         CreateMap<Document, DocumentDto>()
             .ForMember(x => x.GradeId, y => y.MapFrom(src => src.GradeId))
             .ForMember(x => x.GradeTitle, y => y.MapFrom(src => src.Grade.Title))
+            .ForMember(x => x.BookCollection, y => y.MapFrom(src => EnumExtensions.GetDisplayName(src.BookCollection)))
+            .ForMember(x => x.TypeOfBook, y => y.MapFrom(src => EnumExtensions.GetDisplayName(src.TypeOfBook)))
             .ReverseMap();
         CreateMap<Document, DocumentCreateDto>().ReverseMap();
         CreateMap<Document, DocumentUpdateDto>().ReverseMap();

@@ -7,6 +7,7 @@ using LW.Shared.DTOs.Grade;
 using LW.Shared.DTOs.Lesson;
 using LW.Shared.DTOs.Level;
 using LW.Shared.DTOs.Topic;
+using LW.Shared.Enums;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using Nest;
@@ -33,9 +34,11 @@ public class AppDbContextSeed
             await context.Levels.AddRangeAsync(dataLevel);
             await context.SaveChangesAsync();
             var result = mapper.Map<IEnumerable<LevelDto>>(dataLevel);
-            logger.Information("Seeded data Levels for Education DB associated with context {DbContextName}", nameof(AppDbContext));
+            logger.Information("Seeded data Levels for Education DB associated with context {DbContextName}",
+                nameof(AppDbContext));
             await elasticClient.BulkAsync(b => b.Index(ElasticConstant.ElasticLevels).IndexMany(result));
-            logger.Information("Seeded data Levels for ElasticSearch associated with {IElasticClient}", nameof(IElasticClient));
+            logger.Information("Seeded data Levels for ElasticSearch associated with {IElasticClient}",
+                nameof(IElasticClient));
         }
 
         if (!context.Grades.Any())
@@ -44,9 +47,11 @@ public class AppDbContextSeed
             await context.Grades.AddRangeAsync(dataGrade);
             await context.SaveChangesAsync();
             var result = mapper.Map<IEnumerable<GradeDto>>(dataGrade);
-            logger.Information("Seeded data Grades for Education DB associated with context {DbContextName}", nameof(AppDbContext));
+            logger.Information("Seeded data Grades for Education DB associated with context {DbContextName}",
+                nameof(AppDbContext));
             await elasticClient.BulkAsync(b => b.Index(ElasticConstant.ElasticGrades).IndexMany(result));
-            logger.Information("Seeded data Grades for ElasticSearch associated with {IElasticClient}", nameof(IElasticClient));
+            logger.Information("Seeded data Grades for ElasticSearch associated with {IElasticClient}",
+                nameof(IElasticClient));
         }
 
         if (!context.Documents.Any())
@@ -55,9 +60,11 @@ public class AppDbContextSeed
             await context.Documents.AddRangeAsync(dataDocument);
             await context.SaveChangesAsync();
             var result = mapper.Map<IEnumerable<DocumentDto>>(dataDocument);
-            logger.Information("Seeded data Documents for Education DB associated with context {DbContextName}", nameof(AppDbContext));
+            logger.Information("Seeded data Documents for Education DB associated with context {DbContextName}",
+                nameof(AppDbContext));
             await elasticClient.BulkAsync(b => b.Index(ElasticConstant.ElasticDocuments).IndexMany(result));
-            logger.Information("Seeded data Documents for ElasticSearch associated with {IElasticClient}", nameof(IElasticClient));
+            logger.Information("Seeded data Documents for ElasticSearch associated with {IElasticClient}",
+                nameof(IElasticClient));
         }
 
         if (!context.Topics.Any())
@@ -66,9 +73,11 @@ public class AppDbContextSeed
             await context.Topics.AddRangeAsync(dataTopic);
             await context.SaveChangesAsync();
             var result = mapper.Map<IEnumerable<TopicDto>>(dataTopic);
-            logger.Information("Seeded data Topics for Education DB associated with context {DbContextName}", nameof(AppDbContext));
+            logger.Information("Seeded data Topics for Education DB associated with context {DbContextName}",
+                nameof(AppDbContext));
             await elasticClient.BulkAsync(b => b.Index(ElasticConstant.ElasticTopics).IndexMany(result));
-            logger.Information("Seeded data dataTopic for ElasticSearch associated with {IElasticClient}", nameof(IElasticClient));
+            logger.Information("Seeded data dataTopic for ElasticSearch associated with {IElasticClient}",
+                nameof(IElasticClient));
         }
 
         if (!context.Lessons.Any())
@@ -77,9 +86,11 @@ public class AppDbContextSeed
             await context.Lessons.AddRangeAsync(dataLesson);
             await context.SaveChangesAsync();
             var result = mapper.Map<IEnumerable<LessonDto>>(dataLesson);
-            logger.Information("Seeded data Lessons for Education DB associated with context {DbContextName}", nameof(AppDbContext));
+            logger.Information("Seeded data Lessons for Education DB associated with context {DbContextName}",
+                nameof(AppDbContext));
             await elasticClient.BulkAsync(b => b.Index(ElasticConstant.ElasticLessons).IndexMany(result));
-            logger.Information("Seeded data Lessons for ElasticSearch associated with {IElasticClient}", nameof(IElasticClient));
+            logger.Information("Seeded data Lessons for ElasticSearch associated with {IElasticClient}",
+                nameof(IElasticClient));
         }
     }
 
@@ -253,6 +264,7 @@ public class AppDbContextSeed
             },
         };
     }
+
     private static IEnumerable<Document> SeedDocument()
     {
         return new List<Document>()
@@ -261,56 +273,60 @@ public class AppDbContextSeed
             {
                 Code = "CD0301",
                 Title = "Sách giáo khoa tin học lớp 3 Cánh diều",
-                BookCollection = "Cánh diều",
-                Description = "Sách giáo khoa Tin học lớp 3 - Cánh diều là một công cụ hữu ích và phổ biến trong việc giáo dục cơ bản tại Việt Nam, dành cho học sinh ở cấp tiểu học. Cuốn sách này được thiết kế để trang bị kiến thức và kỹ năng cơ bản về máy tính và công nghệ thông tin cho học sinh, từ đó giúp các em hòa nhập tốt hơn vào môi trường giáo dục hiện đại và thế giới ngày càng kỹ thuật số. Cuốn sách gồm nhiều chủ đề được chia thành các phần và bài học cụ thể, giúp học sinh có thể dễ dàng theo dõi và tích lũy kiến thức từng bước một",
+                BookCollection = EBookCollection.CanhDieu,
+                Description =
+                    "Sách giáo khoa Tin học lớp 3 - Cánh diều là một công cụ hữu ích và phổ biến trong việc giáo dục cơ bản tại Việt Nam, dành cho học sinh ở cấp tiểu học. Cuốn sách này được thiết kế để trang bị kiến thức và kỹ năng cơ bản về máy tính và công nghệ thông tin cho học sinh, từ đó giúp các em hòa nhập tốt hơn vào môi trường giáo dục hiện đại và thế giới ngày càng kỹ thuật số. Cuốn sách gồm nhiều chủ đề được chia thành các phần và bài học cụ thể, giúp học sinh có thể dễ dàng theo dõi và tích lũy kiến thức từng bước một",
                 KeyWord = "sach giao khoa tin học lop 3 canh dieu",
                 GradeId = 1,
                 Author = "Hồ Sĩ Đàm",
                 PublicationYear = 2022,
                 Edition = 1,
-                TypeOfBook = "Sách giáo khoa",
+                TypeOfBook = EBookType.SGK,
                 IsActive = true,
             },
             new()
             {
                 Code = "CD0402",
                 Title = "Sách giáo khoa tin học lớp 4 Cánh diều",
-                BookCollection = "Cánh diều",
-                Description = "Sách giáo khoa Tin học lớp 4 Cánh diều được biên soạn theo chương trình giáo dục phổ thông 2018, với mục tiêu giúp học sinh hình thành và phát triển năng lực sử dụng máy tính và công nghệ thông tin một cách hiệu quả.",
+                BookCollection = EBookCollection.CanhDieu,
+                Description =
+                    "Sách giáo khoa Tin học lớp 4 Cánh diều được biên soạn theo chương trình giáo dục phổ thông 2018, với mục tiêu giúp học sinh hình thành và phát triển năng lực sử dụng máy tính và công nghệ thông tin một cách hiệu quả.",
                 KeyWord = "sach giao khoa tin học lop 4 canh dieu",
                 GradeId = 2,
                 Author = "Hồ Sĩ Đàm, Hồ Cẩm Hà",
                 PublicationYear = 2022,
                 Edition = 1,
-                TypeOfBook = "Sách giáo khoa",
+                TypeOfBook = EBookType.SGK,
                 IsActive = true,
             },
             new()
             {
                 Code = "CD0503",
                 Title = "Sách giáo khoa tin học lớp 5 Cánh diều",
-                BookCollection = "Cánh diều",
-                Description = "Sách giáo khoa Tin học lớp 5 Cánh diều được biên soạn theo chương trình giáo dục phổ thông 2018, với mục tiêu giúp học sinh hình thành và phát triển năng lực sử dụng máy tính và công nghệ thông tin một cách hiệu quả.",
+                BookCollection = EBookCollection.CanhDieu,
+                Description =
+                    "Sách giáo khoa Tin học lớp 5 Cánh diều được biên soạn theo chương trình giáo dục phổ thông 2018, với mục tiêu giúp học sinh hình thành và phát triển năng lực sử dụng máy tính và công nghệ thông tin một cách hiệu quả.",
                 KeyWord = "sach giao khoa tin học lop 5 canh dieu",
                 GradeId = 3,
                 Author = "Hồ Sĩ Đàm, Hồ Cẩm Hà",
                 PublicationYear = 2022,
                 Edition = 1,
-                TypeOfBook = "Sách giáo khoa",
+                TypeOfBook = EBookType.SGK,
                 IsActive = true,
             },
             new()
             {
                 Code = "CD0604",
                 Title = "Sách giáo khoa tin học lớp 6 Cánh diều",
-                BookCollection = "Cánh Diều",
-                Description = "Sách giáo khoa Tin học lớp 6 Cánh diều được biên soạn theo chương trình giáo dục phổ thông 2018, với mục tiêu giúp học sinh hình thành và phát triển năng lực sử dụng máy tính và công nghệ thông tin một cách hiệu quả.",
+                BookCollection = EBookCollection.CanhDieu,
+                Description =
+                    "Sách giáo khoa Tin học lớp 6 Cánh diều được biên soạn theo chương trình giáo dục phổ thông 2018, với mục tiêu giúp học sinh hình thành và phát triển năng lực sử dụng máy tính và công nghệ thông tin một cách hiệu quả.",
                 KeyWord = "sach giao khoa tin học lop 6 canh dieu",
                 GradeId = 4,
                 Author = "Hồ Sĩ Đàm, Hồ Cẩm Hà",
                 PublicationYear = 2022,
                 Edition = 1,
-                TypeOfBook = "Sách giáo khoa",
+                TypeOfBook = EBookType.SGK,
                 IsActive = true,
             },
         };
@@ -325,8 +341,10 @@ public class AppDbContextSeed
                 //1
                 Title = "Chủ đề A Máy tính và em",
                 KeyWord = "chu de a may tinh va em",
-                Description = "Chủ đề A máy tính và em trong sách giáo khoa Tin học lớp 3 của bộ sách Cánh Diều thường bao gồm các nội dung cơ bản về máy tính và cách sử dụng chúng. Dưới đây là một mô tả tổng quan về những gì có thể được bao gồm trong chủ đề này",
-                Objectives = "Hiểu biết cơ bản về máy tính, Sử dụng máy tính, Làm việc với hệ điểu hành, Sử dụng phần mềm cơ bản",
+                Description =
+                    "Chủ đề A máy tính và em trong sách giáo khoa Tin học lớp 3 của bộ sách Cánh Diều thường bao gồm các nội dung cơ bản về máy tính và cách sử dụng chúng. Dưới đây là một mô tả tổng quan về những gì có thể được bao gồm trong chủ đề này",
+                Objectives =
+                    "Hiểu biết cơ bản về máy tính, Sử dụng máy tính, Làm việc với hệ điểu hành, Sử dụng phần mềm cơ bản",
                 IsActive = true,
                 DocumentId = 1,
                 ParentId = null,
@@ -336,8 +354,10 @@ public class AppDbContextSeed
                 //2
                 Title = "Chủ đề B Mạng máy tính và Internet",
                 KeyWord = "chu de b mang may tinh va internet",
-                Description = "Chủ đề B mạng máy tính và internet trong sách giáo khoa Tin học lớp 3 của bộ sách Cánh Diều thường bao gồm các nội dung cơ bản về mạng máy tính và Internet. Dưới đây là một mô tả tổng quan về những gì có thể được bao gồm trong chủ đề này: Giới thiệu về mạng máy tính,Kết nối mạng máy tính,Internet là gì?",
-                Objectives = "Giúp học sinh hiểu khái niệm cơ bản về mạng máy tính và Internet, nhận biết các loại mạng và thành phần chính, cũng như cách kết nối và sử dụng mạng. Học sinh sẽ biết cách sử dụng trình duyệt web để tìm kiếm thông tin, sử dụng email, và nhận thức được tầm quan trọng của an toàn mạng, bao gồm bảo vệ thông tin cá nhân và quyền riêng tư trực tuyến",
+                Description =
+                    "Chủ đề B mạng máy tính và internet trong sách giáo khoa Tin học lớp 3 của bộ sách Cánh Diều thường bao gồm các nội dung cơ bản về mạng máy tính và Internet. Dưới đây là một mô tả tổng quan về những gì có thể được bao gồm trong chủ đề này: Giới thiệu về mạng máy tính,Kết nối mạng máy tính,Internet là gì?",
+                Objectives =
+                    "Giúp học sinh hiểu khái niệm cơ bản về mạng máy tính và Internet, nhận biết các loại mạng và thành phần chính, cũng như cách kết nối và sử dụng mạng. Học sinh sẽ biết cách sử dụng trình duyệt web để tìm kiếm thông tin, sử dụng email, và nhận thức được tầm quan trọng của an toàn mạng, bao gồm bảo vệ thông tin cá nhân và quyền riêng tư trực tuyến",
                 IsActive = true,
                 DocumentId = 1,
                 ParentId = null,
@@ -347,7 +367,8 @@ public class AppDbContextSeed
                 //3
                 Title = "Chủ đề C Tổ chức lưu trữ, tìm kiếm và trao đổi thông tin",
                 KeyWord = "chu de d dao duc, phap luat va van hoa trong moi truong so",
-                Description = "Chủ đề này cũng nhấn mạnh vai trò của giáo dục và hướng nghiệp trong việc sử dụng công nghệ một cách có trách nhiệm và mang tính xây dựng cho cá nhân và cộng đồng.",
+                Description =
+                    "Chủ đề này cũng nhấn mạnh vai trò của giáo dục và hướng nghiệp trong việc sử dụng công nghệ một cách có trách nhiệm và mang tính xây dựng cho cá nhân và cộng đồng.",
                 Objectives = "Hiểu và áp dụng các giá trị đạo đức và đạo lý khi sử dụng công nghệ và Internet.",
                 IsActive = true,
                 DocumentId = 1,
@@ -359,7 +380,8 @@ public class AppDbContextSeed
 
                 Title = "Chủ đề D Đạo đức, Pháp luật và Văn hóa trong môi trường số",
                 KeyWord = "chu de d dao duc, phap luat va van hoa trong moi truong so",
-                Description = "Chủ đề này cũng nhấn mạnh vai trò của giáo dục và hướng nghiệp trong việc sử dụng công nghệ một cách có trách nhiệm và mang tính xây dựng cho cá nhân và cộng đồng.",
+                Description =
+                    "Chủ đề này cũng nhấn mạnh vai trò của giáo dục và hướng nghiệp trong việc sử dụng công nghệ một cách có trách nhiệm và mang tính xây dựng cho cá nhân và cộng đồng.",
                 Objectives = "Hiểu và áp dụng các giá trị đạo đức và đạo lý khi sử dụng công nghệ và Internet.",
                 IsActive = true,
                 DocumentId = 1,
@@ -371,8 +393,10 @@ public class AppDbContextSeed
 
                 Title = "Chủ đề E Ứng dụng tin học",
                 KeyWord = "chu de e ung dung tin hoc",
-                Description = "Chủ đề này giới thiệu cho học sinh về các ứng dụng cụ thể của tin học trong cuộc sống hàng ngày. Học sinh sẽ được hướng dẫn cách sử dụng các phần mềm và công cụ tin học để giải quyết các vấn đề thực tế và hỗ trợ trong học tập.",
-                Objectives = "Hiểu và áp dụng các ứng dụng cụ thể của tin học trong đời sống hàng ngày, như việc sử dụng phần mềm văn phòng (word, excel), các ứng dụng học tập và giải trí.",
+                Description =
+                    "Chủ đề này giới thiệu cho học sinh về các ứng dụng cụ thể của tin học trong cuộc sống hàng ngày. Học sinh sẽ được hướng dẫn cách sử dụng các phần mềm và công cụ tin học để giải quyết các vấn đề thực tế và hỗ trợ trong học tập.",
+                Objectives =
+                    "Hiểu và áp dụng các ứng dụng cụ thể của tin học trong đời sống hàng ngày, như việc sử dụng phần mềm văn phòng (word, excel), các ứng dụng học tập và giải trí.",
                 IsActive = true,
                 DocumentId = 1,
                 ParentId = null
@@ -383,8 +407,10 @@ public class AppDbContextSeed
 
                 Title = "Chủ đề A1 Khám phá máy tính",
                 KeyWord = "chu de e ung dung tin hoc",
-                Description = "Chủ đề này giới thiệu cho học sinh về các ứng dụng cụ thể của tin học trong cuộc sống hàng ngày. Học sinh sẽ được hướng dẫn cách sử dụng các phần mềm và công cụ tin học để giải quyết các vấn đề thực tế và hỗ trợ trong học tập.",
-                Objectives = "Hiểu và áp dụng các ứng dụng cụ thể của tin học trong đời sống hàng ngày, như việc sử dụng phần mềm văn phòng (word, excel), các ứng dụng học tập và giải trí.",
+                Description =
+                    "Chủ đề này giới thiệu cho học sinh về các ứng dụng cụ thể của tin học trong cuộc sống hàng ngày. Học sinh sẽ được hướng dẫn cách sử dụng các phần mềm và công cụ tin học để giải quyết các vấn đề thực tế và hỗ trợ trong học tập.",
+                Objectives =
+                    "Hiểu và áp dụng các ứng dụng cụ thể của tin học trong đời sống hàng ngày, như việc sử dụng phần mềm văn phòng (word, excel), các ứng dụng học tập và giải trí.",
                 IsActive = true,
                 DocumentId = 1,
                 ParentId = 1
@@ -395,8 +421,10 @@ public class AppDbContextSeed
 
                 Title = "Chủ đề A2 Thông tin và xử lý thông tin",
                 KeyWord = "chu de e ung dung tin hoc",
-                Description = "Chủ đề này giới thiệu cho học sinh về các ứng dụng cụ thể của tin học trong cuộc sống hàng ngày. Học sinh sẽ được hướng dẫn cách sử dụng các phần mềm và công cụ tin học để giải quyết các vấn đề thực tế và hỗ trợ trong học tập.",
-                Objectives = "Hiểu và áp dụng các ứng dụng cụ thể của tin học trong đời sống hàng ngày, như việc sử dụng phần mềm văn phòng (word, excel), các ứng dụng học tập và giải trí.",
+                Description =
+                    "Chủ đề này giới thiệu cho học sinh về các ứng dụng cụ thể của tin học trong cuộc sống hàng ngày. Học sinh sẽ được hướng dẫn cách sử dụng các phần mềm và công cụ tin học để giải quyết các vấn đề thực tế và hỗ trợ trong học tập.",
+                Objectives =
+                    "Hiểu và áp dụng các ứng dụng cụ thể của tin học trong đời sống hàng ngày, như việc sử dụng phần mềm văn phòng (word, excel), các ứng dụng học tập và giải trí.",
                 IsActive = true,
                 DocumentId = 1,
                 ParentId = 1
@@ -407,8 +435,10 @@ public class AppDbContextSeed
 
                 Title = "Chủ đề A3 Làm quen với cách gõ bàn phím",
                 KeyWord = "chu de e ung dung tin hoc",
-                Description = "Chủ đề này giới thiệu cho học sinh về các ứng dụng cụ thể của tin học trong cuộc sống hàng ngày. Học sinh sẽ được hướng dẫn cách sử dụng các phần mềm và công cụ tin học để giải quyết các vấn đề thực tế và hỗ trợ trong học tập.",
-                Objectives = "Hiểu và áp dụng các ứng dụng cụ thể của tin học trong đời sống hàng ngày, như việc sử dụng phần mềm văn phòng (word, excel), các ứng dụng học tập và giải trí.",
+                Description =
+                    "Chủ đề này giới thiệu cho học sinh về các ứng dụng cụ thể của tin học trong cuộc sống hàng ngày. Học sinh sẽ được hướng dẫn cách sử dụng các phần mềm và công cụ tin học để giải quyết các vấn đề thực tế và hỗ trợ trong học tập.",
+                Objectives =
+                    "Hiểu và áp dụng các ứng dụng cụ thể của tin học trong đời sống hàng ngày, như việc sử dụng phần mềm văn phòng (word, excel), các ứng dụng học tập và giải trí.",
                 IsActive = true,
                 DocumentId = 1,
                 ParentId = 1

@@ -1,4 +1,6 @@
-﻿namespace LW.Shared.Enums;
+﻿using System.ComponentModel;
+
+namespace LW.Shared.Enums;
 
 public enum ETopicIndex
 {

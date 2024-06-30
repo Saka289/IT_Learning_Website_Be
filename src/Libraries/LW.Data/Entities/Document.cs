@@ -2,6 +2,7 @@
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 using LW.Contracts.Domains;
+using LW.Shared.Enums;
 
 namespace LW.Data.Entities;
 
@@ -12,7 +13,7 @@ public class Document : EntityAuditBase<int>
     [Required] 
     public string Title { get; set; }
     [Required] 
-    public string BookCollection { get; set; }
+    public EBookCollection BookCollection { get; set; }
     [Required] 
     public string Description { get; set; }
     [Required] 
@@ -24,7 +25,7 @@ public class Document : EntityAuditBase<int>
     [Required]
     public int Edition { get; set; }
     [Required]
-    public string TypeOfBook { get; set; }
+    public EBookType TypeOfBook { get; set; }
     [Required]
     public bool IsActive { get; set; }
     [Required] 
