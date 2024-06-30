@@ -1,0 +1,7 @@
+﻿C:\Users\canduykhanh\OneDrive\Máy tính\Learning_Website_SEP490\IT_Learning_Website_Be\src\BuildingBlocks\LW.Infrastructure\Common\CloudinaryService.cs
+C:\Users\canduykhanh\OneDrive\Máy tính\Learning_Website_SEP490\IT_Learning_Website_Be\src\BuildingBlocks\LW.Infrastructure\Common\ElasticSearchService.cs
+C:\Users\canduykhanh\OneDrive\Máy tính\Learning_Website_SEP490\IT_Learning_Website_Be\src\BuildingBlocks\LW.Infrastructure\Common\SerializeService.cs
+C:\Users\canduykhanh\OneDrive\Máy tính\Learning_Website_SEP490\IT_Learning_Website_Be\src\BuildingBlocks\LW.Infrastructure\Configurations\SMTPEmailSetting.cs
+C:\Users\canduykhanh\OneDrive\Máy tính\Learning_Website_SEP490\IT_Learning_Website_Be\src\BuildingBlocks\LW.Infrastructure\Extensions\ConfigurationExtensions.cs
+C:\Users\canduykhanh\OneDrive\Máy tính\Learning_Website_SEP490\IT_Learning_Website_Be\src\BuildingBlocks\LW.Infrastructure\Extensions\RemoveDiacriticsExtensions.cs
+C:\Users\canduykhanh\OneDrive\Máy tính\Learning_Website_SEP490\IT_Learning_Website_Be\src\BuildingBlocks\LW.Infrastructure\Services\SmtpEmailService.cs

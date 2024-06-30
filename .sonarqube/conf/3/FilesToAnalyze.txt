@@ -1,0 +1,12 @@
+﻿C:\Users\canduykhanh\OneDrive\Máy tính\Learning_Website_SEP490\IT_Learning_Website_Be\src\BuildingBlocks\LW.Contracts\Common\ICloudinaryService.cs
+C:\Users\canduykhanh\OneDrive\Máy tính\Learning_Website_SEP490\IT_Learning_Website_Be\src\BuildingBlocks\LW.Contracts\Common\IElasticSearchService.cs
+C:\Users\canduykhanh\OneDrive\Máy tính\Learning_Website_SEP490\IT_Learning_Website_Be\src\BuildingBlocks\LW.Contracts\Common\ISerializeService.cs
+C:\Users\canduykhanh\OneDrive\Máy tính\Learning_Website_SEP490\IT_Learning_Website_Be\src\BuildingBlocks\LW.Contracts\Configurations\ISMTPEmailSetting.cs
+C:\Users\canduykhanh\OneDrive\Máy tính\Learning_Website_SEP490\IT_Learning_Website_Be\src\BuildingBlocks\LW.Contracts\Domains\EntityAuditBase.cs
+C:\Users\canduykhanh\OneDrive\Máy tính\Learning_Website_SEP490\IT_Learning_Website_Be\src\BuildingBlocks\LW.Contracts\Domains\EntityBase.cs
+C:\Users\canduykhanh\OneDrive\Máy tính\Learning_Website_SEP490\IT_Learning_Website_Be\src\BuildingBlocks\LW.Contracts\Domains\Interfaces\IAuditable.cs
+C:\Users\canduykhanh\OneDrive\Máy tính\Learning_Website_SEP490\IT_Learning_Website_Be\src\BuildingBlocks\LW.Contracts\Domains\Interfaces\IDateTracking.cs
+C:\Users\canduykhanh\OneDrive\Máy tính\Learning_Website_SEP490\IT_Learning_Website_Be\src\BuildingBlocks\LW.Contracts\Domains\Interfaces\IEntityBase.cs
+C:\Users\canduykhanh\OneDrive\Máy tính\Learning_Website_SEP490\IT_Learning_Website_Be\src\BuildingBlocks\LW.Contracts\Domains\Interfaces\IUserTracking.cs
+C:\Users\canduykhanh\OneDrive\Máy tính\Learning_Website_SEP490\IT_Learning_Website_Be\src\BuildingBlocks\LW.Contracts\Services\IEmailService.cs
+C:\Users\canduykhanh\OneDrive\Máy tính\Learning_Website_SEP490\IT_Learning_Website_Be\src\BuildingBlocks\LW.Contracts\Services\ISmtpEmailService.cs

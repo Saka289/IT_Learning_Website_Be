@@ -19,7 +19,7 @@ namespace LW.Shared.DTOs.Document
         public string Author { get; set; }
         public int PublicationYear { get; set; }
         public int Edition { get; set; }
-        public string TypeOfBook { get; set; }
+        public string TypeOfBook { get; set; } 
         public bool IsActive { get; set; }
         public int GradeId { get; set; }
         public string GradeTitle { get; set; }
