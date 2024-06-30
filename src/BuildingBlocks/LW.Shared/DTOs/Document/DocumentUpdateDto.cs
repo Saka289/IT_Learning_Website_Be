@@ -13,11 +13,11 @@ namespace LW.Shared.DTOs.Document
 
         public string Code { get; set; }
 
-        public string BookCollection { get; set; }
+        public int BookCollection { get; set; } //1-KetNoiTriThuc 2-CanhDieu 3-ChanTroiSangTao
         public string Author { get; set; }
         public int PublicationYear { get; set; }
         public int Edition { get; set; }
-        public string TypeOfBook { get; set; }
+        public int TypeOfBook { get; set; } // 1- SGK 2-SBT 3-SGV 4-TLTK 
         public string Description { get; set; }
         public bool IsActive { get; set; }
         public int GradeId { get; set; }
