@@ -9,7 +9,6 @@ using LW.Shared.SeedWork;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.OpenApi.Extensions;
-using EnumExtensions = LW.Infrastructure.Extensions.EnumExtensions;
 
 namespace LW.API.Controllers.Public
 {

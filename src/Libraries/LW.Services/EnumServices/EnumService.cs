@@ -14,9 +14,9 @@ public class EnumService : IEnumService
         var result = enumValues.Select(e => new EnumDto
         {
             Value = (int)e,
-            Name = EnumExtensions.GetDisplayName(e) ?? e.ToString()
+            Name = EnumHelperExtensions.GetDisplayName(e) ?? e.ToString()
         }).ToList();
-        return new ApiResult<IEnumerable<EnumDto>>(true,result,"Get all book collection successfully");
+        return new ApiResult<IEnumerable<EnumDto>>(true, result, "Get all book collection successfully");
     }
 
     public async Task<ApiResult<IEnumerable<EnumDto>>> GetAllBookType()
@@ -25,7 +25,8 @@ public class EnumService : IEnumService
         var result = enumValues.Select(e => new EnumDto
         {
             Value = (int)e,
-            Name = EnumExtensions.GetDisplayName(e) ?? e.ToString()
+            Name = EnumHelperExtensions.GetDisplayName(e) ?? e.ToString()
         }).ToList();
-        return new ApiResult<IEnumerable<EnumDto>>(true,result,"Get all book type successfully");    }
+        return new ApiResult<IEnumerable<EnumDto>>(true, result, "Get all book type successfully");
+    }
 }
