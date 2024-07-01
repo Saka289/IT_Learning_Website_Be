@@ -3,9 +3,9 @@ using System.Reflection;
 
 namespace LW.Infrastructure.Extensions;
 
-public static class EnumExtensions
+public static class EnumHelperExtensions
 {
-    public static string? GetDisplayName(Enum enumValue)
+    public static string GetDisplayName(Enum enumValue)
     {
         return enumValue.GetType()
             .GetMember(enumValue.ToString())
