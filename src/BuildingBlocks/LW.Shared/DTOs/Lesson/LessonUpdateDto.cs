@@ -6,9 +6,9 @@ namespace LW.Shared.DTOs.Lesson;
 
 public class LessonUpdateDto
 {
-    public int Id { get; set;  }
+    public int Id { get; set; }
     public string Title { get; set; }
-    public bool IsActive { get; set; }
+    private bool IsActive { get; set; } = false;
     public string? Content { get; set; }
     public IFormFile? FilePath { get; set; }
     public int TopicId { get; set; }

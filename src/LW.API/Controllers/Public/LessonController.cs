@@ -5,8 +5,10 @@ using System.Linq;
 using System.Threading.Tasks;
 using LW.API.Application.Validators.LessonValidator;
 using LW.Services.LessonServices;
+using LW.Shared.Constant;
 using LW.Shared.DTOs.Lesson;
 using LW.Shared.SeedWork;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Newtonsoft.Json;
@@ -117,7 +119,8 @@ namespace LW.API.Controllers.Public
             
             return Ok(result);
         }
-
+        
+        [Authorize(Roles = RoleConstant.RoleAdmin)]
         [HttpPut("UpdateStatusLesson")]
         public async Task<ActionResult<ApiResult<bool>>> UpdateStatusLesson(int id)
         {

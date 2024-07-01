@@ -117,11 +117,13 @@ public class ElasticSearchService<T, K> : IElasticSearchService<T, K> where T : 
 
         var response = await _elasticClient.SearchAsync<T>(s => s
             .Index(indexName)
+            .Size(searchRequestParameters.Size)
+            .Sort(o => o.Ascending("id"))
             .Query(q => q
                 .MatchAll()
             )
         );
-        
+
         if (!response.IsValid || response.Total == 0)
         {
             _logger.Error($"Get all failed: {response.IsValid.ToString()}");

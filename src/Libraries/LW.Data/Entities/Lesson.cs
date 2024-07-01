@@ -12,7 +12,6 @@ public class Lesson : EntityAuditBase<int>
     public string KeyWord { get; set; }
     [Required] 
     public bool IsActive { get; set; }
-    [Required]
     public string? Content { get; set; }
     public string? FilePath { get; set; }
     public string? PublicId { get; set; }

@@ -36,9 +36,13 @@ public class TopicRepository : RepositoryBase<Topic, int>, ITopicRepository
 
     public async Task<Topic> GetTopicById(int id)
     {
-        return await FindByCondition(x => x.Id == id, false, c => c.ChildTopics).FirstOrDefaultAsync();
+        return await FindByCondition(x => x.Id == id)
+            .Include(c => c.ChildTopics)
+            .ThenInclude(d => d.Document)
+            .Include(d => d.Document)
+            .FirstOrDefaultAsync();
     }
-    
+
     public async Task<Topic> GetTopicByAllId(int id)
     {
         return await GetByIdAsync(id);
