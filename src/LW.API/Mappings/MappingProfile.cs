@@ -1,5 +1,6 @@
 ﻿using AutoMapper;
 using LW.Data.Entities;
+using LW.Infrastructure.Extensions;
 using LW.Shared.DTOs.Admin;
 using LW.Shared.DTOs.CommentDocumentDto;
 using LW.Shared.DTOs.Grade;
@@ -43,8 +44,8 @@ public class MappingProfile : Profile
         CreateMap<Document, DocumentDto>()
             .ForMember(x => x.GradeId, y => y.MapFrom(src => src.GradeId))
             .ForMember(x => x.GradeTitle, y => y.MapFrom(src => src.Grade.Title))
-            .ForMember(x => x.BookCollection, y => y.MapFrom(src => EnumExtensions.GetDisplayName(src.BookCollection)))
-            .ForMember(x => x.TypeOfBook, y => y.MapFrom(src => EnumExtensions.GetDisplayName(src.TypeOfBook)))
+            .ForMember(x => x.BookCollection, y => y.MapFrom(src => EnumHelperExtensions.GetDisplayName(src.BookCollection).ToString()))
+            .ForMember(x => x.TypeOfBook, y => y.MapFrom(src => EnumHelperExtensions.GetDisplayName(src.TypeOfBook).ToString()))
             .ReverseMap();
         CreateMap<Document, DocumentCreateDto>().ReverseMap();
         CreateMap<Document, DocumentUpdateDto>().ReverseMap();

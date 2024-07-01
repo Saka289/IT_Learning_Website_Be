@@ -17,4 +17,5 @@ public class Grade : EntityAuditBase<int>
     [ForeignKey(nameof(LevelId))] 
     public virtual Level Level { get; set; }
     public virtual ICollection<Document> Documents { get; set; }
+    public virtual ICollection<UserGrade> UserGrades { get; set; }
 }
