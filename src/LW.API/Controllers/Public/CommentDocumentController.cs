@@ -25,7 +25,7 @@ namespace LW.API.Controllers.Public
 
         [HttpGet("GetAllCommentByDocumentIdPagination")]
         public async Task<ActionResult<ApiResult<PagedList<PagedList<CommentDocumentDto>>>>>
-            GetAllCommentByDocumentIdPagination([FromQuery] int documentId,
+            GetAllCommentByDocumentIdPagination([Required] int documentId,
                 [FromQuery] PagingRequestParameters pagingRequestParameters)
         {
             var result =
@@ -41,7 +41,7 @@ namespace LW.API.Controllers.Public
 
         [HttpGet("GetAllCommentDocumentByUserIdPagination")]
         public async Task<ActionResult<ApiResult<PagedList<PagedList<CommentDocumentDto>>>>>
-            GetAllCommentDocumentByUserIdPagination([FromQuery] string userId,
+            GetAllCommentDocumentByUserIdPagination([Required] string userId,
                 [FromQuery] PagingRequestParameters pagingRequestParameters)
         {
             var result =

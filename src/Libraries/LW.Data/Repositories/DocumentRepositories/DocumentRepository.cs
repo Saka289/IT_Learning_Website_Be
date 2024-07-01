@@ -48,7 +48,7 @@ namespace LW.Data.Repositories.DocumentRepositories
 
         public Task<IQueryable<Document>> GetAllDocumentPagination()
         {
-            var result = FindAll();
+            var result = FindAll().Include(g => g.Grade).AsQueryable();
             return Task.FromResult(result);
         }
 

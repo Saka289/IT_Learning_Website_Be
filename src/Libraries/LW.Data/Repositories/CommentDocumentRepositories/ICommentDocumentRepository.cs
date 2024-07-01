@@ -11,6 +11,7 @@ public interface ICommentDocumentRepository : IRepositoryBase<CommentDocument, i
     Task<CommentDocument> CreateComment(CommentDocument commentDocument);
     Task<CommentDocument> UpdateComment(CommentDocument commentDocument);
     Task<CommentDocument> GetCommentById(int id);
+    Task<IQueryable<CommentDocument>> GetAllCommentByDocumentId(int documentId);
     Task<IEnumerable<CommentDocument>> GetAllParentCommentById(int id);
     Task<CommentDocument> GetParentCommentById(int commentDocumentId, int? parentId);
     Task<bool> DeleteComment(int id);
