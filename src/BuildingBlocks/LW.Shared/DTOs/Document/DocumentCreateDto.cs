@@ -9,7 +9,7 @@ namespace LW.Shared.DTOs.Document
 {
     public  class DocumentCreateDto
     {
-        public string Code { get; set; }
+        //public string Code { get; set; }
         public string Title { get; set; }
         public EBookCollection BookCollection { get; set; } //1-KetNoiTriThuc 2-CanhDieu 3-ChanTroiSangTao
         public string Author { get; set; }

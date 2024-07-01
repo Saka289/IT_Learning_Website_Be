@@ -1,5 +1,6 @@
 ﻿using System.ComponentModel.DataAnnotations;
 using System.Reflection;
+using LW.Shared.Enums;
 
 namespace LW.Infrastructure.Extensions;
 

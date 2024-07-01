@@ -29,4 +29,5 @@ public class EnumService : IEnumService
         }).ToList();
         return new ApiResult<IEnumerable<EnumDto>>(true, result, "Get all book type successfully");
     }
+  
 }

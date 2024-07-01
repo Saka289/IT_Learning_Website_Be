@@ -7,6 +7,7 @@ using LW.Infrastructure.Extensions;
 using LW.Shared.Constant;
 using LW.Shared.DTOs.Document;
 using LW.Shared.SeedWork;
+using Microsoft.OpenApi.Extensions;
 using MockQueryable.Moq;
 
 namespace LW.Services.DocumentServices;
@@ -114,6 +115,8 @@ public class DocumentService : IDocumentService
             return new ApiResult<DocumentDto>(false, "GradeID not found !!!");
         }
         var documentEntity = _mapper.Map<Document>(documentCreateDto);
+        // mã hóa code field
+        documentEntity.Code = EncodeHelperExtensions.EncodeDocument(documentEntity.BookCollection.GetDisplayName().ToUpper(),documentEntity.TypeOfBook.GetDisplayName().ToUpper(),documentEntity.PublicationYear,documentEntity.Edition);
         documentEntity.KeyWord = documentEntity.Title.RemoveDiacritics();
         await _documentRepository.CreateDocument(documentEntity);
         documentEntity.Grade = gradeEntity;
@@ -137,6 +140,9 @@ public class DocumentService : IDocumentService
         }
 
         var model = _mapper.Map(documentUpdateDto, documentEntity);
+        // encode code field
+        model.Code = EncodeHelperExtensions.EncodeDocument(model.BookCollection.GetDisplayName().ToUpper(),
+            model.TypeOfBook.GetDisplayName().ToUpper(), model.PublicationYear, model.Edition);
         model.KeyWord = documentUpdateDto.Title.RemoveDiacritics();
         var updateDocument = await _documentRepository.UpdateDocument(model);
         updateDocument.Grade = gradeEntity;
