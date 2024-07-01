@@ -11,7 +11,8 @@ namespace LW.Shared.DTOs.Document
     {
         public int Id { get; set; }
         public string Title { get; set; }
-        public string Code { get; set; }
+        
+        //public string Code { get; set; }
         public EBookCollection BookCollection { get; set; } //1-KetNoiTriThuc 2-CanhDieu 3-ChanTroiSangTao
         public string Author { get; set; }
         public int PublicationYear { get; set; }

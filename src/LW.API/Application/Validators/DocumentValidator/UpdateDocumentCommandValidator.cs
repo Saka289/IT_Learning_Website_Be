@@ -17,6 +17,5 @@ public class UpdateDocumentCommandValidator : AbstractValidator<DocumentUpdateDt
         RuleFor(x => x.BookCollection).NotNull().NotEmpty();
         RuleFor(x => x.TypeOfBook).NotNull().NotEmpty();
         RuleFor(x => x.Edition).NotNull().NotEmpty().GreaterThan(0);
-        RuleFor(x => x.Code).NotNull().NotEmpty();
     }
 }
