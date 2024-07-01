@@ -6,7 +6,7 @@ using Microsoft.EntityFrameworkCore.Migrations;
 
 namespace LW.Data.Persistence.Migrations
 {
-    public partial class Init_Add_All_Class : Migration
+    public partial class Init_Update_Class_2 : Migration
     {
         protected override void Up(MigrationBuilder migrationBuilder)
         {
@@ -267,12 +267,20 @@ namespace LW.Data.Persistence.Migrations
                 {
                     Id = table.Column<int>(type: "int", nullable: false)
                         .Annotation("MySql:ValueGenerationStrategy", MySqlValueGenerationStrategy.IdentityColumn),
+                    Code = table.Column<string>(type: "longtext", nullable: false)
+                        .Annotation("MySql:CharSet", "utf8mb4"),
                     Title = table.Column<string>(type: "longtext", nullable: false)
                         .Annotation("MySql:CharSet", "utf8mb4"),
+                    BookCollection = table.Column<int>(type: "int", nullable: false),
                     Description = table.Column<string>(type: "longtext", nullable: false)
                         .Annotation("MySql:CharSet", "utf8mb4"),
                     KeyWord = table.Column<string>(type: "longtext", nullable: false)
                         .Annotation("MySql:CharSet", "utf8mb4"),
+                    Author = table.Column<string>(type: "longtext", nullable: false)
+                        .Annotation("MySql:CharSet", "utf8mb4"),
+                    PublicationYear = table.Column<int>(type: "int", nullable: false),
+                    Edition = table.Column<int>(type: "int", nullable: false),
+                    TypeOfBook = table.Column<int>(type: "int", nullable: false),
                     IsActive = table.Column<bool>(type: "tinyint(1)", nullable: false),
                     GradeId = table.Column<int>(type: "int", nullable: false),
                     CreatedDate = table.Column<DateTimeOffset>(type: "datetime(6)", nullable: false),
@@ -289,6 +297,34 @@ namespace LW.Data.Persistence.Migrations
                         name: "FK_Documents_Grades_GradeId",
                         column: x => x.GradeId,
                         principalTable: "Grades",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
+                })
+                .Annotation("MySql:CharSet", "utf8mb4");
+
+            migrationBuilder.CreateTable(
+                name: "UserGrade",
+                columns: table => new
+                {
+                    Id = table.Column<int>(type: "int", nullable: false)
+                        .Annotation("MySql:ValueGenerationStrategy", MySqlValueGenerationStrategy.IdentityColumn),
+                    GradeId = table.Column<int>(type: "int", nullable: false),
+                    UserId = table.Column<string>(type: "varchar(255)", nullable: false)
+                        .Annotation("MySql:CharSet", "utf8mb4")
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_UserGrade", x => x.Id);
+                    table.ForeignKey(
+                        name: "FK_UserGrade_Grades_GradeId",
+                        column: x => x.GradeId,
+                        principalTable: "Grades",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
+                    table.ForeignKey(
+                        name: "FK_UserGrade_Users_UserId",
+                        column: x => x.UserId,
+                        principalTable: "Users",
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Cascade);
                 })
@@ -352,6 +388,7 @@ namespace LW.Data.Persistence.Migrations
                     Objectives = table.Column<string>(type: "longtext", nullable: false)
                         .Annotation("MySql:CharSet", "utf8mb4"),
                     IsActive = table.Column<bool>(type: "tinyint(1)", nullable: false),
+                    ParentId = table.Column<int>(type: "int", nullable: true),
                     DocumentId = table.Column<int>(type: "int", nullable: false),
                     CreatedDate = table.Column<DateTimeOffset>(type: "datetime(6)", nullable: false),
                     LastModifiedDate = table.Column<DateTimeOffset>(type: "datetime(6)", nullable: true),
@@ -369,6 +406,11 @@ namespace LW.Data.Persistence.Migrations
                         principalTable: "Documents",
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Cascade);
+                    table.ForeignKey(
+                        name: "FK_Topics_Topics_ParentId",
+                        column: x => x.ParentId,
+                        principalTable: "Topics",
+                        principalColumn: "Id");
                 })
                 .Annotation("MySql:CharSet", "utf8mb4");
 
@@ -458,8 +500,23 @@ namespace LW.Data.Persistence.Migrations
                 column: "DocumentId");
 
             migrationBuilder.CreateIndex(
+                name: "IX_Topics_ParentId",
+                table: "Topics",
+                column: "ParentId");
+
+            migrationBuilder.CreateIndex(
                 name: "IX_UserClaims_UserId",
                 table: "UserClaims",
+                column: "UserId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_UserGrade_GradeId",
+                table: "UserGrade",
+                column: "GradeId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_UserGrade_UserId",
+                table: "UserGrade",
                 column: "UserId");
 
             migrationBuilder.CreateIndex(
@@ -497,6 +554,9 @@ namespace LW.Data.Persistence.Migrations
 
             migrationBuilder.DropTable(
                 name: "UserClaims");
+
+            migrationBuilder.DropTable(
+                name: "UserGrade");
 
             migrationBuilder.DropTable(
                 name: "UserLogins");

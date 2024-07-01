@@ -23,8 +23,10 @@ public class TopicService : ITopicService
     private readonly IElasticSearchService<LessonDto, int> _elasticSearchLessonService;
     private readonly ILogger _logger;
     private readonly ILessonRepository _lessonRepository;
+
     public TopicService(ITopicRepository topicRepository, IMapper mapper, IDocumentRepository documentRepository,
-        IElasticSearchService<TopicDto, int> elasticSearchService, ILogger logger, ILessonRepository lessonRepository, IElasticSearchService<LessonDto, int> elasticSearchLessonService)
+        IElasticSearchService<TopicDto, int> elasticSearchService, ILogger logger, ILessonRepository lessonRepository,
+        IElasticSearchService<LessonDto, int> elasticSearchLessonService)
     {
         _topicRepository = topicRepository;
         _mapper = mapper;
@@ -46,9 +48,16 @@ public class TopicService : ITopicService
         var topic = _mapper.Map<Topic>(model);
         topic.KeyWord = model.Title.RemoveDiacritics();
         await _topicRepository.CreateTopic(topic);
-        topic.Document = documentEntity;
-        var result = _mapper.Map<TopicDto>(topic);
-        _elasticSearchService.CreateDocumentAsync(ElasticConstant.ElasticTopics, result, g => g.Id);
+        if (model.ParentId != null)
+        {
+            var topicUpdate = await _topicRepository.GetTopicById(Convert.ToInt32(model.ParentId));
+            var resultUpdate = _mapper.Map<TopicDto>(topicUpdate);
+             _elasticSearchService.UpdateDocumentAsync(ElasticConstant.ElasticTopics, resultUpdate, Convert.ToInt32(model.ParentId));
+            return new ApiResult<bool>(true, "Create topic successfully");
+        }
+        var topicCreate = await _topicRepository.GetTopicById(topic.Id);
+        var resultCreate = _mapper.Map<TopicDto>(topicCreate);
+        _elasticSearchService.CreateDocumentAsync(ElasticConstant.ElasticTopics, resultCreate, g => g.Id);
         return new ApiResult<bool>(true, "Create topic successfully");
     }
 
@@ -69,10 +78,9 @@ public class TopicService : ITopicService
         var topicUpdate = _mapper.Map(model, topicEntity);
         topicUpdate.KeyWord = model.Title.RemoveDiacritics();
         await _topicRepository.UpdateTopic(topicUpdate);
-
-        topicUpdate.Document = documentEntity;
-        var result = _mapper.Map<TopicDto>(topicUpdate);
-        _elasticSearchService.UpdateDocumentAsync(ElasticConstant.ElasticTopics, result, model.Id);
+        var topicElastic = await _topicRepository.GetTopicById(Convert.ToInt32(topicUpdate.ParentId));
+        var result = _mapper.Map<TopicDto>(topicElastic);
+        _elasticSearchService.UpdateDocumentAsync(ElasticConstant.ElasticTopics, result, Convert.ToInt32(topicUpdate.ParentId));
         return new ApiResult<bool>(true, "Update topic successfully");
     }
 
@@ -84,13 +92,10 @@ public class TopicService : ITopicService
             return new ApiResult<bool>(false, "Not found !");
         }
 
-        var documentEntity = await _documentRepository.GetDocumentById(obj.DocumentId);
-
         obj.IsActive = !obj.IsActive;
         await _topicRepository.UpdateTopic(obj);
-
-        obj.Document = documentEntity;
-        var result = _mapper.Map<TopicDto>(obj);
+        var topicElastic = await _topicRepository.GetTopicById(Convert.ToInt32(obj.ParentId));
+        var result = _mapper.Map<TopicDto>(topicElastic);
         _elasticSearchService.UpdateDocumentAsync(ElasticConstant.ElasticTopics, result, id);
         return new ApiResult<bool>(true, "Update status of topic successfully");
     }
@@ -116,7 +121,7 @@ public class TopicService : ITopicService
     public async Task<ApiResult<bool>> DeleteRange(IEnumerable<int> ids)
     {
         var listTopicValid = new List<Topic>();
-        
+
         foreach (var topicId in ids)
         {
             var topicObj = await _topicRepository.GetTopicById(topicId);
@@ -140,7 +145,8 @@ public class TopicService : ITopicService
             _elasticSearchService.UpdateDocumentAsync(ElasticConstant.ElasticTopics, result, obj.Id);
             // delete soft all the lesson of this topic
             var lessons = await _lessonRepository.GetAllLessonByTopic(obj.Id);
-            if(lessons!=null){
+            if (lessons != null)
+            {
                 foreach (var lesson in lessons)
                 {
                     lesson.IsActive = false;
@@ -148,10 +154,12 @@ public class TopicService : ITopicService
                     await _lessonRepository.SaveChangesAsync();
                     lesson.Topic = obj;
                     var resultLesson = _mapper.Map<LessonDto>(lesson);
-                    _elasticSearchLessonService.UpdateDocumentAsync(ElasticConstant.ElasticLessons, resultLesson, lesson.Id);
+                    _elasticSearchLessonService.UpdateDocumentAsync(ElasticConstant.ElasticLessons, resultLesson,
+                        lesson.Id);
                 }
             }
         }
+
         return new ApiSuccessResult<bool>(true, "Delete Range Topics Successfully !!!");
     }
 
@@ -221,12 +229,6 @@ public class TopicService : ITopicService
         if (obj == null)
         {
             return new ApiResult<TopicDto>(false, "Not found !");
-        }
-
-        var document = await _documentRepository.GetDocumentById(obj.DocumentId);
-        if (document != null)
-        {
-            obj.Document = document;
         }
 
         var result = _mapper.Map<TopicDto>(obj);

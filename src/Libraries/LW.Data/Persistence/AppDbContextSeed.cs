@@ -72,6 +72,7 @@ public class AppDbContextSeed
             var dataTopic = SeedTopic();
             await context.Topics.AddRangeAsync(dataTopic);
             await context.SaveChangesAsync();
+            dataTopic = dataTopic.Where(p => p.ParentId == null);
             var result = mapper.Map<IEnumerable<TopicDto>>(dataTopic);
             logger.Information("Seeded data Topics for Education DB associated with context {DbContextName}",
                 nameof(AppDbContext));

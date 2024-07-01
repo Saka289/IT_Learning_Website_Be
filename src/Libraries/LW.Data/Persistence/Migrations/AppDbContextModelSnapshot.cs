@@ -262,7 +262,6 @@ namespace LW.Data.Persistence.Migrations
                         .HasColumnType("int");
 
                     b.Property<string>("Content")
-                        .IsRequired()
                         .HasColumnType("longtext");
 
                     b.Property<string>("CreatedBy")

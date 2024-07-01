@@ -11,7 +11,7 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace LW.Data.Persistence.Migrations
 {
     [DbContext(typeof(AppDbContext))]
-    [Migration("20240630172153_Init_Update_Class_2")]
+    [Migration("20240701074029_Init_Update_Class_2")]
     partial class Init_Update_Class_2
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -264,7 +264,6 @@ namespace LW.Data.Persistence.Migrations
                         .HasColumnType("int");
 
                     b.Property<string>("Content")
-                        .IsRequired()
                         .HasColumnType("longtext");
 
                     b.Property<string>("CreatedBy")

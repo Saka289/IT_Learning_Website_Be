@@ -6,5 +6,5 @@ public class SearchRequestParameters : PagingRequestParameters
 {
     public virtual string? Key { get; set; }
     public string? Value { get; set; }
-    public int Size { get; set; } = 500;
+    public int Size { get; set; } = 2000;
 }
