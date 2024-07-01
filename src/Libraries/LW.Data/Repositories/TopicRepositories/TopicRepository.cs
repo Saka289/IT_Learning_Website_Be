@@ -67,7 +67,8 @@ public class TopicRepository : RepositoryBase<Topic, int>, ITopicRepository
 
     public Task<IQueryable<Topic>> GetAllTopicPagination()
     {
-        var result = FindAll();
+        var result = FindAll()
+            .Where(t => t.ParentId == null);
         return Task.FromResult(result);
     }
 

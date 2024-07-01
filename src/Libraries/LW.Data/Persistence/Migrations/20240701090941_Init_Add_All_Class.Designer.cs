@@ -11,8 +11,8 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace LW.Data.Persistence.Migrations
 {
     [DbContext(typeof(AppDbContext))]
-    [Migration("20240701074029_Init_Update_Class_2")]
-    partial class Init_Update_Class_2
+    [Migration("20240701090941_Init_Add_All_Class")]
+    partial class Init_Add_All_Class
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {

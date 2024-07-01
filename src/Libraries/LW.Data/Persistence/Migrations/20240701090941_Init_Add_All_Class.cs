@@ -6,7 +6,7 @@ using Microsoft.EntityFrameworkCore.Migrations;
 
 namespace LW.Data.Persistence.Migrations
 {
-    public partial class Init_Update_Class_2 : Migration
+    public partial class Init_Add_All_Class : Migration
     {
         protected override void Up(MigrationBuilder migrationBuilder)
         {
