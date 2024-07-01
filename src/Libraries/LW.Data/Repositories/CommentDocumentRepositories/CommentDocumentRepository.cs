@@ -41,6 +41,12 @@ public class CommentDocumentRepository : RepositoryBase<CommentDocument, int>, I
         return await FindByCondition(c => c.Id == id, false, c => c.ChildCommentDocuments).FirstOrDefaultAsync();
     }
 
+    public Task<IQueryable<CommentDocument>> GetAllCommentByDocumentId(int documentId)
+    {
+        var result = FindByCondition(x => x.DocumentId == documentId);
+        return Task.FromResult(result);
+    }
+
     public async Task<IEnumerable<CommentDocument>> GetAllParentCommentById(int id)
     {
         return await FindByCondition(c => c.ParentId == id).ToListAsync();
