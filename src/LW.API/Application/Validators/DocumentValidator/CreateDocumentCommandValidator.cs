@@ -1,5 +1,6 @@
 ﻿using FluentValidation;
 using LW.Shared.DTOs.Document;
+using LW.Shared.Enums;
 
 namespace LW.API.Application.Validators.DocumentValidator;
 
@@ -13,8 +14,8 @@ public class CreateDocumentCommandValidator : AbstractValidator<DocumentCreateDt
         RuleFor(x => x.GradeId).NotNull().NotEmpty().GreaterThan(0);
         RuleFor(x => x.Author).NotNull().NotEmpty();
         RuleFor(x => x.PublicationYear).NotNull().NotEmpty().GreaterThan(0);
-        RuleFor(x => x.BookCollection).NotNull().NotEmpty();
-        RuleFor(x => x.TypeOfBook).NotNull().NotEmpty();
+        RuleFor(x => x.BookCollection).NotNull().NotEmpty().IsInEnum();
+        RuleFor(x => x.TypeOfBook).NotNull().NotEmpty().IsInEnum();
         RuleFor(x => x.Edition).NotNull().NotEmpty().GreaterThan(0);
 
     }
