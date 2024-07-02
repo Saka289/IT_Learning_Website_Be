@@ -14,13 +14,21 @@ public class CommentDocumentRepository : RepositoryBase<CommentDocument, int>, I
 
     public Task<IQueryable<CommentDocument>> GetAllCommentByDocumentIdPagination(int id)
     {
-        var result = FindAll().Include(r => r.ChildCommentDocuments).Where(x => x.DocumentId == id);
+        var result = FindAll()
+            .Include(r => r.ChildCommentDocuments)
+            .ThenInclude(u => u.ApplicationUser)
+            .Include(u => u.ApplicationUser)
+            .Where(x => x.DocumentId == id);
         return Task.FromResult(result);
     }
 
     public Task<IQueryable<CommentDocument>> GetAllCommentByUserIdPagination(string id)
     {
-        var result = FindAll().Include(r => r.ChildCommentDocuments).Where(x => x.UserId == id);
+        var result = FindAll()
+            .Include(r => r.ChildCommentDocuments)
+            .ThenInclude(u => u.ApplicationUser)
+            .Include(u => u.ApplicationUser)
+            .Where(x => x.UserId == id);
         return Task.FromResult(result);
     }
 
@@ -38,7 +46,11 @@ public class CommentDocumentRepository : RepositoryBase<CommentDocument, int>, I
 
     public async Task<CommentDocument> GetCommentById(int id)
     {
-        return await FindByCondition(c => c.Id == id, false, c => c.ChildCommentDocuments).FirstOrDefaultAsync();
+        return await FindByCondition(c => c.Id == id)
+            .Include(r => r.ChildCommentDocuments)
+            .ThenInclude(u => u.ApplicationUser)
+            .Include(u => u.ApplicationUser)
+            .FirstOrDefaultAsync();
     }
 
     public Task<IQueryable<CommentDocument>> GetAllCommentByDocumentId(int documentId)

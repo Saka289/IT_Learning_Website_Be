@@ -46,6 +46,7 @@ public class DocumentService : IDocumentService
             var comment = await _commentDocumentRepository.GetAllCommentByDocumentId(item.Id);
             var averageRating = comment.Any() ? Math.Round(comment.Average(c => c.Rating), 2) : 0;
             item.AverageRating = averageRating;
+            item.TotalReviewer = comment.Count();
         }
 
         return new ApiSuccessResult<IEnumerable<DocumentDto>>(result);
@@ -65,6 +66,7 @@ public class DocumentService : IDocumentService
             var comment = await _commentDocumentRepository.GetAllCommentByDocumentId(item.Id);
             var averageRating = comment.Any() ? Math.Round(comment.Average(c => c.Rating), 2) : 0;
             item.AverageRating = averageRating;
+            item.TotalReviewer = comment.Count();
         }
         
         return new ApiSuccessResult<IEnumerable<DocumentDto>>(result);
@@ -85,6 +87,7 @@ public class DocumentService : IDocumentService
             var comment = await _commentDocumentRepository.GetAllCommentByDocumentId(item.Id);
             var averageRating = comment.Any() ? Math.Round(comment.Average(c => c.Rating), 2) : 0;
             item.AverageRating = averageRating;
+            item.TotalReviewer = comment.Count();
         }
         
         var pagedResult = await PagedList<DocumentDto>.ToPageListAsync(result.AsQueryable().BuildMock(), pagingRequestParameters.PageIndex,
@@ -111,6 +114,7 @@ public class DocumentService : IDocumentService
         var comment = await _commentDocumentRepository.GetAllCommentByDocumentId(result.Id);
         var averageRating = comment.Any() ? Math.Round(comment.Average(c => c.Rating), 2) : 0;
         result.AverageRating = averageRating;
+        result.TotalReviewer = comment.Count();
         return new ApiSuccessResult<DocumentDto>(result);
     }
 
@@ -134,6 +138,7 @@ public class DocumentService : IDocumentService
             var comment = await _commentDocumentRepository.GetAllCommentByDocumentId(item.Id);
             var averageRating = comment.Any() ? Math.Round(comment.Average(c => c.Rating), 2) : 0;
             item.AverageRating = averageRating;
+            item.TotalReviewer = comment.Count();
         }
         var pagedResult = await PagedList<DocumentDto>.ToPageListAsync(result.AsQueryable().BuildMock(),
             searchDocumentDto.PageIndex, searchDocumentDto.PageSize, searchDocumentDto.OrderBy,

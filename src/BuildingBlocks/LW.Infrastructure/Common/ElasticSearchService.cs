@@ -1,7 +1,8 @@
-﻿using LW.Contracts.Common;
-using LW.Shared.SeedWork;
+﻿using Elasticsearch.Net;
+using LW.Contracts.Common;
 using Nest;
 using Serilog;
+using SearchRequestParameters = LW.Shared.SeedWork.SearchRequestParameters;
 
 namespace LW.Infrastructure.Common;
 
@@ -36,7 +37,10 @@ public class ElasticSearchService<T, K> : IElasticSearchService<T, K> where T : 
 
     public async Task<string> CreateDocumentAsync(string indexName, T document, Func<T, K> idExtractor)
     {
-        var request = new IndexRequest<T>(document, indexName, Convert.ToString(idExtractor(document)));
+        var request = new IndexRequest<T>(document, indexName, Convert.ToString(idExtractor(document)))
+        {
+            Refresh = Refresh.True
+        };
         var response = await _elasticClient.IndexAsync(request);
         if (!response.IsValid)
         {
@@ -52,6 +56,7 @@ public class ElasticSearchService<T, K> : IElasticSearchService<T, K> where T : 
         var response = await _elasticClient.BulkAsync(b => b
             .Index(indexName)
             .IndexMany(document)
+            .Refresh(Refresh.True)
         );
 
         if (!response.IsValid)
@@ -68,6 +73,7 @@ public class ElasticSearchService<T, K> : IElasticSearchService<T, K> where T : 
         var response = await _elasticClient.UpdateAsync<T>(Convert.ToString(documentId), u => u
             .Index(indexName)
             .Doc(document)
+            .Refresh(Refresh.True)
         );
         if (!response.IsValid)
         {
@@ -76,6 +82,29 @@ public class ElasticSearchService<T, K> : IElasticSearchService<T, K> where T : 
         }
 
         return response.Id;
+    }
+
+    public async Task<IEnumerable<string>> UpdateDocumentRangeAsync(string indexName, IEnumerable<T> document,
+        Func<T, K> idExtractor)
+    {
+        var bulkDescriptor = new BulkDescriptor();
+
+        foreach (var itemDocument in document)
+        {
+            bulkDescriptor.Update<T>(d => d
+                .Index(indexName)
+                .Id(Convert.ToString(idExtractor(itemDocument)))
+                .Doc(itemDocument)).Refresh(Refresh.True);
+        }
+
+        var response = await _elasticClient.BulkAsync(bulkDescriptor);
+        if (!response.IsValid)
+        {
+            _logger.Error($"Failed to bulk update documents: {response.OriginalException.Message}");
+            return null;
+        }
+
+        return response.Items.Select(i => i.Id).Where(id => !string.IsNullOrEmpty(id));
     }
 
     public async Task<IEnumerable<T>> SearchDocumentAsync(string indexName,
@@ -136,7 +165,10 @@ public class ElasticSearchService<T, K> : IElasticSearchService<T, K> where T : 
 
     public async Task<bool> DeleteDocumentAsync(string indexName, K documentId)
     {
-        var request = new DeleteRequest<T>(indexName, Convert.ToString(documentId));
+        var request = new DeleteRequest<T>(indexName, Convert.ToString(documentId))
+        {
+            Refresh = Refresh.True
+        };
         var response = await _elasticClient.DeleteAsync(request);
         if (!response.IsValid)
         {
@@ -153,7 +185,7 @@ public class ElasticSearchService<T, K> : IElasticSearchService<T, K> where T : 
 
         foreach (var itemDocument in documentId)
         {
-            bulkDescriptor.Delete<T>(d => d.Index(indexName).Id(itemDocument.ToString()));
+            bulkDescriptor.Delete<T>(d => d.Index(indexName).Id(itemDocument.ToString())).Refresh(Refresh.True);
         }
 
         var response = await _elasticClient.BulkAsync(bulkDescriptor);

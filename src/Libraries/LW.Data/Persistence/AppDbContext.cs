@@ -79,7 +79,9 @@ public class AppDbContext : IdentityDbContext<ApplicationUser>
                         {
                             var tokenHandler = new JwtSecurityTokenHandler();
                             var token = tokenHandler.ReadToken(accessToken) as JwtSecurityToken;
-                            addedUserEntity.CreatedBy = $"{token.Claims.FirstOrDefault(u => u.Type == JwtRegisteredClaimNames.FamilyName).Value} {token.Claims.FirstOrDefault(u => u.Type == JwtRegisteredClaimNames.GivenName).Value}";
+                            string familyName = token.Claims.FirstOrDefault(u => u.Type == JwtRegisteredClaimNames.FamilyName)?.Value ?? String.Empty;
+                            string givenName = token.Claims.FirstOrDefault(u => u.Type == JwtRegisteredClaimNames.GivenName)?.Value ?? String.Empty;
+                            addedUserEntity.LastModifiedBy = $"{familyName} {givenName}";
                             item.State = EntityState.Added;
                         }
                         else
@@ -105,7 +107,9 @@ public class AppDbContext : IdentityDbContext<ApplicationUser>
                         {
                             var tokenHandler = new JwtSecurityTokenHandler();
                             var token = tokenHandler.ReadToken(accessToken) as JwtSecurityToken;
-                            modifiedUserEntity.LastModifiedBy = $"{token.Claims.FirstOrDefault(u => u.Type == "firstname").Value} {token.Claims.FirstOrDefault(u => u.Type == "lastname").Value}";
+                            string familyName = token.Claims.FirstOrDefault(u => u.Type == JwtRegisteredClaimNames.FamilyName)?.Value ?? String.Empty;
+                            string givenName = token.Claims.FirstOrDefault(u => u.Type == JwtRegisteredClaimNames.GivenName)?.Value ?? String.Empty;
+                            modifiedUserEntity.LastModifiedBy = $"{familyName} {givenName}";
                             item.State = EntityState.Modified;
                         }
                         else

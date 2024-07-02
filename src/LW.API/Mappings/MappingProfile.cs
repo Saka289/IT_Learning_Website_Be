@@ -73,10 +73,16 @@ public class MappingProfile : Profile
         //Role
         CreateMap<IdentityRole, RoleDto>().ReverseMap();
         //CommentDocument
-        CreateMap<CommentDocument, CommentDocumentDto>().ReverseMap();
+        CreateMap<CommentDocument, CommentDocumentDto>()
+            .ForMember(x => x.FullName, y => y.MapFrom(src => src.ApplicationUser.FirstName + " " + src.ApplicationUser.LastName))
+            .ForMember(x => x.Avatar, y => y.MapFrom(src => src.ApplicationUser.Image))
+            .ReverseMap();
         CreateMap<CommentDocument, CommentDocumentUpdateDto>().ReverseMap();
         CreateMap<CommentDocument, CommentDocumentCreateDto>().ReverseMap();
-        CreateMap<CommentDocument, RepliesCommentDocumentDto>().ReverseMap();
+        CreateMap<CommentDocument, RepliesCommentDocumentDto>()
+            .ForMember(x => x.FullName, y => y.MapFrom(src => src.ApplicationUser.FirstName + " " + src.ApplicationUser.LastName))
+            .ForMember(x => x.Avatar, y => y.MapFrom(src => src.ApplicationUser.Image))
+            .ReverseMap();
         //IndexDocument
         CreateMap<Document, DocumentIndexByDocumentDto>()
             .ReverseMap();

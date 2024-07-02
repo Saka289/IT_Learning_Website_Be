@@ -23,6 +23,7 @@ namespace LW.Shared.DTOs.Document
         public bool IsActive { get; set; }
         public int GradeId { get; set; }
         public double? AverageRating { get; set; }
+        public int TotalReviewer { get; set; }
         public string GradeTitle { get; set; }
         public DateTimeOffset CreatedDate { get; set; }
         public DateTimeOffset? LastModifiedDate { get; set; }

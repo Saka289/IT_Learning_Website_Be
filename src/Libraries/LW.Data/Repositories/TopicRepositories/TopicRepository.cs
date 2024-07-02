@@ -22,9 +22,21 @@ public class TopicRepository : RepositoryBase<Topic, int>, ITopicRepository
         return UpdateAsync(topic);
     }
 
+    public async Task<bool> UpdateRangeTopic(IEnumerable<Topic> topics)
+    {
+        topics = topics.Where(t => t != null);
+        if (!topics.Any())
+        {
+            return false;
+        }
+
+        await UpdateListAsync(topics);
+        return true;
+    }
+
     public async Task<bool> DeleteTopic(int id)
     {
-        var topic = await GetTopicById(id);
+        var topic = await GetByIdAsync(id);
         if (topic != null)
         {
             await DeleteAsync(topic);
@@ -36,7 +48,7 @@ public class TopicRepository : RepositoryBase<Topic, int>, ITopicRepository
 
     public async Task<Topic> GetTopicById(int id)
     {
-        return await FindByCondition(x => x.Id == id)
+        return await FindByCondition(x => x.Id == id, true)
             .Include(c => c.ChildTopics)
             .ThenInclude(d => d.Document)
             .Include(d => d.Document)
