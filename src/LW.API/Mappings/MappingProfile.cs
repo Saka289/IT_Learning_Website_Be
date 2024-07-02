@@ -1,6 +1,7 @@
 ﻿using AutoMapper;
 using LW.Data.Entities;
 using LW.Infrastructure.Extensions;
+using LW.Shared.DTOs;
 using LW.Shared.DTOs.Admin;
 using LW.Shared.DTOs.CommentDocumentDto;
 using LW.Shared.DTOs.Grade;
@@ -138,5 +139,16 @@ public class MappingProfile : Profile
             .ForMember(x => x.Title, y => y.MapFrom(y => y.Topic.ParentTopic.Title))
             .ForPath(x => x.ParentTopic.Lessons, y => y.MapFrom(y => y.Topic.Lessons))
             .ReverseMap();
+        //UserGrade
+        CreateMap<UserGrade, UserGradeDto>()
+            .ForMember(x=>x.GradeName, y=>y.MapFrom(y=>y.Grade.Title))
+            .ForMember(x=>x.UserName, y=> y.MapFrom(x=>x.ApplicationUser.UserName))
+            .ReverseMap();
+        CreateMap<UserGrade, UserGradeCreateDto>()
+            .ReverseMap();
+        CreateMap<UserGrade, UserGradeUpdateDto>()
+            .ReverseMap();
+
+
     }
 }

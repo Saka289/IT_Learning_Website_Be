@@ -33,11 +33,13 @@ using LW.Services.DocumentServices;
 using LW.Data.Repositories.DocumentRepositories;
 using LW.Data.Repositories.LessonRepositories;
 using LW.Data.Repositories.TopicRepositories;
+using LW.Data.Repositories.UserGradeRepositories;
 using LW.Services.CommentDocumentServices;
 using LW.Services.EnumServices;
 using LW.Services.IndexServices;
 using LW.Services.LessonServices;
 using LW.Services.TopicServices;
+using LW.Services.UserGradeServices;
 using Nest;
 
 namespace LW.API.Extensions;
@@ -248,6 +250,8 @@ public static class ServiceExtensions
         services.AddScoped<ITopicRepository, TopicRepository>();
         services.AddScoped<ILessonRepository, LessonRepository>();
         services.AddScoped<ICommentDocumentRepository, CommentDocumentRepository>();
+        services.AddScoped<IUserGradeRepository, UserGradeRepository>();
+        
         // IService 
         services.AddScoped<IAdminAuthorService, AdminAuthorService>();
         services.AddScoped<IUserService, UserService>();
@@ -262,6 +266,7 @@ public static class ServiceExtensions
         services.AddScoped<ICommentDocumentService, CommentDocumentService>();
         services.AddScoped<IIndexService, IndexService>();
         services.AddScoped<IEnumService, EnumService>();
+        services.AddScoped<IUserGradeService, UserGradeService>();
         return services;
     }
 }

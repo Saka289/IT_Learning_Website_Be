@@ -7,5 +7,5 @@ public class LevelDtoForCreate
     [Required]
     public string? Title { get; set; }
 
-    [Required] public bool IsActive { get; set; } = true;
+    [Required] public bool IsActive { get; set; } = false;
 }
