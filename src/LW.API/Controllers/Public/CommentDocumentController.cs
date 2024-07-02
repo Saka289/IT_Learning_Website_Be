@@ -9,6 +9,7 @@ using LW.Shared.DTOs.CommentDocumentDto;
 using LW.Shared.SeedWork;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
+using Newtonsoft.Json;
 
 namespace LW.API.Controllers.Public
 {
@@ -24,33 +25,26 @@ namespace LW.API.Controllers.Public
         }
 
         [HttpGet("GetAllCommentByDocumentIdPagination")]
-        public async Task<ActionResult<ApiResult<PagedList<PagedList<CommentDocumentDto>>>>>
-            GetAllCommentByDocumentIdPagination([Required] int documentId,
-                [FromQuery] PagingRequestParameters pagingRequestParameters)
+        public async Task<ActionResult<ApiResult<PagedList<PagedList<CommentDocumentDto>>>>> GetAllCommentByDocumentIdPagination([Required] int documentId, [FromQuery] PagingRequestParameters pagingRequestParameters)
         {
-            var result =
-                await _commentDocumentService.GetAllCommentByDocumentIdPagination(documentId,
-                    pagingRequestParameters);
+            var result = await _commentDocumentService.GetAllCommentByDocumentIdPagination(documentId, pagingRequestParameters);
             if (!result.IsSucceeded)
             {
                 return NotFound(result);
             }
-
+            Response.Headers.Add("X-Pagination", JsonConvert.SerializeObject(result.Data.GetMetaData()));
             return Ok(result);
         }
 
         [HttpGet("GetAllCommentDocumentByUserIdPagination")]
-        public async Task<ActionResult<ApiResult<PagedList<PagedList<CommentDocumentDto>>>>>
-            GetAllCommentDocumentByUserIdPagination([Required] string userId,
-                [FromQuery] PagingRequestParameters pagingRequestParameters)
+        public async Task<ActionResult<ApiResult<PagedList<PagedList<CommentDocumentDto>>>>> GetAllCommentDocumentByUserIdPagination([Required] string userId, [FromQuery] PagingRequestParameters pagingRequestParameters)
         {
-            var result =
-                await _commentDocumentService.GetAllCommentDocumentByUserIdPagination(userId, pagingRequestParameters);
+            var result = await _commentDocumentService.GetAllCommentDocumentByUserIdPagination(userId, pagingRequestParameters);
             if (!result.IsSucceeded)
             {
                 return NotFound(result);
             }
-
+            Response.Headers.Add("X-Pagination", JsonConvert.SerializeObject(result.Data.GetMetaData()));
             return Ok(result);
         }
 
