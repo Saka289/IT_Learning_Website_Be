@@ -11,6 +11,7 @@ public class UserGradeRepository : RepositoryBase<UserGrade, int>, IUserGradeRep
     public UserGradeRepository(AppDbContext dbContext, IUnitOfWork unitOfWork) : base(dbContext, unitOfWork)
     {
     }
+
     public Task CreateUserGrade(UserGrade userGrade)
     {
         return CreateAsync(userGrade);
@@ -19,6 +20,11 @@ public class UserGradeRepository : RepositoryBase<UserGrade, int>, IUserGradeRep
     public Task CreateRangeUserGrade(IEnumerable<UserGrade> userGrades)
     {
         return CreateListAsync(userGrades);
+    }
+
+    public Task UpdateRangeUserGrade(IEnumerable<UserGrade> userGrades)
+    {
+        return UpdateListAsync(userGrades);
     }
 
     public Task UpdateUserGrade(UserGrade userGrade)
@@ -34,6 +40,7 @@ public class UserGradeRepository : RepositoryBase<UserGrade, int>, IUserGradeRep
             await DeleteAsync(userGrade);
             return true;
         }
+
         return false;
     }
 
@@ -41,9 +48,11 @@ public class UserGradeRepository : RepositoryBase<UserGrade, int>, IUserGradeRep
     {
         if (userGrades != null)
         {
-            await DeleteListAsync(userGrades);
+            DeleteList(userGrades);
+            await SaveChangesAsync();
             return true;
         }
+
         return false;
     }
 
@@ -56,5 +65,18 @@ public class UserGradeRepository : RepositoryBase<UserGrade, int>, IUserGradeRep
     public async Task<IEnumerable<UserGrade>> GetAllUserGrade()
     {
         return await FindAll().Include(x => x.Grade).Include(x => x.ApplicationUser).ToListAsync();
+    }
+
+    public async Task<IEnumerable<UserGrade>> GetAllUserGradeByUserId(string userId)
+    {
+        return await FindAll().AsNoTracking()
+            .Include(x => x.Grade)
+            .Include(x => x.ApplicationUser)
+            .Where(x => x.UserId == userId).ToListAsync();
+    }
+
+    public async Task<IEnumerable<UserGrade>> GetAllByUserId(string userId)
+    {
+        return await FindAll().Where(x => x.UserId == userId).ToListAsync();
     }
 }

@@ -88,26 +88,16 @@ public class UserGradeService : IUserGradeService
         return new ApiSuccessResult<bool>(true, "Delete user grade successfully");
     }
 
-    // public async Task<ApiResult<bool>> DeleteRangeUserGrade(IEnumerable<int> ids)
-    // {
-    //     var listUserGrade = new List<UserGrade>();
-    //     foreach (var idUserGrade in ids.ToList())
-    //     {
-    //         var userGrade = await _userGradeRepository.GetUserGradeById(idUserGrade);
-    //         if (userGrade != null)
-    //         {
-    //             listUserGrade.Add(userGrade);
-    //         }
-    //     }
-    //     
-    //     if (listUserGrade.Count == 0)
-    //     {
-    //         return new ApiResult<bool>(false, "Not Found !!!");
-    //     }
-    //
-    //     await _userGradeRepository.DeleteRangeUserGrade(listUserGrade);
-    //     return new ApiSuccessResult<bool>(true, "Delete list user grade successfully");
-    // }
+    public async Task<ApiResult<bool>> DeleteRangeUserGrade(string userId)
+    {
+        var listUserGrade = await _userGradeRepository.GetAllByUserId(userId);
+        if (listUserGrade.Count() == 0)
+        {
+            return new ApiResult<bool>(false, "Not Found !!!");
+        }
+        await _userGradeRepository.DeleteRangeUserGrade(listUserGrade);
+        return new ApiSuccessResult<bool>(true, "Delete list user grade successfully");
+    }
 
     public async Task<ApiResult<IEnumerable<UserGradeDto>>> GetAllUserGrade()
     {
@@ -131,5 +121,16 @@ public class UserGradeService : IUserGradeService
 
         var result = _mapper.Map<UserGradeDto>(userGrade);
         return new ApiSuccessResult<UserGradeDto>(result);
+    }
+
+    public  async Task<ApiResult<IEnumerable<UserGradeDto>>> GetAllUserGradeByUserId(string userId)
+    {
+        var userGrades = await _userGradeRepository.GetAllUserGradeByUserId(userId);
+        if (userGrades.Count()==0)
+        {
+            return new ApiResult<IEnumerable<UserGradeDto>>(false, "List UserGrade is null !!!");
+        }
+        var result = _mapper.Map<IEnumerable<UserGradeDto>>(userGrades);
+        return new ApiSuccessResult<IEnumerable<UserGradeDto>>(result);
     }
 }

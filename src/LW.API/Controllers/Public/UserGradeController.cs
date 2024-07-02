@@ -3,8 +3,10 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using LW.API.Application.Validators.UserGradeValidator;
+using LW.Data.Entities;
 using LW.Services.UserGradeServices;
 using LW.Shared.DTOs;
+using LW.Shared.DTOs.Grade;
 using LW.Shared.DTOs.Level;
 using LW.Shared.SeedWork;
 using Microsoft.AspNetCore.Http;
@@ -41,6 +43,16 @@ namespace LW.API.Controllers.Public
             }
             return Ok(result);
         }
+        [HttpGet("GetUserGradeByUserId/{userId}")]
+        public async Task<ActionResult<ApiResult<UserGradeDto>>> GetUserGradeByUserId(string userId)
+        {
+            var result = await _userGradeService.GetAllUserGradeByUserId(userId);
+            if (!result.IsSucceeded)
+            {
+                return NotFound();
+            }
+            return Ok(result);
+        }
         [HttpPost("CreateUserGrade")]
         public async Task<ActionResult<ApiResult<bool>>> CreateUserGrade(UserGradeCreateDto model)
         {
@@ -56,26 +68,55 @@ namespace LW.API.Controllers.Public
             }
             return Ok(result);
         }
-        [HttpPost("CreateRangeUserGrade")]
-        public async Task<ActionResult<ApiResult<bool>>> CreateRangeUserGrade(IEnumerable<UserGradeCreateDto> models)
+        [HttpPost("UpdateRangeUserGrade")]
+        public async Task<ActionResult<ApiResult<bool>>> UpdateRangeUserGrade(UserGradeCreateRangeDto models)
         {
-            foreach (var model in models)
+            var listUserGradeDto = new List<UserGradeCreateDto>();
+            if (models.GradeIds.Count() == 0)
             {
-                var validationResult = await new CreateUserGradeCommandValidator().ValidateAsync(model);
-                if (!validationResult.IsValid)
-                {
-                    return BadRequest(validationResult);
-                }
+                return BadRequest("Need to select the class you are interested in");
             }
+            foreach (var x in models.GradeIds)
+            {
+                listUserGradeDto.Add(new UserGradeCreateDto()
+                {
+                    UserId = models.UserId,
+                    GradeId = x
+                });
+            }
+
+            await _userGradeService.DeleteRangeUserGrade(models.UserId);
             
-            var result = await _userGradeService.CreatRangeUserGrade(models);
+            var result = await _userGradeService.CreatRangeUserGrade(listUserGradeDto);
             if (!result.IsSucceeded)
             {
                 return BadRequest(result);
             }
             return Ok(result);
         }
-        
+        [HttpPost("CreateRangeUserGrade")]
+        public async Task<ActionResult<ApiResult<bool>>> CreateRangeUserGrade(UserGradeCreateRangeDto models)
+        {
+            var listUserGradeDto = new List<UserGradeCreateDto>();
+            if (models.GradeIds.Count() == 0)
+            {
+                return BadRequest("Need to select the class you are interested in");
+            }
+            foreach (var x in models.GradeIds)
+            {
+                listUserGradeDto.Add(new UserGradeCreateDto()
+                {
+                    UserId = models.UserId,
+                    GradeId = x
+                });
+            }
+            var result = await _userGradeService.CreatRangeUserGrade(listUserGradeDto);
+            if (!result.IsSucceeded)
+            {
+                return BadRequest(result);
+            }
+            return Ok(result);
+        }
         [HttpPut("UpdateUserGrade")]
         public async Task<ActionResult<ApiResult<bool>>> UpdateUserGrade(UserGradeUpdateDto model)
         {
@@ -96,15 +137,15 @@ namespace LW.API.Controllers.Public
             }
             return Ok(result);
         }
-        // [HttpDelete("DeleteRangeUserGrade")]
-        // public async Task<ActionResult<ApiResult<bool>>> DeleteRangeUserGrade(IEnumerable<int> ids)
-        // {
-        //     var result = await _userGradeService.DeleteRangeUserGrade(ids);
-        //     if (!result.IsSucceeded)
-        //     {
-        //         return BadRequest(result);
-        //     }
-        //     return Ok(result);
-        // }
+        [HttpDelete("DeleteRangeUserGrade/{userId}")]
+        public async Task<ActionResult<ApiResult<bool>>> DeleteRangeUserGrade(string userId)
+        {
+            var result = await _userGradeService.DeleteRangeUserGrade(userId);
+            if (!result.IsSucceeded)
+            {
+                return BadRequest(result);
+            }
+            return Ok(result);
+        }
     }
 }
