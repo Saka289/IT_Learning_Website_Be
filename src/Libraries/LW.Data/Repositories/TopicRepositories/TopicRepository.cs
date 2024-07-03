@@ -87,12 +87,12 @@ public class TopicRepository : RepositoryBase<Topic, int>, ITopicRepository
     public async Task<Topic> GetAllTopicIndex(int id)
     {
         return await FindAll()
-            .Include(d => d.Document)
-            .Include(c => c.ChildTopics)
-            .ThenInclude(l => l.Lessons)
+            .Include(d => d.Document).Where(d => d.Document.IsActive == true)
+            .Include(c => c.ChildTopics.Where(c => c.IsActive == true))
+            .ThenInclude(l => l.Lessons.Where(l => l.IsActive))
             .Include(p => p.ParentTopic)
-            .ThenInclude(l => l.Lessons)
-            .Include(l => l.Lessons)
-            .FirstOrDefaultAsync(t => t.Id == id);
+            .ThenInclude(l => l.Lessons.Where(l => l.IsActive))
+            .Include(l => l.Lessons.Where(l => l.IsActive))
+            .FirstOrDefaultAsync(t => t.Id == id && t.IsActive);
     }
 }
