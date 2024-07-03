@@ -1,4 +1,5 @@
 ﻿using System.IdentityModel.Tokens.Jwt;
+using System.Reflection;
 using LW.Contracts.Domains.Interfaces;
 using LW.Data.Entities;
 using LW.Shared.Constant;
@@ -32,6 +33,7 @@ public class AppDbContext : IdentityDbContext<ApplicationUser>
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
+        modelBuilder.ApplyConfigurationsFromAssembly(Assembly.GetExecutingAssembly());
         base.OnModelCreating(modelBuilder);
         RemoveAspNet(modelBuilder);
     }

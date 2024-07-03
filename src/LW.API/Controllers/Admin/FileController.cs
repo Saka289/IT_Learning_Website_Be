@@ -69,10 +69,17 @@ namespace LW.API.Controllers.Admin
             return Ok(result);
         }
 
-        [HttpPost("ConvertFile")]
-        public async Task<IActionResult> ConvertFile([FromBody] string htmlContent, string fileName, string folderName)
+        [HttpPost("ConvertFileHtmlToPdf")]
+        public async Task<IActionResult> ConvertFileHtmlToPdf([FromBody] string htmlContent, string fileName, string folderName)
         {
             var result = await _cloudinaryService.ConvertHtmlToPdf(htmlContent, fileName, folderName);
+            return Ok(result);
+        }
+
+        [HttpPost("ConvertFilePdfToHtml")]
+        public async Task<IActionResult> ConvertFilePdfToHtml(IFormFile file)
+        {
+            var result = await _cloudinaryService.ConvertPdfToHtml(file);
             return Ok(result);
         }
     }

@@ -5,12 +5,12 @@ EXPOSE 80
 FROM mcr.microsoft.com/dotnet/sdk:6.0 AS build
 WORKDIR /src
 COPY ["LW.API/LW.API.csproj", "LW.API/"]
-COPY ["BuildingBlocks/LW.Infrastructure/LW.Infrastructure.csproj", "BuildingBlocks/LW.Infrastructure/"]
-COPY ["BuildingBlocks/LW.Contracts/LW.Contracts.csproj", "BuildingBlocks/LW.Contracts/"]
-COPY ["BuildingBlocks/LW.Shared/LW.Shared.csproj", "BuildingBlocks/LW.Shared/"]
 COPY ["BuildingBlocks/LW.Logging/LW.Logging.csproj", "BuildingBlocks/LW.Logging/"]
+COPY ["BuildingBlocks/LW.Shared/LW.Shared.csproj", "BuildingBlocks/LW.Shared/"]
 COPY ["Libraries/LW.Cache/LW.Cache.csproj", "Libraries/LW.Cache/"]
+COPY ["BuildingBlocks/LW.Contracts/LW.Contracts.csproj", "BuildingBlocks/LW.Contracts/"]
 COPY ["Libraries/LW.Data/LW.Data.csproj", "Libraries/LW.Data/"]
+COPY ["BuildingBlocks/LW.Infrastructure/LW.Infrastructure.csproj", "BuildingBlocks/LW.Infrastructure/"]
 COPY ["Libraries/LW.Services/LW.Services.csproj", "Libraries/LW.Services/"]
 RUN dotnet restore "LW.API/LW.API.csproj"
 COPY . .
@@ -24,3 +24,4 @@ FROM base AS final
 WORKDIR /app
 COPY --from=publish /app/publish .
 ENTRYPOINT ["dotnet", "LW.API.dll"]
+

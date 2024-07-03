@@ -1,4 +1,5 @@
-﻿using AutoMapper;
+﻿using System.Text;
+using AutoMapper;
 using LW.Contracts.Common;
 using LW.Data.Entities;
 using LW.Data.Repositories.LessonRepositories;
@@ -124,8 +125,10 @@ public class LessonService : ILessonService
         var filePath = new FileDto();
         if (string.IsNullOrEmpty(lessonEntity.Content) || lessonEntity.Content == null)
         {
-            filePath = await _cloudinaryService.CreateFileAsync(lessonCreateDto.FilePath,
-                CloudinaryConstant.FolderLessonFile);
+            var htmlContent = await _cloudinaryService.ConvertPdfToHtml(lessonCreateDto.FilePath);
+            var htmlContentBytes = Encoding.UTF8.GetBytes(htmlContent);
+            lessonEntity.Content = Convert.ToBase64String(htmlContentBytes);
+            filePath = await _cloudinaryService.CreateFileAsync(lessonCreateDto.FilePath, CloudinaryConstant.FolderLessonFile);
         }
         else
         {
@@ -166,13 +169,14 @@ public class LessonService : ILessonService
             var filePath = new FileDto();
             if (string.IsNullOrEmpty(lessonEntity.Content) || lessonEntity.Content == null)
             {
-                filePath = await _cloudinaryService.CreateFileAsync(lessonUpdateDto.FilePath,
-                    CloudinaryConstant.FolderLessonFile);
+                var htmlContent = await _cloudinaryService.ConvertPdfToHtml(lessonUpdateDto.FilePath);
+                var htmlContentBytes = Encoding.UTF8.GetBytes(htmlContent);
+                lessonEntity.Content = Convert.ToBase64String(htmlContentBytes);
+                filePath = await _cloudinaryService.CreateFileAsync(lessonUpdateDto.FilePath, CloudinaryConstant.FolderLessonFile);
             }
             else
             {
-                filePath = await _cloudinaryService.ConvertHtmlToPdf(lessonUpdateDto.Content, lessonUpdateDto.Title,
-                    CloudinaryConstant.FolderLessonFile);
+                filePath = await _cloudinaryService.ConvertHtmlToPdf(lessonUpdateDto.Content, lessonUpdateDto.Title, CloudinaryConstant.FolderLessonFile);
             }
 
             model.FilePath = filePath.Url;
