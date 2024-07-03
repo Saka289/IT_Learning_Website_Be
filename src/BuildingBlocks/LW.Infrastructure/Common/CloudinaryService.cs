@@ -254,7 +254,8 @@ public class CloudinaryService : ICloudinaryService
         await new BrowserFetcher().DownloadAsync();
         await using var browser = await Puppeteer.LaunchAsync(new LaunchOptions
         {
-            Headless = true
+            Headless = true,
+            Args = new string[] { "--no-sandbox" }
         });
         await using var page = await browser.NewPageAsync();
         await page.SetContentAsync(htmlContent);
