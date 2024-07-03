@@ -30,7 +30,7 @@ public class LessonRepository : RepositoryBase<Lesson, int>, ILessonRepository
 
     public async Task<Lesson> GetLessonById(int id)
     {
-        return await FindByCondition(x => x.Id == id, true).Include(t => t.Topic).FirstOrDefaultAsync();
+        return await FindByCondition(x => x.Id == id).Include(t => t.Topic).FirstOrDefaultAsync();
     }
 
     public Task<Lesson> CreateLesson(Lesson lesson)

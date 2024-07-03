@@ -1,4 +1,5 @@
 ﻿using System.Net;
+using Aspose.Pdf;
 using CloudinaryDotNet;
 using CloudinaryDotNet.Actions;
 using LW.Contracts.Common;
@@ -289,5 +290,44 @@ public class CloudinaryService : ICloudinaryService
         }
 
         return null;
+    }
+
+    public async Task<string> ConvertPdfToHtml(IFormFile file)
+    {
+        if (file == null || file.Length == 0)
+        {
+            _logger.Error("File cannot be null or empty.");
+            return null;
+        }
+
+        string htmlContent;
+
+        var document = new Document(file.OpenReadStream());
+
+        await using (var outputStream = new MemoryStream())
+        {
+            var saveOptions = new HtmlSaveOptions()
+            {
+                FixedLayout = true,
+                SaveFullFont = true,
+                UseZOrder = true,
+                RasterImagesSavingMode = HtmlSaveOptions.RasterImagesSavingModes.AsEmbeddedPartsOfPngPageBackground,
+                FontSavingMode = HtmlSaveOptions.FontSavingModes.SaveInAllFormats,
+                PartsEmbeddingMode = HtmlSaveOptions.PartsEmbeddingModes.EmbedAllIntoHtml,
+                LettersPositioningMethod = HtmlSaveOptions.LettersPositioningMethods
+                    .UseEmUnitsAndCompensationOfRoundingErrorsInCss,
+            };
+
+            document.Save(outputStream, saveOptions);
+
+            outputStream.Position = 0;
+
+            using (var reader = new StreamReader(outputStream))
+            {
+                htmlContent = await reader.ReadToEndAsync();
+            }
+        }
+
+        return htmlContent;
     }
 }

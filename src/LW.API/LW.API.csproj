@@ -31,13 +31,13 @@
     </ItemGroup>
 
     <ItemGroup>
-      <Content Include="..\..\.dockerignore">
-        <Link>.dockerignore</Link>
-      </Content>
+      <Folder Include="Application\Models\" />
     </ItemGroup>
 
     <ItemGroup>
-      <Folder Include="Application\Models\" />
+      <Content Include="..\..\.dockerignore">
+        <Link>.dockerignore</Link>
+      </Content>
     </ItemGroup>
 
 </Project>
