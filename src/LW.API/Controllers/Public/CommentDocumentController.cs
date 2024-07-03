@@ -37,9 +37,9 @@ namespace LW.API.Controllers.Public
         }
 
         [HttpGet("GetAllCommentDocumentByUserIdPagination")]
-        public async Task<ActionResult<ApiResult<PagedList<PagedList<CommentDocumentDto>>>>> GetAllCommentDocumentByUserIdPagination([Required] string userId, [FromQuery] PagingRequestParameters pagingRequestParameters)
+        public async Task<ActionResult<ApiResult<PagedList<PagedList<CommentDocumentDto>>>>> GetAllCommentDocumentByUserIdPagination([Required] string userId, int documentId,[FromQuery] PagingRequestParameters pagingRequestParameters)
         {
-            var result = await _commentDocumentService.GetAllCommentDocumentByUserIdPagination(userId, pagingRequestParameters);
+            var result = await _commentDocumentService.GetAllCommentDocumentByUserIdPagination(userId,documentId ,pagingRequestParameters);
             if (!result.IsSucceeded)
             {
                 return NotFound(result);
