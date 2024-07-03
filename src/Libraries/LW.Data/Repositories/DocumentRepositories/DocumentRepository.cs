@@ -67,12 +67,12 @@ namespace LW.Data.Repositories.DocumentRepositories
         public async Task<Document> GetAllDocumentIndex(int id)
         {
             return await FindAll()
-                .Include(t => t.Topics.Where(t => t.ParentId == null))
-                .ThenInclude(ct => ct.Lessons)
+                .Include(t => t.Topics.Where(t => t.ParentId == null && t.IsActive))
+                .ThenInclude(ct => ct.Lessons.Where(ct => ct.IsActive))
                 .Include(t => t.Topics)
-                .ThenInclude(c => c.ChildTopics)
-                .ThenInclude(cl => cl.Lessons)
-                .FirstOrDefaultAsync(d => d.Id == id);
+                .ThenInclude(c => c.ChildTopics.Where(c => c.IsActive))
+                .ThenInclude(cl => cl.Lessons.Where(cl => cl.IsActive))
+                .FirstOrDefaultAsync(d => d.Id == id && d.IsActive);
         }
     }
 }

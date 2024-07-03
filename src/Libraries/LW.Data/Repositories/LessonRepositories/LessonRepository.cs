@@ -86,9 +86,11 @@ public class LessonRepository : RepositoryBase<Lesson, int>, ILessonRepository
         return await FindAll()
             .Include(t => t.Topic)
             .ThenInclude(c => c.ParentTopic)
-            .ThenInclude(l => l.Lessons)
+            .ThenInclude(l => l.Lessons.Where(l => l.IsActive == true))
+            .Where(t => t.Topic.IsActive)
             .Include(t => t.Topic)
             .ThenInclude(d => d.Document)
-            .FirstOrDefaultAsync(l => l.Id == id);
+            .Where(t => t.Topic.Document.IsActive)
+            .FirstOrDefaultAsync(l => l.Id == id && l.IsActive);
     }
 }
