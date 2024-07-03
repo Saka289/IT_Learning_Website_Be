@@ -10,6 +10,15 @@ RUN apt-get update \
 ######################
 #END PUPPETEER RECIPE
 ######################
+#####################
+#Aspose.PDF RECIPE
+#####################
+RUN apt-get update && apt-get install -y libgdiplus
+RUN sed -i'.bak' 's/$/ contrib/' /etc/apt/sources.list
+RUN apt-get update; apt-get install -y ttf-mscorefonts-installer fontconfig
+######################
+#END Aspose.PDF RECIPE
+######################
 ENV PUPPETEER_EXECUTABLE_PATH "/usr/bin/google-chrome-stable"
 WORKDIR /app
 EXPOSE 80

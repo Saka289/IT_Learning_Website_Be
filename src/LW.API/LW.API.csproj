@@ -31,6 +31,10 @@
     </ItemGroup>
 
     <ItemGroup>
+        <RuntimeHostConfigurationOption Include="System.Drawing.EnableUnixSupport" Value="true" />
+    </ItemGroup>
+
+    <ItemGroup>
       <Folder Include="Application\Models\" />
     </ItemGroup>
 
