@@ -89,6 +89,52 @@ public class AdminAuthorService : IAdminAuthorService
             "Register successfully");
     }
 
+    public async Task<ApiResult<LoginAdminResponseDto>> LoginAdminAsync(LoginAdminDto model)
+    {
+        var user = await _userManager.Users.FirstOrDefaultAsync(u => u.Email.ToLower().Equals(model.Email));
+        if (user == null)
+        {
+            return new ApiResult<LoginAdminResponseDto>(false, "Invalid Email !!!");
+        }
+        
+        var isRoles = await _userManager.IsInRoleAsync(user, RoleConstant.RoleAdmin);
+        if (!isRoles)
+        {
+            return new ApiResult<LoginAdminResponseDto>(false, "User is not an Admin !!!");
+        }
+
+        var checkPassword = await _userManager.CheckPasswordAsync(user, model.Password);
+        if (!checkPassword)
+        {
+            return new ApiResult<LoginAdminResponseDto>(false, "The password you entered is incorrect. Please try again.");
+        }
+        
+        var roles = await _userManager.GetRolesAsync(user);
+
+        var accessToken = _jwtTokenService.GenerateAccessToken(user, roles);
+        var refreshToken = _jwtTokenService.GenerateRefreshToken();
+
+        user.RefreshToken = refreshToken;
+        user.RefreshTokenExpiryTime = DateTime.Now.AddDays(7);
+
+        await _userManager.UpdateAsync(user);
+
+        AdminDto adminDto = new()
+        {
+            ID = user.Id,
+            Email = user.Email,
+            FullName = user.FirstName + " " + user.LastName,
+            PhoneNumber = user.PhoneNumber,
+        };
+        LoginAdminResponseDto loginAdminResponseDto = new()
+        {
+            Admin = adminDto,
+            AccessToken = accessToken,
+            RefreshToken = refreshToken
+        };
+        return new ApiResult<LoginAdminResponseDto>(true, loginAdminResponseDto, "Login Admin successfully !!!");
+    }
+
     public async Task<ApiResult<bool>> AssignRoleAsync(string email, string roleName)
     {
         var user = await _userManager.FindByEmailAsync(email);
@@ -127,7 +173,8 @@ public class AdminAuthorService : IAdminAuthorService
         {
             if (user.Image == null)
             {
-                var createImage =await _cloudinaryService.CreateImageAsync(updateAdminDto.Image, CloudinaryConstant.FolderUserImage);
+                var createImage =
+                    await _cloudinaryService.CreateImageAsync(updateAdminDto.Image, CloudinaryConstant.FolderUserImage);
                 if (createImage == null)
                 {
                     return new ApiResult<UpdateAdminDto>(false,
@@ -366,6 +413,7 @@ public class AdminAuthorService : IAdminAuthorService
         {
             return new ApiResult<bool>(false, "Role not found");
         }
+
         var result = await _roleManager.DeleteAsync(role);
         if (result.Succeeded)
         {
@@ -374,6 +422,7 @@ public class AdminAuthorService : IAdminAuthorService
 
         return new ApiResult<bool>(false, result.Errors.FirstOrDefault()?.Description ?? "Fail to delete role");
     }
+
     public async Task<ApiResult<IEnumerable<RoleDto>>> GetAllRolesAsync()
     {
         var roles = await _roleManager.Roles.ToListAsync();
@@ -392,5 +441,4 @@ public class AdminAuthorService : IAdminAuthorService
         var roleDto = _mapper.Map<RoleDto>(role);
         return new ApiResult<RoleDto>(true, roleDto, "Role retrieved successfully");
     }
-    
 }

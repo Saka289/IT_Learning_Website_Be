@@ -24,7 +24,7 @@ public class MappingProfile : Profile
     {
         CreateMap<RegisterMemberResponseDto, ApplicationUser>().ReverseMap();
         CreateMap<ApplicationUser, AdminDto>()
-            .ForMember(x => x.Name, y => y.MapFrom(src => src.FirstName + " " + src.LastName))
+            .ForMember(x => x.FullName, y => y.MapFrom(src => src.FirstName + " " + src.LastName))
             .ReverseMap();
         CreateMap<ApplicationUser, RegisterUserDto>().ReverseMap();
         CreateMap<ApplicationUser, UserResponseDto>()
