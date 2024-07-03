@@ -8,8 +8,8 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution 
 		.dockerignore = .dockerignore
 		src\docker-compose.override.yml = src\docker-compose.override.yml
 		src\docker-compose.yml = src\docker-compose.yml
-		README.md = README.md
 		global.json = global.json
+		README.md = README.md
 	EndProjectSection
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "src", "src", "{3CDA0027-9093-462E-AA0D-ACDE539BFD77}"
@@ -27,6 +27,9 @@ EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "LW.Shared", "src\BuildingBlocks\LW.Shared\LW.Shared.csproj", "{59AD1DEA-0208-492E-A48A-6C14DAAB5BC7}"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "LW.UnitTests", "tests\LW.UnitTests\LW.UnitTests.csproj", "{D11B5E52-9C28-444F-85DD-7913FC52433F}"
+	ProjectSection(ProjectDependencies) = postProject
+		{5B595091-0006-4547-AF1F-427714344D4C} = {5B595091-0006-4547-AF1F-427714344D4C}
+	EndProjectSection
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "LW.Contracts", "src\BuildingBlocks\LW.Contracts\LW.Contracts.csproj", "{FAF21BBA-17DD-466B-BB93-2363C58ED3A6}"
 EndProject
@@ -96,5 +99,8 @@ Global
 		{6475D2FD-7DFA-4979-B981-A31018043626} = {6C28F2C8-8429-4300-846C-E8CA52E02394}
 		{5B595091-0006-4547-AF1F-427714344D4C} = {6C28F2C8-8429-4300-846C-E8CA52E02394}
 		{EE5708F0-7F97-4F50-BA1D-C4C60D89032C} = {6C28F2C8-8429-4300-846C-E8CA52E02394}
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {C332D865-937C-440C-A3DC-CCF1A84FBFC9}
 	EndGlobalSection
 EndGlobal
