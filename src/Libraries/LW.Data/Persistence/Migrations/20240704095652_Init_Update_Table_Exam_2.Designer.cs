@@ -3,6 +3,7 @@ using System;
 using LW.Data.Persistence;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
@@ -10,9 +11,10 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace LW.Data.Persistence.Migrations
 {
     [DbContext(typeof(AppDbContext))]
-    partial class AppDbContextModelSnapshot : ModelSnapshot
+    [Migration("20240704095652_Init_Update_Table_Exam_2")]
+    partial class Init_Update_Table_Exam_2
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -248,9 +250,6 @@ namespace LW.Data.Persistence.Migrations
                     b.Property<DateTimeOffset?>("LastModifiedDate")
                         .HasColumnType("datetime(6)");
 
-                    b.Property<int>("NumberQuestion")
-                        .HasColumnType("int");
-
                     b.Property<string>("Province")
                         .IsRequired()
                         .HasColumnType("longtext");
@@ -308,9 +307,6 @@ namespace LW.Data.Persistence.Migrations
                     b.Property<string>("FilePath")
                         .IsRequired()
                         .HasColumnType("longtext");
-
-                    b.Property<int>("Index")
-                        .HasColumnType("int");
 
                     b.Property<string>("publicId")
                         .IsRequired()

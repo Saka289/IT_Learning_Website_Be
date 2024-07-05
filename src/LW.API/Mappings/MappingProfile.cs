@@ -8,6 +8,8 @@ using LW.Shared.DTOs.Grade;
 using LW.Shared.DTOs.Level;
 using LW.Shared.DTOs.User;
 using LW.Shared.DTOs.Document;
+using LW.Shared.DTOs.Exam;
+using LW.Shared.DTOs.ExamAnswer;
 using LW.Shared.DTOs.Index;
 using LW.Shared.DTOs.Lesson;
 using LW.Shared.DTOs.Topic;
@@ -154,7 +156,18 @@ public class MappingProfile : Profile
             .ReverseMap();
         CreateMap<UserGrade, UserGradeUpdateDto>()
             .ReverseMap();
-
+        //Exam
+        CreateMap<Exam, ExamDto>().ReverseMap();
+        CreateMap<Exam, ExamCreateDto>().ReverseMap();
+        CreateMap<Exam, ExamUpdateDto>().ReverseMap();
+        //ExamImage
+        CreateMap<ExamImage,ExamImageDto>().ReverseMap();
+        CreateMap<ExamImage,ExamImageCreateDto>().ReverseMap();
+        CreateMap<ExamImage,ExamImageUpdateDto>().ReverseMap();
+        //ExamAnswer
+        CreateMap<ExamAnswer,ExamAnswerDto>().ReverseMap();
+        CreateMap<ExamAnswer,ExamAnswerCreateDto>().ReverseMap();
+        CreateMap<ExamAnswer,ExamAnswerUpdateDto>().ReverseMap();
 
     }
 }

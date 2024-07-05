@@ -31,11 +31,17 @@ using Pomelo.EntityFrameworkCore.MySql.Infrastructure;
 using MySqlConnector;
 using LW.Services.DocumentServices;
 using LW.Data.Repositories.DocumentRepositories;
+using LW.Data.Repositories.ExamAnswerRepositories;
+using LW.Data.Repositories.ExamImageRepositories;
+using LW.Data.Repositories.ExamRepositories;
 using LW.Data.Repositories.LessonRepositories;
 using LW.Data.Repositories.TopicRepositories;
 using LW.Data.Repositories.UserGradeRepositories;
 using LW.Services.CommentDocumentServices;
 using LW.Services.EnumServices;
+using LW.Services.ExamAnswerServices;
+using LW.Services.ExamImageServices;
+using LW.Services.ExamServices;
 using LW.Services.IndexServices;
 using LW.Services.LessonServices;
 using LW.Services.TopicServices;
@@ -251,6 +257,9 @@ public static class ServiceExtensions
         services.AddScoped<ILessonRepository, LessonRepository>();
         services.AddScoped<ICommentDocumentRepository, CommentDocumentRepository>();
         services.AddScoped<IUserGradeRepository, UserGradeRepository>();
+        services.AddScoped<IExamRepository, ExamRepository>();
+        services.AddScoped<IExamImageRepository, ExamImageRepository>();
+        services.AddScoped<IExamAnswerRepository, ExamAnswerRepository>();
         
         // IService 
         services.AddScoped<IAdminAuthorService, AdminAuthorService>();
@@ -266,7 +275,9 @@ public static class ServiceExtensions
         services.AddScoped<ICommentDocumentService, CommentDocumentService>();
         services.AddScoped<IIndexService, IndexService>();
         services.AddScoped<IEnumService, EnumService>();
-        services.AddScoped<IUserGradeService, UserGradeService>();
+        services.AddScoped<IExamService, ExamService>();
+        services.AddScoped<IExamImageService, ExamImageService>();
+        services.AddScoped<IExamAnswerService, ExamAnswerService>();
         return services;
     }
 }

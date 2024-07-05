@@ -30,6 +30,10 @@ public class AppDbContext : IdentityDbContext<ApplicationUser>
     public DbSet<Topic> Topics { get; set; }
     public DbSet<Lesson> Lessons { get; set; }
     public DbSet<CommentDocument> CommentDocuments { get; set; }
+    public DbSet<Exam> Exams { get; set; }
+    public DbSet<ExamImage> ExamImages { get; set; }
+    public DbSet<ExamAnswer> ExamAnswers { get; set; }
+
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
