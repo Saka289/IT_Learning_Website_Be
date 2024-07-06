@@ -7,7 +7,8 @@ namespace LW.Services.QuizQuestionServices;
 public interface IQuizQuestionService
 {
     Task<ApiResult<IEnumerable<QuizQuestionDto>>> GetAllQuizQuestion();
-    Task<ApiResult<IEnumerable<QuizQuestionDto>>> GetAllQuizQuestionByQuizId(int quizId);
+    Task<ApiResult<PagedList<QuizQuestionDto>>> GetAllQuizQuestionPagination(PagingRequestParameters pagingRequestParameters);
+    Task<ApiResult<PagedList<QuizQuestionDto>>> GetAllQuizQuestionByQuizIdPagination(int quizId, PagingRequestParameters pagingRequestParameters);
     Task<ApiResult<QuizQuestionDto>> GetQuizQuestionById(int id);
     Task<ApiResult<QuizQuestionDto>> CreateQuizQuestion(QuizQuestionCreateDto quizQuestionCreateDto);
     Task<ApiResult<QuizQuestionDto>> UpdateQuizQuestion(QuizQuestionUpdateDto quizQuestionUpdateDto);

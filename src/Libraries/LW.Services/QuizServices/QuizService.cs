@@ -44,28 +44,43 @@ public class QuizService : IQuizService
         return new ApiSuccessResult<IEnumerable<QuizDto>>(result);
     }
 
-    public async Task<ApiResult<IEnumerable<QuizDto>>> GetAllQuizByTopicId(int topicId)
+    public async Task<ApiResult<PagedList<QuizDto>>> GetAllQuizPagination(PagingRequestParameters pagingRequestParameters)
     {
-        var quizList = await _quizRepository.GetAllQuizByTopicId(topicId);
+        var quizList = await _quizRepository.GetAllQuizPagination();
         if (!quizList.Any())
         {
-            return new ApiResult<IEnumerable<QuizDto>>(false, "Quiz is null !!!");
+            return new ApiResult<PagedList<QuizDto>>(false, "Quiz is null !!!");
         }
 
-        var result = _mapper.Map<IEnumerable<QuizDto>>(quizList);
-        return new ApiSuccessResult<IEnumerable<QuizDto>>(result);
+        var result = _mapper.ProjectTo<QuizDto>(quizList);
+        var pagedResult = await PagedList<QuizDto>.ToPageListAsync(result, pagingRequestParameters.PageIndex, pagingRequestParameters.PageSize, pagingRequestParameters.OrderBy, pagingRequestParameters.IsAscending);
+        return new ApiSuccessResult<PagedList<QuizDto>>(pagedResult);
     }
 
-    public async Task<ApiResult<IEnumerable<QuizDto>>> GetAllQuizByLessonId(int lessonId)
+    public async Task<ApiResult<PagedList<QuizDto>>> GetAllQuizByTopicIdPagination(int topicId, PagingRequestParameters pagingRequestParameters)
     {
-        var quizList = await _quizRepository.GetAllQuizByLessonId(lessonId);
+        var quizList = await _quizRepository.GetAllQuizByTopicIdPagination(topicId);
         if (!quizList.Any())
         {
-            return new ApiResult<IEnumerable<QuizDto>>(false, "Quiz is null !!!");
+            return new ApiResult<PagedList<QuizDto>>(false, "Quiz is null !!!");
         }
 
-        var result = _mapper.Map<IEnumerable<QuizDto>>(quizList);
-        return new ApiSuccessResult<IEnumerable<QuizDto>>(result);
+        var result = _mapper.ProjectTo<QuizDto>(quizList);
+        var pagedResult = await PagedList<QuizDto>.ToPageListAsync(result, pagingRequestParameters.PageIndex, pagingRequestParameters.PageSize, pagingRequestParameters.OrderBy, pagingRequestParameters.IsAscending);
+        return new ApiSuccessResult<PagedList<QuizDto>>(pagedResult);
+    }
+
+    public async Task<ApiResult<PagedList<QuizDto>>> GetAllQuizByLessonIdPagination(int lessonId, PagingRequestParameters pagingRequestParameters)
+    {
+        var quizList = await _quizRepository.GetAllQuizByLessonIdPagination(lessonId);
+        if (!quizList.Any())
+        {
+            return new ApiResult<PagedList<QuizDto>>(false, "Quiz is null !!!");
+        }
+
+        var result = _mapper.ProjectTo<QuizDto>(quizList);
+        var pagedResult = await PagedList<QuizDto>.ToPageListAsync(result, pagingRequestParameters.PageIndex, pagingRequestParameters.PageSize, pagingRequestParameters.OrderBy, pagingRequestParameters.IsAscending);
+        return new ApiSuccessResult<PagedList<QuizDto>>(pagedResult);
     }
 
     public async Task<ApiResult<QuizDto>> GetQuizById(int id)

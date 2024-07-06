@@ -19,12 +19,16 @@ public class QuizQuestionRepository : RepositoryBase<QuizQuestion, int>, IQuizQu
             .ToListAsync();
     }
 
-    public async Task<IEnumerable<QuizQuestion>> GetAllQuizQuestionByQuizId(int id)
+    public Task<IQueryable<QuizQuestion>> GetAllQuizQuestionPagination()
     {
-        return await FindAll()
-            .Include(qa => qa.QuizAnswers)
-            .Where(q => q.QuizId == id)
-            .ToListAsync();
+        var result = FindAll().Include(qa => qa.QuizAnswers).AsQueryable();
+        return Task.FromResult(result);
+    }
+
+    public Task<IQueryable<QuizQuestion>> GetAllQuizQuestionByQuizId(int id)
+    {
+        var result = FindAll().Include(qa => qa.QuizAnswers).Where(q => q.QuizId == id).AsQueryable();
+        return Task.FromResult(result);
     }
 
     public Task<QuizQuestion?> GetQuizQuestionById(int id)
