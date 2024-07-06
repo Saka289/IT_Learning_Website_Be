@@ -20,4 +20,5 @@ public class Lesson : EntityAuditBase<int>
     public int TopicId { get; set; }
     [ForeignKey(nameof(TopicId))]
     public virtual Topic Topic { get; set; }
+    public virtual ICollection<Quiz> Quizzes { get; set; }
 }

@@ -10,6 +10,9 @@ using LW.Shared.DTOs.User;
 using LW.Shared.DTOs.Document;
 using LW.Shared.DTOs.Index;
 using LW.Shared.DTOs.Lesson;
+using LW.Shared.DTOs.Quiz;
+using LW.Shared.DTOs.QuizAnswer;
+using LW.Shared.DTOs.QuizQuestion;
 using LW.Shared.DTOs.Topic;
 using LW.Shared.Enums;
 using Microsoft.AspNetCore.Identity;
@@ -45,8 +48,10 @@ public class MappingProfile : Profile
         CreateMap<Document, DocumentDto>()
             .ForMember(x => x.GradeId, y => y.MapFrom(src => src.GradeId))
             .ForMember(x => x.GradeTitle, y => y.MapFrom(src => src.Grade.Title))
-            .ForMember(x => x.BookCollection, y => y.MapFrom(src => EnumHelperExtensions.GetDisplayName(src.BookCollection).ToString()))
-            .ForMember(x => x.TypeOfBook, y => y.MapFrom(src => EnumHelperExtensions.GetDisplayName(src.TypeOfBook).ToString()))
+            .ForMember(x => x.BookCollection,
+                y => y.MapFrom(src => EnumHelperExtensions.GetDisplayName(src.BookCollection).ToString()))
+            .ForMember(x => x.TypeOfBook,
+                y => y.MapFrom(src => EnumHelperExtensions.GetDisplayName(src.TypeOfBook).ToString()))
             .ReverseMap();
         CreateMap<Document, DocumentCreateDto>().ReverseMap();
         CreateMap<Document, DocumentUpdateDto>().ReverseMap();
@@ -74,13 +79,15 @@ public class MappingProfile : Profile
         CreateMap<IdentityRole, RoleDto>().ReverseMap();
         //CommentDocument
         CreateMap<CommentDocument, CommentDocumentDto>()
-            .ForMember(x => x.FullName, y => y.MapFrom(src => src.ApplicationUser.FirstName + " " + src.ApplicationUser.LastName))
+            .ForMember(x => x.FullName,
+                y => y.MapFrom(src => src.ApplicationUser.FirstName + " " + src.ApplicationUser.LastName))
             .ForMember(x => x.Avatar, y => y.MapFrom(src => src.ApplicationUser.Image))
             .ReverseMap();
         CreateMap<CommentDocument, CommentDocumentUpdateDto>().ReverseMap();
         CreateMap<CommentDocument, CommentDocumentCreateDto>().ReverseMap();
         CreateMap<CommentDocument, RepliesCommentDocumentDto>()
-            .ForMember(x => x.FullName, y => y.MapFrom(src => src.ApplicationUser.FirstName + " " + src.ApplicationUser.LastName))
+            .ForMember(x => x.FullName,
+                y => y.MapFrom(src => src.ApplicationUser.FirstName + " " + src.ApplicationUser.LastName))
             .ForMember(x => x.Avatar, y => y.MapFrom(src => src.ApplicationUser.Image))
             .ReverseMap();
         //IndexDocument
@@ -147,14 +154,27 @@ public class MappingProfile : Profile
             .ReverseMap();
         //UserGrade
         CreateMap<UserGrade, UserGradeDto>()
-            .ForMember(x=>x.GradeName, y=>y.MapFrom(y=>y.Grade.Title))
-            .ForMember(x=>x.UserName, y=> y.MapFrom(x=>x.ApplicationUser.UserName))
+            .ForMember(x => x.GradeName, y => y.MapFrom(y => y.Grade.Title))
+            .ForMember(x => x.UserName, y => y.MapFrom(y => y.ApplicationUser.UserName))
             .ReverseMap();
         CreateMap<UserGrade, UserGradeCreateDto>()
             .ReverseMap();
         CreateMap<UserGrade, UserGradeUpdateDto>()
             .ReverseMap();
-
-
+        //Quiz
+        CreateMap<Quiz, QuizDto>()
+            .ForMember(x => x.TopicTitle, y => y.MapFrom(src => src.Topic.Title))
+            .ForMember(x => x.LessonTitle, y => y.MapFrom(src => src.Lesson.Title))
+            .ReverseMap();
+        CreateMap<Quiz, QuizCreateDto>().ReverseMap();
+        CreateMap<Quiz, QuizUpdateDto>().ReverseMap();
+        //QuizQuestion
+        CreateMap<QuizQuestion, QuizQuestionDto>().ReverseMap();
+        CreateMap<QuizQuestion, QuizQuestionCreateDto>().ReverseMap();
+        CreateMap<QuizQuestion, QuizQuestionUpdateDto>().ReverseMap();
+        //QuizAnswer
+        CreateMap<QuizAnswer, QuizAnswerDto>().ReverseMap();
+        CreateMap<QuizAnswer, QuizAnswerCreateDto>().ReverseMap();
+        CreateMap<QuizAnswer, QuizAnswerUpdateDto>().ReverseMap();
     }
 }

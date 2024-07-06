@@ -3,6 +3,7 @@ using System;
 using LW.Data.Persistence;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
@@ -10,9 +11,10 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace LW.Data.Persistence.Migrations
 {
     [DbContext(typeof(AppDbContext))]
-    partial class AppDbContextModelSnapshot : ModelSnapshot
+    [Migration("20240705032759_Init_Add_Class_QuizQuestion")]
+    partial class Init_Add_Class_QuizQuestion
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -394,42 +396,6 @@ namespace LW.Data.Persistence.Migrations
                     b.ToTable("Quizzes");
                 });
 
-            modelBuilder.Entity("LW.Data.Entities.QuizAnswer", b =>
-                {
-                    b.Property<int>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("int");
-
-                    b.Property<string>("Content")
-                        .IsRequired()
-                        .HasColumnType("longtext");
-
-                    b.Property<string>("CreatedBy")
-                        .IsRequired()
-                        .HasColumnType("longtext");
-
-                    b.Property<DateTimeOffset>("CreatedDate")
-                        .HasColumnType("datetime(6)");
-
-                    b.Property<bool>("IsCorrect")
-                        .HasColumnType("tinyint(1)");
-
-                    b.Property<string>("LastModifiedBy")
-                        .HasColumnType("longtext");
-
-                    b.Property<DateTimeOffset?>("LastModifiedDate")
-                        .HasColumnType("datetime(6)");
-
-                    b.Property<int>("QuizQuestionId")
-                        .HasColumnType("int");
-
-                    b.HasKey("Id");
-
-                    b.HasIndex("QuizQuestionId");
-
-                    b.ToTable("QuizAnswers");
-                });
-
             modelBuilder.Entity("LW.Data.Entities.QuizQuestion", b =>
                 {
                     b.Property<int>("Id")
@@ -461,6 +427,9 @@ namespace LW.Data.Persistence.Migrations
 
                     b.Property<int>("QuizId")
                         .HasColumnType("int");
+
+                    b.Property<decimal>("Score")
+                        .HasColumnType("decimal(12,2)");
 
                     b.Property<int>("Type")
                         .HasColumnType("int");
@@ -749,17 +718,6 @@ namespace LW.Data.Persistence.Migrations
                     b.Navigation("Topic");
                 });
 
-            modelBuilder.Entity("LW.Data.Entities.QuizAnswer", b =>
-                {
-                    b.HasOne("LW.Data.Entities.QuizQuestion", "QuizQuestion")
-                        .WithMany("QuizAnswers")
-                        .HasForeignKey("QuizQuestionId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.Navigation("QuizQuestion");
-                });
-
             modelBuilder.Entity("LW.Data.Entities.QuizQuestion", b =>
                 {
                     b.HasOne("LW.Data.Entities.Quiz", "Quiz")
@@ -896,11 +854,6 @@ namespace LW.Data.Persistence.Migrations
             modelBuilder.Entity("LW.Data.Entities.Quiz", b =>
                 {
                     b.Navigation("QuizQuestions");
-                });
-
-            modelBuilder.Entity("LW.Data.Entities.QuizQuestion", b =>
-                {
-                    b.Navigation("QuizAnswers");
                 });
 
             modelBuilder.Entity("LW.Data.Entities.Topic", b =>
