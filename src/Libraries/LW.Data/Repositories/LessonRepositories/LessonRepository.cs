@@ -59,13 +59,13 @@ public class LessonRepository : RepositoryBase<Lesson, int>, ILessonRepository
 
     public async Task<bool> DeleteLesson(int id)
     {
-        var grade = await GetByIdAsync(id);
-        if (grade == null)
+        var lesson = await GetByIdAsync(id);
+        if (lesson == null)
         {
             return false;
         }
 
-        await DeleteAsync(grade);
+        await DeleteAsync(lesson);
         return true;
     }
 

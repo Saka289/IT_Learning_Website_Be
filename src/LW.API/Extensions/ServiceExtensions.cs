@@ -32,12 +32,17 @@ using MySqlConnector;
 using LW.Services.DocumentServices;
 using LW.Data.Repositories.DocumentRepositories;
 using LW.Data.Repositories.LessonRepositories;
+using LW.Data.Repositories.QuizAnswerRepositories;
+using LW.Data.Repositories.QuizQuestionRepositories;
+using LW.Data.Repositories.QuizRepositories;
 using LW.Data.Repositories.TopicRepositories;
 using LW.Data.Repositories.UserGradeRepositories;
 using LW.Services.CommentDocumentServices;
 using LW.Services.EnumServices;
 using LW.Services.IndexServices;
 using LW.Services.LessonServices;
+using LW.Services.QuizQuestionServices;
+using LW.Services.QuizServices;
 using LW.Services.TopicServices;
 using LW.Services.UserGradeServices;
 using Nest;
@@ -251,6 +256,9 @@ public static class ServiceExtensions
         services.AddScoped<ILessonRepository, LessonRepository>();
         services.AddScoped<ICommentDocumentRepository, CommentDocumentRepository>();
         services.AddScoped<IUserGradeRepository, UserGradeRepository>();
+        services.AddScoped<IQuizRepository, QuizRepository>();
+        services.AddScoped<IQuizQuestionRepository, QuizQuestionRepository>();
+        services.AddScoped<IQuizAnswerRepository, QuizAnswerRepository>();
         
         // IService 
         services.AddScoped<IAdminAuthorService, AdminAuthorService>();
@@ -267,6 +275,8 @@ public static class ServiceExtensions
         services.AddScoped<IIndexService, IndexService>();
         services.AddScoped<IEnumService, EnumService>();
         services.AddScoped<IUserGradeService, UserGradeService>();
+        services.AddScoped<IQuizService, QuizService>();
+        services.AddScoped<IQuizQuestionService, QuizQuestionService>();
         return services;
     }
 }

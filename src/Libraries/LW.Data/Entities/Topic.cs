@@ -26,4 +26,5 @@ public class Topic : EntityAuditBase<int>
     public virtual Topic ParentTopic { get; set; }
     public virtual ICollection<Lesson> Lessons { get; set; }
     public virtual ICollection<Topic> ChildTopics { get; set; }
+    public virtual ICollection<Quiz> Quizzes { get; set; }
 }
