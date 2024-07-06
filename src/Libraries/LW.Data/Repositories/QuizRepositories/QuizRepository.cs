@@ -20,20 +20,31 @@ public class QuizRepository : RepositoryBase<Quiz, int>, IQuizRepository
             .ToListAsync();
     }
 
-    public async Task<IEnumerable<Quiz>> GetAllQuizByTopicId(int topicId)
+    public Task<IQueryable<Quiz>> GetAllQuizPagination()
     {
-        return await FindAll()
+        var result = FindAll()
             .Include(l => l.Lesson)
             .Include(l => l.Topic)
-            .Where(q => q.TopicId == topicId).ToListAsync();
+            .AsQueryable();
+        return Task.FromResult(result);
     }
 
-    public async Task<IEnumerable<Quiz>> GetAllQuizByLessonId(int lessonId)
+    public Task<IQueryable<Quiz>> GetAllQuizByTopicIdPagination(int topicId)
     {
-        return await FindAll()
+        var result = FindAll()
             .Include(l => l.Lesson)
             .Include(l => l.Topic)
-            .Where(q => q.LessonId == lessonId).ToListAsync();
+            .Where(q => q.TopicId == topicId).AsQueryable();
+        return Task.FromResult(result);
+    }
+
+    public Task<IQueryable<Quiz>> GetAllQuizByLessonIdPagination(int lessonId)
+    {
+        var result = FindAll()
+            .Include(l => l.Lesson)
+            .Include(l => l.Topic)
+            .Where(q => q.LessonId == lessonId).AsQueryable();
+        return Task.FromResult(result);
     }
 
     public async Task<Quiz?> GetQuizById(int id)
