@@ -20,7 +20,7 @@ namespace LW.API.Controllers.Public
     public class LessonController : ControllerBase
     {
         private readonly ILessonService _lessonService;
-        
+
         public LessonController(ILessonService lessonService)
         {
             _lessonService = lessonService;
@@ -34,9 +34,10 @@ namespace LW.API.Controllers.Public
             {
                 return NotFound(result);
             }
+
             return Ok(result);
         }
-        
+
         [HttpGet("GetAllLessonByTopic/{topicId}")]
         public async Task<ActionResult<ApiResult<IEnumerable<LessonDto>>>> GetAllLessonByTopic(int topicId)
         {
@@ -45,9 +46,10 @@ namespace LW.API.Controllers.Public
             {
                 return NotFound(result);
             }
+
             return Ok(result);
         }
-        
+
         [HttpGet("GetAllLessonPagination")]
         public async Task<ActionResult<ApiResult<PagedList<LessonDto>>>> GetAllLessonPagination(
             [FromQuery] PagingRequestParameters pagingRequestParameters)
@@ -70,18 +72,20 @@ namespace LW.API.Controllers.Public
             {
                 return NotFound(result);
             }
-            
+
             return Ok(result);
         }
-        
+
         [HttpGet("SearchByLessonPagination")]
-        public async Task<ActionResult<ApiResult<PagedList<LessonDto>>>> SearchByLessonPagination([FromQuery] SearchLessonDto searchLessonDto)
+        public async Task<ActionResult<ApiResult<PagedList<LessonDto>>>> SearchByLessonPagination(
+            [FromQuery] SearchLessonDto searchLessonDto)
         {
             var result = await _lessonService.SearchByLessonPagination(searchLessonDto);
             if (!result.IsSucceeded)
             {
                 return NotFound(result);
             }
+
             Response.Headers.Add("X-Pagination", JsonConvert.SerializeObject(result.Data.GetMetaData()));
             return Ok(result);
         }
@@ -94,12 +98,13 @@ namespace LW.API.Controllers.Public
             {
                 return BadRequest(validationResult);
             }
+
             var result = await _lessonService.CreateLesson(lessonCreateDto);
             if (!result.IsSucceeded)
             {
                 return BadRequest(result);
             }
-            
+
             return Ok(result);
         }
 
@@ -111,25 +116,26 @@ namespace LW.API.Controllers.Public
             {
                 return BadRequest(validationResult);
             }
+
             var result = await _lessonService.UpdateLesson(lessonUpdateDto);
             if (!result.IsSucceeded)
             {
                 return BadRequest(result);
             }
-            
+
             return Ok(result);
         }
-        
+
         [Authorize(Roles = RoleConstant.RoleAdmin)]
         [HttpPut("UpdateStatusLesson")]
-        public async Task<ActionResult<ApiResult<bool>>> UpdateStatusLesson(int id)
+        public async Task<ActionResult<ApiResult<bool>>> UpdateStatusLesson([Required] int id)
         {
             var result = await _lessonService.UpdateLessonStatus(id);
             if (!result.IsSucceeded)
             {
                 return NotFound(result);
             }
-            
+
             return Ok(result);
         }
 
@@ -141,10 +147,10 @@ namespace LW.API.Controllers.Public
             {
                 return NotFound(result);
             }
-            
+
             return Ok(result);
         }
-        
+
         [HttpDelete("DeleteRangeLesson")]
         public async Task<ActionResult<ApiResult<bool>>> DeleteRangeLesson([Required] IEnumerable<int> ids)
         {
@@ -153,7 +159,7 @@ namespace LW.API.Controllers.Public
             {
                 return NotFound(result);
             }
-            
+
             return Ok(result);
         }
     }
