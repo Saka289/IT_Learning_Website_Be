@@ -4,9 +4,13 @@ using LW.Data.Entities;
 using LW.Data.Repositories.QuizAnswerRepositories;
 using LW.Data.Repositories.QuizQuestionRepositories;
 using LW.Data.Repositories.QuizRepositories;
+using LW.Infrastructure.Extensions;
+using LW.Shared.Constant;
+using LW.Shared.DTOs.QuizAnswer;
 using LW.Shared.DTOs.QuizQuestion;
 using LW.Shared.Enums;
 using LW.Shared.SeedWork;
+using MockQueryable.Moq;
 
 namespace LW.Services.QuizQuestionServices;
 
@@ -41,7 +45,8 @@ public class QuizQuestionService : IQuizQuestionService
         return new ApiSuccessResult<IEnumerable<QuizQuestionDto>>(result);
     }
 
-    public async Task<ApiResult<PagedList<QuizQuestionDto>>> GetAllQuizQuestionPagination(PagingRequestParameters pagingRequestParameters)
+    public async Task<ApiResult<PagedList<QuizQuestionDto>>> GetAllQuizQuestionPagination(
+        PagingRequestParameters pagingRequestParameters)
     {
         var quizQuestionList = await _quizQuestionRepository.GetAllQuizQuestionPagination();
         if (!quizQuestionList.Any())
@@ -50,11 +55,13 @@ public class QuizQuestionService : IQuizQuestionService
         }
 
         var result = _mapper.ProjectTo<QuizQuestionDto>(quizQuestionList);
-        var pagedResult = await PagedList<QuizQuestionDto>.ToPageListAsync(result, pagingRequestParameters.PageIndex, pagingRequestParameters.PageSize, pagingRequestParameters.OrderBy, pagingRequestParameters.IsAscending);
+        var pagedResult = await PagedList<QuizQuestionDto>.ToPageListAsync(result, pagingRequestParameters.PageIndex,
+            pagingRequestParameters.PageSize, pagingRequestParameters.OrderBy, pagingRequestParameters.IsAscending);
         return new ApiSuccessResult<PagedList<QuizQuestionDto>>(pagedResult);
     }
 
-    public async Task<ApiResult<PagedList<QuizQuestionDto>>> GetAllQuizQuestionByQuizIdPagination(int quizId, PagingRequestParameters pagingRequestParameters)
+    public async Task<ApiResult<PagedList<QuizQuestionDto>>> GetAllQuizQuestionByQuizIdPagination(int quizId,
+        PagingRequestParameters pagingRequestParameters)
     {
         var quizQuestionList = await _quizQuestionRepository.GetAllQuizQuestionByQuizId(quizId);
         if (!quizQuestionList.Any())
@@ -63,7 +70,31 @@ public class QuizQuestionService : IQuizQuestionService
         }
 
         var result = _mapper.ProjectTo<QuizQuestionDto>(quizQuestionList);
-        var pagedResult = await PagedList<QuizQuestionDto>.ToPageListAsync(result, pagingRequestParameters.PageIndex, pagingRequestParameters.PageSize, pagingRequestParameters.OrderBy, pagingRequestParameters.IsAscending);
+        var pagedResult = await PagedList<QuizQuestionDto>.ToPageListAsync(result, pagingRequestParameters.PageIndex,
+            pagingRequestParameters.PageSize, pagingRequestParameters.OrderBy, pagingRequestParameters.IsAscending);
+        return new ApiSuccessResult<PagedList<QuizQuestionDto>>(pagedResult);
+    }
+
+    public async Task<ApiResult<PagedList<QuizQuestionDto>>> SearchQuizQuestion(
+        SearchQuizQuestionDto searchQuizQuestionDto)
+    {
+        var quizQuestionEntity =
+            await _elasticSearchService.SearchDocumentAsync(ElasticConstant.ElasticQuizQuestion, searchQuizQuestionDto);
+        if (quizQuestionEntity is null)
+        {
+            return new ApiResult<PagedList<QuizQuestionDto>>(false,
+                $"Lesson not found by {searchQuizQuestionDto.Key} !!!");
+        }
+
+        if (searchQuizQuestionDto.QuizId > 0)
+        {
+            quizQuestionEntity = quizQuestionEntity.Where(t => t.QuizId == searchQuizQuestionDto.QuizId).ToList();
+        }
+
+        var result = _mapper.Map<IEnumerable<QuizQuestionDto>>(quizQuestionEntity);
+        var pagedResult = await PagedList<QuizQuestionDto>.ToPageListAsync(result.AsQueryable().BuildMock(),
+            searchQuizQuestionDto.PageIndex, searchQuizQuestionDto.PageSize, searchQuizQuestionDto.OrderBy,
+            searchQuizQuestionDto.IsAscending);
         return new ApiSuccessResult<PagedList<QuizQuestionDto>>(pagedResult);
     }
 
@@ -86,7 +117,7 @@ public class QuizQuestionService : IQuizQuestionService
         {
             return new ApiResult<QuizQuestionDto>(false, "Quiz not found !!!");
         }
-        
+
         var countAnswer = quizQuestionCreateDto.QuizAnswers.Count();
         switch (quizQuestionCreateDto.Type)
         {
@@ -95,24 +126,29 @@ public class QuizQuestionService : IQuizQuestionService
                 {
                     return new ApiResult<QuizQuestionDto>(false, "Question is true or false !!!");
                 }
+
                 break;
             case ETypeQuestion.QuestionFourAnswer:
                 if (countAnswer != 4)
                 {
                     return new ApiResult<QuizQuestionDto>(false, "Question is four answer !!!");
                 }
+
                 break;
             case ETypeQuestion.QuestionFiveAnswer:
                 if (countAnswer != 5)
                 {
                     return new ApiResult<QuizQuestionDto>(false, "Question is five answer !!!");
                 }
+
                 break;
         }
 
         var quizQuestionEntity = _mapper.Map<QuizQuestion>(quizQuestionCreateDto);
+        quizQuestionEntity.KeyWord = quizQuestionCreateDto.Content.RemoveDiacritics();
         var quizQuestionCreate = await _quizQuestionRepository.CreateQuizQuestion(quizQuestionEntity);
         var result = _mapper.Map<QuizQuestionDto>(quizQuestionCreate);
+        _elasticSearchService.CreateDocumentAsync(ElasticConstant.ElasticQuizQuestion, result, q => q.Id);
         return new ApiSuccessResult<QuizQuestionDto>(result);
     }
 
@@ -129,7 +165,7 @@ public class QuizQuestionService : IQuizQuestionService
         {
             return new ApiResult<QuizQuestionDto>(false, "Quiz not found !!!");
         }
-        
+
         var countAnswer = quizQuestionUpdateDto.QuizAnswers.Count();
         switch (quizQuestionUpdateDto.Type)
         {
@@ -138,22 +174,26 @@ public class QuizQuestionService : IQuizQuestionService
                 {
                     return new ApiResult<QuizQuestionDto>(false, "Question is true or false !!!");
                 }
+
                 break;
             case ETypeQuestion.QuestionFourAnswer:
                 if (countAnswer != 4)
                 {
                     return new ApiResult<QuizQuestionDto>(false, "Question is four answer !!!");
                 }
+
                 break;
             case ETypeQuestion.QuestionFiveAnswer:
                 if (countAnswer != 5)
                 {
                     return new ApiResult<QuizQuestionDto>(false, "Question is five answer !!!");
                 }
+
                 break;
         }
 
         var modelQuestion = _mapper.Map(quizQuestionUpdateDto, quizQuestionEntity);
+        modelQuestion.KeyWord = quizQuestionUpdateDto.Content.RemoveDiacritics();
         var quizQuestionUpdate = await _quizQuestionRepository.UpdateQuizQuestion(modelQuestion);
         foreach (var item in quizQuestionUpdateDto.QuizAnswers)
         {
@@ -163,6 +203,8 @@ public class QuizQuestionService : IQuizQuestionService
         }
 
         var result = _mapper.Map<QuizQuestionDto>(quizQuestionUpdate);
+        _elasticSearchService.UpdateDocumentAsync(ElasticConstant.ElasticQuizQuestion, result,
+            quizQuestionUpdateDto.Id);
         return new ApiSuccessResult<QuizQuestionDto>(result);
     }
 
@@ -175,7 +217,7 @@ public class QuizQuestionService : IQuizQuestionService
             {
                 return new ApiResult<bool>(false, "Quiz not found !!!");
             }
-            
+
             var countAnswer = item.QuizAnswers.Count();
             switch (item.Type)
             {
@@ -184,24 +226,29 @@ public class QuizQuestionService : IQuizQuestionService
                     {
                         return new ApiResult<bool>(false, "Question is true or false !!!");
                     }
+
                     break;
                 case ETypeQuestion.QuestionFourAnswer:
                     if (countAnswer != 4)
                     {
                         return new ApiResult<bool>(false, "Question is four answer !!!");
                     }
+
                     break;
                 case ETypeQuestion.QuestionFiveAnswer:
                     if (countAnswer != 5)
                     {
                         return new ApiResult<bool>(false, "Question is five answer !!!");
                     }
+
                     break;
             }
-            
+
             var quizQuestionEntity = _mapper.Map<QuizQuestion>(item);
+            quizQuestionEntity.KeyWord = item.Content.RemoveDiacritics();
             var quizQuestionCreate = await _quizQuestionRepository.CreateQuizQuestion(quizQuestionEntity);
             var result = _mapper.Map<QuizQuestionDto>(quizQuestionCreate);
+            _elasticSearchService.CreateDocumentAsync(ElasticConstant.ElasticQuizQuestion, result, q => q.Id);
         }
 
         return new ApiSuccessResult<bool>(true);
@@ -222,7 +269,7 @@ public class QuizQuestionService : IQuizQuestionService
             {
                 return new ApiResult<bool>(false, "Quiz not found !!!");
             }
-            
+
             var countAnswer = item.QuizAnswers.Count();
             switch (item.Type)
             {
@@ -231,22 +278,26 @@ public class QuizQuestionService : IQuizQuestionService
                     {
                         return new ApiResult<bool>(false, "Question is true or false !!!");
                     }
+
                     break;
                 case ETypeQuestion.QuestionFourAnswer:
                     if (countAnswer != 4)
                     {
                         return new ApiResult<bool>(false, "Question is four answer !!!");
                     }
+
                     break;
                 case ETypeQuestion.QuestionFiveAnswer:
                     if (countAnswer != 5)
                     {
                         return new ApiResult<bool>(false, "Question is five answer !!!");
                     }
+
                     break;
             }
 
             var modelQuestion = _mapper.Map(item, quizQuestionEntity);
+            modelQuestion.KeyWord = item.Content.RemoveDiacritics();
             var quizQuestionUpdate = await _quizQuestionRepository.UpdateQuizQuestion(modelQuestion);
             foreach (var itemAnswer in item.QuizAnswers)
             {
@@ -254,7 +305,8 @@ public class QuizQuestionService : IQuizQuestionService
                 var modelAnswer = _mapper.Map(itemAnswer, quizAnswer);
                 await _quizAnswerRepository.UpdateQuizAnswer(modelAnswer);
             }
-            // var result = _mapper.Map<QuizQuestionDto>(quizQuestionUpdate);
+            var result = _mapper.Map<QuizQuestionDto>(quizQuestionUpdate);
+            _elasticSearchService.UpdateDocumentAsync(ElasticConstant.ElasticQuizQuestion, result, item.Id);
         }
 
         return new ApiSuccessResult<bool>(true);
@@ -271,6 +323,7 @@ public class QuizQuestionService : IQuizQuestionService
         quizQuestionEntity.IsActive = !quizQuestionEntity.IsActive;
         await _quizQuestionRepository.UpdateQuizQuestion(quizQuestionEntity);
         var result = _mapper.Map<QuizQuestionDto>(quizQuestionEntity);
+        _elasticSearchService.UpdateDocumentAsync(ElasticConstant.ElasticQuizQuestion, result, id);
         return new ApiSuccessResult<bool>(true, "Quiz Question update successfully !!!");
     }
 
@@ -287,7 +340,7 @@ public class QuizQuestionService : IQuizQuestionService
         {
             return new ApiResult<bool>(false, "Delete Quiz Question Failed !!!");
         }
-
+        _elasticSearchService.DeleteDocumentAsync(ElasticConstant.ElasticQuizQuestion, id);
         return new ApiSuccessResult<bool>(true);
     }
 }
