@@ -1,6 +1,7 @@
 ﻿using LW.Data.Entities;
 using LW.Shared.DTOs.QuizQuestion;
 using LW.Shared.SeedWork;
+using Microsoft.AspNetCore.Http;
 
 namespace LW.Services.QuizQuestionServices;
 
@@ -15,5 +16,7 @@ public interface IQuizQuestionService
     Task<ApiResult<bool>> UpdateRangeQuizQuestion(IEnumerable<QuizQuestionUpdateDto> quizQuestionsUpdateDto);
     Task<ApiResult<bool>> UpdateStatusQuizQuestion(int id);
     Task<ApiResult<bool>> DeleteQuizQuestion(int id);
-    
+    public Task<byte[]> ExportExcel(int checkData = 1, List<Guid>? Ids = null);
+    public Task<QuizQuestionImportParentDto> ImportExcel(IFormFile formFile);
+    public Task<ApiResult<bool>> ImportDatabase(string idCache);
 }

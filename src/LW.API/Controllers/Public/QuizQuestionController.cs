@@ -1,4 +1,4 @@
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.Linq;
@@ -9,6 +9,7 @@ using LW.Shared.DTOs.QuizQuestion;
 using LW.Shared.SeedWork;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
+using Nest;
 
 namespace LW.API.Controllers.Public
 {
@@ -154,5 +155,35 @@ namespace LW.API.Controllers.Public
 
             return Ok(result);
         }
+
+   
+        [HttpGet("ExportExcel")]
+
+        public async Task<IActionResult> ExportExcel([FromQuery] int checkData = 1)
+        {
+
+            byte[] excelData = await _quizQuestionService.ExportExcel(checkData, null);
+            string fileName = $"Quiz-{DateTime.Now.ToString("dd-MM-yy HH:mm:ss")}.xlsx";
+            return File(excelData, "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet", fileName);
+        }
+        [HttpPost("ImportValidate")]
+        public async Task<IActionResult> ImportEmployee([FromForm] IFormFile fileImport)
+        {
+            var imports = await _quizQuestionService.ImportExcel(fileImport);
+            if (!imports.QuizQuestionImportDtos.Any())
+            {
+                return BadRequest(imports);
+            }
+            return StatusCode(200, imports);
+        }
+        [HttpGet("ImportExcel/{id}")]
+
+        public IActionResult ImportDatabase(string id)
+        {
+
+            var imports = _quizQuestionService.ImportDatabase(id);
+            return StatusCode(200, imports);
+        }
+
     }
 }
