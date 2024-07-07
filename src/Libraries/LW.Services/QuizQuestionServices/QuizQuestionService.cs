@@ -6,9 +6,12 @@ using LW.Data.Entities;
 using LW.Data.Repositories.QuizAnswerRepositories;
 using LW.Data.Repositories.QuizQuestionRepositories;
 using LW.Data.Repositories.QuizRepositories;
+using LW.Infrastructure.Extensions;
 using LW.Shared.DTOs.Email;
+using LW.Shared.DTOs.Enum;
 using LW.Shared.DTOs.QuizAnswer;
 using LW.Shared.DTOs.QuizQuestion;
+using LW.Shared.Enums;
 using LW.Shared.SeedWork;
 using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Caching.Distributed;
@@ -200,7 +203,13 @@ public class QuizQuestionService : IQuizQuestionService
 
     private async Task<byte[]> GenerateExcelFile()
     {
-        var comboBoxValues = await _quizRepository.GetAllQuiz();
+            
+        var comboBoxValues = Enum.GetValues(typeof(ETypeQuestion)).Cast<ETypeQuestion>();
+        var result = comboBoxValues.Select(e => new EnumDto
+        {
+            Value = (int)e,
+            Name = EnumHelperExtensions.GetDisplayName(e) ?? e.ToString()
+        }).ToList();
 
         using (var package = new ExcelPackage())
         {
@@ -209,8 +218,7 @@ public class QuizQuestionService : IQuizQuestionService
             // Define column headers and widths
             string[] columnHeaders = {
                 "STT",
-                "Tiêu đề quiz",
-                "Mô tả nội dung",
+                "Loại câu hỏi",
                 "Câu hỏi - max 200 ký tự ",
                 "Đáp án 1 - max 200 ký tự",
                 "Đáp án 2 - max 200 ký tự",
@@ -223,7 +231,7 @@ public class QuizQuestionService : IQuizQuestionService
             StyleColumn(columnHeaders, worksheet, dataStartRow);
             int startRow = dataStartRow + 1; // Assuming data starts from row (dataStartRow + 1)
             int endRow = 1000; ;  // Calculate end row dynamically
-            AddDataValidation(worksheet, columnHeaders, startRow, endRow, comboBoxValues);
+            AddDataValidation(worksheet, columnHeaders, startRow, endRow, result);
             // Save the workbook to a memory stream and return the stream as a byte array
             return SavePackageToStream(package);
         }
@@ -246,7 +254,7 @@ public class QuizQuestionService : IQuizQuestionService
     // style cho các column 
     public void StyleColumn(string[] columnHeaders, ExcelWorksheet worksheet, int dataStartRow)
     {
-        int[] columnWidths = { 7, 20, 30, 30, 30, 30, 30, 30, 30, 30 };
+        int[] columnWidths = { 7, 20, 30, 30, 30, 30, 30, 30, 30 };
         // Add column headers and set column widths
         for (int i = 0; i < columnHeaders.Length; i++)
         {
@@ -259,16 +267,16 @@ public class QuizQuestionService : IQuizQuestionService
         }
     }
     // tạo combobox 
-    private void AddDataValidation(ExcelWorksheet worksheet, string[] columnHeaders, int startRow, int endRow, IEnumerable<Quiz> comboBoxValues)
+    private void AddDataValidation(ExcelWorksheet worksheet, string[] columnHeaders, int startRow, int endRow, IEnumerable<EnumDto> comboBoxValues)
     {
-        int departmentColumnIndex = Array.IndexOf(columnHeaders, "Tiêu đề quiz");
+        int departmentColumnIndex = Array.IndexOf(columnHeaders, "Loại câu hỏi");
         var validationRange = worksheet.Cells[startRow, departmentColumnIndex + 1, endRow, departmentColumnIndex + 1];
 
         var validation = validationRange.DataValidation.AddListDataValidation();
 
         foreach (var value in comboBoxValues)
         {
-            validation.Formula.Values.Add(value.Title);
+            validation.Formula.Values.Add(value.Name);
         }
     }
     // Lưu package by stream 
@@ -324,7 +332,7 @@ public class QuizQuestionService : IQuizQuestionService
         dto.Errors.Add(error);
         dto.IsImported = false;
     }
-    public async Task<QuizQuestionImportParentDto> ImportExcel(IFormFile fileImport)
+    public async Task<QuizQuestionImportParentDto> ImportExcel(IFormFile fileImport, int quizId)
     {
         var isExcel = CheckFileImport(fileImport);
         var quizQuestionImportParentDtos = new QuizQuestionImportParentDto();
@@ -333,7 +341,13 @@ public class QuizQuestionService : IQuizQuestionService
             int countSuccess = 0, countFail = 0;
             var quizQuestionImportDtos = new List<QuizQuestionImportDto>();
             var quizQuestionImportSuccess = new List<QuizQuestion>();
-            var quizQuestions = await _quizRepository.GetAllQuiz();
+            var getEnum = Enum.GetValues(typeof(ETypeQuestion)).Cast<ETypeQuestion>();
+            var typeQuestion = getEnum.Select(e => new EnumDto
+            {
+                Value = (int)e,
+                Name = EnumHelperExtensions.GetDisplayName(e) ?? e.ToString()
+            }).ToList();
+                
             using (var stream = new MemoryStream())
             {
                 // copy vào tệp stream 
@@ -349,13 +363,13 @@ public class QuizQuestionService : IQuizQuestionService
                         for (int row = 4; row <= rowCount; row++)
                         {
                             var quizQuestionImportDto = new QuizQuestionImportDto();
-                            var quizName = workSheet?.Cells[row, 2]?.Value?.ToString()?.Trim();
-                            var answer1 = workSheet?.Cells[row, 5]?.Value?.ToString()?.Trim();
-                            var answer2 = workSheet?.Cells[row, 6]?.Value?.ToString()?.Trim();
-                            var answer3 = workSheet?.Cells[row, 7]?.Value?.ToString()?.Trim();
-                            var answer4 = workSheet?.Cells[row, 8]?.Value?.ToString()?.Trim();
-                            var answerCorrect = workSheet?.Cells[row, 9]?.Value?.ToString()?.Trim();
-                            var checkQuizName = CheckCoincidence(quizQuestions, quizName, "Title");
+                            var typeQuestionName = workSheet?.Cells[row, 2]?.Value?.ToString()?.Trim();
+                            var answer1 = workSheet?.Cells[row, 4]?.Value?.ToString()?.Trim();
+                            var answer2 = workSheet?.Cells[row, 5]?.Value?.ToString()?.Trim();
+                            var answer3 = workSheet?.Cells[row, 6]?.Value?.ToString()?.Trim();
+                            var answer4 = workSheet?.Cells[row, 7]?.Value?.ToString()?.Trim();
+                            var answerCorrect = workSheet?.Cells[row, 8]?.Value?.ToString()?.Trim();
+                            var checkQuizName = CheckCoincidence(typeQuestion, typeQuestionName, "Name");
                             IEnumerable<QuizAnswerDto> QuizAnswerExcel = new[]
                                 {
                                   new QuizAnswerDto(answerCorrect.Equals("1"), answer1),  // Correct answer for question 1
@@ -365,16 +379,17 @@ public class QuizQuestionService : IQuizQuestionService
                                 };
                             quizQuestionImportDto = new QuizQuestionImportDto
                             {
-                                QuizId = checkQuizName != null ? (int)checkQuizName.GetType().GetProperty("Id")?.GetValue(checkQuizName, null) : 0,
+                                QuizId = quizId,
                                 Content = workSheet?.Cells[row, 3]?.Value?.ToString()?.Trim(),
-                                QuestionLevel = workSheet?.Cells[row, 10]?.Value?.ToString()?.Trim(),
+                                QuestionLevel = workSheet?.Cells[row, 9]?.Value?.ToString()?.Trim(),
                                 QuizAnswers = QuizAnswerExcel,
+                                Type = typeQuestionName
                             };
                             bool check = true;
                             // không tìm thấy 
                             if (checkQuizName == null)
                             {
-                                AddImportError(quizQuestionImportDto, "Không tìm thấy ");
+                                AddImportError(quizQuestionImportDto, "Không tìm thấy loại câu hỏi ");
                                 check = false;
                             }
                             var quizQuestion = _mapper.Map<QuizQuestion>(quizQuestionImportDto);
@@ -422,7 +437,8 @@ public class QuizQuestionService : IQuizQuestionService
         }
         var dataImport = await _redisCacheService.GetStringKey(idImport);
         //var quizQuestionEntity = jArray?.ToObject<List<>>();
-
+        // var jArray = JsonConvert.DeserializeObject<JArray>(dataImport);
+        // var employees = jArray?.ToObject<List<Employee>>();
         var create = await _quizQuestionRepository.CreateRangeQuizQuestion(dataImport);
         return new ApiResult<bool>(true, $"Import Success {create}");
     }

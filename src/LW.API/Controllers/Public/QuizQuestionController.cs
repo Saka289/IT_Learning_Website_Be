@@ -35,9 +35,10 @@ namespace LW.API.Controllers.Public
 
             return Ok(result);
         }
-        
+
         [HttpGet("GetAllQuizQuestionByQuizId/{quizId}")]
-        public async Task<ActionResult<ApiResult<IEnumerable<QuizQuestionDto>>>> GetAllQuizQuestionByQuizId([Required] int quizId)
+        public async Task<ActionResult<ApiResult<IEnumerable<QuizQuestionDto>>>> GetAllQuizQuestionByQuizId(
+            [Required] int quizId)
         {
             var result = await _quizQuestionService.GetAllQuizQuestionByQuizId(quizId);
             if (!result.IsSucceeded)
@@ -47,7 +48,7 @@ namespace LW.API.Controllers.Public
 
             return Ok(result);
         }
-        
+
         [HttpGet("GetQuizQuestionById/{id}")]
         public async Task<ActionResult<ApiResult<IEnumerable<QuizQuestionDto>>>> GetQuizQuestionById([Required] int id)
         {
@@ -59,9 +60,10 @@ namespace LW.API.Controllers.Public
 
             return Ok(result);
         }
-        
+
         [HttpPost("CreateQuizQuestion")]
-        public async Task<ActionResult<ApiResult<IEnumerable<QuizQuestionDto>>>> CreateQuizQuestion([FromBody] QuizQuestionCreateDto quizQuestionCreateDto)
+        public async Task<ActionResult<ApiResult<IEnumerable<QuizQuestionDto>>>> CreateQuizQuestion(
+            [FromBody] QuizQuestionCreateDto quizQuestionCreateDto)
         {
             var validationResult = await new CreateQuizQuestionCommandValidator().ValidateAsync(quizQuestionCreateDto);
             if (!validationResult.IsValid)
@@ -77,9 +79,10 @@ namespace LW.API.Controllers.Public
 
             return Ok(result);
         }
-        
+
         [HttpPut("UpdateQuizQuestion")]
-        public async Task<ActionResult<ApiResult<IEnumerable<QuizQuestionDto>>>> UpdateQuizQuestion([FromBody] QuizQuestionUpdateDto quizQuestionUpdateDto)
+        public async Task<ActionResult<ApiResult<IEnumerable<QuizQuestionDto>>>> UpdateQuizQuestion(
+            [FromBody] QuizQuestionUpdateDto quizQuestionUpdateDto)
         {
             var validationResult = await new UpdateQuizQuestionCommandValidator().ValidateAsync(quizQuestionUpdateDto);
             if (!validationResult.IsValid)
@@ -95,16 +98,18 @@ namespace LW.API.Controllers.Public
 
             return Ok(result);
         }
-        
+
         [HttpPost("CreateRangeQuizQuestion")]
-        public async Task<ActionResult<ApiResult<IEnumerable<QuizQuestionDto>>>> CreateRangeQuizQuestion([FromBody] IEnumerable<QuizQuestionCreateDto> quizQuestionsCreateDto)
+        public async Task<ActionResult<ApiResult<IEnumerable<QuizQuestionDto>>>> CreateRangeQuizQuestion(
+            [FromBody] IEnumerable<QuizQuestionCreateDto> quizQuestionsCreateDto)
         {
-            var validator =  new CreateQuizQuestionCommandValidator();
-            var validationResults =  quizQuestionsCreateDto.Select(async model => await validator.ValidateAsync(model));
+            var validator = new CreateQuizQuestionCommandValidator();
+            var validationResults = quizQuestionsCreateDto.Select(async model => await validator.ValidateAsync(model));
             if (validationResults.Any(result => !result.IsCompleted))
             {
                 return BadRequest(validationResults);
             }
+
             var result = await _quizQuestionService.CreateRangeQuizQuestion(quizQuestionsCreateDto);
             if (!result.IsSucceeded)
             {
@@ -113,16 +118,18 @@ namespace LW.API.Controllers.Public
 
             return Ok(result);
         }
-        
+
         [HttpPut("UpdateRangeQuizQuestion")]
-        public async Task<ActionResult<ApiResult<IEnumerable<QuizQuestionDto>>>> UpdateRangeQuizQuestion([FromBody] IEnumerable<QuizQuestionUpdateDto> quizQuestionsUpdateDto)
+        public async Task<ActionResult<ApiResult<IEnumerable<QuizQuestionDto>>>> UpdateRangeQuizQuestion(
+            [FromBody] IEnumerable<QuizQuestionUpdateDto> quizQuestionsUpdateDto)
         {
-            var validator =  new UpdateQuizQuestionCommandValidator();
-            var validationResults =  quizQuestionsUpdateDto.Select(async model => await validator.ValidateAsync(model));
+            var validator = new UpdateQuizQuestionCommandValidator();
+            var validationResults = quizQuestionsUpdateDto.Select(async model => await validator.ValidateAsync(model));
             if (validationResults.Any(result => !result.IsCompleted))
             {
                 return BadRequest(validationResults);
             }
+
             var result = await _quizQuestionService.UpdateRangeQuizQuestion(quizQuestionsUpdateDto);
             if (!result.IsSucceeded)
             {
@@ -131,7 +138,7 @@ namespace LW.API.Controllers.Public
 
             return Ok(result);
         }
-        
+
         [HttpPut("UpdateStatusQuizQuestion")]
         public async Task<ActionResult<ApiResult<bool>>> UpdateStatusQuizQuestion([Required] int id)
         {
@@ -143,7 +150,7 @@ namespace LW.API.Controllers.Public
 
             return Ok(result);
         }
-        
+
         [HttpDelete("DeleteQuizQuestion/{id}")]
         public async Task<ActionResult<ApiResult<bool>>> DeleteQuiz([Required] int id)
         {
@@ -156,34 +163,32 @@ namespace LW.API.Controllers.Public
             return Ok(result);
         }
 
-   
-        [HttpGet("ExportExcel")]
 
+        [HttpGet("ExportExcel")]
         public async Task<IActionResult> ExportExcel([FromQuery] int checkData = 1)
         {
-
             byte[] excelData = await _quizQuestionService.ExportExcel(checkData, null);
             string fileName = $"Quiz-{DateTime.Now.ToString("dd-MM-yy HH:mm:ss")}.xlsx";
             return File(excelData, "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet", fileName);
         }
+
         [HttpPost("ImportValidate")]
-        public async Task<IActionResult> ImportEmployee([FromForm] IFormFile fileImport)
+        public async Task<IActionResult> ImportEmployee([FromForm] IFormFile fileImport, [Required] int quizId)
         {
-            var imports = await _quizQuestionService.ImportExcel(fileImport);
+            var imports = await _quizQuestionService.ImportExcel(fileImport, quizId);
             if (!imports.QuizQuestionImportDtos.Any())
             {
                 return BadRequest(imports);
             }
+
             return StatusCode(200, imports);
         }
-        [HttpGet("ImportExcel/{id}")]
 
+        [HttpGet("ImportExcel/{id}")]
         public IActionResult ImportDatabase(string id)
         {
-
             var imports = _quizQuestionService.ImportDatabase(id);
             return StatusCode(200, imports);
         }
-
     }
 }
