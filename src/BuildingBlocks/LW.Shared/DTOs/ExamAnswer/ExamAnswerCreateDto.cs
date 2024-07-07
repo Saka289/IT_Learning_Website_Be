@@ -9,9 +9,7 @@ public class ExamAnswerCreateDto
     [Required]
 
     public char Answer { get; set; } //ABCD
-    [Required]
-
-    public decimal Score { get; set; }
+    
     [Required]
 
     public int ExamId { get; set; }

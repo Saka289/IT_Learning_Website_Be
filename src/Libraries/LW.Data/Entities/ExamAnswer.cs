@@ -9,7 +9,6 @@ public class ExamAnswer: EntityBase<int>
     
     public char Answer { get; set; }
     
-    public decimal Score { get; set; }
     public int ExamId { get; set; }
     [ForeignKey(nameof(ExamId))] 
     public virtual Exam Exam { get; set; }

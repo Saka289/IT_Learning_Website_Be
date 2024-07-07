@@ -36,6 +36,7 @@ using LW.Data.Repositories.ExamImageRepositories;
 using LW.Data.Repositories.ExamRepositories;
 using LW.Data.Repositories.LessonRepositories;
 using LW.Data.Repositories.TopicRepositories;
+using LW.Data.Repositories.UserExamRepositories;
 using LW.Data.Repositories.UserGradeRepositories;
 using LW.Services.CommentDocumentServices;
 using LW.Services.EnumServices;
@@ -45,6 +46,7 @@ using LW.Services.ExamServices;
 using LW.Services.IndexServices;
 using LW.Services.LessonServices;
 using LW.Services.TopicServices;
+using LW.Services.UserExamServices;
 using LW.Services.UserGradeServices;
 using Nest;
 
@@ -260,6 +262,7 @@ public static class ServiceExtensions
         services.AddScoped<IExamRepository, ExamRepository>();
         services.AddScoped<IExamImageRepository, ExamImageRepository>();
         services.AddScoped<IExamAnswerRepository, ExamAnswerRepository>();
+        services.AddScoped<IUserExamRepository, UserExamRepository>();
         
         // IService 
         services.AddScoped<IAdminAuthorService, AdminAuthorService>();
@@ -278,6 +281,7 @@ public static class ServiceExtensions
         services.AddScoped<IExamService, ExamService>();
         services.AddScoped<IExamImageService, ExamImageService>();
         services.AddScoped<IExamAnswerService, ExamAnswerService>();
+        services.AddScoped<IUserExamService, UserExamService>();
         return services;
     }
 }

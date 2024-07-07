@@ -8,7 +8,5 @@ public class ExamAnswerDto
     
     public char Answer { get; set; }
     
-    public decimal Score { get; set; }
-    
     public int ExamId { get; set; }
 }

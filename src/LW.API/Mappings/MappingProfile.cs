@@ -13,9 +13,11 @@ using LW.Shared.DTOs.ExamAnswer;
 using LW.Shared.DTOs.Index;
 using LW.Shared.DTOs.Lesson;
 using LW.Shared.DTOs.Topic;
+using LW.Shared.DTOs.UserExam;
 using LW.Shared.Enums;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.OpenApi.Extensions;
+using Newtonsoft.Json;
 using ConfigurationExtensions = LW.Infrastructure.Extensions.ConfigurationExtensions;
 
 namespace LW.API.Mappings;
@@ -168,6 +170,13 @@ public class MappingProfile : Profile
         CreateMap<ExamAnswer,ExamAnswerDto>().ReverseMap();
         CreateMap<ExamAnswer,ExamAnswerCreateDto>().ReverseMap();
         CreateMap<ExamAnswer,ExamAnswerUpdateDto>().ReverseMap();
+        //UserExam
+        CreateMap<UserExam,UserExamDto>()
+            .ForMember(x => x.HistoryExam, y => y.MapFrom(src => JsonConvert.DeserializeObject<List<HistoryAnswer>>(src.HistoryExam)))
+            .ForMember(x=>x.UserName, y=>y.MapFrom(src =>src.ApplicationUser.UserName))
+            .ForMember(x=>x.ExamName, y=>y.MapFrom(src =>src.Exam.Title))
+            .ReverseMap();
+
 
     }
 }

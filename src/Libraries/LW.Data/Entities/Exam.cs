@@ -25,6 +25,7 @@ public class Exam : EntityAuditBase<int>
     
     public virtual ICollection<ExamAnswer> ExamAnswers { get; set; }
     public virtual ICollection<ExamImage> ExamImages { get; set; }
+    public virtual ICollection<UserExam>? UserExams { get; set; }
 
     
 }
