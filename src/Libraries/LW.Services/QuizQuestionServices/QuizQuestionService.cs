@@ -235,7 +235,7 @@ public class QuizQuestionService : IQuizQuestionService
         }
 
     }
-    // tạo worksheet và merge cell 
+    // create worksheet and merge cell 
     public ExcelWorksheet CreateWorkSheet(ExcelPackage package)
     {
         // Add a worksheet named "Data Validation"
@@ -249,7 +249,7 @@ public class QuizQuestionService : IQuizQuestionService
         worksheet.Row(1).Style.Font.Size = 25;
         return worksheet;
     }
-    // style cho các column 
+    // style for column 
     public void StyleColumn(string[] columnHeaders, ExcelWorksheet worksheet, int dataStartRow)
     {
         int[] columnWidths = { 7, 20, 30, 30, 30, 30, 30, 30, 30 };
@@ -264,7 +264,7 @@ public class QuizQuestionService : IQuizQuestionService
             worksheet.Row(dataStartRow).Style.Font.Bold = true;
         }
     }
-    // tạo combobox 
+    // create combobox 
     private void AddDataValidation(ExcelWorksheet worksheet, string[] columnHeaders, int startRow, int endRow, IEnumerable<ETypeQuestion> comboBoxValues, IEnumerable<EQuestionLevel> levels)
     {
         int departmentColumnIndex = Array.IndexOf(columnHeaders, "Loại câu hỏi");
@@ -286,7 +286,7 @@ public class QuizQuestionService : IQuizQuestionService
             validationLevels.Formula.Values.Add(value.GetDisplayNameEnum());
         }
     }
-    // Lưu package by stream 
+    // save package by stream 
     private byte[] SavePackageToStream(ExcelPackage package)
     {
         using (var stream = new MemoryStream())
@@ -333,136 +333,237 @@ public class QuizQuestionService : IQuizQuestionService
 
         return find;
     }
-
-    // Helper method to get integer value from enum display name
-    private static int GetEnumIntValueFromDisplayName<TEnum>(string displayName) where TEnum : Enum
-    {
-        // Get all enum values
-        foreach (TEnum enumValue in Enum.GetValues(typeof(TEnum)))
-        {
-            // Retrieve the display attribute
-            DisplayAttribute displayAttribute = enumValue.GetType()
-                                                        .GetMember(enumValue.ToString())
-                                                        .FirstOrDefault()
-                                                        ?.GetCustomAttribute<DisplayAttribute>();
-
-            // Check if display name matches
-            if (displayAttribute != null && displayAttribute.Name == displayName)
-            {
-                // Return the integer value of the enum
-                return Convert.ToInt32(enumValue);
-            }
-        }
-
-        return 0; // Return 0 if not found
-    }
-    // Hàm hỗ trợ thêm lỗi import vào danh sách
+    // support error in list
     private void AddImportError(QuizQuestionImportDto dto, string error)
     {
         dto.Errors.Add(error);
         dto.IsImported = false;
     }
+    //public async Task<QuizQuestionImportParentDto> ImportExcel(IFormFile fileImport, int quizId)
+    //{
+    //    var isExcel = CheckFileImport(fileImport);
+    //    var quizQuestionImportParentDtos = new QuizQuestionImportParentDto();
+    //    if (isExcel.IsSucceeded)
+    //    {
+    //        int countSuccess = 0, countFail = 0;
+    //        var quizQuestionImportDtos = new List<QuizQuestionImportDto>();
+    //        var quizQuestionImportSuccess = new List<QuizQuestion>();
+    //        using (var stream = new MemoryStream())
+    //        {
+    //            // copy vào tệp stream 
+    //            fileImport.CopyTo(stream);
+    //            // thực hiện đọc dữ liệu trong file
+    //            using (var package = new ExcelPackage(stream))
+    //            {
+    //                // Đọc worksheet đầu 
+    //                ExcelWorksheet workSheet = package.Workbook.Worksheets[0];
+    //                if (workSheet != null)
+    //                {
+    //                    var rowCount = workSheet.Dimension.Rows;
+    //                    for (int row = 4; row <= rowCount; row++)
+    //                    {
+    //                        var quizQuestionImportDto = new QuizQuestionImportDto();
+    //                        var typeQuestionName = workSheet?.Cells[row, 2]?.Value?.ToString()?.Trim();
+    //                        var answer1 = workSheet?.Cells[row, 4]?.Value?.ToString()?.Trim();
+    //                        var answer2 = workSheet?.Cells[row, 5]?.Value?.ToString()?.Trim();
+    //                        var answer3 = workSheet?.Cells[row, 6]?.Value?.ToString()?.Trim();
+    //                        var answer4 = workSheet?.Cells[row, 7]?.Value?.ToString()?.Trim();
+    //                        var answerCorrect = workSheet?.Cells[row, 8]?.Value?.ToString()?.Trim();
+    //                        var level = workSheet?.Cells[row, 9]?.Value?.ToString()?.Trim(); 
+    //                        int result = EnumExtensions.GetEnumIntValueFromDisplayName<ETypeQuestion>(typeQuestionName);
+    //                        int resultLevel = EnumExtensions.GetEnumIntValueFromDisplayName<EQuestionLevel>(level);
+    //                        var resultTypeQuestion = result != 0 ? result : 0;
+    //                        var resultLevelQuestion = resultLevel != 0 ? resultLevel : 0;
+    //                        IEnumerable<QuizAnswerDto> QuizAnswerExcel = new[]
+    //                            {
+    //                              new QuizAnswerDto(answerCorrect.Equals("1"), answer1),  // Correct answer for question 1
+    //                              new QuizAnswerDto(answerCorrect.Equals("2"), answer2), // Incorrect answer for question 1
+    //                              new QuizAnswerDto(answerCorrect.Equals("3"), answer3), // Incorrect answer for question 1
+    //                              new QuizAnswerDto(answerCorrect.Equals("4"), answer4), // Incorrect answer for question 1
+    //                            };
+    //                        quizQuestionImportDto = new QuizQuestionImportDto
+    //                        {
+    //                            QuizId = quizId,
+    //                            Content = workSheet?.Cells[row, 3]?.Value?.ToString()?.Trim(),
+    //                            QuestionLevel = resultLevel.ToString(),
+    //                            QuizAnswers = QuizAnswerExcel,
+    //                            Type = result.ToString(),
+    //                            IsActive = true,
+    //                        };
+    //                        bool check = true;
+    //                        // không tìm thấy 
+    //                        if (resultTypeQuestion == 0)
+    //                        {
+    //                            AddImportError(quizQuestionImportDto, "Không tìm thấy loại câu hỏi ");
+    //                            check = false;
+    //                        }if (resultLevelQuestion == 0)
+    //                        {
+    //                            AddImportError(quizQuestionImportDto, "Không tìm thấy cấp độ câu hỏi ");
+    //                            check = false;
+    //                        }
+
+
+    //                        if (check == true)
+    //                        {
+    //                            var quizQuestion = _mapper.Map<QuizQuestion>(quizQuestionImportDto);
+    //                            countSuccess++;
+    //                            quizQuestionImportDto.IsImported = true;
+    //                            quizQuestionImportSuccess.Add(quizQuestion);
+
+    //                        }
+    //                        if (resultTypeQuestion == 0 || resultLevelQuestion == 0)
+    //                        {
+    //                            countFail++;
+    //                        }
+
+    //                        quizQuestionImportDtos.Add(quizQuestionImportDto);
+
+    //                    }
+    //                }
+    //                quizQuestionImportParentDtos.CountSuccess = countSuccess;
+    //                quizQuestionImportParentDtos.CountFail = countFail;
+    //                quizQuestionImportParentDtos.QuizQuestionImportDtos = quizQuestionImportDtos;
+    //                var cacheKey = $"excel-import-data-{Guid.NewGuid()}"; // Use a unique key
+    //                quizQuestionImportParentDtos.IdImport = cacheKey;
+    //                DateTimeOffset expiryTime = DateTimeOffset.Now.AddDays(1);
+    //                // Define cache entry options with absolute and sliding expiration
+    //                var options = new DistributedCacheEntryOptions()
+    //                    .SetAbsoluteExpiration(DateTime.Now.AddDays(1))  // Set absolute expiration to one day
+    //                    .SetSlidingExpiration(TimeSpan.FromMinutes(5));  // Set sliding expiration to 5 minutes
+    //                await _redisCacheService.SetStringKey(cacheKey, JsonConvert.SerializeObject(quizQuestionImportSuccess), options);
+
+    //            }
+    //        }
+
+    //        return quizQuestionImportParentDtos;
+    //    }
+    //    return quizQuestionImportParentDtos;
+    //}
+
     public async Task<QuizQuestionImportParentDto> ImportExcel(IFormFile fileImport, int quizId)
     {
+        var quizQuestionImportParentDto = new QuizQuestionImportParentDto();
         var isExcel = CheckFileImport(fileImport);
-        var quizQuestionImportParentDtos = new QuizQuestionImportParentDto();
-        if (isExcel.IsSucceeded)
+
+        if (!isExcel.IsSucceeded)
         {
-            int countSuccess = 0, countFail = 0;
-            var quizQuestionImportDtos = new List<QuizQuestionImportDto>();
-            var quizQuestionImportSuccess = new List<QuizQuestion>();
-            using (var stream = new MemoryStream())
+            return quizQuestionImportParentDto;
+        }
+
+        var quizQuestionImportDtos = new List<QuizQuestionImportDto>();
+        var quizQuestionImportSuccess = new List<QuizQuestion>();
+
+        using (var stream = new MemoryStream())
+        {
+            await fileImport.CopyToAsync(stream);
+
+            using (var package = new ExcelPackage(stream))
             {
-                // copy vào tệp stream 
-                fileImport.CopyTo(stream);
-                // thực hiện đọc dữ liệu trong file
-                using (var package = new ExcelPackage(stream))
+                var workSheet = package.Workbook.Worksheets.FirstOrDefault();
+
+                if (workSheet != null)
                 {
-                    // Đọc worksheet đầu 
-                    ExcelWorksheet workSheet = package.Workbook.Worksheets[0];
-                    if (workSheet != null)
-                    {
-                        var rowCount = workSheet.Dimension.Rows;
-                        for (int row = 4; row <= rowCount; row++)
-                        {
-                            var quizQuestionImportDto = new QuizQuestionImportDto();
-                            var typeQuestionName = workSheet?.Cells[row, 2]?.Value?.ToString()?.Trim();
-                            var answer1 = workSheet?.Cells[row, 4]?.Value?.ToString()?.Trim();
-                            var answer2 = workSheet?.Cells[row, 5]?.Value?.ToString()?.Trim();
-                            var answer3 = workSheet?.Cells[row, 6]?.Value?.ToString()?.Trim();
-                            var answer4 = workSheet?.Cells[row, 7]?.Value?.ToString()?.Trim();
-                            var answerCorrect = workSheet?.Cells[row, 8]?.Value?.ToString()?.Trim();
-                            var level = workSheet?.Cells[row, 9]?.Value?.ToString()?.Trim(); 
-                            int result = GetEnumIntValueFromDisplayName<ETypeQuestion>(typeQuestionName);
-                            int resultLevel = GetEnumIntValueFromDisplayName<EQuestionLevel>(level);
-                            var resultTypeQuestion = result != 0 ? result : 0;
-                            var resultLevelQuestion = resultLevel != 0 ? resultLevel : 0;
-                            IEnumerable<QuizAnswerDto> QuizAnswerExcel = new[]
-                                {
-                                  new QuizAnswerDto(answerCorrect.Equals("1"), answer1),  // Correct answer for question 1
-                                  new QuizAnswerDto(answerCorrect.Equals("2"), answer2), // Incorrect answer for question 1
-                                  new QuizAnswerDto(answerCorrect.Equals("3"), answer3), // Incorrect answer for question 1
-                                  new QuizAnswerDto(answerCorrect.Equals("4"), answer4), // Incorrect answer for question 1
-                                };
-                            quizQuestionImportDto = new QuizQuestionImportDto
-                            {
-                                QuizId = quizId,
-                                Content = workSheet?.Cells[row, 3]?.Value?.ToString()?.Trim(),
-                                QuestionLevel = resultLevel.ToString(),
-                                QuizAnswers = QuizAnswerExcel,
-                                Type = result.ToString(),
-                                IsActive = true,
-                            };
-                            bool check = true;
-                            // không tìm thấy 
-                            if (resultTypeQuestion == 0)
-                            {
-                                AddImportError(quizQuestionImportDto, "Không tìm thấy loại câu hỏi ");
-                                check = false;
-                            }if (resultLevelQuestion == 0)
-                            {
-                                AddImportError(quizQuestionImportDto, "Không tìm thấy cấp độ câu hỏi ");
-                                check = false;
-                            }
-                            
+                    ProcessWorksheet(workSheet, quizId, quizQuestionImportDtos, quizQuestionImportSuccess, out int countSuccess, out int countFail);
 
-                            if (check == true)
-                            {
-                                var quizQuestion = _mapper.Map<QuizQuestion>(quizQuestionImportDto);
-                                countSuccess++;
-                                quizQuestionImportDto.IsImported = true;
-                                quizQuestionImportSuccess.Add(quizQuestion);
-                               
-                            }
-                            if (resultTypeQuestion == 0 || resultLevelQuestion == 0)
-                            {
-                                countFail++;
-                            }
-
-                            quizQuestionImportDtos.Add(quizQuestionImportDto);
-
-                        }
-                    }
-                    quizQuestionImportParentDtos.CountSuccess = countSuccess;
-                    quizQuestionImportParentDtos.CountFail = countFail;
-                    quizQuestionImportParentDtos.QuizQuestionImportDtos = quizQuestionImportDtos;
-                    var cacheKey = $"excel-import-data-{Guid.NewGuid()}"; // Use a unique key
-                    quizQuestionImportParentDtos.IdImport = cacheKey;
-                    DateTimeOffset expiryTime = DateTimeOffset.Now.AddDays(1);
-                    // Define cache entry options with absolute and sliding expiration
-                    var options = new DistributedCacheEntryOptions()
-                        .SetAbsoluteExpiration(DateTime.Now.AddDays(1))  // Set absolute expiration to one day
-                        .SetSlidingExpiration(TimeSpan.FromMinutes(5));  // Set sliding expiration to 5 minutes
-                    await _redisCacheService.SetStringKey(cacheKey, JsonConvert.SerializeObject(quizQuestionImportSuccess), options);
-
+                    quizQuestionImportParentDto.CountSuccess = countSuccess;
+                    quizQuestionImportParentDto.CountFail = countFail;
+                    quizQuestionImportParentDto.QuizQuestionImportDtos = quizQuestionImportDtos;
+                    quizQuestionImportParentDto.IdImport = await CacheQuizQuestions(quizQuestionImportSuccess);
                 }
             }
-
-            return quizQuestionImportParentDtos;
         }
-        return quizQuestionImportParentDtos;
+
+        return quizQuestionImportParentDto;
     }
-    
+
+    private void ProcessWorksheet(ExcelWorksheet workSheet, int quizId, List<QuizQuestionImportDto> quizQuestionImportDtos, List<QuizQuestion> quizQuestionImportSuccess, out int countSuccess, out int countFail)
+    {
+        countSuccess = 0;
+        countFail = 0;
+
+        for (int row = 4; row <= workSheet.Dimension.Rows; row++)
+        {
+            var quizQuestionImportDto = CreateQuizQuestionImportDto(workSheet, row, quizId);
+
+            if (ValidateQuizQuestionImportDto(quizQuestionImportDto))
+            {
+                var quizQuestion = _mapper.Map<QuizQuestion>(quizQuestionImportDto);
+                quizQuestionImportDto.IsImported = true;
+                quizQuestionImportSuccess.Add(quizQuestion);
+                countSuccess++;
+            }
+            else
+            {
+                countFail++;
+            }
+
+            quizQuestionImportDtos.Add(quizQuestionImportDto);
+        }
+    }
+
+    private QuizQuestionImportDto CreateQuizQuestionImportDto(ExcelWorksheet workSheet, int row, int quizId)
+    {
+        var typeQuestionName = workSheet.Cells[row, 2].Value?.ToString()?.Trim();
+        var answer1 = workSheet.Cells[row, 4].Value?.ToString()?.Trim();
+        var answer2 = workSheet.Cells[row, 5].Value?.ToString()?.Trim();
+        var answer3 = workSheet.Cells[row, 6].Value?.ToString()?.Trim();
+        var answer4 = workSheet.Cells[row, 7].Value?.ToString()?.Trim();
+        var answerCorrect = workSheet.Cells[row, 8].Value?.ToString()?.Trim();
+        var level = workSheet.Cells[row, 9].Value?.ToString()?.Trim();
+
+        int result = EnumExtensions.GetEnumIntValueFromDisplayName<ETypeQuestion>(typeQuestionName);
+        int resultLevel = EnumExtensions.GetEnumIntValueFromDisplayName<EQuestionLevel>(level);
+
+        IEnumerable<QuizAnswerDto> quizAnswers = new[]
+        {
+        new QuizAnswerDto(answerCorrect.Equals("1"), answer1),
+        new QuizAnswerDto(answerCorrect.Equals("2"), answer2),
+        new QuizAnswerDto(answerCorrect.Equals("3"), answer3),
+        new QuizAnswerDto(answerCorrect.Equals("4"), answer4),
+    };
+
+        return new QuizQuestionImportDto
+        {
+            QuizId = quizId,
+            Content = workSheet.Cells[row, 3].Value?.ToString()?.Trim(),
+            QuestionLevel = resultLevel.ToString(),
+            QuizAnswers = quizAnswers,
+            Type = result.ToString(),
+            IsActive = true,
+        };
+    }
+
+    private bool ValidateQuizQuestionImportDto(QuizQuestionImportDto dto)
+    {
+        bool isValid = true;
+
+        if (int.Parse(dto.Type) == 0)
+        {
+            AddImportError(dto, "Không tìm thấy loại câu hỏi");
+            isValid = false;
+        }
+
+        if (int.Parse(dto.QuestionLevel) == 0)
+        {
+            AddImportError(dto, "Không tìm thấy cấp độ câu hỏi");
+            isValid = false;
+        }
+
+        return isValid;
+    }
+
+    private async Task<string> CacheQuizQuestions(List<QuizQuestion> quizQuestionImportSuccess)
+    {
+        var cacheKey = $"excel-import-data-{Guid.NewGuid()}";
+        var options = new DistributedCacheEntryOptions()
+            .SetAbsoluteExpiration(DateTime.Now.AddDays(1))
+            .SetSlidingExpiration(TimeSpan.FromMinutes(5));
+
+        await _redisCacheService.SetStringKey(cacheKey, JsonConvert.SerializeObject(quizQuestionImportSuccess), options);
+
+        return cacheKey;
+    }
+
     public async Task<ApiResult<bool>> ImportDatabase(string idImport)
     {
         if (idImport == null)
