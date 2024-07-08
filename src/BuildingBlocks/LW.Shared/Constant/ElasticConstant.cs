@@ -7,4 +7,5 @@ public class ElasticConstant
     public const string ElasticDocuments = "documents";
     public const string ElasticTopics = "topics";
     public const string ElasticLessons = "lessons";
+    public const string ElasticExams = "exams";
 }
