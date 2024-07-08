@@ -71,7 +71,19 @@ namespace LW.API.Controllers.Public
             Response.Headers.Add("X-Pagination", JsonConvert.SerializeObject(result.Data.GetMetaData()));
             return Ok(result);
         }
-
+        
+        [HttpGet("SearchQuizPagination")]
+        public async Task<ActionResult<ApiResult<IEnumerable<QuizDto>>>> SearchQuizPagination([FromQuery] SearchQuizDto searchQuizDto)
+        {
+            var result = await _quizService.SearchQuizPagination(searchQuizDto);
+            if (!result.IsSucceeded)
+            {
+                return NotFound(result);
+            }
+            Response.Headers.Add("X-Pagination", JsonConvert.SerializeObject(result.Data.GetMetaData()));
+            return Ok(result);
+        }
+        
         [HttpGet("GetQuizById/{id}")]
         public async Task<ActionResult<ApiResult<QuizDto>>> GetQuizById([Required] int id)
         {

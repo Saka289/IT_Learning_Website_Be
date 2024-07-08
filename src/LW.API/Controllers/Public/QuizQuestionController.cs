@@ -5,6 +5,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using LW.API.Application.Validators.QuizQuestionValidator;
 using LW.Services.QuizQuestionServices;
+using LW.Shared.DTOs.QuizAnswer;
 using LW.Shared.DTOs.QuizQuestion;
 using LW.Shared.SeedWork;
 using Microsoft.AspNetCore.Http;
@@ -52,6 +53,18 @@ namespace LW.API.Controllers.Public
         public async Task<ActionResult<ApiResult<PagedList<QuizQuestionDto>>>> GetAllQuizQuestionByQuizIdPagination([Required] int quizId, [FromQuery] PagingRequestParameters pagingRequestParameters)
         {
             var result = await _quizQuestionService.GetAllQuizQuestionByQuizIdPagination(quizId, pagingRequestParameters);
+            if (!result.IsSucceeded)
+            {
+                return NotFound(result);
+            }
+            Response.Headers.Add("X-Pagination", JsonConvert.SerializeObject(result.Data.GetMetaData()));
+            return Ok(result);
+        }
+        
+        [HttpGet("SearchQuizQuestionPagination")]
+        public async Task<ActionResult<ApiResult<IEnumerable<QuizQuestionDto>>>> SearchQuizQuestionPagination([FromQuery] SearchQuizQuestionDto searchQuizQuestionDto)
+        {
+            var result = await _quizQuestionService.SearchQuizQuestion(searchQuizQuestionDto);
             if (!result.IsSucceeded)
             {
                 return NotFound(result);

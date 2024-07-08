@@ -14,6 +14,8 @@ public class QuizQuestion : EntityAuditBase<int>
     [Required]
     public string Content { get; set; }
     [Required]
+    public string KeyWord { get; set; }
+    [Required]
     public bool IsActive { get; set; }
     [Required]
     public EQuestionLevel QuestionLevel { get; set; }
