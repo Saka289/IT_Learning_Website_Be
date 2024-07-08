@@ -19,7 +19,7 @@ public class LessonRepository : RepositoryBase<Lesson, int>, ILessonRepository
 
     public async Task<IEnumerable<Lesson>> GetAllLessonByTopic(int id)
     {
-        return await FindAll(true).Include(t => t.Topic).Where(x => x.TopicId == id).ToListAsync();
+        return await FindAll().Include(t => t.Topic).Where(x => x.TopicId == id).ToListAsync();
     }
 
     public Task<IQueryable<Lesson>> GetAllLessonPagination()

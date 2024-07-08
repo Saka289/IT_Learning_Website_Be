@@ -463,7 +463,7 @@ public class AppDbContextSeed
                 Description =
                     "Chủ đề này giúp học sinh hiểu cách sử dụng máy tính để giải quyết các vấn đề trong cuộc sống hàng ngày. Các em sẽ học cách áp dụng các kỹ năng tin học để tìm kiếm thông tin, xử lý dữ liệu và đưa ra quyết định. Chủ đề này khuyến khích tư duy sáng tạo và logic thông qua việc sử dụng các phần mềm và công cụ hỗ trợ học tập.",
                 Objectives =
-                    "Nhận diện và xác định vấn đề: Học sinh có khả năng nhận diện các vấn đề cần giải quyết trong học tập và cuộc sống.\nTìm kiếm và thu thập thông tin: Học sinh biết cách sử dụng máy tính để tìm kiếm và thu thập thông tin liên quan đến vấn đề cần giải quyết",
+                    "Nhận diện và xác định vấn đề: Học sinh có khả năng nhận diện các vấn đề cần giải quyết trong học tập và cuộc sống.Tìm kiếm và thu thập thông tin: Học sinh biết cách sử dụng máy tính để tìm kiếm và thu thập thông tin liên quan đến vấn đề cần giải quyết",
                 IsActive = true,
                 DocumentId = 1,
                 ParentId = null
@@ -802,529 +802,529 @@ public class AppDbContextSeed
                 DocumentId = 2,
                 ParentId = 21
             },
-            //Lop 5
-             new()
-            {
-                //31
-                Title = "Chủ đề A Máy tính và em - Những việc em có thể làm được nhờ máy tính",
-                KeyWord = "chu de a may tinh va em - nhung viec em co the lam duoc nho may tinh",
-                Description =
-                    "Chủ đề A máy tính và em trong sách giáo khoa Tin học lớp 3 của bộ sách Cánh Diều thường bao gồm các nội dung cơ bản về máy tính và cách sử dụng chúng. Dưới đây là một mô tả tổng quan về những gì có thể được bao gồm trong chủ đề này",
-                Objectives =
-                    "Hiểu biết cơ bản về máy tính, Sử dụng máy tính, Làm việc với hệ điểu hành, Sử dụng phần mềm cơ bản",
-                IsActive = true,
-                DocumentId = 3,
-                ParentId = null,
-            },
-            new()
-            {
-                //32
-                Title = "Chủ đề B Mạng máy tính và Internet - Tìm kiếm thông tin trên website",
-                KeyWord = "chu de b mang may tinh va internet - tim kiem thong tin tren website",
-                Description =
-                    "Chủ đề B mạng máy tính và internet trong sách giáo khoa Tin học lớp 3 của bộ sách Cánh Diều thường bao gồm các nội dung cơ bản về mạng máy tính và Internet. Dưới đây là một mô tả tổng quan về những gì có thể được bao gồm trong chủ đề này: Giới thiệu về mạng máy tính,Kết nối mạng máy tính,Internet là gì?",
-                Objectives =
-                    "Giúp học sinh hiểu khái niệm cơ bản về mạng máy tính và Internet, nhận biết các loại mạng và thành phần chính, cũng như cách kết nối và sử dụng mạng. Học sinh sẽ biết cách sử dụng trình duyệt web để tìm kiếm thông tin, sử dụng email, và nhận thức được tầm quan trọng của an toàn mạng, bao gồm bảo vệ thông tin cá nhân và quyền riêng tư trực tuyến",
-                IsActive = true,
-                DocumentId = 3,
-                ParentId = null,
-            },
-            new()
-            {
-                //33
-                Title = "Chủ đề C Tổ chức lưu trữ, tìm kiếm và trao đổi thông tin",
-                KeyWord = "chu de d dao duc, phap luat va van hoa trong moi truong so",
-                Description =
-                    "Chủ đề này cũng nhấn mạnh vai trò của giáo dục và hướng nghiệp trong việc sử dụng công nghệ một cách có trách nhiệm và mang tính xây dựng cho cá nhân và cộng đồng.",
-                Objectives = "Hiểu và áp dụng các giá trị đạo đức và đạo lý khi sử dụng công nghệ và Internet.",
-                IsActive = true,
-                DocumentId =3,
-                ParentId = null
-            },
-            new()
-            {
-                //34
-
-                Title = "Chủ đề D Đạo đức, Pháp luật và Văn hóa trong môi trường số - bản quyền nội dung thông tin",
-                KeyWord = "chu de d dao duc, phap luat va van hoa trong moi truong so - ban quyen noi dung thong tin",
-                Description =
-                    "Chủ đề này cũng nhấn mạnh vai trò của giáo dục và hướng nghiệp trong việc sử dụng công nghệ một cách có trách nhiệm và mang tính xây dựng cho cá nhân và cộng đồng.",
-                Objectives = "Hiểu và áp dụng các giá trị đạo đức và đạo lý khi sử dụng công nghệ và Internet.",
-                IsActive = true,
-                DocumentId = 3,
-                ParentId = null
-            },
-            new()
-            {
-                //35
-
-                Title = "Chủ đề E Ứng dụng tin học - Trình soạn thảo văn bản",
-                KeyWord = "chu de e ung dung tin hoc",
-                Description =
-                    "Chủ đề này giới thiệu cho học sinh về các ứng dụng cụ thể của tin học trong cuộc sống hàng ngày. Học sinh sẽ được hướng dẫn cách sử dụng các phần mềm và công cụ tin học để giải quyết các vấn đề thực tế và hỗ trợ trong học tập.",
-                Objectives =
-                    "Hiểu và áp dụng các ứng dụng cụ thể của tin học trong đời sống hàng ngày, như việc sử dụng phần mềm văn phòng (word, excel), các ứng dụng học tập và giải trí.",
-                IsActive = true,
-                DocumentId = 3,
-                ParentId = null
-            },
-            new()
-            {
-                //36
-
-                Title = "Chủ đề F: Giải quyết vấn đề với sự trợ giúp của máy tính - Chơi và khám phá trong môi trường lập trình trực quan",
-                KeyWord = "chu de f: giai quyet van de voi su tro giup cua may tinh - choi va kham pha trong moi truong lap trinh truc quan",
-                Description =
-                    "Chủ đề này giúp học sinh hiểu cách sử dụng máy tính để giải quyết các vấn đề trong cuộc sống hàng ngày. Các em sẽ học cách áp dụng các kỹ năng tin học để tìm kiếm thông tin, xử lý dữ liệu và đưa ra quyết định. Chủ đề này khuyến khích tư duy sáng tạo và logic thông qua việc sử dụng các phần mềm và công cụ hỗ trợ học tập.",
-                Objectives =
-                    "Nhận diện và xác định vấn đề: Học sinh có khả năng nhận diện các vấn đề cần giải quyết trong học tập và cuộc sống.\nTìm kiếm và thu thập thông tin: Học sinh biết cách sử dụng máy tính để tìm kiếm và thu thập thông tin liên quan đến vấn đề cần giải quyết",
-                IsActive = true,
-                DocumentId = 3,
-                ParentId = null
-            },
-           
-            new()
-            {
-                //37
-
-                Title = "Chủ đề C1. Tìm kiếm thông tin trong giải quyết vấn đề",
-                KeyWord = "chu de c1. tim kiem thong tin trong giai quyet van de",
-                Description =
-                    "Chủ đề này giúp học sinh làm quen với bàn phím máy tính, từ đó phát triển kỹ năng gõ phím một cách chính xác và hiệu quả. Học sinh sẽ học cách nhận biết và sử dụng các phím chức năng, phím chữ cái, phím số, và các phím đặc biệt khác. Mục tiêu là giúp học sinh trở nên thành thạo trong việc sử dụng bàn phím để soạn thảo văn bản và thực hiện các tác vụ khác trên máy tính.",
-                Objectives =
-                    "Nhận biết các phím trên bàn phím, Học cách gõ phím đúng, Thực hành văn bản, Sử dụng phím chức năng, Tăng tốc độ và hiệu quả",
-                IsActive = true,
-                DocumentId = 3,
-                ParentId = 33
-            },
-            new()
-            {
-                //38
-
-                Title = "Lựa chọn 1. Sử dụng phần mềm đồ họa tạo sản phẩm số đơn giản",
-                KeyWord = "chu de c2. cay thu muc va tim kiem tep tren may tinh",
-                Description =
-                    "Chủ đề này giúp học sinh làm quen với bàn phím máy tính, từ đó phát triển kỹ năng gõ phím một cách chính xác và hiệu quả. Học sinh sẽ học cách nhận biết và sử dụng các phím chức năng, phím chữ cái, phím số, và các phím đặc biệt khác. Mục tiêu là giúp học sinh trở nên thành thạo trong việc sử dụng bàn phím để soạn thảo văn bản và thực hiện các tác vụ khác trên máy tính.",
-                Objectives =
-                    "Nhận biết các phím trên bàn phím, Học cách gõ phím đúng, Thực hành văn bản, Sử dụng phím chức năng, Tăng tốc độ và hiệu quả",
-                IsActive = true,
-                DocumentId = 3,
-                ParentId = 35
-            },
-            new()
-            {
-                //39
-
-                Title = "Lựa chon 2. Sử dụng công cụ đa phương tiện hỗ trợ tạo sản phẩm đơn giản",
-                KeyWord = "chu de e1. lam quen voi bai trinh chieu don gian",
-                Description =
-                    "Chủ đề này giúp học sinh làm quen với bàn phím máy tính, từ đó phát triển kỹ năng gõ phím một cách chính xác và hiệu quả. Học sinh sẽ học cách nhận biết và sử dụng các phím chức năng, phím chữ cái, phím số, và các phím đặc biệt khác. Mục tiêu là giúp học sinh trở nên thành thạo trong việc sử dụng bàn phím để soạn thảo văn bản và thực hiện các tác vụ khác trên máy tính.",
-                Objectives =
-                    "Nhận biết các phím trên bàn phím, Học cách gõ phím đúng, Thực hành văn bản, Sử dụng phím chức năng, Tăng tốc độ và hiệu quả",
-                IsActive = true,
-                DocumentId = 3,
-                ParentId = 35
-            },
-            
-            // Lớp 6
-            new()
-            {
-                //40
-                Title = "Chủ đề A. Máy tính và cộng đồng",
-                KeyWord = "chu de a. may tinh va cong dong",
-                Description =
-                    "Chủ đề này giúp học sinh làm quen với bàn phím máy tính, từ đó phát triển kỹ năng gõ phím một cách chính xác và hiệu quả. Học sinh sẽ học cách nhận biết và sử dụng các phím chức năng, phím chữ cái, phím số, và các phím đặc biệt khác. Mục tiêu là giúp học sinh trở nên thành thạo trong việc sử dụng bàn phím để soạn thảo văn bản và thực hiện các tác vụ khác trên máy tính.",
-                Objectives =
-                    "Nhận biết các phím trên bàn phím, Học cách gõ phím đúng, Thực hành văn bản, Sử dụng phím chức năng, Tăng tốc độ và hiệu quả",
-                IsActive = true,
-                DocumentId = 4,
-                ParentId = null
-            },
-            new()
-            {
-                //41
-                Title = "Chủ đề B. Mạng máy tính và internet",
-                KeyWord = "chu de b. Mạng máy tính và internet",
-                Description =
-                    "Chủ đề này giúp học sinh làm quen với bàn phím máy tính, từ đó phát triển kỹ năng gõ phím một cách chính xác và hiệu quả. Học sinh sẽ học cách nhận biết và sử dụng các phím chức năng, phím chữ cái, phím số, và các phím đặc biệt khác. Mục tiêu là giúp học sinh trở nên thành thạo trong việc sử dụng bàn phím để soạn thảo văn bản và thực hiện các tác vụ khác trên máy tính.",
-                Objectives =
-                    "Nhận biết các phím trên bàn phím, Học cách gõ phím đúng, Thực hành văn bản, Sử dụng phím chức năng, Tăng tốc độ và hiệu quả",
-                IsActive = true,
-                DocumentId = 4,
-                ParentId = null
-            },
-            new()
-            {
-                //42
-                Title = "Chủ đề C. Tổ chức lưu trữ, tìm kiếm và trao đổi thông tin",
-                KeyWord = "chu de c. to chuc luu tru, tim kiem va trao doi thong tin",
-                Description =
-                    "Chủ đề này giúp học sinh làm quen với bàn phím máy tính, từ đó phát triển kỹ năng gõ phím một cách chính xác và hiệu quả. Học sinh sẽ học cách nhận biết và sử dụng các phím chức năng, phím chữ cái, phím số, và các phím đặc biệt khác. Mục tiêu là giúp học sinh trở nên thành thạo trong việc sử dụng bàn phím để soạn thảo văn bản và thực hiện các tác vụ khác trên máy tính.",
-                Objectives =
-                    "Nhận biết các phím trên bàn phím, Học cách gõ phím đúng, Thực hành văn bản, Sử dụng phím chức năng, Tăng tốc độ và hiệu quả",
-                IsActive = true,
-                DocumentId = 4,
-                ParentId = null
-            },
-            new()
-            {
-                //43
-                Title = "Chủ đề D. Đạo đức, pháp luật và văn hóa trong môi trường số",
-                KeyWord = "chu de d. dao duc, phap luat va van hoa trong moi truong so",
-                Description =
-                    "Chủ đề này giúp học sinh làm quen với bàn phím máy tính, từ đó phát triển kỹ năng gõ phím một cách chính xác và hiệu quả. Học sinh sẽ học cách nhận biết và sử dụng các phím chức năng, phím chữ cái, phím số, và các phím đặc biệt khác. Mục tiêu là giúp học sinh trở nên thành thạo trong việc sử dụng bàn phím để soạn thảo văn bản và thực hiện các tác vụ khác trên máy tính.",
-                Objectives =
-                    "Nhận biết các phím trên bàn phím, Học cách gõ phím đúng, Thực hành văn bản, Sử dụng phím chức năng, Tăng tốc độ và hiệu quả",
-                IsActive = true,
-                DocumentId = 4,
-                ParentId = null
-            }, 
-            new()
-            {
-                //44
-                Title = "Chủ đề E. Ứng dụng tin học",
-                KeyWord = "chu de e. ung dung tin hoc",
-                Description =
-                    "Chủ đề này giúp học sinh làm quen với bàn phím máy tính, từ đó phát triển kỹ năng gõ phím một cách chính xác và hiệu quả. Học sinh sẽ học cách nhận biết và sử dụng các phím chức năng, phím chữ cái, phím số, và các phím đặc biệt khác. Mục tiêu là giúp học sinh trở nên thành thạo trong việc sử dụng bàn phím để soạn thảo văn bản và thực hiện các tác vụ khác trên máy tính.",
-                Objectives =
-                    "Nhận biết các phím trên bàn phím, Học cách gõ phím đúng, Thực hành văn bản, Sử dụng phím chức năng, Tăng tốc độ và hiệu quả",
-                IsActive = true,
-                DocumentId = 4,
-                ParentId = null
-            }, 
-            new()
-            {
-                //45
-                Title = "Chủ đề F. Giải quyết vấn đề với sự trợ giúp của máy tính",
-                KeyWord = "chu de f. giai quyet van de voi su tro giup cua may tinh",
-                Description =
-                    "Chủ đề này giúp học sinh làm quen với bàn phím máy tính, từ đó phát triển kỹ năng gõ phím một cách chính xác và hiệu quả. Học sinh sẽ học cách nhận biết và sử dụng các phím chức năng, phím chữ cái, phím số, và các phím đặc biệt khác. Mục tiêu là giúp học sinh trở nên thành thạo trong việc sử dụng bàn phím để soạn thảo văn bản và thực hiện các tác vụ khác trên máy tính.",
-                Objectives =
-                    "Nhận biết các phím trên bàn phím, Học cách gõ phím đúng, Thực hành văn bản, Sử dụng phím chức năng, Tăng tốc độ và hiệu quả",
-                IsActive = true,
-                DocumentId = 4,
-                ParentId = null
-            }, 
-            
-            
-              // Lớp 7 - Canh dieu
-            new()
-            {
-                //46
-                Title = "Chủ đề A. Máy tính và cộng đồng - sơ lược về các thành phần của máy tính. Khái niệm hệ điều hành và phần mềm ứng dụng",
-                KeyWord = "chu de a. may tinh va cong dong - so luoc ve cac thanh phan cua may tinh. khai niem he dieu hanh va phan mem ung dung",
-                Description =
-                    "Chủ đề này giúp học sinh làm quen với bàn phím máy tính, từ đó phát triển kỹ năng gõ phím một cách chính xác và hiệu quả. Học sinh sẽ học cách nhận biết và sử dụng các phím chức năng, phím chữ cái, phím số, và các phím đặc biệt khác. Mục tiêu là giúp học sinh trở nên thành thạo trong việc sử dụng bàn phím để soạn thảo văn bản và thực hiện các tác vụ khác trên máy tính.",
-                Objectives =
-                    "Nhận biết các phím trên bàn phím, Học cách gõ phím đúng, Thực hành văn bản, Sử dụng phím chức năng, Tăng tốc độ và hiệu quả",
-                IsActive = true,
-                DocumentId = 5,
-                ParentId = null
-            },
-           
-            new()
-            {
-                //47
-                Title = "Chủ đề C. Tổ chức lưu trữ, tìm kiếm và trao đổi thông tin - mạng xã hội và một số kênh trao đổi thông tin thông dụng trên internet",
-                KeyWord = "chu de c. to chuc luu tru, tim kiem va trao doi thong tin - mang xa hoi va mot so kenh trao doi thong tin thong dung tren internet",
-                Description =
-                    "Chủ đề này giúp học sinh làm quen với bàn phím máy tính, từ đó phát triển kỹ năng gõ phím một cách chính xác và hiệu quả. Học sinh sẽ học cách nhận biết và sử dụng các phím chức năng, phím chữ cái, phím số, và các phím đặc biệt khác. Mục tiêu là giúp học sinh trở nên thành thạo trong việc sử dụng bàn phím để soạn thảo văn bản và thực hiện các tác vụ khác trên máy tính.",
-                Objectives =
-                    "Nhận biết các phím trên bàn phím, Học cách gõ phím đúng, Thực hành văn bản, Sử dụng phím chức năng, Tăng tốc độ và hiệu quả",
-                IsActive = true,
-                DocumentId = 5,
-                ParentId = null
-            },
-            new()
-            {
-                //48
-                Title = "Chủ đề D. Đạo đức, pháp luật và văn hóa trong môi trường số - văn hóa ứng xử qua phương tiện truyền thông số",
-                KeyWord = "chu de d. dao duc, phap luat va van hoa trong moi truong so - van hoa ung xu qua phuong tien truyen thong so",
-                Description =
-                    "Chủ đề này giúp học sinh làm quen với bàn phím máy tính, từ đó phát triển kỹ năng gõ phím một cách chính xác và hiệu quả. Học sinh sẽ học cách nhận biết và sử dụng các phím chức năng, phím chữ cái, phím số, và các phím đặc biệt khác. Mục tiêu là giúp học sinh trở nên thành thạo trong việc sử dụng bàn phím để soạn thảo văn bản và thực hiện các tác vụ khác trên máy tính.",
-                Objectives =
-                    "Nhận biết các phím trên bàn phím, Học cách gõ phím đúng, Thực hành văn bản, Sử dụng phím chức năng, Tăng tốc độ và hiệu quả",
-                IsActive = true,
-                DocumentId = 5,
-                ParentId = null
-            }, 
-            new()
-            {
-                //49
-                Title = "Chủ đề E. Ứng dụng tin học - bảng tính điện tử cơ bản, phần mềm trình chiếu cơ bản",
-                KeyWord = "chu de e. ung dung tin hoc - bảng tính điện tử cơ bản, phần mềm trình chiếu cơ bản",
-                Description =
-                    "Chủ đề này giúp học sinh làm quen với bàn phím máy tính, từ đó phát triển kỹ năng gõ phím một cách chính xác và hiệu quả. Học sinh sẽ học cách nhận biết và sử dụng các phím chức năng, phím chữ cái, phím số, và các phím đặc biệt khác. Mục tiêu là giúp học sinh trở nên thành thạo trong việc sử dụng bàn phím để soạn thảo văn bản và thực hiện các tác vụ khác trên máy tính.",
-                Objectives =
-                    "Nhận biết các phím trên bàn phím, Học cách gõ phím đúng, Thực hành văn bản, Sử dụng phím chức năng, Tăng tốc độ và hiệu quả",
-                IsActive = true,
-                DocumentId = 5,
-                ParentId = null
-            }, 
-            new()
-            {
-                //50
-                Title = "Chủ đề F. Giải quyết vấn đề với sự trợ giúp của máy tính - Một số thuật toán sắp xếp và tìm kiếm cơ bản",
-                KeyWord = "chu de f. giai quyet van de voi su tro giup cua may tinh - mot so thuat toan sap xep va tim kiem co ban",
-                Description =
-                    "Chủ đề này giúp học sinh làm quen với bàn phím máy tính, từ đó phát triển kỹ năng gõ phím một cách chính xác và hiệu quả. Học sinh sẽ học cách nhận biết và sử dụng các phím chức năng, phím chữ cái, phím số, và các phím đặc biệt khác. Mục tiêu là giúp học sinh trở nên thành thạo trong việc sử dụng bàn phím để soạn thảo văn bản và thực hiện các tác vụ khác trên máy tính.",
-                Objectives =
-                    "Nhận biết các phím trên bàn phím, Học cách gõ phím đúng, Thực hành văn bản, Sử dụng phím chức năng, Tăng tốc độ và hiệu quả",
-                IsActive = true,
-                DocumentId = 5,
-                ParentId = null
-            }, 
-                 // Lớp 8 - Canh dieu
-            new()
-            {
-                //51
-                Title = "Chủ đề A. Máy tính và cộng đồng - sơ lược về lịch sử phát triển máy tính",
-                KeyWord = "chu de a. may tinh va cong dong - so luoc ve lich su phat trien may tinh",
-                Description =
-                    "Chủ đề này giúp học sinh làm quen với bàn phím máy tính, từ đó phát triển kỹ năng gõ phím một cách chính xác và hiệu quả. Học sinh sẽ học cách nhận biết và sử dụng các phím chức năng, phím chữ cái, phím số, và các phím đặc biệt khác. Mục tiêu là giúp học sinh trở nên thành thạo trong việc sử dụng bàn phím để soạn thảo văn bản và thực hiện các tác vụ khác trên máy tính.",
-                Objectives =
-                    "Nhận biết các phím trên bàn phím, Học cách gõ phím đúng, Thực hành văn bản, Sử dụng phím chức năng, Tăng tốc độ và hiệu quả",
-                IsActive = true,
-                DocumentId = 6,
-                ParentId = null
-            },
-           
-            new()
-            {
-                //52
-                Title = "Chủ đề C. Tổ chức lưu trữ, tìm kiếm và trao đổi thông tin - đặc điểm của thông tin trong môi trường số thông tin với giải quyết vấn đề",
-                KeyWord = "chu de c. to chuc luu tru, tim kiem va trao doi thong tin - dac diem cua thong tin trong moi truong so thong tin voi giai quyet van de",
-                Description =
-                    "Chủ đề này giúp học sinh làm quen với bàn phím máy tính, từ đó phát triển kỹ năng gõ phím một cách chính xác và hiệu quả. Học sinh sẽ học cách nhận biết và sử dụng các phím chức năng, phím chữ cái, phím số, và các phím đặc biệt khác. Mục tiêu là giúp học sinh trở nên thành thạo trong việc sử dụng bàn phím để soạn thảo văn bản và thực hiện các tác vụ khác trên máy tính.",
-                Objectives =
-                    "Nhận biết các phím trên bàn phím, Học cách gõ phím đúng, Thực hành văn bản, Sử dụng phím chức năng, Tăng tốc độ và hiệu quả",
-                IsActive = true,
-                DocumentId = 6,
-                ParentId = null
-            },
-            new()
-            {
-                //53
-                Title = "Chủ đề D. Đạo đức, pháp luật và văn hóa trong môi trường số - đạo đức và văn hóa trong sử dụng công nghệ kĩ thuật số",
-                KeyWord = "chu de d. dao duc, phap luat va van hoa trong moi truong so - dao duc va van hoa trong su dung cong nghe ki thuat so",
-                Description =
-                    "Chủ đề này giúp học sinh làm quen với bàn phím máy tính, từ đó phát triển kỹ năng gõ phím một cách chính xác và hiệu quả. Học sinh sẽ học cách nhận biết và sử dụng các phím chức năng, phím chữ cái, phím số, và các phím đặc biệt khác. Mục tiêu là giúp học sinh trở nên thành thạo trong việc sử dụng bàn phím để soạn thảo văn bản và thực hiện các tác vụ khác trên máy tính.",
-                Objectives =
-                    "Nhận biết các phím trên bàn phím, Học cách gõ phím đúng, Thực hành văn bản, Sử dụng phím chức năng, Tăng tốc độ và hiệu quả",
-                IsActive = true,
-                DocumentId = 6,
-                ParentId = null
-            }, 
-            new()
-            {
-                //54
-                Title = "Chủ đề E. Ứng dụng tin học",
-                KeyWord = "chu de e. ung dung tin hoc",
-                Description =
-                    "Chủ đề này giúp học sinh làm quen với bàn phím máy tính, từ đó phát triển kỹ năng gõ phím một cách chính xác và hiệu quả. Học sinh sẽ học cách nhận biết và sử dụng các phím chức năng, phím chữ cái, phím số, và các phím đặc biệt khác. Mục tiêu là giúp học sinh trở nên thành thạo trong việc sử dụng bàn phím để soạn thảo văn bản và thực hiện các tác vụ khác trên máy tính.",
-                Objectives =
-                    "Nhận biết các phím trên bàn phím, Học cách gõ phím đúng, Thực hành văn bản, Sử dụng phím chức năng, Tăng tốc độ và hiệu quả",
-                IsActive = true,
-                DocumentId = 6,
-                ParentId = null
-            }, 
-            new()
-            {
-                //55
-                Title = "Chủ đề E1. Xử lí và trực quan hóa dữ liệu bằng bảng điện tử",
-                KeyWord = "chu de e1. xu li va truc quan hoa du lieu bang bang dien tu",
-                Description =
-                    "Chủ đề này giúp học sinh làm quen với bàn phím máy tính, từ đó phát triển kỹ năng gõ phím một cách chính xác và hiệu quả. Học sinh sẽ học cách nhận biết và sử dụng các phím chức năng, phím chữ cái, phím số, và các phím đặc biệt khác. Mục tiêu là giúp học sinh trở nên thành thạo trong việc sử dụng bàn phím để soạn thảo văn bản và thực hiện các tác vụ khác trên máy tính.",
-                Objectives =
-                    "Nhận biết các phím trên bàn phím, Học cách gõ phím đúng, Thực hành văn bản, Sử dụng phím chức năng, Tăng tốc độ và hiệu quả",
-                IsActive = true,
-                DocumentId = 6,
-                ParentId = 54
-            }, 
-            new()
-            {
-                //56
-                Title = "Chủ đề E2. Soạn thảo văn bản và phần mềm trình chiếu nâng cao",
-                KeyWord = "chu de e. soan thao van ban va phan mem trinh chieu nang cao",
-                Description =
-                    "Chủ đề này giúp học sinh làm quen với bàn phím máy tính, từ đó phát triển kỹ năng gõ phím một cách chính xác và hiệu quả. Học sinh sẽ học cách nhận biết và sử dụng các phím chức năng, phím chữ cái, phím số, và các phím đặc biệt khác. Mục tiêu là giúp học sinh trở nên thành thạo trong việc sử dụng bàn phím để soạn thảo văn bản và thực hiện các tác vụ khác trên máy tính.",
-                Objectives =
-                    "Nhận biết các phím trên bàn phím, Học cách gõ phím đúng, Thực hành văn bản, Sử dụng phím chức năng, Tăng tốc độ và hiệu quả",
-                IsActive = true,
-                DocumentId = 6,
-                ParentId = 54
-            }, 
-            new()
-            {
-                //57
-                Title = "Chủ đề E3. Làm quen với phần mềm chỉnh sửa ảnh",
-                KeyWord = "chu de e. lam quen voi phan mem chinh sua anh",
-                Description =
-                    "Chủ đề này giúp học sinh làm quen với bàn phím máy tính, từ đó phát triển kỹ năng gõ phím một cách chính xác và hiệu quả. Học sinh sẽ học cách nhận biết và sử dụng các phím chức năng, phím chữ cái, phím số, và các phím đặc biệt khác. Mục tiêu là giúp học sinh trở nên thành thạo trong việc sử dụng bàn phím để soạn thảo văn bản và thực hiện các tác vụ khác trên máy tính.",
-                Objectives =
-                    "Nhận biết các phím trên bàn phím, Học cách gõ phím đúng, Thực hành văn bản, Sử dụng phím chức năng, Tăng tốc độ và hiệu quả",
-                IsActive = true,
-                DocumentId = 6,
-                ParentId = 54
-            }, 
-            new()
-            {
-                //58
-                Title = "Chủ đề F. Giải quyết vấn đề với sự trợ giúp của máy tính - Lập trình trực quan",
-                KeyWord = "chu de f. giai quyet van de voi su tro giup cua may tinh - lap trinh truc quan",
-                Description =
-                    "Chủ đề này giúp học sinh làm quen với bàn phím máy tính, từ đó phát triển kỹ năng gõ phím một cách chính xác và hiệu quả. Học sinh sẽ học cách nhận biết và sử dụng các phím chức năng, phím chữ cái, phím số, và các phím đặc biệt khác. Mục tiêu là giúp học sinh trở nên thành thạo trong việc sử dụng bàn phím để soạn thảo văn bản và thực hiện các tác vụ khác trên máy tính.",
-                Objectives =
-                    "Nhận biết các phím trên bàn phím, Học cách gõ phím đúng, Thực hành văn bản, Sử dụng phím chức năng, Tăng tốc độ và hiệu quả",
-                IsActive = true,
-                DocumentId = 6,
-                ParentId = null
-            }, 
-            new()
-            {
-                //59
-                Title = "Chủ đề G. Hướng nghiệp với tin học - tin học và hành nghề",
-                KeyWord = "chu de g. huong nghiep voi tin hoc - tin hoc va hanh nghe",
-                Description =
-                    "Chủ đề này giúp học sinh làm quen với bàn phím máy tính, từ đó phát triển kỹ năng gõ phím một cách chính xác và hiệu quả. Học sinh sẽ học cách nhận biết và sử dụng các phím chức năng, phím chữ cái, phím số, và các phím đặc biệt khác. Mục tiêu là giúp học sinh trở nên thành thạo trong việc sử dụng bàn phím để soạn thảo văn bản và thực hiện các tác vụ khác trên máy tính.",
-                Objectives =
-                    "Nhận biết các phím trên bàn phím, Học cách gõ phím đúng, Thực hành văn bản, Sử dụng phím chức năng, Tăng tốc độ và hiệu quả",
-                IsActive = true,
-                DocumentId = 6,
-                ParentId = null
-            }, 
-            // Lớp 9 Cánh diều
-            new()
-            {
-                //60
-                Title = "Chủ đề A Máy tính và cộng đồng - vai trò của máy tính trong đời sống",
-                KeyWord = "chu de a may tinh va cong dong - vai tro cua may tinh trong doi song",
-                Description =
-                    "Chủ đề A máy tính và em trong sách giáo khoa Tin học lớp 9 của bộ sách Cánh Diều thường bao gồm các nội dung cơ bản về máy tính và cách sử dụng chúng. Dưới đây là một mô tả tổng quan về những gì có thể được bao gồm trong chủ đề này",
-                Objectives =
-                    "Hiểu biết cơ bản về máy tính, Sử dụng máy tính, Làm việc với hệ điểu hành, Sử dụng phần mềm cơ bản",
-                IsActive = true,
-                DocumentId = 7,
-                ParentId = null,
-            },
-            
-            new()
-            {
-                //61
-                Title = "Chủ đề C. Tổ chức lưu trữ, tìm kiếm và trao đổi thông tin - đánh giá chất lượng thông tin trong giải quyết vấn đề",
-                KeyWord = "chu de c. to chuc luu tru, tim kiem va trao doi thong tin - danh gia chat luong thong tin trong giai quyet van de",
-                Description =
-                    "Chủ đề này giúp học sinh làm quen với bàn phím máy tính, từ đó phát triển kỹ năng gõ phím một cách chính xác và hiệu quả. Học sinh sẽ học cách nhận biết và sử dụng các phím chức năng, phím chữ cái, phím số, và các phím đặc biệt khác. Mục tiêu là giúp học sinh trở nên thành thạo trong việc sử dụng bàn phím để soạn thảo văn bản và thực hiện các tác vụ khác trên máy tính.",
-                Objectives =
-                    "Nhận biết các phím trên bàn phím, Học cách gõ phím đúng, Thực hành văn bản, Sử dụng phím chức năng, Tăng tốc độ và hiệu quả",
-                IsActive = true,
-                DocumentId = 7,
-                ParentId = null
-            },
-            new()
-            {
-                //62
-                Title = "Chủ đề D. Đạo đức, pháp luật và văn hóa trong môi trường số - một số vấn đề pháp lí về sử dụng dịch vụ internet",
-                KeyWord = "chu de d. dao duc, phap luat va van hoa trong moi truong so - mot so van de phap li ve su dung dich vu internet",
-                Description =
-                    "Chủ đề này giúp học sinh làm quen với bàn phím máy tính, từ đó phát triển kỹ năng gõ phím một cách chính xác và hiệu quả. Học sinh sẽ học cách nhận biết và sử dụng các phím chức năng, phím chữ cái, phím số, và các phím đặc biệt khác. Mục tiêu là giúp học sinh trở nên thành thạo trong việc sử dụng bàn phím để soạn thảo văn bản và thực hiện các tác vụ khác trên máy tính.",
-                Objectives =
-                    "Nhận biết các phím trên bàn phím, Học cách gõ phím đúng, Thực hành văn bản, Sử dụng phím chức năng, Tăng tốc độ và hiệu quả",
-                IsActive = true,
-                DocumentId = 7,
-                ParentId = null
-            }, 
-            new()
-            {
-                //63
-                Title = "Chủ đề E. Ứng dụng tin học",
-                KeyWord = "chu de e. ung dung tin hoc",
-                Description =
-                    "Chủ đề này giúp học sinh làm quen với bàn phím máy tính, từ đó phát triển kỹ năng gõ phím một cách chính xác và hiệu quả. Học sinh sẽ học cách nhận biết và sử dụng các phím chức năng, phím chữ cái, phím số, và các phím đặc biệt khác. Mục tiêu là giúp học sinh trở nên thành thạo trong việc sử dụng bàn phím để soạn thảo văn bản và thực hiện các tác vụ khác trên máy tính.",
-                Objectives =
-                    "Nhận biết các phím trên bàn phím, Học cách gõ phím đúng, Thực hành văn bản, Sử dụng phím chức năng, Tăng tốc độ và hiệu quả",
-                IsActive = true,
-                DocumentId = 7,
-                ParentId = null
-            }, 
+            // //Lop 5
+            //  new()
+            // {
+            //     //31
+            //     Title = "Chủ đề A Máy tính và em - Những việc em có thể làm được nhờ máy tính",
+            //     KeyWord = "chu de a may tinh va em - nhung viec em co the lam duoc nho may tinh",
+            //     Description =
+            //         "Chủ đề A máy tính và em trong sách giáo khoa Tin học lớp 3 của bộ sách Cánh Diều thường bao gồm các nội dung cơ bản về máy tính và cách sử dụng chúng. Dưới đây là một mô tả tổng quan về những gì có thể được bao gồm trong chủ đề này",
+            //     Objectives =
+            //         "Hiểu biết cơ bản về máy tính, Sử dụng máy tính, Làm việc với hệ điểu hành, Sử dụng phần mềm cơ bản",
+            //     IsActive = true,
+            //     DocumentId = 3,
+            //     ParentId = null,
+            // },
+            // new()
+            // {
+            //     //32
+            //     Title = "Chủ đề B Mạng máy tính và Internet - Tìm kiếm thông tin trên website",
+            //     KeyWord = "chu de b mang may tinh va internet - tim kiem thong tin tren website",
+            //     Description =
+            //         "Chủ đề B mạng máy tính và internet trong sách giáo khoa Tin học lớp 3 của bộ sách Cánh Diều thường bao gồm các nội dung cơ bản về mạng máy tính và Internet. Dưới đây là một mô tả tổng quan về những gì có thể được bao gồm trong chủ đề này: Giới thiệu về mạng máy tính,Kết nối mạng máy tính,Internet là gì?",
+            //     Objectives =
+            //         "Giúp học sinh hiểu khái niệm cơ bản về mạng máy tính và Internet, nhận biết các loại mạng và thành phần chính, cũng như cách kết nối và sử dụng mạng. Học sinh sẽ biết cách sử dụng trình duyệt web để tìm kiếm thông tin, sử dụng email, và nhận thức được tầm quan trọng của an toàn mạng, bao gồm bảo vệ thông tin cá nhân và quyền riêng tư trực tuyến",
+            //     IsActive = true,
+            //     DocumentId = 3,
+            //     ParentId = null,
+            // },
+            // new()
+            // {
+            //     //33
+            //     Title = "Chủ đề C Tổ chức lưu trữ, tìm kiếm và trao đổi thông tin",
+            //     KeyWord = "chu de d dao duc, phap luat va van hoa trong moi truong so",
+            //     Description =
+            //         "Chủ đề này cũng nhấn mạnh vai trò của giáo dục và hướng nghiệp trong việc sử dụng công nghệ một cách có trách nhiệm và mang tính xây dựng cho cá nhân và cộng đồng.",
+            //     Objectives = "Hiểu và áp dụng các giá trị đạo đức và đạo lý khi sử dụng công nghệ và Internet.",
+            //     IsActive = true,
+            //     DocumentId =3,
+            //     ParentId = null
+            // },
+            // new()
+            // {
+            //     //34
             //
-            new()
-            {
-                //64
-                Title = "Chủ đề E1. Phần mềm mô phỏng và khám phá tri thức",
-                KeyWord = "chu de e. phan mem mo phong va kham pha tri thuc",
-                Description =
-                    "Chủ đề này giúp học sinh làm quen với bàn phím máy tính, từ đó phát triển kỹ năng gõ phím một cách chính xác và hiệu quả. Học sinh sẽ học cách nhận biết và sử dụng các phím chức năng, phím chữ cái, phím số, và các phím đặc biệt khác. Mục tiêu là giúp học sinh trở nên thành thạo trong việc sử dụng bàn phím để soạn thảo văn bản và thực hiện các tác vụ khác trên máy tính.",
-                Objectives =
-                    "Nhận biết các phím trên bàn phím, Học cách gõ phím đúng, Thực hành văn bản, Sử dụng phím chức năng, Tăng tốc độ và hiệu quả",
-                IsActive = true,
-                DocumentId = 7,
-                ParentId = 63
-            },  new()
-            {
-                //65
-                Title = "Chủ đề E2. Trình bày thông tin trong trao đổi và hợp tác",
-                KeyWord = "chu de e2. trinh bay thong tin trong trao doi va hop tac",
-                Description =
-                    "Chủ đề này giúp học sinh làm quen với bàn phím máy tính, từ đó phát triển kỹ năng gõ phím một cách chính xác và hiệu quả. Học sinh sẽ học cách nhận biết và sử dụng các phím chức năng, phím chữ cái, phím số, và các phím đặc biệt khác. Mục tiêu là giúp học sinh trở nên thành thạo trong việc sử dụng bàn phím để soạn thảo văn bản và thực hiện các tác vụ khác trên máy tính.",
-                Objectives =
-                    "Nhận biết các phím trên bàn phím, Học cách gõ phím đúng, Thực hành văn bản, Sử dụng phím chức năng, Tăng tốc độ và hiệu quả",
-                IsActive = true,
-                DocumentId = 7,
-                ParentId = 63
-            }, 
-            new()
-            {
-                //66
-                Title = "Chủ đề E3. Sử dụng bảng tính điện tử nâng cao",
-                KeyWord = "chu de e3. su dung bang tinh dien tu nang cao",
-                Description =
-                    "Chủ đề này giúp học sinh làm quen với bàn phím máy tính, từ đó phát triển kỹ năng gõ phím một cách chính xác và hiệu quả. Học sinh sẽ học cách nhận biết và sử dụng các phím chức năng, phím chữ cái, phím số, và các phím đặc biệt khác. Mục tiêu là giúp học sinh trở nên thành thạo trong việc sử dụng bàn phím để soạn thảo văn bản và thực hiện các tác vụ khác trên máy tính.",
-                Objectives =
-                    "Nhận biết các phím trên bàn phím, Học cách gõ phím đúng, Thực hành văn bản, Sử dụng phím chức năng, Tăng tốc độ và hiệu quả",
-                IsActive = true,
-                DocumentId = 7,
-                ParentId = 63
-            }, 
-            new()
-            {
-                //67
-                Title = "Chủ đề E4. Làm quen với phần mềm làm video",
-                KeyWord = "chu de e4. lam quen voi phan mem lam video",
-                Description =
-                    "Chủ đề này giúp học sinh làm quen với bàn phím máy tính, từ đó phát triển kỹ năng gõ phím một cách chính xác và hiệu quả. Học sinh sẽ học cách nhận biết và sử dụng các phím chức năng, phím chữ cái, phím số, và các phím đặc biệt khác. Mục tiêu là giúp học sinh trở nên thành thạo trong việc sử dụng bàn phím để soạn thảo văn bản và thực hiện các tác vụ khác trên máy tính.",
-                Objectives =
-                    "Nhận biết các phím trên bàn phím, Học cách gõ phím đúng, Thực hành văn bản, Sử dụng phím chức năng, Tăng tốc độ và hiệu quả",
-                IsActive = true,
-                DocumentId = 7,
-                ParentId = 63
-            }, 
-            new()
-            {
-                //68
-                Title = "Chủ đề F. Giải quyết vấn đề với sự trợ giúp của máy tính - giải bài toán bằng máy tính",
-                KeyWord = "chu de f. giai quyet van de voi su tro giup cua may tinh - giai bai toan bang may tinh",
-                Description =
-                    "Chủ đề này giúp học sinh làm quen với bàn phím máy tính, từ đó phát triển kỹ năng gõ phím một cách chính xác và hiệu quả. Học sinh sẽ học cách nhận biết và sử dụng các phím chức năng, phím chữ cái, phím số, và các phím đặc biệt khác. Mục tiêu là giúp học sinh trở nên thành thạo trong việc sử dụng bàn phím để soạn thảo văn bản và thực hiện các tác vụ khác trên máy tính.",
-                Objectives =
-                    "Nhận biết các phím trên bàn phím, Học cách gõ phím đúng, Thực hành văn bản, Sử dụng phím chức năng, Tăng tốc độ và hiệu quả",
-                IsActive = true,
-                DocumentId = 7,
-                ParentId = null
-            }, 
-            new()
-            {
-                //69
-                Title = "Chủ đề G. Hướng nghiệp với tin học - tin học và định hướng nghề nghiệp",
-                KeyWord = "chu de g. huong nghiep voi tin hoc - tin hoc va dinh huong nghe nghiep",
-                Description =
-                    "Chủ đề này giúp học sinh làm quen với bàn phím máy tính, từ đó phát triển kỹ năng gõ phím một cách chính xác và hiệu quả. Học sinh sẽ học cách nhận biết và sử dụng các phím chức năng, phím chữ cái, phím số, và các phím đặc biệt khác. Mục tiêu là giúp học sinh trở nên thành thạo trong việc sử dụng bàn phím để soạn thảo văn bản và thực hiện các tác vụ khác trên máy tính.",
-                Objectives =
-                    "Nhận biết các phím trên bàn phím, Học cách gõ phím đúng, Thực hành văn bản, Sử dụng phím chức năng, Tăng tốc độ và hiệu quả",
-                IsActive = true,
-                DocumentId = 7,
-                ParentId = null
-            }, 
+            //     Title = "Chủ đề D Đạo đức, Pháp luật và Văn hóa trong môi trường số - bản quyền nội dung thông tin",
+            //     KeyWord = "chu de d dao duc, phap luat va van hoa trong moi truong so - ban quyen noi dung thong tin",
+            //     Description =
+            //         "Chủ đề này cũng nhấn mạnh vai trò của giáo dục và hướng nghiệp trong việc sử dụng công nghệ một cách có trách nhiệm và mang tính xây dựng cho cá nhân và cộng đồng.",
+            //     Objectives = "Hiểu và áp dụng các giá trị đạo đức và đạo lý khi sử dụng công nghệ và Internet.",
+            //     IsActive = true,
+            //     DocumentId = 3,
+            //     ParentId = null
+            // },
+            // new()
+            // {
+            //     //35
+            //
+            //     Title = "Chủ đề E Ứng dụng tin học - Trình soạn thảo văn bản",
+            //     KeyWord = "chu de e ung dung tin hoc",
+            //     Description =
+            //         "Chủ đề này giới thiệu cho học sinh về các ứng dụng cụ thể của tin học trong cuộc sống hàng ngày. Học sinh sẽ được hướng dẫn cách sử dụng các phần mềm và công cụ tin học để giải quyết các vấn đề thực tế và hỗ trợ trong học tập.",
+            //     Objectives =
+            //         "Hiểu và áp dụng các ứng dụng cụ thể của tin học trong đời sống hàng ngày, như việc sử dụng phần mềm văn phòng (word, excel), các ứng dụng học tập và giải trí.",
+            //     IsActive = true,
+            //     DocumentId = 3,
+            //     ParentId = null
+            // },
+            // new()
+            // {
+            //     //36
+            //
+            //     Title = "Chủ đề F: Giải quyết vấn đề với sự trợ giúp của máy tính - Chơi và khám phá trong môi trường lập trình trực quan",
+            //     KeyWord = "chu de f: giai quyet van de voi su tro giup cua may tinh - choi va kham pha trong moi truong lap trinh truc quan",
+            //     Description =
+            //         "Chủ đề này giúp học sinh hiểu cách sử dụng máy tính để giải quyết các vấn đề trong cuộc sống hàng ngày. Các em sẽ học cách áp dụng các kỹ năng tin học để tìm kiếm thông tin, xử lý dữ liệu và đưa ra quyết định. Chủ đề này khuyến khích tư duy sáng tạo và logic thông qua việc sử dụng các phần mềm và công cụ hỗ trợ học tập.",
+            //     Objectives =
+            //         "Nhận diện và xác định vấn đề: Học sinh có khả năng nhận diện các vấn đề cần giải quyết trong học tập và cuộc sống.\nTìm kiếm và thu thập thông tin: Học sinh biết cách sử dụng máy tính để tìm kiếm và thu thập thông tin liên quan đến vấn đề cần giải quyết",
+            //     IsActive = true,
+            //     DocumentId = 3,
+            //     ParentId = null
+            // },
+            //
+            // new()
+            // {
+            //     //37
+            //
+            //     Title = "Chủ đề C1. Tìm kiếm thông tin trong giải quyết vấn đề",
+            //     KeyWord = "chu de c1. tim kiem thong tin trong giai quyet van de",
+            //     Description =
+            //         "Chủ đề này giúp học sinh làm quen với bàn phím máy tính, từ đó phát triển kỹ năng gõ phím một cách chính xác và hiệu quả. Học sinh sẽ học cách nhận biết và sử dụng các phím chức năng, phím chữ cái, phím số, và các phím đặc biệt khác. Mục tiêu là giúp học sinh trở nên thành thạo trong việc sử dụng bàn phím để soạn thảo văn bản và thực hiện các tác vụ khác trên máy tính.",
+            //     Objectives =
+            //         "Nhận biết các phím trên bàn phím, Học cách gõ phím đúng, Thực hành văn bản, Sử dụng phím chức năng, Tăng tốc độ và hiệu quả",
+            //     IsActive = true,
+            //     DocumentId = 3,
+            //     ParentId = 33
+            // },
+            // new()
+            // {
+            //     //38
+            //
+            //     Title = "Lựa chọn 1. Sử dụng phần mềm đồ họa tạo sản phẩm số đơn giản",
+            //     KeyWord = "chu de c2. cay thu muc va tim kiem tep tren may tinh",
+            //     Description =
+            //         "Chủ đề này giúp học sinh làm quen với bàn phím máy tính, từ đó phát triển kỹ năng gõ phím một cách chính xác và hiệu quả. Học sinh sẽ học cách nhận biết và sử dụng các phím chức năng, phím chữ cái, phím số, và các phím đặc biệt khác. Mục tiêu là giúp học sinh trở nên thành thạo trong việc sử dụng bàn phím để soạn thảo văn bản và thực hiện các tác vụ khác trên máy tính.",
+            //     Objectives =
+            //         "Nhận biết các phím trên bàn phím, Học cách gõ phím đúng, Thực hành văn bản, Sử dụng phím chức năng, Tăng tốc độ và hiệu quả",
+            //     IsActive = true,
+            //     DocumentId = 3,
+            //     ParentId = 35
+            // },
+            // new()
+            // {
+            //     //39
+            //
+            //     Title = "Lựa chon 2. Sử dụng công cụ đa phương tiện hỗ trợ tạo sản phẩm đơn giản",
+            //     KeyWord = "chu de e1. lam quen voi bai trinh chieu don gian",
+            //     Description =
+            //         "Chủ đề này giúp học sinh làm quen với bàn phím máy tính, từ đó phát triển kỹ năng gõ phím một cách chính xác và hiệu quả. Học sinh sẽ học cách nhận biết và sử dụng các phím chức năng, phím chữ cái, phím số, và các phím đặc biệt khác. Mục tiêu là giúp học sinh trở nên thành thạo trong việc sử dụng bàn phím để soạn thảo văn bản và thực hiện các tác vụ khác trên máy tính.",
+            //     Objectives =
+            //         "Nhận biết các phím trên bàn phím, Học cách gõ phím đúng, Thực hành văn bản, Sử dụng phím chức năng, Tăng tốc độ và hiệu quả",
+            //     IsActive = true,
+            //     DocumentId = 3,
+            //     ParentId = 35
+            // },
+            //
+            // // Lớp 6
+            // new()
+            // {
+            //     //40
+            //     Title = "Chủ đề A. Máy tính và cộng đồng",
+            //     KeyWord = "chu de a. may tinh va cong dong",
+            //     Description =
+            //         "Chủ đề này giúp học sinh làm quen với bàn phím máy tính, từ đó phát triển kỹ năng gõ phím một cách chính xác và hiệu quả. Học sinh sẽ học cách nhận biết và sử dụng các phím chức năng, phím chữ cái, phím số, và các phím đặc biệt khác. Mục tiêu là giúp học sinh trở nên thành thạo trong việc sử dụng bàn phím để soạn thảo văn bản và thực hiện các tác vụ khác trên máy tính.",
+            //     Objectives =
+            //         "Nhận biết các phím trên bàn phím, Học cách gõ phím đúng, Thực hành văn bản, Sử dụng phím chức năng, Tăng tốc độ và hiệu quả",
+            //     IsActive = true,
+            //     DocumentId = 4,
+            //     ParentId = null
+            // },
+            // new()
+            // {
+            //     //41
+            //     Title = "Chủ đề B. Mạng máy tính và internet",
+            //     KeyWord = "chu de b. Mạng máy tính và internet",
+            //     Description =
+            //         "Chủ đề này giúp học sinh làm quen với bàn phím máy tính, từ đó phát triển kỹ năng gõ phím một cách chính xác và hiệu quả. Học sinh sẽ học cách nhận biết và sử dụng các phím chức năng, phím chữ cái, phím số, và các phím đặc biệt khác. Mục tiêu là giúp học sinh trở nên thành thạo trong việc sử dụng bàn phím để soạn thảo văn bản và thực hiện các tác vụ khác trên máy tính.",
+            //     Objectives =
+            //         "Nhận biết các phím trên bàn phím, Học cách gõ phím đúng, Thực hành văn bản, Sử dụng phím chức năng, Tăng tốc độ và hiệu quả",
+            //     IsActive = true,
+            //     DocumentId = 4,
+            //     ParentId = null
+            // },
+            // new()
+            // {
+            //     //42
+            //     Title = "Chủ đề C. Tổ chức lưu trữ, tìm kiếm và trao đổi thông tin",
+            //     KeyWord = "chu de c. to chuc luu tru, tim kiem va trao doi thong tin",
+            //     Description =
+            //         "Chủ đề này giúp học sinh làm quen với bàn phím máy tính, từ đó phát triển kỹ năng gõ phím một cách chính xác và hiệu quả. Học sinh sẽ học cách nhận biết và sử dụng các phím chức năng, phím chữ cái, phím số, và các phím đặc biệt khác. Mục tiêu là giúp học sinh trở nên thành thạo trong việc sử dụng bàn phím để soạn thảo văn bản và thực hiện các tác vụ khác trên máy tính.",
+            //     Objectives =
+            //         "Nhận biết các phím trên bàn phím, Học cách gõ phím đúng, Thực hành văn bản, Sử dụng phím chức năng, Tăng tốc độ và hiệu quả",
+            //     IsActive = true,
+            //     DocumentId = 4,
+            //     ParentId = null
+            // },
+            // new()
+            // {
+            //     //43
+            //     Title = "Chủ đề D. Đạo đức, pháp luật và văn hóa trong môi trường số",
+            //     KeyWord = "chu de d. dao duc, phap luat va van hoa trong moi truong so",
+            //     Description =
+            //         "Chủ đề này giúp học sinh làm quen với bàn phím máy tính, từ đó phát triển kỹ năng gõ phím một cách chính xác và hiệu quả. Học sinh sẽ học cách nhận biết và sử dụng các phím chức năng, phím chữ cái, phím số, và các phím đặc biệt khác. Mục tiêu là giúp học sinh trở nên thành thạo trong việc sử dụng bàn phím để soạn thảo văn bản và thực hiện các tác vụ khác trên máy tính.",
+            //     Objectives =
+            //         "Nhận biết các phím trên bàn phím, Học cách gõ phím đúng, Thực hành văn bản, Sử dụng phím chức năng, Tăng tốc độ và hiệu quả",
+            //     IsActive = true,
+            //     DocumentId = 4,
+            //     ParentId = null
+            // }, 
+            // new()
+            // {
+            //     //44
+            //     Title = "Chủ đề E. Ứng dụng tin học",
+            //     KeyWord = "chu de e. ung dung tin hoc",
+            //     Description =
+            //         "Chủ đề này giúp học sinh làm quen với bàn phím máy tính, từ đó phát triển kỹ năng gõ phím một cách chính xác và hiệu quả. Học sinh sẽ học cách nhận biết và sử dụng các phím chức năng, phím chữ cái, phím số, và các phím đặc biệt khác. Mục tiêu là giúp học sinh trở nên thành thạo trong việc sử dụng bàn phím để soạn thảo văn bản và thực hiện các tác vụ khác trên máy tính.",
+            //     Objectives =
+            //         "Nhận biết các phím trên bàn phím, Học cách gõ phím đúng, Thực hành văn bản, Sử dụng phím chức năng, Tăng tốc độ và hiệu quả",
+            //     IsActive = true,
+            //     DocumentId = 4,
+            //     ParentId = null
+            // }, 
+            // new()
+            // {
+            //     //45
+            //     Title = "Chủ đề F. Giải quyết vấn đề với sự trợ giúp của máy tính",
+            //     KeyWord = "chu de f. giai quyet van de voi su tro giup cua may tinh",
+            //     Description =
+            //         "Chủ đề này giúp học sinh làm quen với bàn phím máy tính, từ đó phát triển kỹ năng gõ phím một cách chính xác và hiệu quả. Học sinh sẽ học cách nhận biết và sử dụng các phím chức năng, phím chữ cái, phím số, và các phím đặc biệt khác. Mục tiêu là giúp học sinh trở nên thành thạo trong việc sử dụng bàn phím để soạn thảo văn bản và thực hiện các tác vụ khác trên máy tính.",
+            //     Objectives =
+            //         "Nhận biết các phím trên bàn phím, Học cách gõ phím đúng, Thực hành văn bản, Sử dụng phím chức năng, Tăng tốc độ và hiệu quả",
+            //     IsActive = true,
+            //     DocumentId = 4,
+            //     ParentId = null
+            // }, 
+            //
+            //
+            //   // Lớp 7 - Canh dieu
+            // new()
+            // {
+            //     //46
+            //     Title = "Chủ đề A. Máy tính và cộng đồng - sơ lược về các thành phần của máy tính. Khái niệm hệ điều hành và phần mềm ứng dụng",
+            //     KeyWord = "chu de a. may tinh va cong dong - so luoc ve cac thanh phan cua may tinh. khai niem he dieu hanh va phan mem ung dung",
+            //     Description =
+            //         "Chủ đề này giúp học sinh làm quen với bàn phím máy tính, từ đó phát triển kỹ năng gõ phím một cách chính xác và hiệu quả. Học sinh sẽ học cách nhận biết và sử dụng các phím chức năng, phím chữ cái, phím số, và các phím đặc biệt khác. Mục tiêu là giúp học sinh trở nên thành thạo trong việc sử dụng bàn phím để soạn thảo văn bản và thực hiện các tác vụ khác trên máy tính.",
+            //     Objectives =
+            //         "Nhận biết các phím trên bàn phím, Học cách gõ phím đúng, Thực hành văn bản, Sử dụng phím chức năng, Tăng tốc độ và hiệu quả",
+            //     IsActive = true,
+            //     DocumentId = 5,
+            //     ParentId = null
+            // },
+            //
+            // new()
+            // {
+            //     //47
+            //     Title = "Chủ đề C. Tổ chức lưu trữ, tìm kiếm và trao đổi thông tin - mạng xã hội và một số kênh trao đổi thông tin thông dụng trên internet",
+            //     KeyWord = "chu de c. to chuc luu tru, tim kiem va trao doi thong tin - mang xa hoi va mot so kenh trao doi thong tin thong dung tren internet",
+            //     Description =
+            //         "Chủ đề này giúp học sinh làm quen với bàn phím máy tính, từ đó phát triển kỹ năng gõ phím một cách chính xác và hiệu quả. Học sinh sẽ học cách nhận biết và sử dụng các phím chức năng, phím chữ cái, phím số, và các phím đặc biệt khác. Mục tiêu là giúp học sinh trở nên thành thạo trong việc sử dụng bàn phím để soạn thảo văn bản và thực hiện các tác vụ khác trên máy tính.",
+            //     Objectives =
+            //         "Nhận biết các phím trên bàn phím, Học cách gõ phím đúng, Thực hành văn bản, Sử dụng phím chức năng, Tăng tốc độ và hiệu quả",
+            //     IsActive = true,
+            //     DocumentId = 5,
+            //     ParentId = null
+            // },
+            // new()
+            // {
+            //     //48
+            //     Title = "Chủ đề D. Đạo đức, pháp luật và văn hóa trong môi trường số - văn hóa ứng xử qua phương tiện truyền thông số",
+            //     KeyWord = "chu de d. dao duc, phap luat va van hoa trong moi truong so - van hoa ung xu qua phuong tien truyen thong so",
+            //     Description =
+            //         "Chủ đề này giúp học sinh làm quen với bàn phím máy tính, từ đó phát triển kỹ năng gõ phím một cách chính xác và hiệu quả. Học sinh sẽ học cách nhận biết và sử dụng các phím chức năng, phím chữ cái, phím số, và các phím đặc biệt khác. Mục tiêu là giúp học sinh trở nên thành thạo trong việc sử dụng bàn phím để soạn thảo văn bản và thực hiện các tác vụ khác trên máy tính.",
+            //     Objectives =
+            //         "Nhận biết các phím trên bàn phím, Học cách gõ phím đúng, Thực hành văn bản, Sử dụng phím chức năng, Tăng tốc độ và hiệu quả",
+            //     IsActive = true,
+            //     DocumentId = 5,
+            //     ParentId = null
+            // }, 
+            // new()
+            // {
+            //     //49
+            //     Title = "Chủ đề E. Ứng dụng tin học - bảng tính điện tử cơ bản, phần mềm trình chiếu cơ bản",
+            //     KeyWord = "chu de e. ung dung tin hoc - bảng tính điện tử cơ bản, phần mềm trình chiếu cơ bản",
+            //     Description =
+            //         "Chủ đề này giúp học sinh làm quen với bàn phím máy tính, từ đó phát triển kỹ năng gõ phím một cách chính xác và hiệu quả. Học sinh sẽ học cách nhận biết và sử dụng các phím chức năng, phím chữ cái, phím số, và các phím đặc biệt khác. Mục tiêu là giúp học sinh trở nên thành thạo trong việc sử dụng bàn phím để soạn thảo văn bản và thực hiện các tác vụ khác trên máy tính.",
+            //     Objectives =
+            //         "Nhận biết các phím trên bàn phím, Học cách gõ phím đúng, Thực hành văn bản, Sử dụng phím chức năng, Tăng tốc độ và hiệu quả",
+            //     IsActive = true,
+            //     DocumentId = 5,
+            //     ParentId = null
+            // }, 
+            // new()
+            // {
+            //     //50
+            //     Title = "Chủ đề F. Giải quyết vấn đề với sự trợ giúp của máy tính - Một số thuật toán sắp xếp và tìm kiếm cơ bản",
+            //     KeyWord = "chu de f. giai quyet van de voi su tro giup cua may tinh - mot so thuat toan sap xep va tim kiem co ban",
+            //     Description =
+            //         "Chủ đề này giúp học sinh làm quen với bàn phím máy tính, từ đó phát triển kỹ năng gõ phím một cách chính xác và hiệu quả. Học sinh sẽ học cách nhận biết và sử dụng các phím chức năng, phím chữ cái, phím số, và các phím đặc biệt khác. Mục tiêu là giúp học sinh trở nên thành thạo trong việc sử dụng bàn phím để soạn thảo văn bản và thực hiện các tác vụ khác trên máy tính.",
+            //     Objectives =
+            //         "Nhận biết các phím trên bàn phím, Học cách gõ phím đúng, Thực hành văn bản, Sử dụng phím chức năng, Tăng tốc độ và hiệu quả",
+            //     IsActive = true,
+            //     DocumentId = 5,
+            //     ParentId = null
+            // }, 
+            //      // Lớp 8 - Canh dieu
+            // new()
+            // {
+            //     //51
+            //     Title = "Chủ đề A. Máy tính và cộng đồng - sơ lược về lịch sử phát triển máy tính",
+            //     KeyWord = "chu de a. may tinh va cong dong - so luoc ve lich su phat trien may tinh",
+            //     Description =
+            //         "Chủ đề này giúp học sinh làm quen với bàn phím máy tính, từ đó phát triển kỹ năng gõ phím một cách chính xác và hiệu quả. Học sinh sẽ học cách nhận biết và sử dụng các phím chức năng, phím chữ cái, phím số, và các phím đặc biệt khác. Mục tiêu là giúp học sinh trở nên thành thạo trong việc sử dụng bàn phím để soạn thảo văn bản và thực hiện các tác vụ khác trên máy tính.",
+            //     Objectives =
+            //         "Nhận biết các phím trên bàn phím, Học cách gõ phím đúng, Thực hành văn bản, Sử dụng phím chức năng, Tăng tốc độ và hiệu quả",
+            //     IsActive = true,
+            //     DocumentId = 6,
+            //     ParentId = null
+            // },
+            //
+            // new()
+            // {
+            //     //52
+            //     Title = "Chủ đề C. Tổ chức lưu trữ, tìm kiếm và trao đổi thông tin - đặc điểm của thông tin trong môi trường số thông tin với giải quyết vấn đề",
+            //     KeyWord = "chu de c. to chuc luu tru, tim kiem va trao doi thong tin - dac diem cua thong tin trong moi truong so thong tin voi giai quyet van de",
+            //     Description =
+            //         "Chủ đề này giúp học sinh làm quen với bàn phím máy tính, từ đó phát triển kỹ năng gõ phím một cách chính xác và hiệu quả. Học sinh sẽ học cách nhận biết và sử dụng các phím chức năng, phím chữ cái, phím số, và các phím đặc biệt khác. Mục tiêu là giúp học sinh trở nên thành thạo trong việc sử dụng bàn phím để soạn thảo văn bản và thực hiện các tác vụ khác trên máy tính.",
+            //     Objectives =
+            //         "Nhận biết các phím trên bàn phím, Học cách gõ phím đúng, Thực hành văn bản, Sử dụng phím chức năng, Tăng tốc độ và hiệu quả",
+            //     IsActive = true,
+            //     DocumentId = 6,
+            //     ParentId = null
+            // },
+            // new()
+            // {
+            //     //53
+            //     Title = "Chủ đề D. Đạo đức, pháp luật và văn hóa trong môi trường số - đạo đức và văn hóa trong sử dụng công nghệ kĩ thuật số",
+            //     KeyWord = "chu de d. dao duc, phap luat va van hoa trong moi truong so - dao duc va van hoa trong su dung cong nghe ki thuat so",
+            //     Description =
+            //         "Chủ đề này giúp học sinh làm quen với bàn phím máy tính, từ đó phát triển kỹ năng gõ phím một cách chính xác và hiệu quả. Học sinh sẽ học cách nhận biết và sử dụng các phím chức năng, phím chữ cái, phím số, và các phím đặc biệt khác. Mục tiêu là giúp học sinh trở nên thành thạo trong việc sử dụng bàn phím để soạn thảo văn bản và thực hiện các tác vụ khác trên máy tính.",
+            //     Objectives =
+            //         "Nhận biết các phím trên bàn phím, Học cách gõ phím đúng, Thực hành văn bản, Sử dụng phím chức năng, Tăng tốc độ và hiệu quả",
+            //     IsActive = true,
+            //     DocumentId = 6,
+            //     ParentId = null
+            // }, 
+            // new()
+            // {
+            //     //54
+            //     Title = "Chủ đề E. Ứng dụng tin học",
+            //     KeyWord = "chu de e. ung dung tin hoc",
+            //     Description =
+            //         "Chủ đề này giúp học sinh làm quen với bàn phím máy tính, từ đó phát triển kỹ năng gõ phím một cách chính xác và hiệu quả. Học sinh sẽ học cách nhận biết và sử dụng các phím chức năng, phím chữ cái, phím số, và các phím đặc biệt khác. Mục tiêu là giúp học sinh trở nên thành thạo trong việc sử dụng bàn phím để soạn thảo văn bản và thực hiện các tác vụ khác trên máy tính.",
+            //     Objectives =
+            //         "Nhận biết các phím trên bàn phím, Học cách gõ phím đúng, Thực hành văn bản, Sử dụng phím chức năng, Tăng tốc độ và hiệu quả",
+            //     IsActive = true,
+            //     DocumentId = 6,
+            //     ParentId = null
+            // }, 
+            // new()
+            // {
+            //     //55
+            //     Title = "Chủ đề E1. Xử lí và trực quan hóa dữ liệu bằng bảng điện tử",
+            //     KeyWord = "chu de e1. xu li va truc quan hoa du lieu bang bang dien tu",
+            //     Description =
+            //         "Chủ đề này giúp học sinh làm quen với bàn phím máy tính, từ đó phát triển kỹ năng gõ phím một cách chính xác và hiệu quả. Học sinh sẽ học cách nhận biết và sử dụng các phím chức năng, phím chữ cái, phím số, và các phím đặc biệt khác. Mục tiêu là giúp học sinh trở nên thành thạo trong việc sử dụng bàn phím để soạn thảo văn bản và thực hiện các tác vụ khác trên máy tính.",
+            //     Objectives =
+            //         "Nhận biết các phím trên bàn phím, Học cách gõ phím đúng, Thực hành văn bản, Sử dụng phím chức năng, Tăng tốc độ và hiệu quả",
+            //     IsActive = true,
+            //     DocumentId = 6,
+            //     ParentId = 54
+            // }, 
+            // new()
+            // {
+            //     //56
+            //     Title = "Chủ đề E2. Soạn thảo văn bản và phần mềm trình chiếu nâng cao",
+            //     KeyWord = "chu de e. soan thao van ban va phan mem trinh chieu nang cao",
+            //     Description =
+            //         "Chủ đề này giúp học sinh làm quen với bàn phím máy tính, từ đó phát triển kỹ năng gõ phím một cách chính xác và hiệu quả. Học sinh sẽ học cách nhận biết và sử dụng các phím chức năng, phím chữ cái, phím số, và các phím đặc biệt khác. Mục tiêu là giúp học sinh trở nên thành thạo trong việc sử dụng bàn phím để soạn thảo văn bản và thực hiện các tác vụ khác trên máy tính.",
+            //     Objectives =
+            //         "Nhận biết các phím trên bàn phím, Học cách gõ phím đúng, Thực hành văn bản, Sử dụng phím chức năng, Tăng tốc độ và hiệu quả",
+            //     IsActive = true,
+            //     DocumentId = 6,
+            //     ParentId = 54
+            // }, 
+            // new()
+            // {
+            //     //57
+            //     Title = "Chủ đề E3. Làm quen với phần mềm chỉnh sửa ảnh",
+            //     KeyWord = "chu de e. lam quen voi phan mem chinh sua anh",
+            //     Description =
+            //         "Chủ đề này giúp học sinh làm quen với bàn phím máy tính, từ đó phát triển kỹ năng gõ phím một cách chính xác và hiệu quả. Học sinh sẽ học cách nhận biết và sử dụng các phím chức năng, phím chữ cái, phím số, và các phím đặc biệt khác. Mục tiêu là giúp học sinh trở nên thành thạo trong việc sử dụng bàn phím để soạn thảo văn bản và thực hiện các tác vụ khác trên máy tính.",
+            //     Objectives =
+            //         "Nhận biết các phím trên bàn phím, Học cách gõ phím đúng, Thực hành văn bản, Sử dụng phím chức năng, Tăng tốc độ và hiệu quả",
+            //     IsActive = true,
+            //     DocumentId = 6,
+            //     ParentId = 54
+            // }, 
+            // new()
+            // {
+            //     //58
+            //     Title = "Chủ đề F. Giải quyết vấn đề với sự trợ giúp của máy tính - Lập trình trực quan",
+            //     KeyWord = "chu de f. giai quyet van de voi su tro giup cua may tinh - lap trinh truc quan",
+            //     Description =
+            //         "Chủ đề này giúp học sinh làm quen với bàn phím máy tính, từ đó phát triển kỹ năng gõ phím một cách chính xác và hiệu quả. Học sinh sẽ học cách nhận biết và sử dụng các phím chức năng, phím chữ cái, phím số, và các phím đặc biệt khác. Mục tiêu là giúp học sinh trở nên thành thạo trong việc sử dụng bàn phím để soạn thảo văn bản và thực hiện các tác vụ khác trên máy tính.",
+            //     Objectives =
+            //         "Nhận biết các phím trên bàn phím, Học cách gõ phím đúng, Thực hành văn bản, Sử dụng phím chức năng, Tăng tốc độ và hiệu quả",
+            //     IsActive = true,
+            //     DocumentId = 6,
+            //     ParentId = null
+            // }, 
+            // new()
+            // {
+            //     //59
+            //     Title = "Chủ đề G. Hướng nghiệp với tin học - tin học và hành nghề",
+            //     KeyWord = "chu de g. huong nghiep voi tin hoc - tin hoc va hanh nghe",
+            //     Description =
+            //         "Chủ đề này giúp học sinh làm quen với bàn phím máy tính, từ đó phát triển kỹ năng gõ phím một cách chính xác và hiệu quả. Học sinh sẽ học cách nhận biết và sử dụng các phím chức năng, phím chữ cái, phím số, và các phím đặc biệt khác. Mục tiêu là giúp học sinh trở nên thành thạo trong việc sử dụng bàn phím để soạn thảo văn bản và thực hiện các tác vụ khác trên máy tính.",
+            //     Objectives =
+            //         "Nhận biết các phím trên bàn phím, Học cách gõ phím đúng, Thực hành văn bản, Sử dụng phím chức năng, Tăng tốc độ và hiệu quả",
+            //     IsActive = true,
+            //     DocumentId = 6,
+            //     ParentId = null
+            // }, 
+            // // Lớp 9 Cánh diều
+            // new()
+            // {
+            //     //60
+            //     Title = "Chủ đề A Máy tính và cộng đồng - vai trò của máy tính trong đời sống",
+            //     KeyWord = "chu de a may tinh va cong dong - vai tro cua may tinh trong doi song",
+            //     Description =
+            //         "Chủ đề A máy tính và em trong sách giáo khoa Tin học lớp 9 của bộ sách Cánh Diều thường bao gồm các nội dung cơ bản về máy tính và cách sử dụng chúng. Dưới đây là một mô tả tổng quan về những gì có thể được bao gồm trong chủ đề này",
+            //     Objectives =
+            //         "Hiểu biết cơ bản về máy tính, Sử dụng máy tính, Làm việc với hệ điểu hành, Sử dụng phần mềm cơ bản",
+            //     IsActive = true,
+            //     DocumentId = 7,
+            //     ParentId = null,
+            // },
+            //
+            // new()
+            // {
+            //     //61
+            //     Title = "Chủ đề C. Tổ chức lưu trữ, tìm kiếm và trao đổi thông tin - đánh giá chất lượng thông tin trong giải quyết vấn đề",
+            //     KeyWord = "chu de c. to chuc luu tru, tim kiem va trao doi thong tin - danh gia chat luong thong tin trong giai quyet van de",
+            //     Description =
+            //         "Chủ đề này giúp học sinh làm quen với bàn phím máy tính, từ đó phát triển kỹ năng gõ phím một cách chính xác và hiệu quả. Học sinh sẽ học cách nhận biết và sử dụng các phím chức năng, phím chữ cái, phím số, và các phím đặc biệt khác. Mục tiêu là giúp học sinh trở nên thành thạo trong việc sử dụng bàn phím để soạn thảo văn bản và thực hiện các tác vụ khác trên máy tính.",
+            //     Objectives =
+            //         "Nhận biết các phím trên bàn phím, Học cách gõ phím đúng, Thực hành văn bản, Sử dụng phím chức năng, Tăng tốc độ và hiệu quả",
+            //     IsActive = true,
+            //     DocumentId = 7,
+            //     ParentId = null
+            // },
+            // new()
+            // {
+            //     //62
+            //     Title = "Chủ đề D. Đạo đức, pháp luật và văn hóa trong môi trường số - một số vấn đề pháp lí về sử dụng dịch vụ internet",
+            //     KeyWord = "chu de d. dao duc, phap luat va van hoa trong moi truong so - mot so van de phap li ve su dung dich vu internet",
+            //     Description =
+            //         "Chủ đề này giúp học sinh làm quen với bàn phím máy tính, từ đó phát triển kỹ năng gõ phím một cách chính xác và hiệu quả. Học sinh sẽ học cách nhận biết và sử dụng các phím chức năng, phím chữ cái, phím số, và các phím đặc biệt khác. Mục tiêu là giúp học sinh trở nên thành thạo trong việc sử dụng bàn phím để soạn thảo văn bản và thực hiện các tác vụ khác trên máy tính.",
+            //     Objectives =
+            //         "Nhận biết các phím trên bàn phím, Học cách gõ phím đúng, Thực hành văn bản, Sử dụng phím chức năng, Tăng tốc độ và hiệu quả",
+            //     IsActive = true,
+            //     DocumentId = 7,
+            //     ParentId = null
+            // }, 
+            // new()
+            // {
+            //     //63
+            //     Title = "Chủ đề E. Ứng dụng tin học",
+            //     KeyWord = "chu de e. ung dung tin hoc",
+            //     Description =
+            //         "Chủ đề này giúp học sinh làm quen với bàn phím máy tính, từ đó phát triển kỹ năng gõ phím một cách chính xác và hiệu quả. Học sinh sẽ học cách nhận biết và sử dụng các phím chức năng, phím chữ cái, phím số, và các phím đặc biệt khác. Mục tiêu là giúp học sinh trở nên thành thạo trong việc sử dụng bàn phím để soạn thảo văn bản và thực hiện các tác vụ khác trên máy tính.",
+            //     Objectives =
+            //         "Nhận biết các phím trên bàn phím, Học cách gõ phím đúng, Thực hành văn bản, Sử dụng phím chức năng, Tăng tốc độ và hiệu quả",
+            //     IsActive = true,
+            //     DocumentId = 7,
+            //     ParentId = null
+            // }, 
+            // //
+            // new()
+            // {
+            //     //64
+            //     Title = "Chủ đề E1. Phần mềm mô phỏng và khám phá tri thức",
+            //     KeyWord = "chu de e. phan mem mo phong va kham pha tri thuc",
+            //     Description =
+            //         "Chủ đề này giúp học sinh làm quen với bàn phím máy tính, từ đó phát triển kỹ năng gõ phím một cách chính xác và hiệu quả. Học sinh sẽ học cách nhận biết và sử dụng các phím chức năng, phím chữ cái, phím số, và các phím đặc biệt khác. Mục tiêu là giúp học sinh trở nên thành thạo trong việc sử dụng bàn phím để soạn thảo văn bản và thực hiện các tác vụ khác trên máy tính.",
+            //     Objectives =
+            //         "Nhận biết các phím trên bàn phím, Học cách gõ phím đúng, Thực hành văn bản, Sử dụng phím chức năng, Tăng tốc độ và hiệu quả",
+            //     IsActive = true,
+            //     DocumentId = 7,
+            //     ParentId = 63
+            // },  new()
+            // {
+            //     //65
+            //     Title = "Chủ đề E2. Trình bày thông tin trong trao đổi và hợp tác",
+            //     KeyWord = "chu de e2. trinh bay thong tin trong trao doi va hop tac",
+            //     Description =
+            //         "Chủ đề này giúp học sinh làm quen với bàn phím máy tính, từ đó phát triển kỹ năng gõ phím một cách chính xác và hiệu quả. Học sinh sẽ học cách nhận biết và sử dụng các phím chức năng, phím chữ cái, phím số, và các phím đặc biệt khác. Mục tiêu là giúp học sinh trở nên thành thạo trong việc sử dụng bàn phím để soạn thảo văn bản và thực hiện các tác vụ khác trên máy tính.",
+            //     Objectives =
+            //         "Nhận biết các phím trên bàn phím, Học cách gõ phím đúng, Thực hành văn bản, Sử dụng phím chức năng, Tăng tốc độ và hiệu quả",
+            //     IsActive = true,
+            //     DocumentId = 7,
+            //     ParentId = 63
+            // }, 
+            // new()
+            // {
+            //     //66
+            //     Title = "Chủ đề E3. Sử dụng bảng tính điện tử nâng cao",
+            //     KeyWord = "chu de e3. su dung bang tinh dien tu nang cao",
+            //     Description =
+            //         "Chủ đề này giúp học sinh làm quen với bàn phím máy tính, từ đó phát triển kỹ năng gõ phím một cách chính xác và hiệu quả. Học sinh sẽ học cách nhận biết và sử dụng các phím chức năng, phím chữ cái, phím số, và các phím đặc biệt khác. Mục tiêu là giúp học sinh trở nên thành thạo trong việc sử dụng bàn phím để soạn thảo văn bản và thực hiện các tác vụ khác trên máy tính.",
+            //     Objectives =
+            //         "Nhận biết các phím trên bàn phím, Học cách gõ phím đúng, Thực hành văn bản, Sử dụng phím chức năng, Tăng tốc độ và hiệu quả",
+            //     IsActive = true,
+            //     DocumentId = 7,
+            //     ParentId = 63
+            // }, 
+            // new()
+            // {
+            //     //67
+            //     Title = "Chủ đề E4. Làm quen với phần mềm làm video",
+            //     KeyWord = "chu de e4. lam quen voi phan mem lam video",
+            //     Description =
+            //         "Chủ đề này giúp học sinh làm quen với bàn phím máy tính, từ đó phát triển kỹ năng gõ phím một cách chính xác và hiệu quả. Học sinh sẽ học cách nhận biết và sử dụng các phím chức năng, phím chữ cái, phím số, và các phím đặc biệt khác. Mục tiêu là giúp học sinh trở nên thành thạo trong việc sử dụng bàn phím để soạn thảo văn bản và thực hiện các tác vụ khác trên máy tính.",
+            //     Objectives =
+            //         "Nhận biết các phím trên bàn phím, Học cách gõ phím đúng, Thực hành văn bản, Sử dụng phím chức năng, Tăng tốc độ và hiệu quả",
+            //     IsActive = true,
+            //     DocumentId = 7,
+            //     ParentId = 63
+            // }, 
+            // new()
+            // {
+            //     //68
+            //     Title = "Chủ đề F. Giải quyết vấn đề với sự trợ giúp của máy tính - giải bài toán bằng máy tính",
+            //     KeyWord = "chu de f. giai quyet van de voi su tro giup cua may tinh - giai bai toan bang may tinh",
+            //     Description =
+            //         "Chủ đề này giúp học sinh làm quen với bàn phím máy tính, từ đó phát triển kỹ năng gõ phím một cách chính xác và hiệu quả. Học sinh sẽ học cách nhận biết và sử dụng các phím chức năng, phím chữ cái, phím số, và các phím đặc biệt khác. Mục tiêu là giúp học sinh trở nên thành thạo trong việc sử dụng bàn phím để soạn thảo văn bản và thực hiện các tác vụ khác trên máy tính.",
+            //     Objectives =
+            //         "Nhận biết các phím trên bàn phím, Học cách gõ phím đúng, Thực hành văn bản, Sử dụng phím chức năng, Tăng tốc độ và hiệu quả",
+            //     IsActive = true,
+            //     DocumentId = 7,
+            //     ParentId = null
+            // }, 
+            // new()
+            // {
+            //     //69
+            //     Title = "Chủ đề G. Hướng nghiệp với tin học - tin học và định hướng nghề nghiệp",
+            //     KeyWord = "chu de g. huong nghiep voi tin hoc - tin hoc va dinh huong nghe nghiep",
+            //     Description =
+            //         "Chủ đề này giúp học sinh làm quen với bàn phím máy tính, từ đó phát triển kỹ năng gõ phím một cách chính xác và hiệu quả. Học sinh sẽ học cách nhận biết và sử dụng các phím chức năng, phím chữ cái, phím số, và các phím đặc biệt khác. Mục tiêu là giúp học sinh trở nên thành thạo trong việc sử dụng bàn phím để soạn thảo văn bản và thực hiện các tác vụ khác trên máy tính.",
+            //     Objectives =
+            //         "Nhận biết các phím trên bàn phím, Học cách gõ phím đúng, Thực hành văn bản, Sử dụng phím chức năng, Tăng tốc độ và hiệu quả",
+            //     IsActive = true,
+            //     DocumentId = 7,
+            //     ParentId = null
+            // }, 
         };
     }
 
@@ -1343,7 +1343,7 @@ public class AppDbContextSeed
                 PublicId = "LessonFile/FILE-5a5f56e6-6081-47d3-81db-fa35f3a898e0.pdf",
                 UrlDownload =
                     "https://res.cloudinary.com/itsupport18/raw/upload/fl_attachment/v1/LessonFile/FILE-5a5f56e6-6081-47d3-81db-fa35f3a898e0.pdf",
-                TopicId = 6,
+                TopicId = 7,
             },
             new()
             {
@@ -1356,7 +1356,7 @@ public class AppDbContextSeed
                 PublicId = "LessonFile/FILE-a662a89a-8bc1-4ba9-98dc-3580b5ae1782.pdf",
                 UrlDownload =
                     "https://res.cloudinary.com/itsupport18/raw/upload/fl_attachment/v1/LessonFile/FILE-a662a89a-8bc1-4ba9-98dc-3580b5ae1782.pdf",
-                TopicId = 6,
+                TopicId = 7,
             },
             new Lesson()
             {
@@ -1369,7 +1369,7 @@ public class AppDbContextSeed
                 PublicId = "LessonFile/FILE-3a204b73-f357-490d-9a42-f11b42318ca5.pdf",
                 UrlDownload =
                     "https://res.cloudinary.com/itsupport18/raw/upload/fl_attachment/v1/LessonFile/FILE-3a204b73-f357-490d-9a42-f11b42318ca5.pdf",
-                TopicId = 6,
+                TopicId = 7,
             }
         };
     }

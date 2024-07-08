@@ -1,11 +1,17 @@
 ﻿using AutoMapper;
 using LW.Contracts.Common;
 using LW.Data.Entities;
+using LW.Data.Repositories.DocumentRepositories;
 using LW.Data.Repositories.GradeRepositories;
+using LW.Data.Repositories.LessonRepositories;
 using LW.Data.Repositories.LevelRepositories;
+using LW.Data.Repositories.TopicRepositories;
 using LW.Infrastructure.Extensions;
 using LW.Shared.Constant;
+using LW.Shared.DTOs.Document;
 using LW.Shared.DTOs.Grade;
+using LW.Shared.DTOs.Lesson;
+using LW.Shared.DTOs.Topic;
 using LW.Shared.SeedWork;
 using Microsoft.EntityFrameworkCore;
 using MockQueryable.Moq;
@@ -17,15 +23,32 @@ public class GradeService : IGradeService
     private readonly IGradeRepository _gradeRepository;
     private readonly ILevelRepository _levelRepository;
     private readonly IElasticSearchService<GradeDto, int> _elasticSearchService;
+    private readonly IElasticSearchService<DocumentDto, int> _elasticSearchDocumentService;
+    private readonly IElasticSearchService<TopicDto, int> _elasticSearchTopicService;
+    private readonly IElasticSearchService<LessonDto, int> _elasticSearchLessonService;
     private readonly IMapper _mapper;
+    private readonly IDocumentRepository _documentRepository;
+    private readonly ITopicRepository _topicRepository;
+    private readonly ILessonRepository _lessonRepository;
+
 
     public GradeService(IGradeRepository gradeRepository, IMapper mapper, ILevelRepository levelRepository,
-        IElasticSearchService<GradeDto, int> elasticSearchService)
+        IElasticSearchService<GradeDto, int> elasticSearchService,
+        IElasticSearchService<DocumentDto, int> elasticSearchDocumentService,
+        IElasticSearchService<TopicDto, int> elasticSearchTopicService,
+        IElasticSearchService<LessonDto, int> elasticSearchLessonService, IDocumentRepository documentRepository,
+        ITopicRepository topicRepository, ILessonRepository lessonRepository)
     {
         _gradeRepository = gradeRepository;
         _mapper = mapper;
         _levelRepository = levelRepository;
         _elasticSearchService = elasticSearchService;
+        _elasticSearchDocumentService = elasticSearchDocumentService;
+        _elasticSearchTopicService = elasticSearchTopicService;
+        _elasticSearchLessonService = elasticSearchLessonService;
+        _documentRepository = documentRepository;
+        _topicRepository = topicRepository;
+        _lessonRepository = lessonRepository;
     }
 
     public async Task<ApiResult<IEnumerable<GradeDto>>> GetAllGrade()
@@ -62,7 +85,8 @@ public class GradeService : IGradeService
         }
 
         var result = _mapper.ProjectTo<GradeDto>(gradeList);
-        var pagedResult = await PagedList<GradeDto>.ToPageListAsync(result, pagingRequestParameters.PageIndex, pagingRequestParameters.PageSize, pagingRequestParameters.OrderBy, pagingRequestParameters.IsAscending);
+        var pagedResult = await PagedList<GradeDto>.ToPageListAsync(result, pagingRequestParameters.PageIndex,
+            pagingRequestParameters.PageSize, pagingRequestParameters.OrderBy, pagingRequestParameters.IsAscending);
 
         return new ApiSuccessResult<PagedList<GradeDto>>(pagedResult);
     }
@@ -74,6 +98,7 @@ public class GradeService : IGradeService
         {
             return new ApiResult<GradeDto>(false, "Grade is null !!!");
         }
+
         var levelEntity = await _levelRepository.GetLevelById(gradeEntity.LevelId);
         if (levelEntity != null)
         {
@@ -86,12 +111,13 @@ public class GradeService : IGradeService
 
     public async Task<ApiResult<PagedList<GradeDto>>> SearchByGradePagination(SearchGradeDto searchGradeDto)
     {
-        var gradeEntity = await _elasticSearchService.SearchDocumentAsync(ElasticConstant.ElasticGrades, searchGradeDto);
+        var gradeEntity =
+            await _elasticSearchService.SearchDocumentAsync(ElasticConstant.ElasticGrades, searchGradeDto);
         if (gradeEntity is null)
         {
             return new ApiResult<PagedList<GradeDto>>(false, $"Grade not found by {searchGradeDto.Key} !!!");
         }
-        
+
         if (searchGradeDto.LevelId > 0)
         {
             gradeEntity = gradeEntity.Where(d => d.LevelId == searchGradeDto.LevelId).ToList();
@@ -99,7 +125,8 @@ public class GradeService : IGradeService
 
 
         var result = _mapper.Map<IEnumerable<GradeDto>>(gradeEntity);
-        var pagedResult = await PagedList<GradeDto>.ToPageListAsync(result.AsQueryable().BuildMock(), searchGradeDto.PageIndex, searchGradeDto.PageSize, searchGradeDto.OrderBy, searchGradeDto.IsAscending);
+        var pagedResult = await PagedList<GradeDto>.ToPageListAsync(result.AsQueryable().BuildMock(),
+            searchGradeDto.PageIndex, searchGradeDto.PageSize, searchGradeDto.OrderBy, searchGradeDto.IsAscending);
         return new ApiSuccessResult<PagedList<GradeDto>>(pagedResult);
     }
 
@@ -152,6 +179,7 @@ public class GradeService : IGradeService
         {
             return new ApiResult<bool>(false, "Grade not found !!!");
         }
+
         var levelEntity = await _levelRepository.GetLevelById(gradeEntity.LevelId);
 
         gradeEntity.IsActive = !gradeEntity.IsActive;
@@ -169,6 +197,55 @@ public class GradeService : IGradeService
         if (gradeEntity is null)
         {
             return new ApiResult<bool>(false, "Grade not found !!!");
+        }
+
+        // xóa document - topic - lesson
+        var documents = await _documentRepository.GetAllDocumentByGrade(id);
+        if (documents.Any())
+        {
+            var listDocumentDtoId = documents.Select(x => x.Id).ToList();
+            await _elasticSearchDocumentService.DeleteDocumentRangeAsync(ElasticConstant.ElasticDocuments,
+                listDocumentDtoId);
+            foreach (var document in documents)
+            {
+                var listTopic = await _topicRepository.GetAllTopicByDocument(document.Id);
+                if (listTopic.Any())
+                {
+                    var listTopicDto = _mapper.Map<IEnumerable<TopicDto>>(listTopic);
+                    var listTopicDtoId = listTopicDto.Select(x => x.Id).ToList();
+                    await _elasticSearchTopicService.DeleteDocumentRangeAsync(ElasticConstant.ElasticTopics,
+                        listTopicDtoId);
+                    foreach (var topic in listTopic)
+                    {
+                        var topicChilds = await _topicRepository.GetAllTopicChildByParentId(topic.Id);
+                        if (topicChilds.Any())
+                        {
+                            foreach (var topicChild in topicChilds)
+                            {
+                                var listLesson = await _lessonRepository.GetAllLessonByTopic(topicChild.Id);
+                                if (listLesson.Any())
+                                {
+                                    var listLessonDto = _mapper.Map<IEnumerable<LessonDto>>(listLesson);
+                                    var listId = listLessonDto.Select(x => x.Id).ToList();
+                                    await _elasticSearchLessonService.DeleteDocumentRangeAsync(
+                                        ElasticConstant.ElasticLessons, listId);
+                                }
+                            }
+                        }
+                        else
+                        {
+                            var listLesson = await _lessonRepository.GetAllLessonByTopic(topic.Id);
+                            if (listLesson.Any())
+                            {
+                                var listLessonDto = _mapper.Map<IEnumerable<LessonDto>>(listLesson);
+                                var listId = listLessonDto.Select(x => x.Id).ToList();
+                                await _elasticSearchLessonService.DeleteDocumentRangeAsync(
+                                    ElasticConstant.ElasticLessons, listId);
+                            }
+                        }
+                    }
+                }
+            }
         }
 
         var grade = await _gradeRepository.DeleteGrade(id);
