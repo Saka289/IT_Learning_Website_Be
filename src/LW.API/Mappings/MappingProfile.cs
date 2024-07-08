@@ -170,10 +170,12 @@ public class MappingProfile : Profile
         CreateMap<Quiz, QuizUpdateDto>().ReverseMap();
         //QuizQuestion
         CreateMap<QuizQuestion, QuizQuestionDto>().ReverseMap();
+        CreateMap<QuizQuestion, QuizQuestionTestDto>().ReverseMap();
         CreateMap<QuizQuestion, QuizQuestionCreateDto>().ReverseMap();
         CreateMap<QuizQuestion, QuizQuestionUpdateDto>().ReverseMap();
         //QuizAnswer
         CreateMap<QuizAnswer, QuizAnswerDto>().ReverseMap();
+        CreateMap<QuizAnswer, QuizAnswerTestDto>().ReverseMap();
         CreateMap<QuizAnswer, QuizAnswerCreateDto>().ReverseMap();
         CreateMap<QuizAnswer, QuizAnswerUpdateDto>().ReverseMap();
     }

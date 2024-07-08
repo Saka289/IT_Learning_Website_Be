@@ -1,4 +1,5 @@
-﻿using AutoMapper;
+﻿using System.Collections;
+using AutoMapper;
 using LW.Contracts.Common;
 using LW.Data.Entities;
 using LW.Data.Repositories.QuizAnswerRepositories;
@@ -60,23 +61,33 @@ public class QuizQuestionService : IQuizQuestionService
         return new ApiSuccessResult<PagedList<QuizQuestionDto>>(pagedResult);
     }
 
-    public async Task<ApiResult<PagedList<QuizQuestionDto>>> GetAllQuizQuestionByQuizIdPagination(int quizId,
-        PagingRequestParameters pagingRequestParameters)
+    public async Task<ApiResult<IEnumerable<QuizQuestionDto>>> GetAllQuizQuestionByQuizIdPractice(int quizId)
     {
         var quizQuestionList = await _quizQuestionRepository.GetAllQuizQuestionByQuizId(quizId);
         if (!quizQuestionList.Any())
         {
-            return new ApiResult<PagedList<QuizQuestionDto>>(false, "Quiz Question is null !!!");
+            return new ApiResult<IEnumerable<QuizQuestionDto>>(false, "Quiz Question is null !!!");
         }
 
-        var result = _mapper.ProjectTo<QuizQuestionDto>(quizQuestionList);
-        var pagedResult = await PagedList<QuizQuestionDto>.ToPageListAsync(result, pagingRequestParameters.PageIndex,
-            pagingRequestParameters.PageSize, pagingRequestParameters.OrderBy, pagingRequestParameters.IsAscending);
-        return new ApiSuccessResult<PagedList<QuizQuestionDto>>(pagedResult);
+        var result = _mapper.Map<IEnumerable<QuizQuestionDto>>(quizQuestionList);
+        return new ApiSuccessResult<IEnumerable<QuizQuestionDto>>(result);
     }
 
-    public async Task<ApiResult<PagedList<QuizQuestionDto>>> SearchQuizQuestion(
-        SearchQuizQuestionDto searchQuizQuestionDto)
+    public async Task<ApiResult<PagedList<QuizQuestionTestDto>>> GetAllQuizQuestionByQuizIdPaginationTest(int quizId, PagingRequestParameters pagingRequestParameters)
+    {
+        var quizQuestionList = await _quizQuestionRepository.GetAllQuizQuestionByQuizId(quizId);
+        if (!quizQuestionList.Any())
+        {
+            return new ApiResult<PagedList<QuizQuestionTestDto>>(false, "Quiz Question is null !!!");
+        }
+
+        var result = _mapper.ProjectTo<QuizQuestionTestDto>(quizQuestionList);
+        var pagedResult = await PagedList<QuizQuestionTestDto>.ToPageListAsync(result, pagingRequestParameters.PageIndex,
+            pagingRequestParameters.PageSize, pagingRequestParameters.OrderBy, pagingRequestParameters.IsAscending);
+        return new ApiSuccessResult<PagedList<QuizQuestionTestDto>>(pagedResult);
+    }
+
+    public async Task<ApiResult<PagedList<QuizQuestionDto>>> SearchQuizQuestion(SearchQuizQuestionDto searchQuizQuestionDto)
     {
         var quizQuestionEntity =
             await _elasticSearchService.SearchDocumentAsync(ElasticConstant.ElasticQuizQuestion, searchQuizQuestionDto);

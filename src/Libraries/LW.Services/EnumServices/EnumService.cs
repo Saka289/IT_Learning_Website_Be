@@ -1,4 +1,5 @@
-﻿using LW.Infrastructure.Extensions;
+﻿using System.Collections;
+using LW.Infrastructure.Extensions;
 using LW.Shared.DTOs.Document;
 using LW.Shared.DTOs.Enum;
 using LW.Shared.Enums;
@@ -29,5 +30,26 @@ public class EnumService : IEnumService
         }).ToList();
         return new ApiResult<IEnumerable<EnumDto>>(true, result, "Get all book type successfully");
     }
-  
+
+    public async Task<ApiResult<IEnumerable<EnumDto>>> GetAllTypeQuestion()
+    {
+        var result =  typeof(ETypeQuestion).ToEnumDto();
+        if (result is null)
+        {
+            return new ApiResult<IEnumerable<EnumDto>>(false, "Get all enum type not found !!!");
+        }
+
+        return new ApiSuccessResult<IEnumerable<EnumDto>>(result);
+    }
+
+    public async Task<ApiResult<IEnumerable<EnumDto>>> GetAllLevelQuestion()
+    {
+        var result =  typeof(EQuestionLevel).ToEnumDto();
+        if (result is null)
+        {
+            return new ApiResult<IEnumerable<EnumDto>>(false, "Get all question level not found !!!");
+        }
+
+        return new ApiSuccessResult<IEnumerable<EnumDto>>(result);
+    }
 }

@@ -10,7 +10,8 @@ public interface IQuizQuestionService
 {
     Task<ApiResult<IEnumerable<QuizQuestionDto>>> GetAllQuizQuestion();
     Task<ApiResult<PagedList<QuizQuestionDto>>> GetAllQuizQuestionPagination(PagingRequestParameters pagingRequestParameters);
-    Task<ApiResult<PagedList<QuizQuestionDto>>> GetAllQuizQuestionByQuizIdPagination(int quizId, PagingRequestParameters pagingRequestParameters);
+    Task<ApiResult<IEnumerable<QuizQuestionDto>>> GetAllQuizQuestionByQuizIdPractice(int quizId);
+    Task<ApiResult<PagedList<QuizQuestionTestDto>>> GetAllQuizQuestionByQuizIdPaginationTest(int quizId, PagingRequestParameters pagingRequestParameters);
     Task<ApiResult<PagedList<QuizQuestionDto>>> SearchQuizQuestion(SearchQuizQuestionDto searchQuizQuestionDto);
     Task<ApiResult<QuizQuestionDto>> GetQuizQuestionById(int id);
     Task<ApiResult<QuizQuestionDto>> CreateQuizQuestion(QuizQuestionCreateDto quizQuestionCreateDto);

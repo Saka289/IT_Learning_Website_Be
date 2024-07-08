@@ -49,10 +49,21 @@ namespace LW.API.Controllers.Public
             return Ok(result);
         }
         
-        [HttpGet("GetAllQuizQuestionByQuizIdPagination/{quizId}")]
-        public async Task<ActionResult<ApiResult<PagedList<QuizQuestionDto>>>> GetAllQuizQuestionByQuizIdPagination([Required] int quizId, [FromQuery] PagingRequestParameters pagingRequestParameters)
+        [HttpGet("GetAllQuizQuestionByQuizIdPractice/{quizId}")]
+        public async Task<ActionResult<ApiResult<PagedList<QuizQuestionDto>>>> GetAllQuizQuestionByQuizIdPractice([Required] int quizId)
         {
-            var result = await _quizQuestionService.GetAllQuizQuestionByQuizIdPagination(quizId, pagingRequestParameters);
+            var result = await _quizQuestionService.GetAllQuizQuestionByQuizIdPractice(quizId);
+            if (!result.IsSucceeded)
+            {
+                return NotFound(result);
+            }
+            return Ok(result);
+        }
+        
+        [HttpGet("GetAllQuizQuestionByQuizIdPaginationTest/{quizId}")]
+        public async Task<ActionResult<ApiResult<PagedList<QuizQuestionTestDto>>>> GetAllQuizQuestionByQuizIdPaginationTest([Required] int quizId, [FromQuery] PagingRequestParameters pagingRequestParameters)
+        {
+            var result = await _quizQuestionService.GetAllQuizQuestionByQuizIdPaginationTest(quizId, pagingRequestParameters);
             if (!result.IsSucceeded)
             {
                 return NotFound(result);
