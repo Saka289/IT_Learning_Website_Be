@@ -34,7 +34,9 @@ public class AppDbContext : IdentityDbContext<ApplicationUser>
     public DbSet<ExamImage> ExamImages { get; set; }
     public DbSet<ExamAnswer> ExamAnswers { get; set; }
     public DbSet<UserExam> UserExams { get; set; }
-
+    public DbSet<Quiz> Quizzes { get; set; }
+    public DbSet<QuizQuestion> QuizQuestions { get; set; }
+    public DbSet<QuizAnswer> QuizAnswers { get; set; }
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
@@ -86,8 +88,12 @@ public class AppDbContext : IdentityDbContext<ApplicationUser>
                         {
                             var tokenHandler = new JwtSecurityTokenHandler();
                             var token = tokenHandler.ReadToken(accessToken) as JwtSecurityToken;
-                            string familyName = token.Claims.FirstOrDefault(u => u.Type == JwtRegisteredClaimNames.FamilyName)?.Value ?? String.Empty;
-                            string givenName = token.Claims.FirstOrDefault(u => u.Type == JwtRegisteredClaimNames.GivenName)?.Value ?? String.Empty;
+                            string familyName =
+                                token.Claims.FirstOrDefault(u => u.Type == JwtRegisteredClaimNames.FamilyName)?.Value ??
+                                String.Empty;
+                            string givenName =
+                                token.Claims.FirstOrDefault(u => u.Type == JwtRegisteredClaimNames.GivenName)?.Value ??
+                                String.Empty;
                             addedUserEntity.LastModifiedBy = $"{familyName} {givenName}";
                             item.State = EntityState.Added;
                         }
@@ -114,8 +120,12 @@ public class AppDbContext : IdentityDbContext<ApplicationUser>
                         {
                             var tokenHandler = new JwtSecurityTokenHandler();
                             var token = tokenHandler.ReadToken(accessToken) as JwtSecurityToken;
-                            string familyName = token.Claims.FirstOrDefault(u => u.Type == JwtRegisteredClaimNames.FamilyName)?.Value ?? String.Empty;
-                            string givenName = token.Claims.FirstOrDefault(u => u.Type == JwtRegisteredClaimNames.GivenName)?.Value ?? String.Empty;
+                            string familyName =
+                                token.Claims.FirstOrDefault(u => u.Type == JwtRegisteredClaimNames.FamilyName)?.Value ??
+                                String.Empty;
+                            string givenName =
+                                token.Claims.FirstOrDefault(u => u.Type == JwtRegisteredClaimNames.GivenName)?.Value ??
+                                String.Empty;
                             modifiedUserEntity.LastModifiedBy = $"{familyName} {givenName}";
                             item.State = EntityState.Modified;
                         }
