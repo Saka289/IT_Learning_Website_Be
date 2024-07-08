@@ -215,6 +215,111 @@ namespace LW.Data.Persistence.Migrations
                     b.ToTable("Documents");
                 });
 
+            modelBuilder.Entity("LW.Data.Entities.Exam", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    b.Property<string>("CreatedBy")
+                        .IsRequired()
+                        .HasColumnType("longtext");
+
+                    b.Property<DateTimeOffset>("CreatedDate")
+                        .HasColumnType("datetime(6)");
+
+                    b.Property<string>("Description")
+                        .IsRequired()
+                        .HasColumnType("longtext");
+
+                    b.Property<string>("ExamFile")
+                        .HasColumnType("longtext");
+
+                    b.Property<bool>("IsActive")
+                        .HasColumnType("tinyint(1)");
+
+                    b.Property<string>("KeyWord")
+                        .IsRequired()
+                        .HasColumnType("longtext");
+
+                    b.Property<string>("LastModifiedBy")
+                        .HasColumnType("longtext");
+
+                    b.Property<DateTimeOffset?>("LastModifiedDate")
+                        .HasColumnType("datetime(6)");
+
+                    b.Property<int>("NumberQuestion")
+                        .HasColumnType("int");
+
+                    b.Property<string>("Province")
+                        .IsRequired()
+                        .HasColumnType("longtext");
+
+                    b.Property<string>("PublicId")
+                        .HasColumnType("longtext");
+
+                    b.Property<string>("Title")
+                        .IsRequired()
+                        .HasColumnType("longtext");
+
+                    b.Property<int>("Year")
+                        .HasColumnType("int");
+
+                    b.HasKey("Id");
+
+                    b.ToTable("Exams");
+                });
+
+            modelBuilder.Entity("LW.Data.Entities.ExamAnswer", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    b.Property<string>("Answer")
+                        .IsRequired()
+                        .HasColumnType("varchar(1)");
+
+                    b.Property<int>("ExamId")
+                        .HasColumnType("int");
+
+                    b.Property<int>("NumberOfQuestion")
+                        .HasColumnType("int");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("ExamId");
+
+                    b.ToTable("ExamAnswers");
+                });
+
+            modelBuilder.Entity("LW.Data.Entities.ExamImage", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    b.Property<int>("ExamId")
+                        .HasColumnType("int");
+
+                    b.Property<string>("FilePath")
+                        .IsRequired()
+                        .HasColumnType("longtext");
+
+                    b.Property<int>("Index")
+                        .HasColumnType("int");
+
+                    b.Property<string>("publicId")
+                        .IsRequired()
+                        .HasColumnType("longtext");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("ExamId");
+
+                    b.ToTable("ExamImages");
+                });
+
             modelBuilder.Entity("LW.Data.Entities.Grade", b =>
                 {
                     b.Property<int>("Id")
@@ -450,6 +555,10 @@ namespace LW.Data.Persistence.Migrations
                     b.Property<bool>("IsActive")
                         .HasColumnType("tinyint(1)");
 
+                    b.Property<string>("KeyWord")
+                        .IsRequired()
+                        .HasColumnType("longtext");
+
                     b.Property<string>("LastModifiedBy")
                         .HasColumnType("longtext");
 
@@ -523,6 +632,35 @@ namespace LW.Data.Persistence.Migrations
                     b.HasIndex("ParentId");
 
                     b.ToTable("Topics");
+                });
+
+            modelBuilder.Entity("LW.Data.Entities.UserExam", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    b.Property<int>("ExamId")
+                        .HasColumnType("int");
+
+                    b.Property<string>("HistoryExam")
+                        .IsRequired()
+                        .HasColumnType("json");
+
+                    b.Property<decimal>("Score")
+                        .HasColumnType("decimal(65,30)");
+
+                    b.Property<string>("UserId")
+                        .IsRequired()
+                        .HasColumnType("varchar(255)");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("ExamId");
+
+                    b.HasIndex("UserId");
+
+                    b.ToTable("UserExams");
                 });
 
             modelBuilder.Entity("LW.Data.Entities.UserGrade", b =>
@@ -712,6 +850,28 @@ namespace LW.Data.Persistence.Migrations
                     b.Navigation("Grade");
                 });
 
+            modelBuilder.Entity("LW.Data.Entities.ExamAnswer", b =>
+                {
+                    b.HasOne("LW.Data.Entities.Exam", "Exam")
+                        .WithMany("ExamAnswers")
+                        .HasForeignKey("ExamId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Exam");
+                });
+
+            modelBuilder.Entity("LW.Data.Entities.ExamImage", b =>
+                {
+                    b.HasOne("LW.Data.Entities.Exam", "Exam")
+                        .WithMany("ExamImages")
+                        .HasForeignKey("ExamId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Exam");
+                });
+
             modelBuilder.Entity("LW.Data.Entities.Grade", b =>
                 {
                     b.HasOne("LW.Data.Entities.Level", "Level")
@@ -789,6 +949,25 @@ namespace LW.Data.Persistence.Migrations
                     b.Navigation("ParentTopic");
                 });
 
+            modelBuilder.Entity("LW.Data.Entities.UserExam", b =>
+                {
+                    b.HasOne("LW.Data.Entities.Exam", "Exam")
+                        .WithMany("UserExams")
+                        .HasForeignKey("ExamId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("LW.Data.Entities.ApplicationUser", "ApplicationUser")
+                        .WithMany("UserExams")
+                        .HasForeignKey("UserId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("ApplicationUser");
+
+                    b.Navigation("Exam");
+                });
+
             modelBuilder.Entity("LW.Data.Entities.UserGrade", b =>
                 {
                     b.HasOne("LW.Data.Entities.Grade", "Grade")
@@ -861,6 +1040,8 @@ namespace LW.Data.Persistence.Migrations
 
             modelBuilder.Entity("LW.Data.Entities.ApplicationUser", b =>
                 {
+                    b.Navigation("UserExams");
+
                     b.Navigation("UserGrades");
                 });
 
@@ -874,6 +1055,15 @@ namespace LW.Data.Persistence.Migrations
                     b.Navigation("CommentDocuments");
 
                     b.Navigation("Topics");
+                });
+
+            modelBuilder.Entity("LW.Data.Entities.Exam", b =>
+                {
+                    b.Navigation("ExamAnswers");
+
+                    b.Navigation("ExamImages");
+
+                    b.Navigation("UserExams");
                 });
 
             modelBuilder.Entity("LW.Data.Entities.Grade", b =>

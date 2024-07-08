@@ -5,11 +5,13 @@ using System.Linq;
 using System.Threading.Tasks;
 using LW.API.Application.Validators.QuizQuestionValidator;
 using LW.Services.QuizQuestionServices;
+using LW.Shared.DTOs.QuizAnswer;
 using LW.Shared.DTOs.QuizQuestion;
 using LW.Shared.SeedWork;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Nest;
+using Newtonsoft.Json;
 
 namespace LW.API.Controllers.Public
 {
@@ -35,17 +37,51 @@ namespace LW.API.Controllers.Public
 
             return Ok(result);
         }
-
-        [HttpGet("GetAllQuizQuestionByQuizId/{quizId}")]
-        public async Task<ActionResult<ApiResult<IEnumerable<QuizQuestionDto>>>> GetAllQuizQuestionByQuizId(
-            [Required] int quizId)
+        
+        [HttpGet("GetAllQuizQuestionPagination")]
+        public async Task<ActionResult<ApiResult<PagedList<QuizQuestionDto>>>> GetAllQuizQuestionPagination([FromQuery] PagingRequestParameters pagingRequestParameters)
         {
-            var result = await _quizQuestionService.GetAllQuizQuestionByQuizId(quizId);
+            var result = await _quizQuestionService.GetAllQuizQuestionPagination(pagingRequestParameters);
             if (!result.IsSucceeded)
             {
                 return NotFound(result);
             }
-
+            Response.Headers.Add("X-Pagination", JsonConvert.SerializeObject(result.Data.GetMetaData()));
+            return Ok(result);
+        }
+        
+        [HttpGet("GetAllQuizQuestionByQuizIdPractice/{quizId}")]
+        public async Task<ActionResult<ApiResult<PagedList<QuizQuestionDto>>>> GetAllQuizQuestionByQuizIdPractice([Required] int quizId)
+        {
+            var result = await _quizQuestionService.GetAllQuizQuestionByQuizIdPractice(quizId);
+            if (!result.IsSucceeded)
+            {
+                return NotFound(result);
+            }
+            return Ok(result);
+        }
+        
+        [HttpGet("GetAllQuizQuestionByQuizIdPaginationTest/{quizId}")]
+        public async Task<ActionResult<ApiResult<PagedList<QuizQuestionTestDto>>>> GetAllQuizQuestionByQuizIdPaginationTest([Required] int quizId, [FromQuery] PagingRequestParameters pagingRequestParameters)
+        {
+            var result = await _quizQuestionService.GetAllQuizQuestionByQuizIdPaginationTest(quizId, pagingRequestParameters);
+            if (!result.IsSucceeded)
+            {
+                return NotFound(result);
+            }
+            Response.Headers.Add("X-Pagination", JsonConvert.SerializeObject(result.Data.GetMetaData()));
+            return Ok(result);
+        }
+        
+        [HttpGet("SearchQuizQuestionPagination")]
+        public async Task<ActionResult<ApiResult<IEnumerable<QuizQuestionDto>>>> SearchQuizQuestionPagination([FromQuery] SearchQuizQuestionDto searchQuizQuestionDto)
+        {
+            var result = await _quizQuestionService.SearchQuizQuestion(searchQuizQuestionDto);
+            if (!result.IsSucceeded)
+            {
+                return NotFound(result);
+            }
+            Response.Headers.Add("X-Pagination", JsonConvert.SerializeObject(result.Data.GetMetaData()));
             return Ok(result);
         }
 

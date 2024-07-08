@@ -1,4 +1,6 @@
 ﻿using LW.Data.Entities;
+using LW.Shared.DTOs.Quiz;
+using LW.Shared.DTOs.QuizAnswer;
 using LW.Shared.DTOs.QuizQuestion;
 using LW.Shared.SeedWork;
 using Microsoft.AspNetCore.Http;
@@ -8,7 +10,10 @@ namespace LW.Services.QuizQuestionServices;
 public interface IQuizQuestionService
 {
     Task<ApiResult<IEnumerable<QuizQuestionDto>>> GetAllQuizQuestion();
-    Task<ApiResult<IEnumerable<QuizQuestionDto>>> GetAllQuizQuestionByQuizId(int quizId);
+    Task<ApiResult<PagedList<QuizQuestionDto>>> GetAllQuizQuestionPagination(PagingRequestParameters pagingRequestParameters);
+    Task<ApiResult<IEnumerable<QuizQuestionDto>>> GetAllQuizQuestionByQuizIdPractice(int quizId);
+    Task<ApiResult<PagedList<QuizQuestionTestDto>>> GetAllQuizQuestionByQuizIdPaginationTest(int quizId, PagingRequestParameters pagingRequestParameters);
+    Task<ApiResult<PagedList<QuizQuestionDto>>> SearchQuizQuestion(SearchQuizQuestionDto searchQuizQuestionDto);
     Task<ApiResult<QuizQuestionDto>> GetQuizQuestionById(int id);
     Task<ApiResult<QuizQuestionDto>> CreateQuizQuestion(QuizQuestionCreateDto quizQuestionCreateDto);
     Task<ApiResult<QuizQuestionDto>> UpdateQuizQuestion(QuizQuestionUpdateDto quizQuestionUpdateDto);

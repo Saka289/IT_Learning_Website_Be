@@ -17,10 +17,12 @@ namespace LW.API.Controllers.Public
     public class EnumController : ControllerBase
     {
         private readonly IEnumService _enumService;
+
         public EnumController(IEnumService enumService)
         {
             _enumService = enumService;
         }
+
         [HttpGet("GetAllBookCollection")]
         public async Task<ActionResult<ApiResult<IEnumerable<EnumDto>>>> GetBookCollection()
         {
@@ -29,6 +31,7 @@ namespace LW.API.Controllers.Public
             {
                 return NotFound(result);
             }
+
             return Ok(result);
         }
 
@@ -40,6 +43,32 @@ namespace LW.API.Controllers.Public
             {
                 return NotFound(result);
             }
-            return Ok(result);        }
+
+            return Ok(result);
+        }
+        
+        [HttpGet("GetTypeQuestion")]
+        public async Task<ActionResult<ApiResult<IEnumerable<EnumDto>>>> GetTypeQuestion()
+        {
+            var result = await _enumService.GetAllTypeQuestion();
+            if (!result.IsSucceeded)
+            {
+                return NotFound(result);
+            }
+
+            return Ok(result);
+        }
+        
+        [HttpGet("GetQuestionLevel")]
+        public async Task<ActionResult<ApiResult<IEnumerable<EnumDto>>>> GetQuestionLevel()
+        {
+            var result = await _enumService.GetAllLevelQuestion();
+            if (!result.IsSucceeded)
+            {
+                return NotFound(result);
+            }
+
+            return Ok(result);
+        }
     }
 }

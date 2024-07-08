@@ -7,8 +7,9 @@ namespace LW.Data.Repositories.QuizRepositories;
 public interface IQuizRepository : IRepositoryBase<Quiz, int>
 {
     Task<IEnumerable<Quiz>> GetAllQuiz();
-    Task<IEnumerable<Quiz>> GetAllQuizByTopicId(int topicId);
-    Task<IEnumerable<Quiz>> GetAllQuizByLessonId(int lessonId);
+    Task<IQueryable<Quiz>> GetAllQuizPagination();
+    Task<IQueryable<Quiz>> GetAllQuizByTopicIdPagination(int topicId);
+    Task<IQueryable<Quiz>> GetAllQuizByLessonIdPagination(int lessonId);
     Task<Quiz?> GetQuizById(int id);
     Task<Quiz> CreateQuiz(Quiz quiz);
     Task<Quiz> UpdateQuiz(Quiz quiz);

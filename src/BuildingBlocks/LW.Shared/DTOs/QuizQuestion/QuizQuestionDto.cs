@@ -9,6 +9,7 @@ public class QuizQuestionDto
     public string Type { get; set; }
     public string? TypeName { get; set; }
     public string? Content { get; set; }
+    public string KeyWord { get; set; }
     public bool IsActive { get; set; }
     public string QuestionLevel { get; set; }
     public string? QuestionLevelName { get; set; }
