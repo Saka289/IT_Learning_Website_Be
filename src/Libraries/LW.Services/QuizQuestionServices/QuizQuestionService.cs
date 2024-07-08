@@ -468,7 +468,7 @@ public class QuizQuestionService : IQuizQuestionService
                     quizQuestionImportParentDto.CountSuccess = countSuccess;
                     quizQuestionImportParentDto.CountFail = countFail;
                     quizQuestionImportParentDto.QuizQuestionImportDtos = quizQuestionImportDtos;
-                    quizQuestionImportParentDto.IdImport = await CacheQuizQuestions(quizQuestionImportSuccess);
+                    //quizQuestionImportParentDto.IdImport = await CacheQuizQuestions(quizQuestionImportSuccess);
                 }
             }
         }
@@ -527,8 +527,10 @@ public class QuizQuestionService : IQuizQuestionService
             QuizId = quizId,
             Content = workSheet.Cells[row, 3].Value?.ToString()?.Trim(),
             QuestionLevel = resultLevel.ToString(),
+            QuestionLevelName = level,
             QuizAnswers = quizAnswers,
             Type = result.ToString(),
+            TypeName = typeQuestionName,
             IsActive = true,
         };
     }
@@ -546,6 +548,10 @@ public class QuizQuestionService : IQuizQuestionService
         if (int.Parse(dto.QuestionLevel) == 0)
         {
             AddImportError(dto, "Không tìm thấy cấp độ câu hỏi");
+            isValid = false;
+        }if (string.IsNullOrEmpty(dto.Content))
+        {
+            AddImportError(dto, "Không tìm thấy câu hỏi");
             isValid = false;
         }
 
