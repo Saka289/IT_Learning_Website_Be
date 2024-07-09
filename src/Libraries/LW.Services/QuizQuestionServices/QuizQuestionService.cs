@@ -40,22 +40,15 @@ public class QuizQuestionService : IQuizQuestionService
     private readonly IMapper _mapper;
     private readonly IRedisCache<string> _redisCacheService;
     public QuizQuestionService(IQuizAnswerRepository quizAnswerRepository,
-<<<<<<< HEAD
-        IQuizQuestionRepository quizQuestionRepository, IRedisCache<string> redisCacheService, IMapper mapper, IQuizRepository quizRepository)
-=======
-        IQuizQuestionRepository quizQuestionRepository, IMapper mapper, IQuizRepository quizRepository,
+        IQuizQuestionRepository quizQuestionRepository, IRedisCache<string> redisCacheService, IMapper mapper, IQuizRepository quizRepository,
         IElasticSearchService<QuizQuestionDto, int> elasticSearchService)
->>>>>>> b709a49dbf6e4dcba71bf6e6cfbcccc52262527b
     {
         _quizAnswerRepository = quizAnswerRepository;
         _quizQuestionRepository = quizQuestionRepository;
         _mapper = mapper;
         _quizRepository = quizRepository;
-<<<<<<< HEAD
         _redisCacheService = redisCacheService ?? throw new ArgumentNullException(nameof(redisCacheService));
-=======
         _elasticSearchService = elasticSearchService;
->>>>>>> b709a49dbf6e4dcba71bf6e6cfbcccc52262527b
     }
 
     public async Task<ApiResult<IEnumerable<QuizQuestionDto>>> GetAllQuizQuestion()
@@ -238,7 +231,7 @@ public class QuizQuestionService : IQuizQuestionService
         }
 
         var result = _mapper.Map<QuizQuestionDto>(quizQuestionUpdate);
-        _elasticSearchService.UpdateDocumentAsync(ElasticConstant.ElasticQuizQuestion, result,
+         _elasticSearchService.UpdateDocumentAsync(ElasticConstant.ElasticQuizQuestion, result,
             quizQuestionUpdateDto.Id);
         return new ApiSuccessResult<QuizQuestionDto>(result);
     }
