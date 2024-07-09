@@ -28,6 +28,7 @@ using System.ComponentModel.DataAnnotations;
 using System.Reflection;
 using static Aspose.Pdf.CollectionItem;
 using MockQueryable.Moq;
+using Microsoft.OpenApi.Extensions;
 
 namespace LW.Services.QuizQuestionServices;
 
@@ -447,7 +448,7 @@ public class QuizQuestionService : IQuizQuestionService
 
         foreach (var value in comboBoxValues)
         {
-            validation.Formula.Values.Add(value.GetDisplayNameEnum());
+            validation.Formula.Values.Add(value.GetDisplayName());
         }
         int levelsColumnIndex = Array.IndexOf(columnHeaders, "Mức độ câu hỏi");
         var validationRangelevels = worksheet.Cells[startRow, levelsColumnIndex + 1, endRow, levelsColumnIndex + 1];
@@ -456,7 +457,7 @@ public class QuizQuestionService : IQuizQuestionService
 
         foreach (var value in levels)
         {
-            validationLevels.Formula.Values.Add(value.GetDisplayNameEnum());
+            validationLevels.Formula.Values.Add(value.GetDisplayName());
         }
     }
     // save package by stream 
@@ -585,8 +586,9 @@ public class QuizQuestionService : IQuizQuestionService
         var answerCorrect = workSheet.Cells[row, 8].Value?.ToString()?.Trim();
         var level = workSheet.Cells[row, 9].Value?.ToString()?.Trim();
 
-        int result = EnumExtensions.GetEnumIntValueFromDisplayName<ETypeQuestion>(typeQuestionName);
-        int resultLevel = EnumExtensions.GetEnumIntValueFromDisplayName<EQuestionLevel>(level);
+        int result = EnumHelperExtensions
+            .GetEnumIntValueFromDisplayName<ETypeQuestion>(typeQuestionName);
+        int resultLevel = EnumHelperExtensions.GetEnumIntValueFromDisplayName<EQuestionLevel>(level);
 
         IEnumerable<QuizAnswerDto> quizAnswers = new[]
         {
