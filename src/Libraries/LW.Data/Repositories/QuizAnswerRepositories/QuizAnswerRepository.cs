@@ -22,6 +22,15 @@ public class QuizAnswerRepository : RepositoryBase<QuizAnswer, int>, IQuizAnswer
         return await FindByCondition(x => x.QuizQuestionId == id).FirstOrDefaultAsync();
     }
 
+    public async Task<IEnumerable<QuizAnswer>> GetQuizAnswerByQuizIdCorrect(int quizId)
+    {
+        var result = await FindAll()
+            .Include(q => q.QuizQuestion)
+            .Where(q => q.QuizQuestion.QuizId == quizId && q.IsCorrect)
+            .ToListAsync();
+        return result;
+    }
+
     public async Task<QuizAnswer?> GetQuizAnswerById(int id)
     {
         return await FindByCondition(x => x.Id == id).FirstOrDefaultAsync();

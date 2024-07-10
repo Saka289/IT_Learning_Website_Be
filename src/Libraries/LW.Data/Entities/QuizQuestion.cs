@@ -13,8 +13,13 @@ public class QuizQuestion : EntityAuditBase<int>
     public ETypeQuestion Type { get; set; }
     [Required]
     public string Content { get; set; }
+    public string? Hint { get; set; }
+    public string? Image { get; set; }
+    public string? PublicId { get; set; }
     [Required]
     public string KeyWord { get; set; }
+    [Required]
+    public bool IsShuffle { get; set; }
     [Required]
     public bool IsActive { get; set; }
     [Required]

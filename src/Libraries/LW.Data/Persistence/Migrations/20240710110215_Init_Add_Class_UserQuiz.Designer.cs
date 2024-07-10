@@ -3,6 +3,7 @@ using System;
 using LW.Data.Persistence;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
@@ -10,9 +11,10 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace LW.Data.Persistence.Migrations
 {
     [DbContext(typeof(AppDbContext))]
-    partial class AppDbContextModelSnapshot : ModelSnapshot
+    [Migration("20240710110215_Init_Add_Class_UserQuiz")]
+    partial class Init_Add_Class_UserQuiz
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -555,12 +557,6 @@ namespace LW.Data.Persistence.Migrations
                     b.Property<DateTimeOffset>("CreatedDate")
                         .HasColumnType("datetime(6)");
 
-                    b.Property<string>("Hint")
-                        .HasColumnType("longtext");
-
-                    b.Property<string>("Image")
-                        .HasColumnType("longtext");
-
                     b.Property<bool>("IsActive")
                         .HasColumnType("tinyint(1)");
 
@@ -576,9 +572,6 @@ namespace LW.Data.Persistence.Migrations
 
                     b.Property<DateTimeOffset?>("LastModifiedDate")
                         .HasColumnType("datetime(6)");
-
-                    b.Property<string>("PublicId")
-                        .HasColumnType("longtext");
 
                     b.Property<int>("QuestionLevel")
                         .HasColumnType("int");

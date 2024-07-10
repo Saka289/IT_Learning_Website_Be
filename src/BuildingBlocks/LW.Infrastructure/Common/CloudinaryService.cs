@@ -1,5 +1,5 @@
 ﻿using System.Net;
-//using Aspose.Pdf;
+using Aspose.Pdf;
 using CloudinaryDotNet;
 using CloudinaryDotNet.Actions;
 using LW.Contracts.Common;
@@ -255,7 +255,8 @@ public class CloudinaryService : ICloudinaryService
         await using var browser = await Puppeteer.LaunchAsync(new LaunchOptions
         {
             Headless = true,
-            Args = new string[] { "--disable-gpu", "--disable-dev-shm-usage", "--disable-setuid-sandbox", "--no-sandbox" }
+            Args = new string[]
+                { "--disable-gpu", "--disable-dev-shm-usage", "--disable-setuid-sandbox", "--no-sandbox" }
         });
         await using var page = await browser.NewPageAsync();
         await page.SetContentAsync(htmlContent);
@@ -295,41 +296,39 @@ public class CloudinaryService : ICloudinaryService
 
     public async Task<string> ConvertPdfToHtml(IFormFile file)
     {
-        // if (file == null || file.Length == 0)
-        // {
-        //     _logger.Error("File cannot be null or empty.");
-        //     return null;
-        // }
-        //
-        // string htmlContent;
-        //
-        // var document = new Document(file.OpenReadStream());
-        //
-        // await using (var outputStream = new MemoryStream())
-        // {
-        //     var saveOptions = new HtmlSaveOptions()
-        //     {
-        //         FixedLayout = true,
-        //         SaveFullFont = true,
-        //         UseZOrder = true,
-        //         RasterImagesSavingMode = HtmlSaveOptions.RasterImagesSavingModes.AsEmbeddedPartsOfPngPageBackground,
-        //         FontSavingMode = HtmlSaveOptions.FontSavingModes.SaveInAllFormats,
-        //         PartsEmbeddingMode = HtmlSaveOptions.PartsEmbeddingModes.EmbedAllIntoHtml,
-        //         LettersPositioningMethod = HtmlSaveOptions.LettersPositioningMethods
-        //             .UseEmUnitsAndCompensationOfRoundingErrorsInCss,
-        //     };
-        //
-        //     document.Save(outputStream, saveOptions);
-        //
-        //     outputStream.Position = 0;
-        //
-        //     using (var reader = new StreamReader(outputStream))
-        //     {
-        //         htmlContent = await reader.ReadToEndAsync();
-        //     }
-        // }
-        //
-        // return htmlContent;
-        return "";
+        if (file == null || file.Length == 0)
+        {
+            _logger.Error("File cannot be null or empty.");
+            return null;
+        }
+
+        string htmlContent;
+
+        var document = new Document(file.OpenReadStream());
+
+        await using (var outputStream = new MemoryStream())
+        {
+            var saveOptions = new HtmlSaveOptions()
+            {
+                FixedLayout = true,
+                SaveFullFont = true,
+                UseZOrder = true,
+                RasterImagesSavingMode = HtmlSaveOptions.RasterImagesSavingModes.AsEmbeddedPartsOfPngPageBackground,
+                FontSavingMode = HtmlSaveOptions.FontSavingModes.SaveInAllFormats,
+                PartsEmbeddingMode = HtmlSaveOptions.PartsEmbeddingModes.EmbedAllIntoHtml,
+                LettersPositioningMethod = HtmlSaveOptions.LettersPositioningMethods.UseEmUnitsAndCompensationOfRoundingErrorsInCss,
+            };
+
+            document.Save(outputStream, saveOptions);
+
+            outputStream.Position = 0;
+
+            using (var reader = new StreamReader(outputStream))
+            {
+                htmlContent = await reader.ReadToEndAsync();
+            }
+        }
+
+        return htmlContent;
     }
 }
