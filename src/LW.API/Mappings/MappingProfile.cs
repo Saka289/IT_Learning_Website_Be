@@ -17,6 +17,7 @@ using LW.Shared.DTOs.QuizAnswer;
 using LW.Shared.DTOs.QuizQuestion;
 using LW.Shared.DTOs.Topic;
 using LW.Shared.DTOs.UserExam;
+using LW.Shared.DTOs.UserQuiz;
 using LW.Shared.Enums;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.OpenApi.Extensions;
@@ -201,5 +202,8 @@ public class MappingProfile : Profile
         CreateMap<QuizAnswer, QuizAnswerTestDto>().ReverseMap();
         CreateMap<QuizAnswer, QuizAnswerCreateDto>().ReverseMap();
         CreateMap<QuizAnswer, QuizAnswerUpdateDto>().ReverseMap();
+        //UserQuiz
+        CreateMap<UserQuiz, UserQuizDto>().ReverseMap();
+        CreateMap<HistoryQuiz, HistoryQuizDto>().ReverseMap();
     }
 }

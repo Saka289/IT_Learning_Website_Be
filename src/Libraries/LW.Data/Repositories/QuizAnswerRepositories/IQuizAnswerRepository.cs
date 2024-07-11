@@ -7,6 +7,7 @@ public interface IQuizAnswerRepository : IRepositoryBase<QuizAnswer, int>
 {
     Task<IEnumerable<QuizAnswer>> GetAllQuizAnswerByQuizQuestionId(int id);
     Task<QuizAnswer?> GetQuizAnswerByQuizQuestionId(int id);
+    Task<IEnumerable<QuizAnswer>> GetQuizAnswerByQuizIdCorrect(int quizId);
     Task<QuizAnswer?> GetQuizAnswerById(int id);
     Task<QuizAnswer> CreateQuizAnswer(QuizAnswer quizAnswer);
     Task<bool> CreateRangeQuizAnswer(IEnumerable<QuizAnswer> quizAnswers);

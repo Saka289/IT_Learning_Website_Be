@@ -10,5 +10,6 @@ public enum ETypeQuestion
     QuestionFourAnswer = 2,
     [Display(Name = "Loại năm câu trả lời")]
     QuestionFiveAnswer = 3,
-
+[Display(Name = "Loại nhiều câu trả lời")]
+    QuestionMultiChoice = 4,
 }
