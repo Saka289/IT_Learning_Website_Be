@@ -8,6 +8,7 @@ public enum ETypeQuestion
     QuestionTrueFalse = 1,
     [Display(Name = "Loại bốn câu trả lời")]
     QuestionFourAnswer = 2,
+    [Display(Name = "Loại năm câu trả lời")]
     QuestionFiveAnswer = 3,
 
 }

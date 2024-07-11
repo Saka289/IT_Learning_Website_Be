@@ -15,15 +15,15 @@ public static class EnumHelperExtensions
             .GetCustomAttribute<DisplayAttribute>()
             ?.GetName();
     }
-    //public static string GetDisplayNameEnum(this Enum enumValue)
-    //{
-    //    var displayAttribute = enumValue.GetType()
-    //        .GetMember(enumValue.ToString())
-    //        .First()
-    //        .GetCustomAttribute<DisplayAttribute>();
+    public static string GetDisplayNameEnum(this Enum enumValue)
+    {
+        var displayAttribute = enumValue.GetType()
+            .GetMember(enumValue.ToString())
+            .First()
+            .GetCustomAttribute<DisplayAttribute>();
 
-    //    return displayAttribute?.Name ?? enumValue.ToString();
-    //}
+        return displayAttribute?.Name ?? enumValue.ToString();
+    }
     //// Helper method to get integer value from enum display name
 
 

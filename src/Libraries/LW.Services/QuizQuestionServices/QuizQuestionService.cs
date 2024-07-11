@@ -2,7 +2,7 @@
 using AutoMapper;
 using LW.Cache;
 using LW.Cache.Interfaces;
-﻿using System.Collections;
+using System.Collections;
 using AutoMapper;
 using LW.Contracts.Common;
 using LW.Data.Entities;
@@ -28,7 +28,7 @@ using System.ComponentModel.DataAnnotations;
 using System.Reflection;
 using static Aspose.Pdf.CollectionItem;
 using MockQueryable.Moq;
-using Microsoft.OpenApi.Extensions;
+
 
 namespace LW.Services.QuizQuestionServices;
 
@@ -232,8 +232,8 @@ public class QuizQuestionService : IQuizQuestionService
         }
 
         var result = _mapper.Map<QuizQuestionDto>(quizQuestionUpdate);
-         _elasticSearchService.UpdateDocumentAsync(ElasticConstant.ElasticQuizQuestion, result,
-            quizQuestionUpdateDto.Id);
+        _elasticSearchService.UpdateDocumentAsync(ElasticConstant.ElasticQuizQuestion, result,
+           quizQuestionUpdateDto.Id);
         return new ApiSuccessResult<QuizQuestionDto>(result);
     }
 
@@ -383,6 +383,11 @@ public class QuizQuestionService : IQuizQuestionService
 
         ETypeQuestion[] typeQuestions = (ETypeQuestion[])Enum.GetValues(typeof(ETypeQuestion));
         EQuestionLevel[] levels = (EQuestionLevel[])Enum.GetValues(typeof(EQuestionLevel));
+        var arrayShuffle = new[]
+{
+    new { label = "Có", value = true },
+    new { label = "Không", value = false }
+};
         using (var package = new ExcelPackage())
         {
             // Add a worksheet named "Data Validation"
@@ -396,14 +401,19 @@ public class QuizQuestionService : IQuizQuestionService
                 "Đáp án 2 - max 200 ký tự",
                 "Đáp án 3 - max 200 ký tự",
                 "Đáp án 4 - max 200 ký tự",
-                "Đáp án đúng - Chọn một câu trả lời đúng theo số (1,2,3,4) ",
+                "Đáp án 5 - max 200 ký tự",
+                "Đáp án 6 - max 200 ký tự", // thay đổi cột import 
+                "Đáp án đúng - Chọn một câu trả lời đúng theo số (1,2,3,4,5,6) ",
                 "Mức độ câu hỏi",
+                "Trộn câu hỏi",
+                "Gợi ý câu hỏi",
+
                 };
             int dataStartRow = 3;
-            StyleColumn(columnHeaders, worksheet, dataStartRow);
-            int startRow = dataStartRow + 1; // Assuming data starts from row (dataStartRow + 1)
             int endRow = 1000; ;  // Calculate end row dynamically
-            AddDataValidation(worksheet, columnHeaders, startRow, endRow, typeQuestions, levels);
+            StyleColumn(columnHeaders, worksheet, dataStartRow,endRow);
+            int startRow = dataStartRow + 1; // Assuming data starts from row (dataStartRow + 1)
+            AddDataValidation(worksheet, columnHeaders, startRow, endRow, typeQuestions, levels, arrayShuffle);
             // Save the workbook to a memory stream and return the stream as a byte array
             return SavePackageToStream(package);
         }
@@ -415,7 +425,7 @@ public class QuizQuestionService : IQuizQuestionService
         // Add a worksheet named "Data Validation"
         var worksheet = package.Workbook.Worksheets.Add("Danh sách câu hỏi");
         // Merge cells for title and set title formatting
-        worksheet.Cells["A1:I2"].Merge = true;
+        worksheet.Cells["A1:M2"].Merge = true;
         worksheet.Cells["A1"].Value = "Danh Sách Câu Hỏi"; // Replace with your actual title
         worksheet.Row(1).Height = 25;
         worksheet.Row(1).Style.Font.Bold = true;
@@ -424,9 +434,9 @@ public class QuizQuestionService : IQuizQuestionService
         return worksheet;
     }
     // style for column 
-    public void StyleColumn(string[] columnHeaders, ExcelWorksheet worksheet, int dataStartRow)
+    public void StyleColumn(string[] columnHeaders, ExcelWorksheet worksheet, int dataStartRow, int endrow)
     {
-        int[] columnWidths = { 7, 20, 30, 30, 30, 30, 30, 30, 30 };
+        int[] columnWidths = { 7, 20, 30, 30, 30, 30, 30, 30, 30, 30, 30, 30, 30 };
         // Add column headers and set column widths
         for (int i = 0; i < columnHeaders.Length; i++)
         {
@@ -436,19 +446,32 @@ public class QuizQuestionService : IQuizQuestionService
             worksheet.Column(i + 1).Width = columnWidths[i];
             worksheet.Row(dataStartRow).Style.Font.Size = 12; // Set font size for headers row
             worksheet.Row(dataStartRow).Style.Font.Bold = true;
+            // Apply border style to the entire column
+            using (var range = worksheet.Cells[dataStartRow, i + 1, endrow, i + 1])
+            {
+                range.Style.Border.Top.Style = ExcelBorderStyle.Thin;
+                range.Style.Border.Bottom.Style = ExcelBorderStyle.Thin;
+                range.Style.Border.Left.Style = ExcelBorderStyle.Thin;
+                range.Style.Border.Right.Style = ExcelBorderStyle.Thin;
+            }
         }
     }
     // create combobox 
-    private void AddDataValidation(ExcelWorksheet worksheet, string[] columnHeaders, int startRow, int endRow, IEnumerable<ETypeQuestion> comboBoxValues, IEnumerable<EQuestionLevel> levels)
+    private void AddDataValidation(ExcelWorksheet worksheet, string[] columnHeaders, int startRow, int endRow, IEnumerable<ETypeQuestion> comboBoxValues, IEnumerable<EQuestionLevel> levels, IEnumerable<Object> shuffles)
     {
         int departmentColumnIndex = Array.IndexOf(columnHeaders, "Loại câu hỏi");
+        if (departmentColumnIndex == -1)
+        {
+            throw new ArgumentException("Column 'Loại câu hỏi' not found in columnHeaders.");
+        }
+
         var validationRange = worksheet.Cells[startRow, departmentColumnIndex + 1, endRow, departmentColumnIndex + 1];
 
         var validation = validationRange.DataValidation.AddListDataValidation();
 
         foreach (var value in comboBoxValues)
         {
-            validation.Formula.Values.Add(value.GetDisplayName());
+            validation.Formula.Values.Add(value.GetDisplayNameEnum());
         }
         int levelsColumnIndex = Array.IndexOf(columnHeaders, "Mức độ câu hỏi");
         var validationRangelevels = worksheet.Cells[startRow, levelsColumnIndex + 1, endRow, levelsColumnIndex + 1];
@@ -457,7 +480,17 @@ public class QuizQuestionService : IQuizQuestionService
 
         foreach (var value in levels)
         {
-            validationLevels.Formula.Values.Add(value.GetDisplayName());
+            validationLevels.Formula.Values.Add(value.GetDisplayNameEnum());
+        }
+        int shuffleColumnIndex = Array.IndexOf(columnHeaders, "Trộn câu hỏi");
+        var validationRangeShuffle = worksheet.Cells[startRow, shuffleColumnIndex + 1, endRow, shuffleColumnIndex + 1];
+
+        var validationShuffle = validationRangeShuffle.DataValidation.AddListDataValidation();
+
+        foreach (var item in shuffles)
+        {
+            var label = item.GetType().GetProperty("label").GetValue(item).ToString();
+            validationShuffle.Formula.Values.Add(label);
         }
     }
     // save package by stream 
@@ -578,26 +611,37 @@ public class QuizQuestionService : IQuizQuestionService
 
     private QuizQuestionImportDto CreateQuizQuestionImportDto(ExcelWorksheet workSheet, int row, int quizId)
     {
+        var arrayShuffle = new[]
+{
+    new { label = "Có", value = true },
+    new { label = "Không", value = false }
+};
         var typeQuestionName = workSheet.Cells[row, 2].Value?.ToString()?.Trim();
         var answer1 = workSheet.Cells[row, 4].Value?.ToString()?.Trim();
         var answer2 = workSheet.Cells[row, 5].Value?.ToString()?.Trim();
         var answer3 = workSheet.Cells[row, 6].Value?.ToString()?.Trim();
         var answer4 = workSheet.Cells[row, 7].Value?.ToString()?.Trim();
-        var answerCorrect = workSheet.Cells[row, 8].Value?.ToString()?.Trim();
-        var level = workSheet.Cells[row, 9].Value?.ToString()?.Trim();
+        var answer5 = workSheet.Cells[row, 8].Value?.ToString()?.Trim();
+        var answer6 = workSheet.Cells[row, 9].Value?.ToString()?.Trim();
+        var answerCorrect = workSheet.Cells[row, 10].Value?.ToString()?.Trim();
+        var level = workSheet.Cells[row, 11].Value?.ToString()?.Trim();
+        var isShuffle = workSheet.Cells[row, 12].Value?.ToString()?.Trim();
+        var hint = workSheet.Cells[row, 13].Value?.ToString()?.Trim();
 
         int result = EnumHelperExtensions
             .GetEnumIntValueFromDisplayName<ETypeQuestion>(typeQuestionName);
         int resultLevel = EnumHelperExtensions.GetEnumIntValueFromDisplayName<EQuestionLevel>(level);
-
+        string[] correctAnswersArray = answerCorrect?.Split(',') ?? Array.Empty<string>();
         IEnumerable<QuizAnswerDto> quizAnswers = new[]
         {
-        new QuizAnswerDto(answerCorrect.Equals("1"), answer1),
-        new QuizAnswerDto(answerCorrect.Equals("2"), answer2),
-        new QuizAnswerDto(answerCorrect.Equals("3"), answer3),
-        new QuizAnswerDto(answerCorrect.Equals("4"), answer4),
+        new QuizAnswerDto(correctAnswersArray.Contains("1"), answer1),
+        new QuizAnswerDto(correctAnswersArray.Contains("2"), answer2),
+        new QuizAnswerDto(correctAnswersArray.Contains("3"), answer3),
+        new QuizAnswerDto(correctAnswersArray.Contains("4"), answer4),
+        new QuizAnswerDto(correctAnswersArray.Contains("5"), answer5),
+        new QuizAnswerDto(correctAnswersArray.Contains("6"), answer6),
     };
-
+        var shuffle = CheckCoincidence(arrayShuffle, isShuffle, "label");
         return new QuizQuestionImportDto
         {
             QuizId = quizId,
@@ -625,7 +669,8 @@ public class QuizQuestionService : IQuizQuestionService
         {
             AddImportError(dto, "Không tìm thấy cấp độ câu hỏi");
             isValid = false;
-        }if (string.IsNullOrEmpty(dto.Content))
+        }
+        if (string.IsNullOrEmpty(dto.Content))
         {
             AddImportError(dto, "Không tìm thấy câu hỏi");
             isValid = false;
