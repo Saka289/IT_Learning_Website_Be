@@ -97,7 +97,7 @@ namespace LW.API.Controllers.Public
         }
         
         [HttpPost("CreateQuizQuestion")]
-        public async Task<ActionResult<ApiResult<IEnumerable<QuizQuestionDto>>>> CreateQuizQuestion([FromBody] QuizQuestionCreateDto quizQuestionCreateDto)
+        public async Task<ActionResult<ApiResult<IEnumerable<QuizQuestionDto>>>> CreateQuizQuestion([FromForm] QuizQuestionCreateDto quizQuestionCreateDto)
         {
             var validationResult = await new CreateQuizQuestionCommandValidator().ValidateAsync(quizQuestionCreateDto);
             if (!validationResult.IsValid)
@@ -115,7 +115,7 @@ namespace LW.API.Controllers.Public
         }
         
         [HttpPut("UpdateQuizQuestion")]
-        public async Task<ActionResult<ApiResult<IEnumerable<QuizQuestionDto>>>> UpdateQuizQuestion([FromBody] QuizQuestionUpdateDto quizQuestionUpdateDto)
+        public async Task<ActionResult<ApiResult<IEnumerable<QuizQuestionDto>>>> UpdateQuizQuestion([FromForm] QuizQuestionUpdateDto quizQuestionUpdateDto)
         {
             var validationResult = await new UpdateQuizQuestionCommandValidator().ValidateAsync(quizQuestionUpdateDto);
             if (!validationResult.IsValid)
@@ -133,7 +133,7 @@ namespace LW.API.Controllers.Public
         }
         
         [HttpPost("CreateRangeQuizQuestion")]
-        public async Task<ActionResult<ApiResult<IEnumerable<QuizQuestionDto>>>> CreateRangeQuizQuestion([FromBody] IEnumerable<QuizQuestionCreateDto> quizQuestionsCreateDto)
+        public async Task<ActionResult<ApiResult<IEnumerable<QuizQuestionDto>>>> CreateRangeQuizQuestion([FromForm] IEnumerable<QuizQuestionCreateDto> quizQuestionsCreateDto)
         {
             var validator =  new CreateQuizQuestionCommandValidator();
             var validationResults =  quizQuestionsCreateDto.Select(async model => await validator.ValidateAsync(model));
@@ -151,7 +151,7 @@ namespace LW.API.Controllers.Public
         }
         
         [HttpPut("UpdateRangeQuizQuestion")]
-        public async Task<ActionResult<ApiResult<IEnumerable<QuizQuestionDto>>>> UpdateRangeQuizQuestion([FromBody] IEnumerable<QuizQuestionUpdateDto> quizQuestionsUpdateDto)
+        public async Task<ActionResult<ApiResult<IEnumerable<QuizQuestionDto>>>> UpdateRangeQuizQuestion([FromForm] IEnumerable<QuizQuestionUpdateDto> quizQuestionsUpdateDto)
         {
             var validator =  new UpdateQuizQuestionCommandValidator();
             var validationResults =  quizQuestionsUpdateDto.Select(async model => await validator.ValidateAsync(model));

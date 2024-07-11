@@ -3,7 +3,7 @@ using LW.Data.Entities;
 
 namespace LW.Data.Repositories.UserGradeRepositories;
 
-public interface IUserGradeRepository:IRepositoryBase<UserGrade,int>
+public interface IUserGradeRepository : IRepositoryBase<UserGrade, int>
 {
     Task CreateUserGrade(UserGrade userGrade);
     Task CreateRangeUserGrade(IEnumerable<UserGrade> userGrades);
