@@ -105,10 +105,18 @@ public class TopicService : ITopicService
 
     public async Task<ApiResult<bool>> Delete(int id)
     {
-        var topic = await _topicRepository.GetTopicById(id);
+        var topic = await _topicRepository.GetTopicByAllId(id);
         if (topic == null)
         {
             return new ApiResult<bool>(false, "Not found !");
+        }
+
+        var listLesson = await _lessonRepository.GetAllLessonByTopic(id);
+        if (listLesson.Any())
+        {
+            var listLessonDto = _mapper.Map<IEnumerable<LessonDto>>(listLesson);
+            var listId = listLessonDto.Select(x => x.Id).ToList();
+            await _elasticSearchLessonService.DeleteDocumentRangeAsync(ElasticConstant.ElasticLessons, listId);
         }
 
         var isDeleted = await _topicRepository.DeleteTopic(id);
@@ -117,7 +125,9 @@ public class TopicService : ITopicService
             return new ApiResult<bool>(false, "Delete topic failed");
         }
 
-        _elasticSearchService.DeleteDocumentAsync(ElasticConstant.ElasticTopics, id);
+        await _elasticSearchService.DeleteDocumentAsync(ElasticConstant.ElasticTopics, id);
+
+
         return new ApiResult<bool>(true, "Delete topic successfully");
     }
 

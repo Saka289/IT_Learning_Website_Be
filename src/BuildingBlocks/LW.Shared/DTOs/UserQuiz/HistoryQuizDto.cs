@@ -1,8 +1,8 @@
 ﻿using LW.Shared.DTOs.QuizQuestion;
 
-namespace LW.Data.Entities;
+namespace LW.Shared.DTOs.UserQuiz;
 
-public class HistoryQuiz
+public class HistoryQuizDto
 {
     public int QuestionId { get; set; }
     public IEnumerable<int>? AnswerId { get; set; }

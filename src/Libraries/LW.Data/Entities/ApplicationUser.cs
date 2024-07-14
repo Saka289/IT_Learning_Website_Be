@@ -15,4 +15,5 @@ public class ApplicationUser : IdentityUser
     public DateTime? RefreshTokenExpiryTime { get; set; }
     public virtual ICollection<UserGrade> UserGrades { get; set; }
     public virtual ICollection<UserExam>? UserExams { get; set; }
+    public virtual ICollection<UserQuiz> UserQuizzes { get; set; }
 }

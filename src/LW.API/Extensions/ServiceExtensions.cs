@@ -41,6 +41,7 @@ using LW.Data.Repositories.QuizRepositories;
 using LW.Data.Repositories.TopicRepositories;
 using LW.Data.Repositories.UserExamRepositories;
 using LW.Data.Repositories.UserGradeRepositories;
+using LW.Data.Repositories.UserQuizRepositories;
 using LW.Services.CommentDocumentServices;
 using LW.Services.EnumServices;
 using LW.Services.ExamAnswerServices;
@@ -53,6 +54,7 @@ using LW.Services.QuizServices;
 using LW.Services.TopicServices;
 using LW.Services.UserExamServices;
 using LW.Services.UserGradeServices;
+using LW.Services.UserQuizServices;
 using Nest;
 
 namespace LW.API.Extensions;
@@ -271,6 +273,7 @@ public static class ServiceExtensions
         services.AddScoped<IQuizRepository, QuizRepository>();
         services.AddScoped<IQuizQuestionRepository, QuizQuestionRepository>();
         services.AddScoped<IQuizAnswerRepository, QuizAnswerRepository>();
+        services.AddScoped<IUserQuizRepository, UserQuizRepository>();
         
         // IService 
         services.AddScoped<IAdminAuthorService, AdminAuthorService>();
@@ -293,6 +296,7 @@ public static class ServiceExtensions
         services.AddScoped<IUserGradeService, UserGradeService>();
         services.AddScoped<IQuizService, QuizService>();
         services.AddScoped<IQuizQuestionService, QuizQuestionService>();
+        services.AddScoped<IUserQuizService, UserQuizService>();
         return services;
     }
 }

@@ -16,6 +16,8 @@ public class Quiz : EntityAuditBase<int>
     [Column(TypeName = "decimal(12,2)")] 
     public decimal Score { get; set; }
     [Required]
+    public bool IsShuffle { get; set; }
+    [Required]
     public bool IsActive { get; set; }
     public int? TopicId { get; set; }
     public int? LessonId { get; set; }
@@ -24,4 +26,5 @@ public class Quiz : EntityAuditBase<int>
     [ForeignKey(nameof(LessonId))]
     public virtual Lesson Lesson { get; set; }
     public virtual ICollection<QuizQuestion> QuizQuestions { get; set; }
+    public virtual ICollection<UserQuiz> UserQuizzes { get; set; }
 }

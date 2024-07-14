@@ -7,4 +7,5 @@ public enum ETypeQuestion
     QuestionTrueFalse = 1,
     QuestionFourAnswer = 2,
     QuestionFiveAnswer = 3,
+    QuestionMultiChoice = 4,
 }
