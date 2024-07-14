@@ -10,4 +10,5 @@ public class ElasticConstant
     public const string ElasticQuizzes = "quizzes";
     public const string ElasticQuizQuestion = "questions";
     public const string ElasticExams = "exams";
+    public const string ElasticTags = "tags";
 }

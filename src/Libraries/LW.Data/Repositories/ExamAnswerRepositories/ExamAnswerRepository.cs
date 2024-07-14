@@ -27,6 +27,11 @@ public class ExamAnswerRepository : RepositoryBase<ExamAnswer, int>, IExamAnswer
         return await FindByCondition(x => x.Id == id).FirstOrDefaultAsync();
     }
 
+    public async Task<ExamAnswer> GetExamAnswerByNumberOfQuestion(int numberOfQuestion)
+    {
+        return await FindByCondition(x => x.NumberOfQuestion == numberOfQuestion).FirstOrDefaultAsync();
+    }
+
     public async Task<bool> CreateRangeExamAnswer(IEnumerable<ExamAnswer> examAnswers)
     {
         await CreateListAsync(examAnswers);

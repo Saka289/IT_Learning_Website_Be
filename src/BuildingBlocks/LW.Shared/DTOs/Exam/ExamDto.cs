@@ -14,5 +14,5 @@ public class ExamDto
     public DateTimeOffset CreatedDate { get; set; }
     public DateTimeOffset? LastModifiedDate { get; set; }
     //images
-    public IEnumerable<ExamImageDto> ImageDtos { get; set; }
+    public IEnumerable<ExamImageDto> ExamImages { get; set; }
 }

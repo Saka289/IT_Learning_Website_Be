@@ -76,6 +76,12 @@ public class TagService : ITagService
 
     public async Task<ApiResult<TagDto>> CreateTag(TagCreateDto tagCreateDto)
     {
+        var tagExist = await _tagRepository.GetTagByKeyword(tagCreateDto.KeyWord);
+        if (tagExist != null)
+        {
+            return new ApiResult<TagDto>(false,
+                "It seems that there is already a tag with the same value as the tag just created");
+        }
         var tag = _mapper.Map<Tag>(tagCreateDto);
         await _tagRepository.CreateTag(tag);
         var result = _mapper.Map<TagDto>(tag);

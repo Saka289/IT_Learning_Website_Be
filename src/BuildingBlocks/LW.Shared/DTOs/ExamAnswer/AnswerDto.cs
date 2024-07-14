@@ -2,15 +2,12 @@
 
 namespace LW.Shared.DTOs.ExamAnswer;
 
-public class ExamAnswerCreateDto
+public class AnswerDto
 {
     [Required]
     public int NumberOfQuestion { get; set; }
+    
     [Required]
 
     public char Answer { get; set; } //ABCD
-
-    [Required]
-
-    public int ExamId { get; set; }
 }

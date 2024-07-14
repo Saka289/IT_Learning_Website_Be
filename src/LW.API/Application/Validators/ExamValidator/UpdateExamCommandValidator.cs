@@ -16,7 +16,7 @@ public class UpdateExamCommandValidator:AbstractValidator<ExamUpdateDto>
         RuleFor(x => x.Description).NotNull().NotEmpty();
         RuleFor(x => x.Year).NotNull().NotEmpty().GreaterThan(0);
         RuleFor(x => x.NumberQuestion).NotNull().NotEmpty().GreaterThan(0);
-
+        RuleFor(x => x.tagValues).NotNull().NotEmpty();
         RuleFor(x => x.IsActive);
     }
     private bool BeAValidPdfFormat(IFormFile file)

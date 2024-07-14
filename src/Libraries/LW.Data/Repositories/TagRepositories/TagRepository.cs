@@ -44,8 +44,14 @@ public class TagRepository : RepositoryBase<Tag, int>, ITagRepository
         return await FindAll().ToListAsync();
     }
 
-    public  Task<IQueryable<Tag>> GetAllTagPagination()
+    public Task<IQueryable<Tag>> GetAllTagPagination()
     {
         var result = FindAll();
-        return Task.FromResult(result);    }
+        return Task.FromResult(result);
+    }
+
+    public async Task<Tag> GetTagByKeyword(string key)
+    {
+        return await FindByCondition(x => x.KeyWord.Equals(key)).FirstOrDefaultAsync();
+    }
 }

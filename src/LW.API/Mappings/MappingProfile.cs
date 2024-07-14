@@ -15,6 +15,7 @@ using LW.Shared.DTOs.Lesson;
 using LW.Shared.DTOs.Quiz;
 using LW.Shared.DTOs.QuizAnswer;
 using LW.Shared.DTOs.QuizQuestion;
+using LW.Shared.DTOs.Tag;
 using LW.Shared.DTOs.Topic;
 using LW.Shared.DTOs.UserExam;
 using LW.Shared.DTOs.UserQuiz;
@@ -204,5 +205,10 @@ public class MappingProfile : Profile
         //UserQuiz
         CreateMap<UserQuiz, UserQuizDto>().ReverseMap();
         CreateMap<HistoryQuiz, HistoryQuizDto>().ReverseMap();
+        //Tag
+        CreateMap<Tag, TagDto>().ReverseMap();
+        CreateMap<Tag, TagCreateDto>().ReverseMap();
+        CreateMap<Tag, TagUpdateDto>().ReverseMap();
+
     }
 }

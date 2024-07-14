@@ -11,4 +11,7 @@ public interface ITagRepository : IRepositoryBase<Tag, int>
     Task<Tag> GetTagById(int id);
     Task<IEnumerable<Tag>> GetAllTag();
     Task<IQueryable<Tag>> GetAllTagPagination();
+    Task<Tag> GetTagByKeyword(string key);
+
+    
 }
