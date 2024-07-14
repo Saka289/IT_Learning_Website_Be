@@ -3,6 +3,7 @@ using System;
 using LW.Data.Persistence;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
@@ -10,9 +11,10 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace LW.Data.Persistence.Migrations
 {
     [DbContext(typeof(AppDbContext))]
-    partial class AppDbContextModelSnapshot : ModelSnapshot
+    [Migration("20240710080145_Init_Table_Tag")]
+    partial class Init_Table_Tag
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -467,9 +469,6 @@ namespace LW.Data.Persistence.Migrations
                     b.Property<bool>("IsActive")
                         .HasColumnType("tinyint(1)");
 
-                    b.Property<bool>("IsShuffle")
-                        .HasColumnType("tinyint(1)");
-
                     b.Property<string>("KeyWord")
                         .IsRequired()
                         .HasColumnType("longtext");
@@ -555,16 +554,7 @@ namespace LW.Data.Persistence.Migrations
                     b.Property<DateTimeOffset>("CreatedDate")
                         .HasColumnType("datetime(6)");
 
-                    b.Property<string>("Hint")
-                        .HasColumnType("longtext");
-
-                    b.Property<string>("Image")
-                        .HasColumnType("longtext");
-
                     b.Property<bool>("IsActive")
-                        .HasColumnType("tinyint(1)");
-
-                    b.Property<bool>("IsShuffle")
                         .HasColumnType("tinyint(1)");
 
                     b.Property<string>("KeyWord")
@@ -576,9 +566,6 @@ namespace LW.Data.Persistence.Migrations
 
                     b.Property<DateTimeOffset?>("LastModifiedDate")
                         .HasColumnType("datetime(6)");
-
-                    b.Property<string>("PublicId")
-                        .HasColumnType("longtext");
 
                     b.Property<int>("QuestionLevel")
                         .HasColumnType("int");
@@ -690,25 +677,12 @@ namespace LW.Data.Persistence.Migrations
                         .ValueGeneratedOnAdd()
                         .HasColumnType("int");
 
-                    b.Property<string>("CreatedBy")
-                        .IsRequired()
-                        .HasColumnType("longtext");
-
-                    b.Property<DateTimeOffset>("CreatedDate")
-                        .HasColumnType("datetime(6)");
-
                     b.Property<int>("ExamId")
                         .HasColumnType("int");
 
                     b.Property<string>("HistoryExam")
                         .IsRequired()
                         .HasColumnType("json");
-
-                    b.Property<string>("LastModifiedBy")
-                        .HasColumnType("longtext");
-
-                    b.Property<DateTimeOffset?>("LastModifiedDate")
-                        .HasColumnType("datetime(6)");
 
                     b.Property<decimal>("Score")
                         .HasColumnType("decimal(65,30)");
@@ -746,53 +720,6 @@ namespace LW.Data.Persistence.Migrations
                     b.HasIndex("UserId");
 
                     b.ToTable("UserGrade");
-                });
-
-            modelBuilder.Entity("LW.Data.Entities.UserQuiz", b =>
-                {
-                    b.Property<int>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("int");
-
-                    b.Property<string>("CreatedBy")
-                        .IsRequired()
-                        .HasColumnType("longtext");
-
-                    b.Property<DateTimeOffset>("CreatedDate")
-                        .HasColumnType("datetime(6)");
-
-                    b.Property<string>("HistoryQuizzes")
-                        .HasColumnType("json");
-
-                    b.Property<string>("LastModifiedBy")
-                        .HasColumnType("longtext");
-
-                    b.Property<DateTimeOffset?>("LastModifiedDate")
-                        .HasColumnType("datetime(6)");
-
-                    b.Property<int>("NumberCorrect")
-                        .HasColumnType("int");
-
-                    b.Property<int>("QuizId")
-                        .HasColumnType("int");
-
-                    b.Property<decimal>("Score")
-                        .HasColumnType("decimal(12,2)");
-
-                    b.Property<int>("TotalQuestion")
-                        .HasColumnType("int");
-
-                    b.Property<string>("UserId")
-                        .IsRequired()
-                        .HasColumnType("varchar(255)");
-
-                    b.HasKey("Id");
-
-                    b.HasIndex("QuizId");
-
-                    b.HasIndex("UserId");
-
-                    b.ToTable("UserQuizzes");
                 });
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityRole", b =>
@@ -1097,25 +1024,6 @@ namespace LW.Data.Persistence.Migrations
                     b.Navigation("Grade");
                 });
 
-            modelBuilder.Entity("LW.Data.Entities.UserQuiz", b =>
-                {
-                    b.HasOne("LW.Data.Entities.Quiz", "Quiz")
-                        .WithMany("UserQuizzes")
-                        .HasForeignKey("QuizId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.HasOne("LW.Data.Entities.ApplicationUser", "ApplicationUser")
-                        .WithMany("UserQuizzes")
-                        .HasForeignKey("UserId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.Navigation("ApplicationUser");
-
-                    b.Navigation("Quiz");
-                });
-
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityRoleClaim<string>", b =>
                 {
                     b.HasOne("Microsoft.AspNetCore.Identity.IdentityRole", null)
@@ -1172,8 +1080,6 @@ namespace LW.Data.Persistence.Migrations
                     b.Navigation("UserExams");
 
                     b.Navigation("UserGrades");
-
-                    b.Navigation("UserQuizzes");
                 });
 
             modelBuilder.Entity("LW.Data.Entities.CommentDocument", b =>
@@ -1217,8 +1123,6 @@ namespace LW.Data.Persistence.Migrations
             modelBuilder.Entity("LW.Data.Entities.Quiz", b =>
                 {
                     b.Navigation("QuizQuestions");
-
-                    b.Navigation("UserQuizzes");
                 });
 
             modelBuilder.Entity("LW.Data.Entities.QuizQuestion", b =>

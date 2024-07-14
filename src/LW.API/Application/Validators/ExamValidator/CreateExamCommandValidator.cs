@@ -16,6 +16,7 @@ public class CreateExamCommandValidator:AbstractValidator<ExamCreateDto>
         RuleFor(x => x.Year).NotNull().NotEmpty().GreaterThan(0);
         RuleFor(x => x.NumberQuestion).NotNull().NotEmpty().GreaterThan(0);
         RuleFor(x => x.IsActive).NotNull();
+        RuleFor(x => x.tagValues).NotNull().NotEmpty();
         // Kiểm tra từng ảnh trong danh sách Images
         RuleForEach(x => x.Images)
             .Must(BeAValidImageFormat)
