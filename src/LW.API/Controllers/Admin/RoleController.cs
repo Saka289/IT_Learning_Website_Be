@@ -20,13 +20,15 @@ namespace LW.API.Controllers.Admin
         private readonly UserManager<ApplicationUser> _userManager;
         private readonly SignInManager<ApplicationUser> _signInManager;
 
-        public RoleController(IAdminAuthorService adminAuthorService, UserManager<ApplicationUser> userManager, SignInManager<ApplicationUser> signInManager)
+        public RoleController(IAdminAuthorService adminAuthorService, UserManager<ApplicationUser> userManager,
+            SignInManager<ApplicationUser> signInManager)
         {
             _adminAuthorService = adminAuthorService;
             _userManager = userManager;
             _signInManager = signInManager;
         }
-        [HttpGet("getAllRoles")] 
+
+        [HttpGet("getAllRoles")]
         public async Task<ActionResult<ApiResult<IEnumerable<RoleDto>>>> GetAllRoles()
         {
             var result = await _adminAuthorService.GetAllRolesAsync();
@@ -34,9 +36,11 @@ namespace LW.API.Controllers.Admin
             {
                 return NotFound(result);
             }
+
             return Ok(result);
         }
-        [HttpGet("getRoleById/{id}")] 
+
+        [HttpGet("getRoleById/{id}")]
         public async Task<ActionResult<ApiResult<RoleDto>>> GetRoleById(string id)
         {
             var result = await _adminAuthorService.GetRoleByIdAsync(id);
@@ -44,9 +48,11 @@ namespace LW.API.Controllers.Admin
             {
                 return NotFound(result);
             }
+
             return Ok(result);
         }
-        [HttpPost("createRole/{roleName}")] 
+
+        [HttpPost("createRole/{roleName}")]
         public async Task<ActionResult<ApiResult<bool>>> CreateRole(string roleName)
         {
             var result = await _adminAuthorService.CreateRoleAsync(roleName);
@@ -54,9 +60,11 @@ namespace LW.API.Controllers.Admin
             {
                 return BadRequest(result);
             }
+
             return Ok(result);
         }
-        [HttpPut("updateRole/{id}/{newRoleName}")] 
+
+        [HttpPut("updateRole/{id}/{newRoleName}")]
         public async Task<ActionResult<ApiResult<bool>>> CreateRole(string id, string newRoleName)
         {
             var result = await _adminAuthorService.UpdateRoleAsync(id, newRoleName);
@@ -64,9 +72,11 @@ namespace LW.API.Controllers.Admin
             {
                 return BadRequest(result);
             }
+
             return Ok(result);
         }
-        [HttpDelete("deleteRole/{id}")] 
+
+        [HttpDelete("deleteRole/{id}")]
         public async Task<ActionResult<ApiResult<bool>>> DeleteRole(string id)
         {
             var result = await _adminAuthorService.DeleteRoleAsync(id);
@@ -74,8 +84,21 @@ namespace LW.API.Controllers.Admin
             {
                 return NotFound(result);
             }
+
             return Ok(result);
         }
-        
+
+        [HttpPost("AssignMultiRoleForUser")]
+        public async Task<ActionResult<ApiResult<IEnumerable<string>>>> AssignMultiRoleForUser(
+            AssignMutipleRoleDto assignMutipleRoleDto)
+        {
+            var result = await _adminAuthorService.AssignMultiRoleAsync(assignMutipleRoleDto);
+            if (!result.IsSucceeded)
+            {
+                return NotFound(result);
+            }
+
+            return Ok(result);
+        }
     }
 }
