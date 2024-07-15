@@ -155,11 +155,11 @@ public class ExamService : IExamService
             objUpdate.ExamFile = filePath.Url;
         }
         var keyWordValue = "";
-        if (examUpdateDto.tagValues.Any())
+        if (examUpdateDto.tagValues!= null &&  examUpdateDto.tagValues.Any())
         {
             keyWordValue = string.Join(",", examUpdateDto.tagValues);
+            objUpdate.KeyWord = keyWordValue;
         }
-        objUpdate.KeyWord = keyWordValue;
         await _examRepository.UpdateExam(objUpdate);
         var examDto = _mapper.Map<ExamDto>(objUpdate);
         await _elasticSearchService.UpdateDocumentAsync(ElasticConstant.ElasticExams, examDto, examUpdateDto.Id);
