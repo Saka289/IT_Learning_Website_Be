@@ -96,7 +96,7 @@ public class AdminAuthorService : IAdminAuthorService
         {
             return new ApiResult<LoginAdminResponseDto>(false, "Invalid Email !!!");
         }
-        
+
         var isRoles = await _userManager.IsInRoleAsync(user, RoleConstant.RoleAdmin);
         if (!isRoles)
         {
@@ -106,9 +106,10 @@ public class AdminAuthorService : IAdminAuthorService
         var checkPassword = await _userManager.CheckPasswordAsync(user, model.Password);
         if (!checkPassword)
         {
-            return new ApiResult<LoginAdminResponseDto>(false, "The password you entered is incorrect. Please try again.");
+            return new ApiResult<LoginAdminResponseDto>(false,
+                "The password you entered is incorrect. Please try again.");
         }
-        
+
         var roles = await _userManager.GetRolesAsync(user);
 
         var accessToken = _jwtTokenService.GenerateAccessToken(user, roles);
@@ -152,6 +153,42 @@ public class AdminAuthorService : IAdminAuthorService
 
         return new ApiResult<bool>(false,
             "Don't find user with email " + email);
+    }
+
+    public async Task<ApiResult<IEnumerable<string>>> AssignMultiRoleAsync(AssignMutipleRoleDto assignMutipleRoleDto)
+    {
+        var user = await _userManager.FindByIdAsync(assignMutipleRoleDto.UserId);
+        if (user == null)
+        {
+            return new ApiResult<IEnumerable<string>>(false,
+                $"User Not Found !");
+        }
+
+        // get all role of user 
+        var oldRoleName = (await _userManager.GetRolesAsync(user)).ToArray();
+
+        // If present in OldRoleName but not in new Roles, those are the roles that need to be deleted
+        var deleteRole = oldRoleName.Where(r => !assignMutipleRoleDto.Roles.Contains(r));
+
+        // If there are in new Roles but not in oldRoleName, then those are the Roles that need to be added
+        var addRole = assignMutipleRoleDto.Roles.Where(r => !oldRoleName.Contains(r));
+
+        // thuc hien xoa cac role o trong delete Role
+        var resultDelete = await _userManager.RemoveFromRolesAsync(user, deleteRole);
+        if (!resultDelete.Succeeded)
+        {
+            return new ApiResult<IEnumerable<string>>(false, "Error when delete old roles");
+        }
+
+        var resultAdd = await _userManager.AddToRolesAsync(user, addRole);
+        if (!resultDelete.Succeeded)
+        {
+            return new ApiResult<IEnumerable<string>>(false, "Error when add new roles");
+        }
+
+        var roleOfUserAfterUpdate = (await _userManager.GetRolesAsync(user)).ToArray();
+        return new ApiResult<IEnumerable<string>>(true, roleOfUserAfterUpdate,
+            $"Assign multi roles for user with id = {assignMutipleRoleDto.UserId} ");
     }
 
     public async Task<ApiResult<UpdateAdminDto>> UpdateAdminAsync(UpdateAdminDto updateAdminDto)
