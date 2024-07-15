@@ -17,7 +17,6 @@ using LW.Shared.DTOs.QuizAnswer;
 using LW.Shared.DTOs.QuizQuestion;
 using LW.Shared.Enums;
 using LW.Shared.SeedWork;
-<<<<<<< HEAD
 using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Caching.Distributed;
 using Nest;
@@ -28,11 +27,12 @@ using OfficeOpenXml.Style;
 using System.ComponentModel.DataAnnotations;
 using System.Reflection;
 using static Aspose.Pdf.CollectionItem;
-=======
 using Microsoft.EntityFrameworkCore;
->>>>>>> 4267fc22ea8e16fc2b9dbeea30b598b79d5afcb6
 using MockQueryable.Moq;
-
+using System.Xml.Linq;
+using System.Data;
+using Moq;
+using LW.Services.FacebookServices;
 
 namespace LW.Services.QuizQuestionServices;
 
@@ -120,7 +120,7 @@ public class QuizQuestionService : IQuizQuestionService
         {
             return new ApiResult<PagedList<QuizQuestionTestDto>>(false, "Quiz Question is null !!!");
         }
-        
+
         var quiz = await _quizRepository.GetQuizById(quizId);
 
         if (quiz.IsShuffle)
@@ -486,13 +486,26 @@ public class QuizQuestionService : IQuizQuestionService
         _elasticSearchService.DeleteDocumentAsync(ElasticConstant.ElasticQuizQuestion, id);
         return new ApiSuccessResult<bool>(true);
     }
-    public async Task<byte[]> ExportExcel(int checkData = 1, List<Guid>? Ids = null)
+    public async Task<byte[]> ExportExcel(int checkData = 1, string? Ids = null)
     {
-        return await GenerateExcelFile();
+        IEnumerable<QuizQuestionExcelDto> data = new List<QuizQuestionExcelDto>();
+        //kiểm tra xem một ICollection
+        if (Ids != null)
+        {
+            var dataImport = await _redisCacheService.GetStringKey(Ids);
+
+            var quizQuestions = JsonConvert.DeserializeObject<List<QuizQuestionImportDto>>(dataImport);
+            data = quizQuestions.Select(e => _mapper.Map<QuizQuestionExcelDto>(e)).ToList();
+        }
+        if (data.Any())
+        {
+            return await GenerateExcelFile(data, Ids);
+        }
+        return await GenerateExcelFile(data, Ids);
     }
 
 
-    private async Task<byte[]> GenerateExcelFile()
+    private async Task<byte[]> GenerateExcelFile(IEnumerable<QuizQuestionExcelDto> data, string Ids)
     {
 
         ETypeQuestion[] typeQuestions = (ETypeQuestion[])Enum.GetValues(typeof(ETypeQuestion));
@@ -505,7 +518,7 @@ public class QuizQuestionService : IQuizQuestionService
         using (var package = new ExcelPackage())
         {
             // Add a worksheet named "Data Validation"
-            var worksheet = CreateWorkSheet(package);
+            var worksheet = CreateWorkSheet(package, Ids);
             // Define column headers and widths
             string[] columnHeaders = {
                 "STT",
@@ -517,30 +530,197 @@ public class QuizQuestionService : IQuizQuestionService
                 "Đáp án 4 - max 200 ký tự",
                 "Đáp án 5 - max 200 ký tự",
                 "Đáp án 6 - max 200 ký tự", // thay đổi cột import 
-                "Đáp án đúng - Chọn một câu trả lời đúng theo số (1,2,3,4,5,6) ",
+                "Đáp án đúng - Chọn một câu trả lời đúng theo số (1;2;3;4;5;6) ",
                 "Mức độ câu hỏi",
                 "Trộn câu hỏi",
                 "Gợi ý câu hỏi",
-
                 };
+            if (Ids != null)
+            {
+                string[] extendedColumnHeaders = new string[columnHeaders.Length + 1];
+                for (int i = 0; i < columnHeaders.Length; i++)
+                {
+                    extendedColumnHeaders[i] = columnHeaders[i];
+                }
+                // Add the new column header
+                extendedColumnHeaders[columnHeaders.Length] = "Tình trạng";
+                // Replace the old array with the new one
+                columnHeaders = extendedColumnHeaders;
+            }
             int dataStartRow = 3;
             int endRow = 1000; ;  // Calculate end row dynamically
-            StyleColumn(columnHeaders, worksheet, dataStartRow,endRow);
+            StyleColumn(columnHeaders, worksheet, dataStartRow, endRow, Ids);
             int startRow = dataStartRow + 1; // Assuming data starts from row (dataStartRow + 1)
             AddDataValidation(worksheet, columnHeaders, startRow, endRow, typeQuestions, levels, arrayShuffle);
+            // Convert data to DataTable and populate the worksheet
+            ToConvertDataTable(data, worksheet);
             // Save the workbook to a memory stream and return the stream as a byte array
             return SavePackageToStream(package);
         }
 
     }
+    public DataTable ToConvertDataTable<T>(IEnumerable<T> items, ExcelWorksheet worksheet)
+    {
+        DataTable dt = CreateDataTableStructure<T>();
+        PropertyInfo[] propInfo = typeof(T).GetProperties(BindingFlags.Instance | BindingFlags.Public);
+
+        int ordinalNumber = 1;
+        int rowIndex = 4;
+
+        foreach (T item in items)
+        {
+            DataRow row = dt.NewRow();
+            row["OrdinalNumber"] = ordinalNumber;
+            worksheet.Cells[rowIndex, 1].Value = ordinalNumber;
+
+            int excelColumnIndex = 2;
+
+            // Set properties separately
+            SetPropertyValueInWorksheet(item, "TypeName", worksheet, rowIndex, ref excelColumnIndex);
+            SetPropertyValueInWorksheet(item, "Content", worksheet, rowIndex, ref excelColumnIndex);
+
+            string correctAnswer = SetQuizAnswersInWorksheet(item, worksheet, rowIndex, ref excelColumnIndex);
+
+            SetRemainingPropertiesInWorksheet(item, propInfo, worksheet, rowIndex, ref excelColumnIndex, correctAnswer);
+
+            dt.Rows.Add(row);
+            rowIndex++;
+            ordinalNumber++;
+        }
+
+        return dt;
+    }
+
+    private DataTable CreateDataTableStructure<T>()
+    {
+        DataTable dt = new DataTable(typeof(T).Name);
+        PropertyInfo[] propInfo = typeof(T).GetProperties(BindingFlags.Instance | BindingFlags.Public);
+
+        dt.Columns.Add("OrdinalNumber", typeof(int));
+        AddColumnIfPropertyExists(dt, propInfo, "TypeName");
+        AddColumnIfPropertyExists(dt, propInfo, "Content");
+
+        for (int i = 1; i <= 6; i++)
+        {
+            dt.Columns.Add($"QuizAnswers_Content{i}");
+        }
+
+        foreach (PropertyInfo prop in propInfo)
+        {
+            if (prop.Name != "QuizAnswers" && prop.Name != "TypeName" && prop.Name != "Content")
+            {
+                dt.Columns.Add(prop.Name);
+            }
+        }
+
+        return dt;
+    }
+
+    private void AddColumnIfPropertyExists(DataTable dt, PropertyInfo[] propInfo, string propertyName)
+    {
+        if (propInfo.Any(p => p.Name == propertyName))
+        {
+            dt.Columns.Add(propertyName);
+        }
+    }
+
+    private void SetPropertyValueInWorksheet<T>(T item, string propertyName, ExcelWorksheet worksheet, int rowIndex, ref int excelColumnIndex)
+    {
+        var prop = item.GetType().GetProperty(propertyName);
+        if (prop != null)
+        {
+            var value = prop.GetValue(item, null);
+            string cellValue = value != null ? value.ToString() : "";
+            worksheet.Cells[rowIndex, excelColumnIndex].Value = cellValue;
+            excelColumnIndex++;
+        }
+    }
+
+    private string SetQuizAnswersInWorksheet<T>(T item, ExcelWorksheet worksheet, int rowIndex, ref int excelColumnIndex)
+    {
+        var quizAnswers = item.GetType().GetProperty("QuizAnswers").GetValue(item) as IEnumerable<QuizAnswerDto>;
+        string correctAnswer = "";
+        if (quizAnswers != null)
+        {
+            int answerIndex = 1;
+            foreach (var answer in quizAnswers)
+            {
+                worksheet.Cells[rowIndex, excelColumnIndex].Value = answer.Content;
+                if (answer.IsCorrect)
+                {
+                    correctAnswer += $"{answerIndex};";
+                }
+                excelColumnIndex++;
+                answerIndex++;
+            }
+        }
+        if (correctAnswer.EndsWith(";"))
+        {
+            correctAnswer = correctAnswer.TrimEnd(';');
+        }
+        return correctAnswer;
+    }
+    private void SetErrorQuizInWorksheet<T>(T item, ExcelWorksheet worksheet, int rowIndex, ref int excelColumnIndex)
+    {
+        var errors = item.GetType().GetProperty("Errors").GetValue(item) as List<string>;
+        if (errors != null && errors.Any())
+        {
+            string combinedErrors = string.Join("\n", errors.Select(e => $" + {e}"));
+            worksheet.Cells[rowIndex, excelColumnIndex].Value = combinedErrors;
+            worksheet.Cells[rowIndex, excelColumnIndex].Style.WrapText = true; // Ensure text wraps within the cell
+            excelColumnIndex++;
+        }
+        else
+        {
+            worksheet.Cells[rowIndex, excelColumnIndex].Value = " + Hợp Lệ";
+        }
+    }
+
+    private void SetRemainingPropertiesInWorksheet<T>(T item, PropertyInfo[] propInfo, ExcelWorksheet worksheet, int rowIndex, ref int excelColumnIndex, string correctAnswer)
+    {
+        excelColumnIndex = 10; 
+        foreach (PropertyInfo prop in propInfo)
+        {
+            if (prop.Name != "QuizAnswers" && prop.Name != "TypeName" && prop.Name != "Content")
+            {
+                if (prop.Name == "Correct")
+                {
+                    string cellValue = !string.IsNullOrEmpty(correctAnswer) ? correctAnswer : "";
+                    worksheet.Cells[rowIndex, excelColumnIndex].Value = cellValue;
+                    excelColumnIndex++;
+                } else if (prop.Name == "Errors")
+                {
+                    SetErrorQuizInWorksheet(item, worksheet, rowIndex, ref excelColumnIndex);
+                }
+                else
+                {
+                    var propValue = prop.GetValue(item, null);
+                    string cellValue = propValue is bool boolValue ? (boolValue ? "Có" : "Không") : propValue?.ToString() ?? "";
+                    worksheet.Cells[rowIndex, excelColumnIndex].Value = cellValue;
+                    excelColumnIndex++;
+                }
+            }
+        }
+    }
+
+
+
     // create worksheet and merge cell 
-    public ExcelWorksheet CreateWorkSheet(ExcelPackage package)
+    public ExcelWorksheet CreateWorkSheet(ExcelPackage package, string Ids)
     {
         // Add a worksheet named "Data Validation"
         var worksheet = package.Workbook.Worksheets.Add("Danh sách câu hỏi");
         // Merge cells for title and set title formatting
-        worksheet.Cells["A1:M2"].Merge = true;
-        worksheet.Cells["A1"].Value = "Danh Sách Câu Hỏi"; // Replace with your actual title
+        
+        if (Ids != null)
+        {
+            worksheet.Cells["A1:N2"].Merge = true;
+        }
+        else
+        {
+            worksheet.Cells["A1:M2"].Merge = true;  
+        }
+            worksheet.Cells["A1"].Value = "Danh Sách Câu Hỏi"; // Replace with your actual title
         worksheet.Row(1).Height = 25;
         worksheet.Row(1).Style.Font.Bold = true;
         worksheet.Row(1).Style.HorizontalAlignment = ExcelHorizontalAlignment.Center;
@@ -548,9 +728,22 @@ public class QuizQuestionService : IQuizQuestionService
         return worksheet;
     }
     // style for column 
-    public void StyleColumn(string[] columnHeaders, ExcelWorksheet worksheet, int dataStartRow, int endrow)
+    public void StyleColumn(string[] columnHeaders, ExcelWorksheet worksheet, int dataStartRow, int endrow, string? Ids)
     {
-        int[] columnWidths = { 7, 20, 30, 30, 30, 30, 30, 30, 30, 30, 30, 30, 30 };
+
+        int[] columnWidths = { 7, 20, 30, 30, 30, 30, 30, 30, 50, 30, 30, 30, 30 };
+        if (Ids != null)
+        {
+            int[] extendedColumnWidths = new int[columnWidths.Length + 1];
+            for (int i = 0; i < columnWidths.Length; i++)
+            {
+                extendedColumnWidths[i] = columnWidths[i];
+            }
+            // Add the new column header
+            extendedColumnWidths[columnWidths.Length] = 50;
+            // Replace the old array with the new one
+            columnWidths = extendedColumnWidths;
+        }
         // Add column headers and set column widths
         for (int i = 0; i < columnHeaders.Length; i++)
         {
@@ -607,6 +800,7 @@ public class QuizQuestionService : IQuizQuestionService
             validationShuffle.Formula.Values.Add(label);
         }
     }
+
     // save package by stream 
     private byte[] SavePackageToStream(ExcelPackage package)
     {
@@ -616,18 +810,18 @@ public class QuizQuestionService : IQuizQuestionService
             return stream.ToArray();
         }
     }
-    public ApiResult<bool> CheckFileImport(IFormFile fileImport)
+    public ApiResult<QuizQuestionImportParentDto> CheckFileImport(IFormFile fileImport)
     {
         if (fileImport == null || fileImport.Length == 0)
         {
-            return new ApiResult<bool>(false, "File Import isn't empty");
+            return new ApiResult<QuizQuestionImportParentDto>(false, "File Import isn't empty");
         }
         if (!Path.GetExtension(fileImport.FileName).Equals(".xlsx", StringComparison.OrdinalIgnoreCase))
         {
-            return new ApiResult<bool>(false, "File upload must be format.xlxs");
+            return new ApiResult<QuizQuestionImportParentDto>(false, "File upload must be format.xlxs");
         }
         // If the file is valid
-        return new ApiResult<bool>(true, "File valid");
+        return new ApiResult<QuizQuestionImportParentDto>(true, "File valid");
     }
     public object? CheckCoincidence(IEnumerable<object> items, string name, string nameCompare)
     {
@@ -662,19 +856,18 @@ public class QuizQuestionService : IQuizQuestionService
     }
 
 
-    public async Task<QuizQuestionImportParentDto> ImportExcel(IFormFile fileImport, int quizId)
+    public async Task<ApiResult<QuizQuestionImportParentDto>> ImportExcel(IFormFile fileImport, int quizId)
     {
         var quizQuestionImportParentDto = new QuizQuestionImportParentDto();
         var isExcel = CheckFileImport(fileImport);
-
         if (!isExcel.IsSucceeded)
         {
-            return quizQuestionImportParentDto;
+            return isExcel;
         }
 
         var quizQuestionImportDtos = new List<QuizQuestionImportDto>();
         var quizQuestionImportSuccess = new List<QuizQuestion>();
-
+        var quizQuestionImportFail = new List<QuizQuestionImportDto>();
         using (var stream = new MemoryStream())
         {
             await fileImport.CopyToAsync(stream);
@@ -685,30 +878,51 @@ public class QuizQuestionService : IQuizQuestionService
 
                 if (workSheet != null)
                 {
-                    ProcessWorksheet(workSheet, quizId, quizQuestionImportDtos, quizQuestionImportSuccess, out int countSuccess, out int countFail);
+
+                    ProcessWorksheet(workSheet, quizId, quizQuestionImportDtos, quizQuestionImportSuccess, quizQuestionImportFail,out int countSuccess, out int countFail);
 
                     quizQuestionImportParentDto.CountSuccess = countSuccess;
                     quizQuestionImportParentDto.CountFail = countFail;
                     quizQuestionImportParentDto.QuizQuestionImportDtos = quizQuestionImportDtos;
-                    //quizQuestionImportParentDto.IdImport = await CacheQuizQuestions(quizQuestionImportSuccess);
+                    var (cacheKeySuccess, cacheKeyFail, cacheKeyResult) = await CacheQuizQuestions(quizQuestionImportSuccess, quizQuestionImportFail, quizQuestionImportDtos);
+                    quizQuestionImportParentDto.IdImport = cacheKeySuccess;
+                    quizQuestionImportParentDto.IdImportFail = cacheKeyFail;
+                    quizQuestionImportParentDto.IdImportResult = cacheKeyResult;
                 }
             }
         }
 
-        return quizQuestionImportParentDto;
+        return new ApiResult<QuizQuestionImportParentDto>(true, quizQuestionImportParentDto);
+    }
+    private static int FindLastRowWithData(ExcelWorksheet worksheet, int headerRow)
+    {
+        int lastRow = headerRow;
+        for (int col = 1; col <= worksheet.Dimension.End.Column; col++)
+        {
+            for (int row = headerRow + 1; row <= worksheet.Dimension.End.Row; row++)
+            {
+                if (worksheet.Cells[row, col].Value != null && worksheet.Cells[row, col].Value.ToString().Trim() != "")
+                {
+                    lastRow = Math.Max(lastRow, row);
+                }
+            }
+        }
+        return lastRow;
     }
 
-    private void ProcessWorksheet(ExcelWorksheet workSheet, int quizId, List<QuizQuestionImportDto> quizQuestionImportDtos, List<QuizQuestion> quizQuestionImportSuccess, out int countSuccess, out int countFail)
+    private void ProcessWorksheet(ExcelWorksheet workSheet, int quizId, List<QuizQuestionImportDto> quizQuestionImportDtos, List<QuizQuestion> quizQuestionImportSuccess, List<QuizQuestionImportDto> quizQuestionImportFail, out int countSuccess, out int countFail)
     {
         countSuccess = 0;
         countFail = 0;
-
-        for (int row = 4; row <= workSheet.Dimension.Rows; row++)
+        int headerRow = 3;
+        int lastRowWithData = FindLastRowWithData(workSheet, headerRow);
+        for (int row = 4; row <= lastRowWithData; row++)
         {
             var quizQuestionImportDto = CreateQuizQuestionImportDto(workSheet, row, quizId);
 
             if (ValidateQuizQuestionImportDto(quizQuestionImportDto))
             {
+
                 var quizQuestion = _mapper.Map<QuizQuestion>(quizQuestionImportDto);
                 quizQuestionImportDto.IsImported = true;
                 quizQuestionImportSuccess.Add(quizQuestion);
@@ -717,6 +931,7 @@ public class QuizQuestionService : IQuizQuestionService
             else
             {
                 countFail++;
+                quizQuestionImportFail.Add(quizQuestionImportDto);
             }
 
             quizQuestionImportDtos.Add(quizQuestionImportDto);
@@ -726,36 +941,22 @@ public class QuizQuestionService : IQuizQuestionService
     private QuizQuestionImportDto CreateQuizQuestionImportDto(ExcelWorksheet workSheet, int row, int quizId)
     {
         var arrayShuffle = new[]
-{
-    new { label = "Có", value = true },
-    new { label = "Không", value = false }
-};
+        {
+           new { label = "Có", value = true },
+           new { label = "Không", value = false }
+        };
         var typeQuestionName = workSheet.Cells[row, 2].Value?.ToString()?.Trim();
-        var answer1 = workSheet.Cells[row, 4].Value?.ToString()?.Trim();
-        var answer2 = workSheet.Cells[row, 5].Value?.ToString()?.Trim();
-        var answer3 = workSheet.Cells[row, 6].Value?.ToString()?.Trim();
-        var answer4 = workSheet.Cells[row, 7].Value?.ToString()?.Trim();
-        var answer5 = workSheet.Cells[row, 8].Value?.ToString()?.Trim();
-        var answer6 = workSheet.Cells[row, 9].Value?.ToString()?.Trim();
+        var answers = CreateArrayAnswer(workSheet, row);
         var answerCorrect = workSheet.Cells[row, 10].Value?.ToString()?.Trim();
         var level = workSheet.Cells[row, 11].Value?.ToString()?.Trim();
         var isShuffle = workSheet.Cells[row, 12].Value?.ToString()?.Trim();
         var hint = workSheet.Cells[row, 13].Value?.ToString()?.Trim();
-
         int result = EnumHelperExtensions
             .GetEnumIntValueFromDisplayName<ETypeQuestion>(typeQuestionName);
         int resultLevel = EnumHelperExtensions.GetEnumIntValueFromDisplayName<EQuestionLevel>(level);
-        string[] correctAnswersArray = answerCorrect?.Split(',') ?? Array.Empty<string>();
-        IEnumerable<QuizAnswerDto> quizAnswers = new[]
-        {
-        new QuizAnswerDto(correctAnswersArray.Contains("1"), answer1),
-        new QuizAnswerDto(correctAnswersArray.Contains("2"), answer2),
-        new QuizAnswerDto(correctAnswersArray.Contains("3"), answer3),
-        new QuizAnswerDto(correctAnswersArray.Contains("4"), answer4),
-        new QuizAnswerDto(correctAnswersArray.Contains("5"), answer5),
-        new QuizAnswerDto(correctAnswersArray.Contains("6"), answer6),
-    };
-        var shuffle = CheckCoincidence(arrayShuffle, isShuffle, "label");
+        string[] correctAnswersArray = answerCorrect?.Split(';', ',') ?? Array.Empty<string>();
+        List<QuizAnswerDto> quizAnswers = CreateQuizAnswer(answers, correctAnswersArray);
+        var shuffle = GetShuffleValue(arrayShuffle, isShuffle);
         return new QuizQuestionImportDto
         {
             QuizId = quizId,
@@ -766,7 +967,37 @@ public class QuizQuestionService : IQuizQuestionService
             Type = result.ToString(),
             TypeName = typeQuestionName,
             IsActive = true,
+            IsShuffle = shuffle,
+            Hint = hint,
+            KeyWord = "Test",
         };
+    }
+    private List<QuizAnswerDto> CreateQuizAnswer(List<string> answers, string[] correctAnswersArray)
+    {
+        List<QuizAnswerDto> quizAnswers = new List<QuizAnswerDto> { };
+        for (int i = 0; i < answers.Count; i++)
+        {
+            if (!string.IsNullOrEmpty(answers[i]))
+            {
+                quizAnswers.Add(new QuizAnswerDto(correctAnswersArray.Contains((i + 1).ToString()), answers[i]));
+            }
+        }
+        return quizAnswers;
+    }
+    private List<string> CreateArrayAnswer(ExcelWorksheet workSheet, int row)
+    {
+        var answers = new List<string>();
+
+        for (int i = 4; i <= 9; i++)
+        {
+            answers.Add(workSheet.Cells[row, i].Value?.ToString()?.Trim());
+        }
+        return answers;
+    }
+    private bool GetShuffleValue(dynamic[] arrayShuffle, string isShuffle)
+    {
+        var shuffle = arrayShuffle.FirstOrDefault(e => e.label == isShuffle);
+        return shuffle?.value ?? false;
     }
 
     private bool ValidateQuizQuestionImportDto(QuizQuestionImportDto dto)
@@ -775,7 +1006,7 @@ public class QuizQuestionService : IQuizQuestionService
 
         if (int.Parse(dto.Type) == 0)
         {
-            AddImportError(dto, "Không tìm thấy loại câu hỏi");
+            AddImportError(dto, $"Không tìm thấy loại câu hỏi");
             isValid = false;
         }
 
@@ -793,17 +1024,31 @@ public class QuizQuestionService : IQuizQuestionService
         return isValid;
     }
 
-    private async Task<string> CacheQuizQuestions(List<QuizQuestion> quizQuestionImportSuccess)
+    private async Task<(string cacheKeySuccess, string cacheKeyFail, string cacheKeyResult)> CacheQuizQuestions(List<QuizQuestion> quizQuestionImportSuccess, List<QuizQuestionImportDto> quizQuestionImportFail, List<QuizQuestionImportDto> quizQuestionImportResult)
     {
-        var cacheKey = $"excel-import-data-{Guid.NewGuid()}";
+        // Generate unique cache keys
+        string cacheKeySuccess = $"excel-import-success-{Guid.NewGuid()}";
+        string cacheKeyFail = $"excel-import-fail-{Guid.NewGuid()}";
+        string cacheKeyResult = $"excel-import-Result-{Guid.NewGuid()}";
+
+        // Set cache options
         var options = new DistributedCacheEntryOptions()
-            .SetAbsoluteExpiration(DateTime.Now.AddDays(1))
+            .SetAbsoluteExpiration(DateTimeOffset.Now.AddDays(1))
             .SetSlidingExpiration(TimeSpan.FromMinutes(5));
 
-        await _redisCacheService.SetStringKey(cacheKey, JsonConvert.SerializeObject(quizQuestionImportSuccess), options);
+        // Serialize and cache quizQuestionImportSuccess
+        await _redisCacheService.SetStringKey(cacheKeySuccess, JsonConvert.SerializeObject(quizQuestionImportSuccess), options);
 
-        return cacheKey;
+        // Serialize and cache quizQuestionImportFail
+        await _redisCacheService.SetStringKey(cacheKeyFail, JsonConvert.SerializeObject(quizQuestionImportFail), options);
+
+        // Serialize and cache quizQuestionImportResult
+        await _redisCacheService.SetStringKey(cacheKeyResult, JsonConvert.SerializeObject(quizQuestionImportResult), options);
+
+        // Return cache keys
+        return (cacheKeySuccess, cacheKeyFail, cacheKeyResult);
     }
+
 
     public async Task<ApiResult<bool>> ImportDatabase(string idImport)
     {
@@ -812,6 +1057,8 @@ public class QuizQuestionService : IQuizQuestionService
             return new ApiResult<bool>(false, "ID Import Not Found");
         }
 
+        // ở bước 3 thực hiện xong thì mới có ID Import Result 
+        // how to take the id result. so, we take value ID by parameter 
         var dataImport = await _redisCacheService.GetStringKey(idImport);
 
         if (string.IsNullOrEmpty(dataImport))
@@ -823,14 +1070,8 @@ public class QuizQuestionService : IQuizQuestionService
         {
             // Assuming CreateRangeQuizQuestion accepts dataImport in the expected format
             var quizQuestions = JsonConvert.DeserializeObject<List<QuizQuestion>>(dataImport);
-            int create = 0;
-            foreach (var item in quizQuestions)
-            {
-                var quizQuestionCreate = await _quizQuestionRepository.CreateQuizQuestion(item);
-                await Console.Out.WriteLineAsync(quizQuestionCreate.ToString());
-                create++;
-            }
-            return new ApiResult<bool>(true, $"Import Success: {create}");
+            var quizQuestionCreate = await _quizQuestionRepository.CreateRangeQuizQuestion(quizQuestions);
+            return new ApiResult<bool>(true, $"Import Success: {quizQuestionCreate}");
         }
         catch (Exception ex)
         {

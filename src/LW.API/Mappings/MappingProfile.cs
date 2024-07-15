@@ -197,6 +197,7 @@ public class MappingProfile : Profile
         CreateMap<QuizQuestion, QuizQuestionCreateDto>().ReverseMap();
         CreateMap<QuizQuestion, QuizQuestionUpdateDto>().ReverseMap();
         CreateMap<QuizQuestion, QuizQuestionImportDto>().ReverseMap();
+        CreateMap<QuizQuestionExcelDto, QuizQuestionImportDto>().ReverseMap();
         //QuizAnswer
         CreateMap<QuizAnswer, QuizAnswerDto>().ReverseMap();
         CreateMap<QuizAnswer, QuizAnswerTestDto>().ReverseMap();

@@ -12,8 +12,13 @@ namespace LW.Shared.DTOs.QuizQuestion
         public int CountFail { get; set; }
 
         public string IdImport { get; set; }
+        // save id with records fail 
+        public string IdImportFail { get; set; }
+        public string IdImportResult { get; set; }
+  
 
         public List<QuizQuestionImportDto> QuizQuestionImportDtos { get; set; }
+       
 
         public QuizQuestionImportParentDto()
         {
