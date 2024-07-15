@@ -18,7 +18,9 @@ public class UserExamService : IUserExamService
     private readonly UserManager<ApplicationUser> _userManager;
     private readonly IMapper _mapper;
     private readonly IUserExamRepository _userExamRepository;
-    public UserExamService(IExamAnswerRepository answerRepository, IExamRepository examRepository, UserManager<ApplicationUser> userManager, IMapper mapper, IUserExamRepository userExamRepository)
+
+    public UserExamService(IExamAnswerRepository answerRepository, IExamRepository examRepository,
+        UserManager<ApplicationUser> userManager, IMapper mapper, IUserExamRepository userExamRepository)
     {
         _answerRepository = answerRepository;
         _examRepository = examRepository;
@@ -26,6 +28,7 @@ public class UserExamService : IUserExamService
         _mapper = mapper;
         _userExamRepository = userExamRepository;
     }
+
     public async Task<ApiResult<bool>> CreateRangeUserExam(ExamFormSubmitDto examFormSubmitDto)
     {
         var user = await _userManager.FindByIdAsync(examFormSubmitDto.UserId);
@@ -33,18 +36,20 @@ public class UserExamService : IUserExamService
         {
             return new ApiResult<bool>(false, $"Not found user with id = {examFormSubmitDto.UserId}");
         }
+
         var exam = await _examRepository.GetExamById(examFormSubmitDto.ExamId);
         if (exam == null)
         {
             return new ApiResult<bool>(false, $"Not found exam with id = {examFormSubmitDto.ExamId}");
         }
 
-        var scoreOfEachQuestion = (decimal) 10 / exam.NumberQuestion;
+        var scoreOfEachQuestion = (decimal)10 / exam.NumberQuestion;
         var listAnswerOfExam = await _answerRepository.GetAllExamAnswerByExamId(exam.Id);
         if (listAnswerOfExam.Count() == 0)
         {
             return new ApiResult<bool>(false, $"Not found list answer of exam with id = {examFormSubmitDto.ExamId}");
         }
+
         decimal totalScore = 0;
         var historyAnswers = new List<HistoryAnswer>();
         foreach (var userAnswer in examFormSubmitDto.UserAnswerDtos)
@@ -54,7 +59,7 @@ public class UserExamService : IUserExamService
             var isCorrect = correctAnswer != null && correctAnswer.Answer == userAnswer.Answer;
             historyAnswer.NumberOfQuestion = userAnswer.NumberOfQuestion;
             historyAnswer.UserAnswer = userAnswer.Answer.ToString();
-            
+
             if (isCorrect)
             {
                 totalScore += scoreOfEachQuestion;
@@ -66,9 +71,10 @@ public class UserExamService : IUserExamService
                 historyAnswer.IsCorrect = false;
                 historyAnswer.CorrectAnswer = correctAnswer.Answer.ToString();
             }
+
             historyAnswers.Add(historyAnswer);
         }
-     
+
         var userExam = new UserExam()
         {
             UserId = examFormSubmitDto.UserId,
@@ -85,10 +91,28 @@ public class UserExamService : IUserExamService
         var userExam = await _userExamRepository.GetUserExamById(id);
         if (userExam == null)
         {
-            return new ApiResult<UserExamDto>(false,"Not found");
+            return new ApiResult<UserExamDto>(false, "Not found");
         }
 
         var result = _mapper.Map<UserExamDto>(userExam);
         return new ApiResult<UserExamDto>(true, result, "Get UserExam successfully");
-    } 
+    }
+
+    public async Task<ApiResult<IEnumerable<UserExamDto>>> GetListResultByUserId(string userId)
+    {
+        var user = await _userManager.FindByIdAsync(userId);
+        if (user == null)
+        {
+            return new ApiResult<IEnumerable<UserExamDto>>(false, "User not found");
+        }
+
+        var listResult = await _userExamRepository.GetAllUserExamByUserId(userId);
+        if (!listResult.Any())
+        {
+            return new ApiResult<IEnumerable<UserExamDto>>(false,"List not found");
+        }
+
+        var result = _mapper.Map<IEnumerable<UserExamDto>>(listResult);
+        return new ApiResult<IEnumerable<UserExamDto>>(true, result, "Get list result of user successfully");
+    }
 }

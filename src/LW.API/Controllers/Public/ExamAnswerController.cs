@@ -18,11 +18,12 @@ namespace LW.API.Controllers.Public
     public class ExamAnswerController : ControllerBase
     {
         private readonly IExamAnswerService _examAnswerService;
+
         public ExamAnswerController(IExamAnswerService examAnswerService)
         {
             _examAnswerService = examAnswerService;
         }
-       
+
         [HttpGet("GetAllExamAnswerByExamId/{examId}")]
         public async Task<ActionResult<ApiResult<IEnumerable<ExamAnswerDto>>>> GetAllExamAnswerByExamId(int examId)
         {
@@ -34,6 +35,7 @@ namespace LW.API.Controllers.Public
 
             return Ok(result);
         }
+
         [HttpGet("GetExamAnswerById/{id}")]
         public async Task<ActionResult<ApiResult<ExamAnswerDto>>> GetExamAnswerById(int id)
         {
@@ -45,6 +47,7 @@ namespace LW.API.Controllers.Public
 
             return Ok(result);
         }
+
         [HttpDelete("DeleteExamAnswerById/{id}")]
         public async Task<ActionResult<ApiResult<bool>>> DeleteExamAnswerById(int id)
         {
@@ -56,14 +59,17 @@ namespace LW.API.Controllers.Public
 
             return Ok(result);
         }
+
         [HttpPost("CreateExamAnswer")]
-        public async Task<ActionResult<ApiResult<ExamAnswerDto>>> CreateExamAnswer([FromForm]ExamAnswerCreateDto examAnswerCreateDto)
+        public async Task<ActionResult<ApiResult<ExamAnswerDto>>> CreateExamAnswer(
+            [FromForm] ExamAnswerCreateDto examAnswerCreateDto)
         {
             var validationResult = await new CreateExamAnswerCommandValidator().ValidateAsync(examAnswerCreateDto);
             if (!validationResult.IsValid)
             {
                 return BadRequest(validationResult);
             }
+
             var result = await _examAnswerService.CreateExamAnswer(examAnswerCreateDto);
             if (!result.IsSucceeded)
             {
@@ -72,19 +78,19 @@ namespace LW.API.Controllers.Public
 
             return Ok(result);
         }
+
         [HttpPost("CreateRangeExamAnswer")]
-        public async Task<ActionResult<ApiResult<bool>>> CreateRangeExamAnswer([FromBody] IEnumerable<ExamAnswerCreateDto> examAnswerCreateDtos)
+        public async Task<ActionResult<ApiResult<bool>>> CreateRangeExamAnswer(
+            [FromBody] ExamAnswerCreateRangeDto examAnswerCreateRangeDtos)
         {
-            foreach (var examAnswerCreateDto in examAnswerCreateDtos)
+            var validationResult =
+                await new CreateRangeExamAnswerCommandValidator().ValidateAsync(examAnswerCreateRangeDtos);
+            if (!validationResult.IsValid)
             {
-                var validationResult = await new CreateExamAnswerCommandValidator().ValidateAsync(examAnswerCreateDto);
-                if (!validationResult.IsValid)
-                {
-                    return BadRequest(validationResult);
-                }
+                return BadRequest(validationResult);
             }
-            
-            var result = await _examAnswerService.CreateRangeExamAnswer(examAnswerCreateDtos);
+
+            var result = await _examAnswerService.CreateRangeExamAnswer(examAnswerCreateRangeDtos);
             if (!result.IsSucceeded)
             {
                 return BadRequest(result);
@@ -92,19 +98,23 @@ namespace LW.API.Controllers.Public
 
             return Ok(result);
         }
+
         [HttpPut("UpdateExamAnswer")]
-        public async Task<ActionResult<ApiResult<ExamAnswerDto>>> UpdateExamAnswer([FromForm]ExamAnswerUpdateDto examAnswerUpdateDto)
+        public async Task<ActionResult<ApiResult<ExamAnswerDto>>> UpdateExamAnswer(
+            [FromForm] ExamAnswerUpdateDto examAnswerUpdateDto)
         {
             var validationResult = await new UpdateExamAnswerCommandValidator().ValidateAsync(examAnswerUpdateDto);
             if (!validationResult.IsValid)
             {
                 return BadRequest(validationResult);
             }
+
             var result = await _examAnswerService.UpdateExamAnswer(examAnswerUpdateDto);
             if (!result.IsSucceeded)
             {
                 return BadRequest(result);
             }
+
             return Ok(result);
         }
     }

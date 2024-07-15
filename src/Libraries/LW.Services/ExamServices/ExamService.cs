@@ -69,12 +69,12 @@ public class ExamService : IExamService
 
         var result = _mapper.Map<ExamDto>(exam);
         
-        var listExamImage = await _examImageRepository.GetAllExamImageByExamId(id);
-        if (listExamImage != null && listExamImage.Count() > 0)
-        {
-            var listExamImageDto = _mapper.Map<IEnumerable<ExamImageDto>>(listExamImage);
-            result.ImageDtos = listExamImageDto;
-        }
+        // var listExamImage = await _examImageRepository.GetAllExamImageByExamId(id);
+        // if (listExamImage != null && listExamImage.Count() > 0)
+        // {
+        //     var listExamImageDto = _mapper.Map<IEnumerable<ExamImageDto>>(listExamImage);
+        //     result.ImageDtos = listExamImageDto;
+        // }
 
         return new ApiResult<ExamDto>(true, result, "Get Exam By Id Successfully");
     }
@@ -105,8 +105,13 @@ public class ExamService : IExamService
             obj.ExamFile = filePath.Url;
             obj.PublicId = filePath.PublicId;
         }
+        var keyWordValue = "";
+        if (examCreateDto.tagValues.Any())
+        {
+            keyWordValue = string.Join(",", examCreateDto.tagValues);
+        }
 
-        obj.KeyWord = examCreateDto.Title.RemoveDiacritics();
+        obj.KeyWord = keyWordValue;
         await _examRepository.CreateExam(obj);
         var result = _mapper.Map<ExamDto>(obj);
         await _elasticSearchService.CreateDocumentAsync(ElasticConstant.ElasticExams, result, x => x.Id);
@@ -149,8 +154,12 @@ public class ExamService : IExamService
             objUpdate.PublicId = filePath.PublicId;
             objUpdate.ExamFile = filePath.Url;
         }
-
-        objUpdate.KeyWord = examUpdateDto.Title.RemoveDiacritics();
+        var keyWordValue = "";
+        if (examUpdateDto.tagValues.Any())
+        {
+            keyWordValue = string.Join(",", examUpdateDto.tagValues);
+        }
+        objUpdate.KeyWord = keyWordValue;
         await _examRepository.UpdateExam(objUpdate);
         var examDto = _mapper.Map<ExamDto>(objUpdate);
         await _elasticSearchService.UpdateDocumentAsync(ElasticConstant.ElasticExams, examDto, examUpdateDto.Id);
@@ -179,7 +188,7 @@ public class ExamService : IExamService
         {
             return new ApiResult<bool>(false, "Not Found");
         }
-        // delete all of image exam if have
+        // delete all images exam if have
         var listImage = await _examImageRepository.GetAllExamImageByExamId(id);
         if (listImage.Count() > 0)
         {
@@ -188,7 +197,7 @@ public class ExamService : IExamService
                await _cloudinaryService.DeleteImageAsync(image.publicId);
             }
         }
-        // delete file pdf if have
+        // delete file pdf 
         if (!string.IsNullOrEmpty(exam.ExamFile))
         {
             await _cloudinaryService.DeleteFileAsync(exam.PublicId);

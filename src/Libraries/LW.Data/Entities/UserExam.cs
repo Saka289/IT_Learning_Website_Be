@@ -4,7 +4,7 @@ using LW.Contracts.Domains;
 
 namespace LW.Data.Entities;
 
-public class UserExam : EntityBase<int>
+public class UserExam : EntityAuditBase<int>
 {
     [Required]
     public decimal Score { get; set; }

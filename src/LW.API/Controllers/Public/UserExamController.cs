@@ -52,5 +52,17 @@ namespace LW.API.Controllers.Public
 
             return Ok(result);
         }
+        
+        [HttpGet("GetListResultExamOfUserByUserId/{userId}")]
+        public async Task<ActionResult<ApiResult<IEnumerable<UserExamDto>>>> GetListResultExamOfUserByUserId(string  userId)
+        {
+            var result = await _userExamService.GetListResultByUserId(userId);
+            if (!result.IsSucceeded)
+            {
+                return BadRequest(result);
+            }
+
+            return Ok(result);
+        }
     }
 }

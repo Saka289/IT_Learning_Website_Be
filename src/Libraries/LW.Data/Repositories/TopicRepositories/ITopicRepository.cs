@@ -13,6 +13,8 @@ public interface ITopicRepository : IRepositoryBase<Topic, int>
     Task<Topic> GetTopicByAllId(int id);
     Task<IEnumerable<Topic>> GetAllTopic();
     Task<IEnumerable<Topic>> GetAllTopicByDocument(int id);
+    Task<IEnumerable<Topic>> GetAllTopicChildByParentId(int parentId);
+
     Task<IQueryable<Topic>> GetAllTopicPagination();
     Task<Topic> GetAllTopicIndex(int id);
 }

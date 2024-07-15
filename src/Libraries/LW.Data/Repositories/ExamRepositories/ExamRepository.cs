@@ -25,7 +25,7 @@ public class ExamRepository : RepositoryBase<Exam, int>, IExamRepository
 
     public async Task<Exam> GetExamById(int id)
     {
-        return await FindByCondition(x => x.Id == id).FirstOrDefaultAsync();
+        return await FindByCondition(x => x.Id == id).Include(x=>x.ExamImages).FirstOrDefaultAsync();
     }
 
     public async Task<Exam> CreateExam(Exam e)

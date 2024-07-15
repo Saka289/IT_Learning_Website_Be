@@ -1,4 +1,5 @@
 ﻿using System.ComponentModel.DataAnnotations;
+using LW.Shared.DTOs.Tag;
 using Microsoft.AspNetCore.Http;
 
 namespace LW.Shared.DTOs.Exam;
@@ -17,8 +18,14 @@ public class ExamCreateDto
     public int Year { set; get; }
     [Required]
     public int NumberQuestion { set; get; }
-
+    
+    [Required]
+    public IEnumerable<string> tagValues { get; set; }
+    
     [Required] public bool IsActive { get; set; } = false;
     
+    
+    
     public List<IFormFile>? Images { get; set; } 
+    
 }
