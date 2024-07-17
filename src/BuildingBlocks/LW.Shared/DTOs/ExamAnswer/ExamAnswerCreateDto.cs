@@ -12,5 +12,5 @@ public class ExamAnswerCreateDto
 
     [Required]
 
-    public int ExamId { get; set; }
+    public int ExamCodeId { get; set; }
 }

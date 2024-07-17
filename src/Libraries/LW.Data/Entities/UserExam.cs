@@ -7,6 +7,7 @@ namespace LW.Data.Entities;
 public class UserExam : EntityAuditBase<int>
 {
     [Required]
+    [Column(TypeName = "decimal(12,2)")] 
     public decimal Score { get; set; }
     [Required]
     [Column(TypeName = "json")]
@@ -16,7 +17,7 @@ public class UserExam : EntityAuditBase<int>
     [ForeignKey(nameof(UserId))]
     public virtual ApplicationUser? ApplicationUser { get; set; }
     [Required]
-    public int ExamId { get; set; }
-    [ForeignKey(nameof(ExamId))]
-    public virtual Exam? Exam { get; set; }
+    public int ExamCodeId { get; set; }
+    [ForeignKey(nameof(ExamCodeId))]
+    public virtual ExamCode? ExamCode { get; set; }
 }

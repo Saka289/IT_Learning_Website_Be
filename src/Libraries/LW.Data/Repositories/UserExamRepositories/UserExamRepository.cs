@@ -12,9 +12,10 @@ public class UserExamRepository : RepositoryBase<UserExam,int>, IUserExamReposit
     {
     }
 
-    public async Task CreateUserExam(UserExam userExam)
-    {
-        await CreateAsync(userExam);
+    public  Task<UserExam> CreateUserExam(UserExam userExam)
+    { 
+        CreateAsync(userExam);
+       return Task.FromResult(userExam);
     }
 
     public async Task CreateRangeUserExam(IEnumerable<UserExam> userExams)
@@ -24,7 +25,7 @@ public class UserExamRepository : RepositoryBase<UserExam,int>, IUserExamReposit
 
     public async Task<UserExam> GetUserExamById(int id)
     {
-        return await FindByCondition(x => x.Id == id).Include(x=>x.ApplicationUser).Include(x=>x.Exam).FirstOrDefaultAsync();
+        return await FindByCondition(x => x.Id == id).Include(x=>x.ApplicationUser).Include(x=>x.ExamCode).FirstOrDefaultAsync();
     }
 
     public async Task<IEnumerable<UserExam>> GetAllUserExam()
@@ -34,6 +35,6 @@ public class UserExamRepository : RepositoryBase<UserExam,int>, IUserExamReposit
 
     public async Task<IEnumerable<UserExam>> GetAllUserExamByUserId(string userId)
     {
-        return await FindByCondition(x => x.UserId == userId).Include(x=>x.ApplicationUser).Include(x=>x.Exam).ToListAsync();
+        return await FindByCondition(x => x.UserId == userId).Include(x=>x.ApplicationUser).Include(x=>x.ExamCode).ToListAsync();
     }
 }
