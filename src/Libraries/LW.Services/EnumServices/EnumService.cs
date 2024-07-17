@@ -52,4 +52,15 @@ public class EnumService : IEnumService
 
         return new ApiSuccessResult<IEnumerable<EnumDto>>(result);
     }
+
+    public async Task<ApiResult<IEnumerable<EnumDto>>> GetAllTypeOfExam()
+    {
+        var result = typeof(EExamType).ToEnumDto();
+        if (result is null)
+        {
+            return new ApiResult<IEnumerable<EnumDto>>(false, "Get all type of exam not found !!!");
+        }
+        return new ApiSuccessResult<IEnumerable<EnumDto>>(result);
+    }
+    
 }

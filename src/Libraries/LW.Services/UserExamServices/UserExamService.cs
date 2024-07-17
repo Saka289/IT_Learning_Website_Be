@@ -1,6 +1,7 @@
 ﻿using AutoMapper;
 using LW.Data.Entities;
 using LW.Data.Repositories.ExamAnswerRepositories;
+using LW.Data.Repositories.ExamCodeRepositories;
 using LW.Data.Repositories.ExamRepositories;
 using LW.Data.Repositories.UserExamRepositories;
 using LW.Shared.DTOs.ExamAnswer;
@@ -18,36 +19,39 @@ public class UserExamService : IUserExamService
     private readonly UserManager<ApplicationUser> _userManager;
     private readonly IMapper _mapper;
     private readonly IUserExamRepository _userExamRepository;
+    private readonly IExamCodeRepository _examCodeRepository;
 
     public UserExamService(IExamAnswerRepository answerRepository, IExamRepository examRepository,
-        UserManager<ApplicationUser> userManager, IMapper mapper, IUserExamRepository userExamRepository)
+        UserManager<ApplicationUser> userManager, IMapper mapper, IUserExamRepository userExamRepository, IExamCodeRepository examCodeRepository)
     {
         _answerRepository = answerRepository;
         _examRepository = examRepository;
         _userManager = userManager;
         _mapper = mapper;
         _userExamRepository = userExamRepository;
+        _examCodeRepository = examCodeRepository;
     }
 
-    public async Task<ApiResult<bool>> CreateRangeUserExam(ExamFormSubmitDto examFormSubmitDto)
+    public async Task<ApiResult<int>> CreateRangeUserExam(ExamFormSubmitDto examFormSubmitDto)
     {
         var user = await _userManager.FindByIdAsync(examFormSubmitDto.UserId);
         if (user == null)
         {
-            return new ApiResult<bool>(false, $"Not found user with id = {examFormSubmitDto.UserId}");
+            return new ApiResult<int>(false, $"Not found user with id = {examFormSubmitDto.UserId}");
         }
 
-        var exam = await _examRepository.GetExamById(examFormSubmitDto.ExamId);
-        if (exam == null)
+        var examCode = await _examCodeRepository.GetExamCodeById(examFormSubmitDto.ExamCodeId);
+        if (examCode == null)
         {
-            return new ApiResult<bool>(false, $"Not found exam with id = {examFormSubmitDto.ExamId}");
+            return new ApiResult<int>(false, $"Not found exam code with id = {examFormSubmitDto.ExamCodeId}");
         }
 
-        var scoreOfEachQuestion = (decimal)10 / exam.NumberQuestion;
-        var listAnswerOfExam = await _answerRepository.GetAllExamAnswerByExamId(exam.Id);
+        var scoreOfEachQuestion = (decimal)10 / examCode.Exam.NumberQuestion;
+        
+        var listAnswerOfExam = await _answerRepository.GetAllExamAnswerByExamCodeId(examCode.Id);
         if (listAnswerOfExam.Count() == 0)
         {
-            return new ApiResult<bool>(false, $"Not found list answer of exam with id = {examFormSubmitDto.ExamId}");
+            return new ApiResult<int>(false, $"Not found list answer of examcode with id = {examFormSubmitDto.ExamCodeId}");
         }
 
         decimal totalScore = 0;
@@ -78,12 +82,12 @@ public class UserExamService : IUserExamService
         var userExam = new UserExam()
         {
             UserId = examFormSubmitDto.UserId,
-            ExamId = examFormSubmitDto.ExamId,
+            ExamCodeId =  examFormSubmitDto.ExamCodeId,
             Score = totalScore,
             HistoryExam = JsonConvert.SerializeObject(historyAnswers)
         };
-        await _userExamRepository.CreateUserExam(userExam);
-        return new ApiResult<bool>(true, "Create result of user successfully");
+        var userExamResult =  await _userExamRepository.CreateUserExam(userExam);
+        return new ApiResult<int>(true,userExamResult.Id, "Create result of user successfully");
     }
 
     public async Task<ApiResult<UserExamDto>> GetExamResultById(int id)

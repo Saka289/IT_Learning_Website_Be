@@ -17,9 +17,9 @@ public class ExamAnswerRepository : RepositoryBase<ExamAnswer, int>, IExamAnswer
         return await FindAll().ToListAsync();
     }
 
-    public async Task<IEnumerable<ExamAnswer>> GetAllExamAnswerByExamId(int examId)
+    public async Task<IEnumerable<ExamAnswer>> GetAllExamAnswerByExamCodeId(int examCodeId)
     {
-        return await FindByCondition(x => x.ExamId == examId).ToListAsync();
+        return await FindByCondition(x => x.ExamCodeId == examCodeId).ToListAsync();
     }
 
     public async Task<ExamAnswer> GetExamAnswerById(int id)
