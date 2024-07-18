@@ -106,12 +106,7 @@ public class ExamService : IExamService
             obj.PublicExamEssaySolutionId = filePath.PublicId;
         }
 
-        var keyWordValue = "";
-        if (examCreateDto.tagValues != null && examCreateDto.tagValues.Any())
-        {
-            keyWordValue = string.Join(",", examCreateDto.tagValues);
-        }
-
+        var keyWordValue = TagValueHelperExtensions.ConvertToTagString(examCreateDto.tagValues);
         obj.KeyWord = keyWordValue;
         await _examRepository.CreateExam(obj);
         var result = _mapper.Map<ExamDto>(obj);
@@ -144,10 +139,9 @@ public class ExamService : IExamService
             objUpdate.ExamSolutionFile = filePath.Url;
         }
 
-        var keyWordValue = "";
         if (examUpdateDto.tagValues != null && examUpdateDto.tagValues.Any())
         {
-            keyWordValue = string.Join(",", examUpdateDto.tagValues);
+            var keyWordValue = TagValueHelperExtensions.ConvertToTagString(examUpdateDto.tagValues);
             objUpdate.KeyWord = keyWordValue;
         }
 
