@@ -32,7 +32,7 @@ using MySqlConnector;
 using LW.Services.DocumentServices;
 using LW.Data.Repositories.DocumentRepositories;
 using LW.Data.Repositories.ExamAnswerRepositories;
-using LW.Data.Repositories.ExamImageRepositories;
+using LW.Data.Repositories.ExamCodeRepositories;
 using LW.Data.Repositories.ExamRepositories;
 using LW.Data.Repositories.LessonRepositories;
 using LW.Data.Repositories.QuizAnswerRepositories;
@@ -47,7 +47,7 @@ using LW.Data.Repositories.UserQuizRepositories;
 using LW.Services.CommentDocumentServices;
 using LW.Services.EnumServices;
 using LW.Services.ExamAnswerServices;
-using LW.Services.ExamImageServices;
+using LW.Services.ExamCodeServices;
 using LW.Services.ExamServices;
 using LW.Services.IndexServices;
 using LW.Services.LessonServices;
@@ -271,7 +271,6 @@ public static class ServiceExtensions
         services.AddScoped<ICommentDocumentRepository, CommentDocumentRepository>();
         services.AddScoped<IUserGradeRepository, UserGradeRepository>();
         services.AddScoped<IExamRepository, ExamRepository>();
-        services.AddScoped<IExamImageRepository, ExamImageRepository>();
         services.AddScoped<IExamAnswerRepository, ExamAnswerRepository>();
         services.AddScoped<IUserExamRepository, UserExamRepository>();
         services.AddScoped<IQuizRepository, QuizRepository>();
@@ -280,6 +279,7 @@ public static class ServiceExtensions
         services.AddScoped<IUserQuizRepository, UserQuizRepository>();
         services.AddScoped<ITagRepository, TagRepository>();
         services.AddScoped<IQuizQuestionRelationRepository, QuizQuestionRelationRepository>();
+        services.AddScoped<IExamCodeRepository, ExamCodeRepository>();
         // IService 
         services.AddScoped<IAdminAuthorService, AdminAuthorService>();
         services.AddScoped<IUserService, UserService>();
@@ -295,7 +295,6 @@ public static class ServiceExtensions
         services.AddScoped<IIndexService, IndexService>();
         services.AddScoped<IEnumService, EnumService>();
         services.AddScoped<IExamService, ExamService>();
-        services.AddScoped<IExamImageService, ExamImageService>();
         services.AddScoped<IExamAnswerService, ExamAnswerService>();
         services.AddScoped<IUserExamService, UserExamService>();
         services.AddScoped<IUserGradeService, UserGradeService>();
@@ -304,6 +303,7 @@ public static class ServiceExtensions
         services.AddScoped<IUserQuizService, UserQuizService>();
         services.AddScoped<ITagService, TagService>();
         services.AddScoped<IQuizQuestionRelationService, QuizQuestionRelationService>();
+        services.AddScoped<IExamCodeService, ExamCodeService>();
         return services;
     }
 }

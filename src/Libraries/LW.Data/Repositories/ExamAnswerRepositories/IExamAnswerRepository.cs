@@ -6,7 +6,7 @@ namespace LW.Data.Repositories.ExamAnswerRepositories;
 public interface IExamAnswerRepository : IRepositoryBase<ExamAnswer, int>
 {
     Task<IEnumerable<ExamAnswer>> GetAllExamAnswer();
-    Task<IEnumerable<ExamAnswer>> GetAllExamAnswerByExamId(int examId);
+    Task<IEnumerable<ExamAnswer>> GetAllExamAnswerByExamCodeId(int examCodeId);
     Task<ExamAnswer> GetExamAnswerById(int id);
     Task<ExamAnswer> GetExamAnswerByNumberOfQuestion(int numberOfQuestion);
     Task<bool> CreateRangeExamAnswer(IEnumerable<ExamAnswer> examAnswers);

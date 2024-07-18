@@ -3,6 +3,7 @@ using System;
 using LW.Data.Persistence;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
@@ -10,9 +11,10 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace LW.Data.Persistence.Migrations
 {
     [DbContext(typeof(AppDbContext))]
-    partial class AppDbContextModelSnapshot : ModelSnapshot
+    [Migration("20240716051928_Init_Update_Table_For_Module_Exam_3")]
+    partial class Init_Update_Table_For_Module_Exam_3
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -268,9 +270,6 @@ namespace LW.Data.Persistence.Migrations
                         .IsRequired()
                         .HasColumnType("longtext");
 
-                    b.Property<int>("Type")
-                        .HasColumnType("int");
-
                     b.Property<int>("Year")
                         .HasColumnType("int");
 
@@ -502,9 +501,6 @@ namespace LW.Data.Persistence.Migrations
                     b.Property<int?>("TopicId")
                         .HasColumnType("int");
 
-                    b.Property<int>("Type")
-                        .HasColumnType("int");
-
                     b.HasKey("Id");
 
                     b.HasIndex("LessonId");
@@ -595,33 +591,17 @@ namespace LW.Data.Persistence.Migrations
                     b.Property<int>("QuestionLevel")
                         .HasColumnType("int");
 
-                    b.Property<int>("Type")
-                        .HasColumnType("int");
-
-                    b.HasKey("Id");
-
-                    b.ToTable("QuizQuestions");
-                });
-
-            modelBuilder.Entity("LW.Data.Entities.QuizQuestionRelation", b =>
-                {
-                    b.Property<int>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("int");
-
                     b.Property<int>("QuizId")
                         .HasColumnType("int");
 
-                    b.Property<int>("QuizQuestionId")
+                    b.Property<int>("Type")
                         .HasColumnType("int");
 
                     b.HasKey("Id");
 
                     b.HasIndex("QuizId");
 
-                    b.HasIndex("QuizQuestionId");
-
-                    b.ToTable("QuizQuestionRelations");
+                    b.ToTable("QuizQuestions");
                 });
 
             modelBuilder.Entity("LW.Data.Entities.Tag", b =>
@@ -1058,23 +1038,15 @@ namespace LW.Data.Persistence.Migrations
                     b.Navigation("QuizQuestion");
                 });
 
-            modelBuilder.Entity("LW.Data.Entities.QuizQuestionRelation", b =>
+            modelBuilder.Entity("LW.Data.Entities.QuizQuestion", b =>
                 {
                     b.HasOne("LW.Data.Entities.Quiz", "Quiz")
-                        .WithMany("QuizQuestionRelations")
+                        .WithMany("QuizQuestions")
                         .HasForeignKey("QuizId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.HasOne("LW.Data.Entities.QuizQuestion", "QuizQuestion")
-                        .WithMany("QuizQuestionRelations")
-                        .HasForeignKey("QuizQuestionId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
                     b.Navigation("Quiz");
-
-                    b.Navigation("QuizQuestion");
                 });
 
             modelBuilder.Entity("LW.Data.Entities.Topic", b =>
@@ -1253,7 +1225,7 @@ namespace LW.Data.Persistence.Migrations
 
             modelBuilder.Entity("LW.Data.Entities.Quiz", b =>
                 {
-                    b.Navigation("QuizQuestionRelations");
+                    b.Navigation("QuizQuestions");
 
                     b.Navigation("UserQuizzes");
                 });
@@ -1261,8 +1233,6 @@ namespace LW.Data.Persistence.Migrations
             modelBuilder.Entity("LW.Data.Entities.QuizQuestion", b =>
                 {
                     b.Navigation("QuizAnswers");
-
-                    b.Navigation("QuizQuestionRelations");
                 });
 
             modelBuilder.Entity("LW.Data.Entities.Topic", b =>

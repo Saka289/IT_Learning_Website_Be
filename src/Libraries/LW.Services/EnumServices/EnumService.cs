@@ -53,6 +53,7 @@ public class EnumService : IEnumService
         return new ApiSuccessResult<IEnumerable<EnumDto>>(result);
     }
 
+
     public async Task<ApiResult<IEnumerable<EnumDto>>> GetAllQuizType()
     {
         var result = typeof(ETypeQuiz).ToEnumDto();
@@ -61,6 +62,16 @@ public class EnumService : IEnumService
             return new ApiResult<IEnumerable<EnumDto>>(false, "Get all quiz type not found !!!");
         }
 
+        return new ApiSuccessResult<IEnumerable<EnumDto>>(result);
+    }
+    
+    public async Task<ApiResult<IEnumerable<EnumDto>>> GetAllTypeOfExam()
+    {
+        var result = typeof(EExamType).ToEnumDto();
+        if (result is null)
+        {
+            return new ApiResult<IEnumerable<EnumDto>>(false, "Get all type of exam not found !!!");
+        }
         return new ApiSuccessResult<IEnumerable<EnumDto>>(result);
     }
 }

@@ -5,7 +5,7 @@ namespace LW.Data.Repositories.UserExamRepositories;
 
 public interface IUserExamRepository : IRepositoryBase<UserExam, int>
 {
-    Task CreateUserExam(UserExam UserExam);
+    Task<UserExam> CreateUserExam(UserExam UserExam);
     
     Task CreateRangeUserExam(IEnumerable<UserExam> UserExams);
     
