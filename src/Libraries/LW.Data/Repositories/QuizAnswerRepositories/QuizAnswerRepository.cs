@@ -16,7 +16,7 @@ public class QuizAnswerRepository : RepositoryBase<QuizAnswer, int>, IQuizAnswer
     {
         return await FindAll().Where(q => q.QuizQuestionId == id).ToListAsync();
     }
-    
+
     public async Task<QuizAnswer?> GetQuizAnswerByQuizQuestionId(int id)
     {
         return await FindByCondition(x => x.QuizQuestionId == id).FirstOrDefaultAsync();
@@ -26,7 +26,8 @@ public class QuizAnswerRepository : RepositoryBase<QuizAnswer, int>, IQuizAnswer
     {
         var result = await FindAll()
             .Include(q => q.QuizQuestion)
-            .Where(q => q.QuizQuestion.QuizId == quizId && q.IsCorrect)
+            .ThenInclude(qr => qr.QuizQuestionRelations)
+            .Where(q => q.QuizQuestion.QuizQuestionRelations.Any(q => q.QuizId == quizId) && q.IsCorrect)
             .ToListAsync();
         return result;
     }

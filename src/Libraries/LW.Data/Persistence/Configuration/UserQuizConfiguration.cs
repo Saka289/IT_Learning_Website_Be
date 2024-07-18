@@ -13,12 +13,12 @@ public class UserQuizConfiguration : IEntityTypeConfiguration<UserQuiz>
         builder.Property(uq => uq.HistoryQuizzes)
             .HasConversion(
                 c => JsonConvert.SerializeObject(c),
-                c => JsonConvert.DeserializeObject<List<HistoryQuiz>>(c) ?? new List<HistoryQuiz>())
+                c => JsonConvert.DeserializeObject<List<HistoryQuiz>>(c) ?? new List<HistoryQuiz>(),
+                new ValueComparer<List<HistoryQuiz>>(
+                    (c1, c2) => c1.SequenceEqual(c2),
+                    c => c.Aggregate(0, (a, v) => HashCode.Combine(a, v.GetHashCode())),
+                    c => c.ToList()))
             .IsRequired(false)
             .HasColumnType("json");
-        // .Metadata.SetValueComparer(new ValueComparer<List<HistoryQuiz>>(
-        //     (c1, c2) => c1.SequenceEqual(c2),
-        //     c => c.Aggregate(0, (a, v) => HashCode.Combine(a, v.GetHashCode())),
-        //     c => c.ToList()));
     }
 }

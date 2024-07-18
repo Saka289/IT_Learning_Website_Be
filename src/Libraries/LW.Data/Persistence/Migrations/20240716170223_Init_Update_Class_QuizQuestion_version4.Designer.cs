@@ -3,6 +3,7 @@ using System;
 using LW.Data.Persistence;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
@@ -10,9 +11,10 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace LW.Data.Persistence.Migrations
 {
     [DbContext(typeof(AppDbContext))]
-    partial class AppDbContextModelSnapshot : ModelSnapshot
+    [Migration("20240716170223_Init_Update_Class_QuizQuestion_version4")]
+    partial class Init_Update_Class_QuizQuestion_version4
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -232,10 +234,7 @@ namespace LW.Data.Persistence.Migrations
                         .IsRequired()
                         .HasColumnType("longtext");
 
-                    b.Property<string>("ExamEssayFile")
-                        .HasColumnType("longtext");
-
-                    b.Property<string>("ExamSolutionFile")
+                    b.Property<string>("ExamFile")
                         .HasColumnType("longtext");
 
                     b.Property<bool>("IsActive")
@@ -258,18 +257,12 @@ namespace LW.Data.Persistence.Migrations
                         .IsRequired()
                         .HasColumnType("longtext");
 
-                    b.Property<string>("PublicExamEssayId")
-                        .HasColumnType("longtext");
-
-                    b.Property<string>("PublicExamEssaySolutionId")
+                    b.Property<string>("PublicId")
                         .HasColumnType("longtext");
 
                     b.Property<string>("Title")
                         .IsRequired()
                         .HasColumnType("longtext");
-
-                    b.Property<int>("Type")
-                        .HasColumnType("int");
 
                     b.Property<int>("Year")
                         .HasColumnType("int");
@@ -289,7 +282,7 @@ namespace LW.Data.Persistence.Migrations
                         .IsRequired()
                         .HasColumnType("varchar(1)");
 
-                    b.Property<int>("ExamCodeId")
+                    b.Property<int>("ExamId")
                         .HasColumnType("int");
 
                     b.Property<int>("NumberOfQuestion")
@@ -297,36 +290,36 @@ namespace LW.Data.Persistence.Migrations
 
                     b.HasKey("Id");
 
-                    b.HasIndex("ExamCodeId");
+                    b.HasIndex("ExamId");
 
                     b.ToTable("ExamAnswers");
                 });
 
-            modelBuilder.Entity("LW.Data.Entities.ExamCode", b =>
+            modelBuilder.Entity("LW.Data.Entities.ExamImage", b =>
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("int");
 
-                    b.Property<string>("Code")
-                        .IsRequired()
-                        .HasColumnType("longtext");
-
-                    b.Property<string>("ExamFile")
-                        .IsRequired()
-                        .HasColumnType("longtext");
-
                     b.Property<int>("ExamId")
                         .HasColumnType("int");
 
-                    b.Property<string>("PublicExamId")
+                    b.Property<string>("FilePath")
+                        .IsRequired()
+                        .HasColumnType("longtext");
+
+                    b.Property<int>("Index")
+                        .HasColumnType("int");
+
+                    b.Property<string>("publicId")
+                        .IsRequired()
                         .HasColumnType("longtext");
 
                     b.HasKey("Id");
 
                     b.HasIndex("ExamId");
 
-                    b.ToTable("ExamCodes");
+                    b.ToTable("ExamImages");
                 });
 
             modelBuilder.Entity("LW.Data.Entities.Grade", b =>
@@ -500,9 +493,6 @@ namespace LW.Data.Persistence.Migrations
                         .HasColumnType("longtext");
 
                     b.Property<int?>("TopicId")
-                        .HasColumnType("int");
-
-                    b.Property<int>("Type")
                         .HasColumnType("int");
 
                     b.HasKey("Id");
@@ -725,7 +715,7 @@ namespace LW.Data.Persistence.Migrations
                     b.Property<DateTimeOffset>("CreatedDate")
                         .HasColumnType("datetime(6)");
 
-                    b.Property<int>("ExamCodeId")
+                    b.Property<int>("ExamId")
                         .HasColumnType("int");
 
                     b.Property<string>("HistoryExam")
@@ -739,7 +729,7 @@ namespace LW.Data.Persistence.Migrations
                         .HasColumnType("datetime(6)");
 
                     b.Property<decimal>("Score")
-                        .HasColumnType("decimal(12,2)");
+                        .HasColumnType("decimal(65,30)");
 
                     b.Property<string>("UserId")
                         .IsRequired()
@@ -747,7 +737,7 @@ namespace LW.Data.Persistence.Migrations
 
                     b.HasKey("Id");
 
-                    b.HasIndex("ExamCodeId");
+                    b.HasIndex("ExamId");
 
                     b.HasIndex("UserId");
 
@@ -990,19 +980,19 @@ namespace LW.Data.Persistence.Migrations
 
             modelBuilder.Entity("LW.Data.Entities.ExamAnswer", b =>
                 {
-                    b.HasOne("LW.Data.Entities.ExamCode", "ExamCode")
+                    b.HasOne("LW.Data.Entities.Exam", "Exam")
                         .WithMany("ExamAnswers")
-                        .HasForeignKey("ExamCodeId")
+                        .HasForeignKey("ExamId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.Navigation("ExamCode");
+                    b.Navigation("Exam");
                 });
 
-            modelBuilder.Entity("LW.Data.Entities.ExamCode", b =>
+            modelBuilder.Entity("LW.Data.Entities.ExamImage", b =>
                 {
                     b.HasOne("LW.Data.Entities.Exam", "Exam")
-                        .WithMany("ExamCodes")
+                        .WithMany("ExamImages")
                         .HasForeignKey("ExamId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
@@ -1097,9 +1087,9 @@ namespace LW.Data.Persistence.Migrations
 
             modelBuilder.Entity("LW.Data.Entities.UserExam", b =>
                 {
-                    b.HasOne("LW.Data.Entities.ExamCode", "ExamCode")
-                        .WithMany()
-                        .HasForeignKey("ExamCodeId")
+                    b.HasOne("LW.Data.Entities.Exam", "Exam")
+                        .WithMany("UserExams")
+                        .HasForeignKey("ExamId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
@@ -1111,7 +1101,7 @@ namespace LW.Data.Persistence.Migrations
 
                     b.Navigation("ApplicationUser");
 
-                    b.Navigation("ExamCode");
+                    b.Navigation("Exam");
                 });
 
             modelBuilder.Entity("LW.Data.Entities.UserGrade", b =>
@@ -1226,12 +1216,11 @@ namespace LW.Data.Persistence.Migrations
 
             modelBuilder.Entity("LW.Data.Entities.Exam", b =>
                 {
-                    b.Navigation("ExamCodes");
-                });
-
-            modelBuilder.Entity("LW.Data.Entities.ExamCode", b =>
-                {
                     b.Navigation("ExamAnswers");
+
+                    b.Navigation("ExamImages");
+
+                    b.Navigation("UserExams");
                 });
 
             modelBuilder.Entity("LW.Data.Entities.Grade", b =>
