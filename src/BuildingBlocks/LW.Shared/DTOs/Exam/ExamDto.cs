@@ -3,7 +3,7 @@
 public class ExamDto
 {
     public int Id { get; set; }
-    public string? Type { get; set; }
+    public int Type { get; set; }
     public string? Title { get; set; }
     public string? KeyWord { get; set; }
     public string? Province { get; set; }
