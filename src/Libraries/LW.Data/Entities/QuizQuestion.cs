@@ -24,9 +24,6 @@ public class QuizQuestion : EntityAuditBase<int>
     public bool IsActive { get; set; }
     [Required]
     public EQuestionLevel QuestionLevel { get; set; }
-    [Required]
-    public int QuizId { get; set; }
-    [ForeignKey(nameof(QuizId))]
-    public virtual Quiz Quiz { get; set; }
+    public virtual ICollection<QuizQuestionRelation> QuizQuestionRelations { get; set; }
     public virtual ICollection<QuizAnswer> QuizAnswers { get; set; }
 }

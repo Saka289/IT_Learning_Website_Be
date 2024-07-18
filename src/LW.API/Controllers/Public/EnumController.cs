@@ -70,5 +70,17 @@ namespace LW.API.Controllers.Public
 
             return Ok(result);
         }
+        
+        [HttpGet("GetTypeQuiz")]
+        public async Task<ActionResult<ApiResult<IEnumerable<EnumDto>>>> GetTypeQuiz()
+        {
+            var result = await _enumService.GetAllQuizType();
+            if (!result.IsSucceeded)
+            {
+                return NotFound(result);
+            }
+
+            return Ok(result);
+        }
     }
 }

@@ -11,6 +11,7 @@ public class UpdateQuizCommandValidator : AbstractValidator<QuizUpdateDto>
         RuleFor(x => x.Title).NotNull().NotEmpty();
         RuleFor(x => x.Description).NotNull().NotEmpty();
         RuleFor(x => x.Score).NotNull().NotEmpty().GreaterThan(0);
+        RuleFor(x => x.Type).NotNull().NotEmpty().IsInEnum();
         RuleFor(x => x.IsActive).NotNull().NotEmpty();
     }
 }

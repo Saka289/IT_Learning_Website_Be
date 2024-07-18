@@ -15,6 +15,7 @@ using LW.Shared.DTOs.Lesson;
 using LW.Shared.DTOs.Quiz;
 using LW.Shared.DTOs.QuizAnswer;
 using LW.Shared.DTOs.QuizQuestion;
+using LW.Shared.DTOs.QuizQuestionRelation;
 using LW.Shared.DTOs.Tag;
 using LW.Shared.DTOs.Topic;
 using LW.Shared.DTOs.UserExam;
@@ -172,18 +173,19 @@ public class MappingProfile : Profile
         CreateMap<Exam, ExamCreateDto>().ReverseMap();
         CreateMap<Exam, ExamUpdateDto>().ReverseMap();
         //ExamImage
-        CreateMap<ExamImage,ExamImageDto>().ReverseMap();
-        CreateMap<ExamImage,ExamImageCreateDto>().ReverseMap();
-        CreateMap<ExamImage,ExamImageUpdateDto>().ReverseMap();
+        CreateMap<ExamImage, ExamImageDto>().ReverseMap();
+        CreateMap<ExamImage, ExamImageCreateDto>().ReverseMap();
+        CreateMap<ExamImage, ExamImageUpdateDto>().ReverseMap();
         //ExamAnswer
-        CreateMap<ExamAnswer,ExamAnswerDto>().ReverseMap();
-        CreateMap<ExamAnswer,ExamAnswerCreateDto>().ReverseMap();
-        CreateMap<ExamAnswer,ExamAnswerUpdateDto>().ReverseMap();
+        CreateMap<ExamAnswer, ExamAnswerDto>().ReverseMap();
+        CreateMap<ExamAnswer, ExamAnswerCreateDto>().ReverseMap();
+        CreateMap<ExamAnswer, ExamAnswerUpdateDto>().ReverseMap();
         //UserExam
-        CreateMap<UserExam,UserExamDto>()
-            .ForMember(x => x.HistoryExam, y => y.MapFrom(src => JsonConvert.DeserializeObject<List<HistoryAnswer>>(src.HistoryExam)))
-            .ForMember(x=>x.UserName, y=>y.MapFrom(src =>src.ApplicationUser.UserName))
-            .ForMember(x=>x.ExamName, y=>y.MapFrom(src =>src.Exam.Title))
+        CreateMap<UserExam, UserExamDto>()
+            .ForMember(x => x.HistoryExam,
+                y => y.MapFrom(src => JsonConvert.DeserializeObject<List<HistoryAnswer>>(src.HistoryExam)))
+            .ForMember(x => x.UserName, y => y.MapFrom(src => src.ApplicationUser.UserName))
+            .ForMember(x => x.ExamName, y => y.MapFrom(src => src.Exam.Title))
             .ReverseMap();
         //Quiz
         CreateMap<Quiz, QuizDto>()
@@ -209,6 +211,7 @@ public class MappingProfile : Profile
         CreateMap<Tag, TagDto>().ReverseMap();
         CreateMap<Tag, TagCreateDto>().ReverseMap();
         CreateMap<Tag, TagUpdateDto>().ReverseMap();
-
+        //QuizQuestionRelation
+        CreateMap<QuizQuestionRelation, QuizQuestionRelationDto>().ReverseMap();
     }
 }

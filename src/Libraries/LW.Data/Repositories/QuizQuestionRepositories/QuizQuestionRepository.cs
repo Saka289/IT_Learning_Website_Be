@@ -27,7 +27,10 @@ public class QuizQuestionRepository : RepositoryBase<QuizQuestion, int>, IQuizQu
 
     public Task<IQueryable<QuizQuestion>> GetAllQuizQuestionByQuizId(int id)
     {
-        var result = FindAll().Include(qa => qa.QuizAnswers).Where(q => q.QuizId == id).AsQueryable();
+        var result = FindAll()
+            .Include(qa => qa.QuizAnswers)
+            .Include(qr => qr.QuizQuestionRelations)
+            .Where(q => q.QuizQuestionRelations.Any(q => q.QuizId == id)).AsQueryable();
         return Task.FromResult(result);
     }
 

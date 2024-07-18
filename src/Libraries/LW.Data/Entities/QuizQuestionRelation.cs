@@ -9,9 +9,9 @@ public class QuizQuestionRelation : EntityBase<int>
     [Required]
     public int QuizId { get; set;  }
     [Required]
-    public int QUizQuestionId { get; set;  }
+    public int QuizQuestionId { get; set;  }
     [ForeignKey(nameof(QuizId))]
     public virtual Quiz Quiz { get; set; }
-    [ForeignKey(nameof(QUizQuestionId))]
+    [ForeignKey(nameof(QuizQuestionId))]
     public virtual QuizQuestion QuizQuestion { get; set; }
 }

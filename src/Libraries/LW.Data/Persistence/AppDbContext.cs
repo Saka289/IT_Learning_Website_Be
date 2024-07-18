@@ -36,6 +36,7 @@ public class AppDbContext : IdentityDbContext<ApplicationUser>
     public DbSet<UserExam> UserExams { get; set; }
     public DbSet<Quiz> Quizzes { get; set; }
     public DbSet<QuizQuestion> QuizQuestions { get; set; }
+    public DbSet<QuizQuestionRelation> QuizQuestionRelations { get; set; }
     public DbSet<QuizAnswer> QuizAnswers { get; set; }
     public DbSet<UserQuiz> UserQuizzes { get; set; }
     public DbSet<Tag> Tags { get; set; }
