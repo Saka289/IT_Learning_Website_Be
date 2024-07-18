@@ -171,8 +171,8 @@ public class MappingProfile : Profile
             .ReverseMap();
         //Exam
         CreateMap<Exam, ExamDto>()
-            .ForMember(x => x.Type,
-                    y => y.MapFrom(src => EnumHelperExtensions.GetDisplayName(src.Type).ToString()))
+            // .ForMember(x => x.Type,
+            //         y => y.MapFrom(src => EnumHelperExtensions.GetDisplayName(src.Type).ToString()))
             .ReverseMap();
         CreateMap<Exam, ExamCreateDto>().ReverseMap();
         CreateMap<Exam, ExamUpdateDto>().ReverseMap();
