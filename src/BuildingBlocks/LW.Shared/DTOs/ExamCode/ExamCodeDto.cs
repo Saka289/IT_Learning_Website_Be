@@ -8,4 +8,6 @@ public class ExamCodeDto
     public string PublicExamId { get; set; }
     public int ExamId { get; set; }
     public string ExamTitle { get; set; }
+    public int NumberQuestion { get; set; }
+    
 }

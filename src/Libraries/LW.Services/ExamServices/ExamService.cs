@@ -9,6 +9,7 @@ using LW.Shared.DTOs;
 using LW.Shared.DTOs.Exam;
 using LW.Shared.DTOs.File;
 using LW.Shared.DTOs.Lesson;
+using LW.Shared.Enums;
 using LW.Shared.SeedWork;
 using MockQueryable.Moq;
 
@@ -72,13 +73,25 @@ public class ExamService : IExamService
         return new ApiResult<ExamDto>(true, result, "Get Exam By Id Successfully");
     }
 
+    public async Task<ApiResult<IEnumerable<ExamDto>>> GetExamByType(EExamType type)
+    {
+        var listExam = await _examRepository.GetExamByType(type);
+        if (listExam == null)
+        {
+            return new ApiResult<IEnumerable<ExamDto>>(false, "NotFound");
+        }
+
+        var result = _mapper.Map<IEnumerable<ExamDto>>(listExam);
+        return new ApiResult<IEnumerable<ExamDto>>(true, result, "Get All Exam By Type Successfully");
+    }
+
     public async Task<ApiResult<PagedList<ExamDto>>> SearchByExamPagination(SearchExamDto searchExamDto)
     {
         var listExam =
             await _elasticSearchService.SearchDocumentAsync(ElasticConstant.ElasticExams, searchExamDto);
         if (listExam is null)
         {
-            return new ApiResult<PagedList<ExamDto>>(false, $"Lesson not found by {searchExamDto.Key} !!!");
+            return new ApiResult<PagedList<ExamDto>>(false, $"Exam not found by {searchExamDto.Key} !!!");
         }
 
         var result = _mapper.Map<IEnumerable<ExamDto>>(listExam);
