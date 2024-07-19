@@ -60,15 +60,14 @@ namespace LW.API.Controllers.Public
             return Ok(result);
         }
         
-        [HttpGet("GetAllQuizQuestionByQuizIdPaginationTest/{quizId}")]
-        public async Task<ActionResult<ApiResult<PagedList<QuizQuestionTestDto>>>> GetAllQuizQuestionByQuizIdPaginationTest([Required] int quizId, [FromQuery] PagingRequestParameters pagingRequestParameters, int? size)
+        [HttpGet("GetAllQuizQuestionByQuizIdTest/{quizId}")]
+        public async Task<ActionResult<ApiResult<PagedList<QuizQuestionTestDto>>>> GetAllQuizQuestionByQuizIdTest([Required] int quizId, int? size)
         {
-            var result = await _quizQuestionService.GetAllQuizQuestionByQuizIdPaginationTest(quizId, pagingRequestParameters, size);
+            var result = await _quizQuestionService.GetAllQuizQuestionByQuizIdTest(quizId, size);
             if (!result.IsSucceeded)
             {
                 return NotFound(result);
             }
-            Response.Headers.Add("X-Pagination", JsonConvert.SerializeObject(result.Data.GetMetaData()));
             return Ok(result);
         }
         

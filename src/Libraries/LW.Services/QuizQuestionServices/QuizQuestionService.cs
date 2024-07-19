@@ -50,7 +50,8 @@ public class QuizQuestionService : IQuizQuestionService
         return new ApiSuccessResult<IEnumerable<QuizQuestionDto>>(result);
     }
 
-    public async Task<ApiResult<PagedList<QuizQuestionDto>>> GetAllQuizQuestionPagination(PagingRequestParameters pagingRequestParameters)
+    public async Task<ApiResult<PagedList<QuizQuestionDto>>> GetAllQuizQuestionPagination(
+        PagingRequestParameters pagingRequestParameters)
     {
         var quizQuestionList = await _quizQuestionRepository.GetAllQuizQuestionPagination();
         if (!quizQuestionList.Any())
@@ -64,8 +65,7 @@ public class QuizQuestionService : IQuizQuestionService
         return new ApiSuccessResult<PagedList<QuizQuestionDto>>(pagedResult);
     }
 
-    public async Task<ApiResult<IEnumerable<QuizQuestionDto>>> GetAllQuizQuestionByQuizIdPractice(int quizId,
-        int? size = 0)
+    public async Task<ApiResult<IEnumerable<QuizQuestionDto>>> GetAllQuizQuestionByQuizIdPractice(int quizId, int? size = 0)
     {
         var quizQuestionList = await _quizQuestionRepository.GetAllQuizQuestionByQuizId(quizId);
         if (!quizQuestionList.Any())
@@ -97,13 +97,12 @@ public class QuizQuestionService : IQuizQuestionService
         return new ApiSuccessResult<IEnumerable<QuizQuestionDto>>(result);
     }
 
-    public async Task<ApiResult<PagedList<QuizQuestionTestDto>>> GetAllQuizQuestionByQuizIdPaginationTest(int quizId,
-        PagingRequestParameters pagingRequestParameters, int? size = 0)
+    public async Task<ApiResult<IEnumerable<QuizQuestionTestDto>>> GetAllQuizQuestionByQuizIdTest(int quizId, int? size = 0)
     {
         var quizQuestionList = await _quizQuestionRepository.GetAllQuizQuestionByQuizId(quizId);
         if (!quizQuestionList.Any())
         {
-            return new ApiResult<PagedList<QuizQuestionTestDto>>(false, "Quiz Question is null !!!");
+            return new ApiResult<IEnumerable<QuizQuestionTestDto>>(false, "Quiz Question is null !!!");
         }
 
         var quiz = await _quizRepository.GetQuizById(quizId);
@@ -126,11 +125,8 @@ public class QuizQuestionService : IQuizQuestionService
             quizQuestionList = quizQuestionList.Take(Convert.ToInt32(size));
         }
 
-        var result = _mapper.ProjectTo<QuizQuestionTestDto>(quizQuestionList);
-        var pagedResult = await PagedList<QuizQuestionTestDto>.ToPageListAsync(result.BuildMock(),
-            pagingRequestParameters.PageIndex,
-            pagingRequestParameters.PageSize, pagingRequestParameters.OrderBy, pagingRequestParameters.IsAscending);
-        return new ApiSuccessResult<PagedList<QuizQuestionTestDto>>(pagedResult);
+        var result = _mapper.Map<IEnumerable<QuizQuestionTestDto>>(quizQuestionList);
+        return new ApiSuccessResult<IEnumerable<QuizQuestionTestDto>>(result);
     }
 
     public async Task<ApiResult<PagedList<QuizQuestionDto>>> SearchQuizQuestion(
@@ -237,6 +233,7 @@ public class QuizQuestionService : IQuizQuestionService
         {
             return new ApiResult<QuizQuestionDto>(false, "Quiz Question not found !!!");
         }
+
         var countAnswer = quizQuestionUpdateDto.QuizAnswers.Count();
         var countAnswerTrue = quizQuestionUpdateDto.QuizAnswers.Count(x => x.IsCorrect);
         switch (quizQuestionUpdateDto.Type)
@@ -298,11 +295,13 @@ public class QuizQuestionService : IQuizQuestionService
         }
 
         var result = _mapper.Map<QuizQuestionDto>(quizQuestionUpdate);
-        _elasticSearchService.UpdateDocumentAsync(ElasticConstant.ElasticQuizQuestion, result, quizQuestionUpdateDto.Id);
+        _elasticSearchService.UpdateDocumentAsync(ElasticConstant.ElasticQuizQuestion, result,
+            quizQuestionUpdateDto.Id);
         return new ApiSuccessResult<QuizQuestionDto>(result);
     }
 
-    public async Task<ApiResult<bool>> CreateRangeQuizQuestion(IEnumerable<QuizQuestionCreateDto> quizQuestionsCreateDto)
+    public async Task<ApiResult<bool>> CreateRangeQuizQuestion(
+        IEnumerable<QuizQuestionCreateDto> quizQuestionsCreateDto)
     {
         foreach (var item in quizQuestionsCreateDto)
         {
@@ -362,7 +361,8 @@ public class QuizQuestionService : IQuizQuestionService
         return new ApiSuccessResult<bool>(true);
     }
 
-    public async Task<ApiResult<bool>> UpdateRangeQuizQuestion(IEnumerable<QuizQuestionUpdateDto> quizQuestionsUpdateDto)
+    public async Task<ApiResult<bool>> UpdateRangeQuizQuestion(
+        IEnumerable<QuizQuestionUpdateDto> quizQuestionsUpdateDto)
     {
         foreach (var item in quizQuestionsUpdateDto)
         {
@@ -371,6 +371,7 @@ public class QuizQuestionService : IQuizQuestionService
             {
                 return new ApiResult<bool>(false, "Quiz Question not found !!!");
             }
+
             var countAnswer = item.QuizAnswers.Count();
             var countAnswerTrue = item.QuizAnswers.Count(x => x.IsCorrect);
             switch (item.Type)
