@@ -18,7 +18,7 @@ public class UpdateExamCommandValidator:AbstractValidator<ExamUpdateDto>
             .WithMessage("ExamSolutionFileUpload must be in a valid format (pdf).").When(x=>x.ExamSolutionFileUpload != null);
         RuleFor(x => x.Description).NotNull().NotEmpty();
         RuleFor(x => x.Year).NotNull().NotEmpty().GreaterThan(0);
-        RuleFor(x => x.NumberQuestion).NotNull().NotEmpty().GreaterThan(0);
+        RuleFor(x => x.NumberQuestion).NotNull();
         RuleFor(x => x.IsActive);
     }
     private bool BeAValidPdfFormat(IFormFile file)

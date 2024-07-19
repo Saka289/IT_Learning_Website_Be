@@ -179,6 +179,7 @@ public class MappingProfile : Profile
         //ExamCode
         CreateMap<ExamCode,ExamCodeDto>()
             .ForMember(x=>x.ExamTitle, y=>y.MapFrom(src=>src.Exam.Title))
+            .ForMember(x=>x.NumberQuestion, y=>y.MapFrom(src=>src.Exam.NumberQuestion))
             .ReverseMap();
         CreateMap<ExamCode,ExamCodeCreateDto>().ReverseMap();
         CreateMap<ExamCode,ExamCodeUpdateDto>().ReverseMap();

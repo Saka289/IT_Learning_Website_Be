@@ -17,7 +17,7 @@ public class CreateExamCommandValidator:AbstractValidator<ExamCreateDto>
             .WithMessage("ExamSolutionFileUpload must be in a valid format (pdf).");
         RuleFor(x => x.Description).NotNull().NotEmpty();
         RuleFor(x => x.Year).NotNull().NotEmpty().GreaterThan(0);
-        RuleFor(x => x.NumberQuestion).NotNull().NotEmpty().GreaterThan(0);
+        RuleFor(x => x.NumberQuestion).NotNull();
         RuleFor(x => x.IsActive).NotNull();
         RuleFor(x => x.tagValues).NotNull().NotEmpty();
         
