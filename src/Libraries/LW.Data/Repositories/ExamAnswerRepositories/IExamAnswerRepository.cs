@@ -10,6 +10,7 @@ public interface IExamAnswerRepository : IRepositoryBase<ExamAnswer, int>
     Task<ExamAnswer> GetExamAnswerById(int id);
     Task<ExamAnswer> GetExamAnswerByNumberOfQuestion(int numberOfQuestion);
     Task<bool> CreateRangeExamAnswer(IEnumerable<ExamAnswer> examAnswers);
+    Task<bool> UpdateRangeExamAnswer(IEnumerable<ExamAnswer> examAnswers);
     Task<ExamAnswer> CreateExamAnswer(ExamAnswer examAnswer);
     Task<ExamAnswer> UpdateExamAnswer(ExamAnswer examAnswer);
     Task<bool> DeleteExamAnswer(int id);

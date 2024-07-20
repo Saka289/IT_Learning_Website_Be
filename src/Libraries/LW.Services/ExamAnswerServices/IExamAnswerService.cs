@@ -12,6 +12,7 @@ public interface IExamAnswerService
     Task<ApiResult<ExamAnswerDto>> CreateExamAnswer(ExamAnswerCreateDto examAnswerCreateDto);
     
     Task<ApiResult<bool>> CreateRangeExamAnswer(ExamAnswerCreateRangeDto examAnswerCreateRangeDtos);
+    Task<ApiResult<bool>> UpdateRangeExamAnswer(ExamAnswerUpdateRangeDto examAnswers);
     Task<ApiResult<ExamAnswerDto>> UpdateExamAnswer(ExamAnswerUpdateDto examAnswerUpdateDto);
     Task<ApiResult<bool>> DeleteExamAnswer(int id);
 }

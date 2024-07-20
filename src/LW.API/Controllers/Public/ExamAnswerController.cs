@@ -97,6 +97,25 @@ namespace LW.API.Controllers.Public
 
             return Ok(result);
         }
+        [HttpPut("UpdateRangeExamAnswer")]
+        public async Task<ActionResult<ApiResult<bool>>> UpdateRangeExamAnswer(
+            [FromBody] ExamAnswerUpdateRangeDto examAnswerCreateRangeDtos)
+        {
+            var validationResult =
+                await new UpdateRangeExamAnswerCommandValidator().ValidateAsync(examAnswerCreateRangeDtos);
+            if (!validationResult.IsValid)
+            {
+                return BadRequest(validationResult);
+            }
+
+            var result = await _examAnswerService.UpdateRangeExamAnswer(examAnswerCreateRangeDtos);
+            if (!result.IsSucceeded)
+            {
+                return BadRequest(result);
+            }
+
+            return Ok(result);
+        }
 
         [HttpPut("UpdateExamAnswer")]
         public async Task<ActionResult<ApiResult<ExamAnswerDto>>> UpdateExamAnswer(

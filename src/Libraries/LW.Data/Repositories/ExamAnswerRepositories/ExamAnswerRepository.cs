@@ -38,6 +38,12 @@ public class ExamAnswerRepository : RepositoryBase<ExamAnswer, int>, IExamAnswer
         return true;
     }
 
+    public async Task<bool> UpdateRangeExamAnswer(IEnumerable<ExamAnswer> examAnswers)
+    {
+        await UpdateListAsync(examAnswers);
+        return true;
+    }
+
     public async Task<ExamAnswer> CreateExamAnswer(ExamAnswer examAnswer)
     {
         await CreateAsync(examAnswer);
