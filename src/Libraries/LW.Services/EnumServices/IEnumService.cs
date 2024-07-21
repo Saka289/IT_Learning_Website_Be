@@ -8,5 +8,8 @@ public interface IEnumService
 {
     Task<ApiResult<IEnumerable<EnumDto>>> GetAllBookCollection();
     Task<ApiResult<IEnumerable<EnumDto>>> GetAllBookType();
-
+    Task<ApiResult<IEnumerable<EnumDto>>> GetAllTypeQuestion();
+    Task<ApiResult<IEnumerable<EnumDto>>> GetAllLevelQuestion();
+    Task<ApiResult<IEnumerable<EnumDto>>> GetAllQuizType();
+    Task<ApiResult<IEnumerable<EnumDto>>> GetAllTypeOfExam();
 }

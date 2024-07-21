@@ -8,4 +8,7 @@ public class CloudinaryConstant
     public const string FolderGradeImage = "GradeImage";
     public const string FolderUserImage = "UserImage";
     public const string FolderLessonFile = "LessonFile";
+    public const string FolderExamFilePdf = "ExamFile";
+    public const string FolderExamImage = "ExamImage";
+    public const string FolderQuestionImage = "QuestionImage";
 }

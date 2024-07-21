@@ -215,6 +215,120 @@ namespace LW.Data.Persistence.Migrations
                     b.ToTable("Documents");
                 });
 
+            modelBuilder.Entity("LW.Data.Entities.Exam", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    b.Property<string>("CreatedBy")
+                        .IsRequired()
+                        .HasColumnType("longtext");
+
+                    b.Property<DateTimeOffset>("CreatedDate")
+                        .HasColumnType("datetime(6)");
+
+                    b.Property<string>("Description")
+                        .IsRequired()
+                        .HasColumnType("longtext");
+
+                    b.Property<string>("ExamEssayFile")
+                        .HasColumnType("longtext");
+
+                    b.Property<string>("ExamSolutionFile")
+                        .HasColumnType("longtext");
+
+                    b.Property<bool>("IsActive")
+                        .HasColumnType("tinyint(1)");
+
+                    b.Property<string>("KeyWord")
+                        .IsRequired()
+                        .HasColumnType("longtext");
+
+                    b.Property<string>("LastModifiedBy")
+                        .HasColumnType("longtext");
+
+                    b.Property<DateTimeOffset?>("LastModifiedDate")
+                        .HasColumnType("datetime(6)");
+
+                    b.Property<int>("NumberQuestion")
+                        .HasColumnType("int");
+
+                    b.Property<string>("Province")
+                        .IsRequired()
+                        .HasColumnType("longtext");
+
+                    b.Property<string>("PublicExamEssayId")
+                        .HasColumnType("longtext");
+
+                    b.Property<string>("PublicExamEssaySolutionId")
+                        .HasColumnType("longtext");
+
+                    b.Property<string>("Title")
+                        .IsRequired()
+                        .HasColumnType("longtext");
+
+                    b.Property<int>("Type")
+                        .HasColumnType("int");
+
+                    b.Property<int>("Year")
+                        .HasColumnType("int");
+
+                    b.HasKey("Id");
+
+                    b.ToTable("Exams");
+                });
+
+            modelBuilder.Entity("LW.Data.Entities.ExamAnswer", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    b.Property<string>("Answer")
+                        .IsRequired()
+                        .HasColumnType("varchar(1)");
+
+                    b.Property<int>("ExamCodeId")
+                        .HasColumnType("int");
+
+                    b.Property<int>("NumberOfQuestion")
+                        .HasColumnType("int");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("ExamCodeId");
+
+                    b.ToTable("ExamAnswers");
+                });
+
+            modelBuilder.Entity("LW.Data.Entities.ExamCode", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    b.Property<string>("Code")
+                        .IsRequired()
+                        .HasColumnType("longtext");
+
+                    b.Property<string>("ExamFile")
+                        .IsRequired()
+                        .HasColumnType("longtext");
+
+                    b.Property<int>("ExamId")
+                        .HasColumnType("int");
+
+                    b.Property<string>("PublicExamId")
+                        .HasColumnType("longtext");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("ExamId");
+
+                    b.ToTable("ExamCodes");
+                });
+
             modelBuilder.Entity("LW.Data.Entities.Grade", b =>
                 {
                     b.Property<int>("Id")
@@ -342,6 +456,209 @@ namespace LW.Data.Persistence.Migrations
                     b.ToTable("Levels");
                 });
 
+            modelBuilder.Entity("LW.Data.Entities.Quiz", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    b.Property<string>("CreatedBy")
+                        .IsRequired()
+                        .HasColumnType("longtext");
+
+                    b.Property<DateTimeOffset>("CreatedDate")
+                        .HasColumnType("datetime(6)");
+
+                    b.Property<string>("Description")
+                        .IsRequired()
+                        .HasColumnType("longtext");
+
+                    b.Property<bool>("IsActive")
+                        .HasColumnType("tinyint(1)");
+
+                    b.Property<bool>("IsShuffle")
+                        .HasColumnType("tinyint(1)");
+
+                    b.Property<string>("KeyWord")
+                        .IsRequired()
+                        .HasColumnType("longtext");
+
+                    b.Property<string>("LastModifiedBy")
+                        .HasColumnType("longtext");
+
+                    b.Property<DateTimeOffset?>("LastModifiedDate")
+                        .HasColumnType("datetime(6)");
+
+                    b.Property<int?>("LessonId")
+                        .HasColumnType("int");
+
+                    b.Property<decimal>("Score")
+                        .HasColumnType("decimal(12,2)");
+
+                    b.Property<string>("Title")
+                        .IsRequired()
+                        .HasColumnType("longtext");
+
+                    b.Property<int?>("TopicId")
+                        .HasColumnType("int");
+
+                    b.Property<int>("Type")
+                        .HasColumnType("int");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("LessonId");
+
+                    b.HasIndex("TopicId");
+
+                    b.ToTable("Quizzes");
+                });
+
+            modelBuilder.Entity("LW.Data.Entities.QuizAnswer", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    b.Property<string>("Content")
+                        .IsRequired()
+                        .HasColumnType("longtext");
+
+                    b.Property<string>("CreatedBy")
+                        .IsRequired()
+                        .HasColumnType("longtext");
+
+                    b.Property<DateTimeOffset>("CreatedDate")
+                        .HasColumnType("datetime(6)");
+
+                    b.Property<bool>("IsCorrect")
+                        .HasColumnType("tinyint(1)");
+
+                    b.Property<string>("LastModifiedBy")
+                        .HasColumnType("longtext");
+
+                    b.Property<DateTimeOffset?>("LastModifiedDate")
+                        .HasColumnType("datetime(6)");
+
+                    b.Property<int>("QuizQuestionId")
+                        .HasColumnType("int");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("QuizQuestionId");
+
+                    b.ToTable("QuizAnswers");
+                });
+
+            modelBuilder.Entity("LW.Data.Entities.QuizQuestion", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    b.Property<string>("Content")
+                        .IsRequired()
+                        .HasColumnType("longtext");
+
+                    b.Property<string>("CreatedBy")
+                        .IsRequired()
+                        .HasColumnType("longtext");
+
+                    b.Property<DateTimeOffset>("CreatedDate")
+                        .HasColumnType("datetime(6)");
+
+                    b.Property<string>("Hint")
+                        .HasColumnType("longtext");
+
+                    b.Property<string>("Image")
+                        .HasColumnType("longtext");
+
+                    b.Property<bool>("IsActive")
+                        .HasColumnType("tinyint(1)");
+
+                    b.Property<bool>("IsShuffle")
+                        .HasColumnType("tinyint(1)");
+
+                    b.Property<string>("KeyWord")
+                        .IsRequired()
+                        .HasColumnType("longtext");
+
+                    b.Property<string>("LastModifiedBy")
+                        .HasColumnType("longtext");
+
+                    b.Property<DateTimeOffset?>("LastModifiedDate")
+                        .HasColumnType("datetime(6)");
+
+                    b.Property<string>("PublicId")
+                        .HasColumnType("longtext");
+
+                    b.Property<int>("QuestionLevel")
+                        .HasColumnType("int");
+
+                    b.Property<int>("Type")
+                        .HasColumnType("int");
+
+                    b.HasKey("Id");
+
+                    b.ToTable("QuizQuestions");
+                });
+
+            modelBuilder.Entity("LW.Data.Entities.QuizQuestionRelation", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    b.Property<int>("QuizId")
+                        .HasColumnType("int");
+
+                    b.Property<int>("QuizQuestionId")
+                        .HasColumnType("int");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("QuizId");
+
+                    b.HasIndex("QuizQuestionId");
+
+                    b.ToTable("QuizQuestionRelations");
+                });
+
+            modelBuilder.Entity("LW.Data.Entities.Tag", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    b.Property<string>("CreatedBy")
+                        .IsRequired()
+                        .HasColumnType("longtext");
+
+                    b.Property<DateTimeOffset>("CreatedDate")
+                        .HasColumnType("datetime(6)");
+
+                    b.Property<bool>("IsActive")
+                        .HasColumnType("tinyint(1)");
+
+                    b.Property<string>("KeyWord")
+                        .IsRequired()
+                        .HasColumnType("longtext");
+
+                    b.Property<string>("LastModifiedBy")
+                        .HasColumnType("longtext");
+
+                    b.Property<DateTimeOffset?>("LastModifiedDate")
+                        .HasColumnType("datetime(6)");
+
+                    b.Property<string>("Title")
+                        .IsRequired()
+                        .HasColumnType("longtext");
+
+                    b.HasKey("Id");
+
+                    b.ToTable("Tags");
+                });
+
             modelBuilder.Entity("LW.Data.Entities.Topic", b =>
                 {
                     b.Property<int>("Id")
@@ -395,6 +712,48 @@ namespace LW.Data.Persistence.Migrations
                     b.ToTable("Topics");
                 });
 
+            modelBuilder.Entity("LW.Data.Entities.UserExam", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    b.Property<string>("CreatedBy")
+                        .IsRequired()
+                        .HasColumnType("longtext");
+
+                    b.Property<DateTimeOffset>("CreatedDate")
+                        .HasColumnType("datetime(6)");
+
+                    b.Property<int>("ExamCodeId")
+                        .HasColumnType("int");
+
+                    b.Property<string>("HistoryExam")
+                        .IsRequired()
+                        .HasColumnType("json");
+
+                    b.Property<string>("LastModifiedBy")
+                        .HasColumnType("longtext");
+
+                    b.Property<DateTimeOffset?>("LastModifiedDate")
+                        .HasColumnType("datetime(6)");
+
+                    b.Property<decimal>("Score")
+                        .HasColumnType("decimal(12,2)");
+
+                    b.Property<string>("UserId")
+                        .IsRequired()
+                        .HasColumnType("varchar(255)");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("ExamCodeId");
+
+                    b.HasIndex("UserId");
+
+                    b.ToTable("UserExams");
+                });
+
             modelBuilder.Entity("LW.Data.Entities.UserGrade", b =>
                 {
                     b.Property<int>("Id")
@@ -415,6 +774,53 @@ namespace LW.Data.Persistence.Migrations
                     b.HasIndex("UserId");
 
                     b.ToTable("UserGrade");
+                });
+
+            modelBuilder.Entity("LW.Data.Entities.UserQuiz", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    b.Property<string>("CreatedBy")
+                        .IsRequired()
+                        .HasColumnType("longtext");
+
+                    b.Property<DateTimeOffset>("CreatedDate")
+                        .HasColumnType("datetime(6)");
+
+                    b.Property<string>("HistoryQuizzes")
+                        .HasColumnType("json");
+
+                    b.Property<string>("LastModifiedBy")
+                        .HasColumnType("longtext");
+
+                    b.Property<DateTimeOffset?>("LastModifiedDate")
+                        .HasColumnType("datetime(6)");
+
+                    b.Property<int>("NumberCorrect")
+                        .HasColumnType("int");
+
+                    b.Property<int>("QuizId")
+                        .HasColumnType("int");
+
+                    b.Property<decimal>("Score")
+                        .HasColumnType("decimal(12,2)");
+
+                    b.Property<int>("TotalQuestion")
+                        .HasColumnType("int");
+
+                    b.Property<string>("UserId")
+                        .IsRequired()
+                        .HasColumnType("varchar(255)");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("QuizId");
+
+                    b.HasIndex("UserId");
+
+                    b.ToTable("UserQuizzes");
                 });
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityRole", b =>
@@ -555,7 +961,8 @@ namespace LW.Data.Persistence.Migrations
 
                     b.HasOne("LW.Data.Entities.CommentDocument", "ParentComment")
                         .WithMany("ChildCommentDocuments")
-                        .HasForeignKey("ParentId");
+                        .HasForeignKey("ParentId")
+                        .OnDelete(DeleteBehavior.Cascade);
 
                     b.HasOne("LW.Data.Entities.ApplicationUser", "ApplicationUser")
                         .WithMany()
@@ -581,6 +988,28 @@ namespace LW.Data.Persistence.Migrations
                     b.Navigation("Grade");
                 });
 
+            modelBuilder.Entity("LW.Data.Entities.ExamAnswer", b =>
+                {
+                    b.HasOne("LW.Data.Entities.ExamCode", "ExamCode")
+                        .WithMany("ExamAnswers")
+                        .HasForeignKey("ExamCodeId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("ExamCode");
+                });
+
+            modelBuilder.Entity("LW.Data.Entities.ExamCode", b =>
+                {
+                    b.HasOne("LW.Data.Entities.Exam", "Exam")
+                        .WithMany("ExamCodes")
+                        .HasForeignKey("ExamId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Exam");
+                });
+
             modelBuilder.Entity("LW.Data.Entities.Grade", b =>
                 {
                     b.HasOne("LW.Data.Entities.Level", "Level")
@@ -603,6 +1032,51 @@ namespace LW.Data.Persistence.Migrations
                     b.Navigation("Topic");
                 });
 
+            modelBuilder.Entity("LW.Data.Entities.Quiz", b =>
+                {
+                    b.HasOne("LW.Data.Entities.Lesson", "Lesson")
+                        .WithMany("Quizzes")
+                        .HasForeignKey("LessonId");
+
+                    b.HasOne("LW.Data.Entities.Topic", "Topic")
+                        .WithMany("Quizzes")
+                        .HasForeignKey("TopicId");
+
+                    b.Navigation("Lesson");
+
+                    b.Navigation("Topic");
+                });
+
+            modelBuilder.Entity("LW.Data.Entities.QuizAnswer", b =>
+                {
+                    b.HasOne("LW.Data.Entities.QuizQuestion", "QuizQuestion")
+                        .WithMany("QuizAnswers")
+                        .HasForeignKey("QuizQuestionId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("QuizQuestion");
+                });
+
+            modelBuilder.Entity("LW.Data.Entities.QuizQuestionRelation", b =>
+                {
+                    b.HasOne("LW.Data.Entities.Quiz", "Quiz")
+                        .WithMany("QuizQuestionRelations")
+                        .HasForeignKey("QuizId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("LW.Data.Entities.QuizQuestion", "QuizQuestion")
+                        .WithMany("QuizQuestionRelations")
+                        .HasForeignKey("QuizQuestionId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Quiz");
+
+                    b.Navigation("QuizQuestion");
+                });
+
             modelBuilder.Entity("LW.Data.Entities.Topic", b =>
                 {
                     b.HasOne("LW.Data.Entities.Document", "Document")
@@ -613,11 +1087,31 @@ namespace LW.Data.Persistence.Migrations
 
                     b.HasOne("LW.Data.Entities.Topic", "ParentTopic")
                         .WithMany("ChildTopics")
-                        .HasForeignKey("ParentId");
+                        .HasForeignKey("ParentId")
+                        .OnDelete(DeleteBehavior.Cascade);
 
                     b.Navigation("Document");
 
                     b.Navigation("ParentTopic");
+                });
+
+            modelBuilder.Entity("LW.Data.Entities.UserExam", b =>
+                {
+                    b.HasOne("LW.Data.Entities.ExamCode", "ExamCode")
+                        .WithMany()
+                        .HasForeignKey("ExamCodeId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("LW.Data.Entities.ApplicationUser", "ApplicationUser")
+                        .WithMany("UserExams")
+                        .HasForeignKey("UserId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("ApplicationUser");
+
+                    b.Navigation("ExamCode");
                 });
 
             modelBuilder.Entity("LW.Data.Entities.UserGrade", b =>
@@ -637,6 +1131,25 @@ namespace LW.Data.Persistence.Migrations
                     b.Navigation("ApplicationUser");
 
                     b.Navigation("Grade");
+                });
+
+            modelBuilder.Entity("LW.Data.Entities.UserQuiz", b =>
+                {
+                    b.HasOne("LW.Data.Entities.Quiz", "Quiz")
+                        .WithMany("UserQuizzes")
+                        .HasForeignKey("QuizId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("LW.Data.Entities.ApplicationUser", "ApplicationUser")
+                        .WithMany("UserQuizzes")
+                        .HasForeignKey("UserId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("ApplicationUser");
+
+                    b.Navigation("Quiz");
                 });
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityRoleClaim<string>", b =>
@@ -692,7 +1205,11 @@ namespace LW.Data.Persistence.Migrations
 
             modelBuilder.Entity("LW.Data.Entities.ApplicationUser", b =>
                 {
+                    b.Navigation("UserExams");
+
                     b.Navigation("UserGrades");
+
+                    b.Navigation("UserQuizzes");
                 });
 
             modelBuilder.Entity("LW.Data.Entities.CommentDocument", b =>
@@ -707,6 +1224,16 @@ namespace LW.Data.Persistence.Migrations
                     b.Navigation("Topics");
                 });
 
+            modelBuilder.Entity("LW.Data.Entities.Exam", b =>
+                {
+                    b.Navigation("ExamCodes");
+                });
+
+            modelBuilder.Entity("LW.Data.Entities.ExamCode", b =>
+                {
+                    b.Navigation("ExamAnswers");
+                });
+
             modelBuilder.Entity("LW.Data.Entities.Grade", b =>
                 {
                     b.Navigation("Documents");
@@ -714,9 +1241,28 @@ namespace LW.Data.Persistence.Migrations
                     b.Navigation("UserGrades");
                 });
 
+            modelBuilder.Entity("LW.Data.Entities.Lesson", b =>
+                {
+                    b.Navigation("Quizzes");
+                });
+
             modelBuilder.Entity("LW.Data.Entities.Level", b =>
                 {
                     b.Navigation("Grades");
+                });
+
+            modelBuilder.Entity("LW.Data.Entities.Quiz", b =>
+                {
+                    b.Navigation("QuizQuestionRelations");
+
+                    b.Navigation("UserQuizzes");
+                });
+
+            modelBuilder.Entity("LW.Data.Entities.QuizQuestion", b =>
+                {
+                    b.Navigation("QuizAnswers");
+
+                    b.Navigation("QuizQuestionRelations");
                 });
 
             modelBuilder.Entity("LW.Data.Entities.Topic", b =>
@@ -724,6 +1270,8 @@ namespace LW.Data.Persistence.Migrations
                     b.Navigation("ChildTopics");
 
                     b.Navigation("Lessons");
+
+                    b.Navigation("Quizzes");
                 });
 #pragma warning restore 612, 618
         }

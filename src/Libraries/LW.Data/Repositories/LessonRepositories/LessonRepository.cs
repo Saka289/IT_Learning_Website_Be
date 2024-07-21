@@ -30,7 +30,7 @@ public class LessonRepository : RepositoryBase<Lesson, int>, ILessonRepository
 
     public async Task<Lesson> GetLessonById(int id)
     {
-        return await GetByIdAsync(id);
+        return await FindByCondition(x => x.Id == id).Include(t => t.Topic).FirstOrDefaultAsync();
     }
 
     public Task<Lesson> CreateLesson(Lesson lesson)
@@ -45,15 +45,27 @@ public class LessonRepository : RepositoryBase<Lesson, int>, ILessonRepository
         return Task.FromResult(lesson);
     }
 
-    public async Task<bool> DeleteLesson(int id)
+    public async Task<bool> UpdateRangeLesson(IEnumerable<Lesson> lessons)
     {
-        var grade = await GetByIdAsync(id);
-        if (grade == null)
+        lessons = lessons.Where(l => l != null);
+        if (!lessons.Any())
         {
             return false;
         }
 
-        await DeleteAsync(grade);
+        await UpdateListAsync(lessons);
+        return true;
+    }
+
+    public async Task<bool> DeleteLesson(int id)
+    {
+        var lesson = await GetByIdAsync(id);
+        if (lesson == null)
+        {
+            return false;
+        }
+
+        await DeleteAsync(lesson);
         return true;
     }
 
@@ -74,9 +86,11 @@ public class LessonRepository : RepositoryBase<Lesson, int>, ILessonRepository
         return await FindAll()
             .Include(t => t.Topic)
             .ThenInclude(c => c.ParentTopic)
-            .ThenInclude(l => l.Lessons)
+            .ThenInclude(l => l.Lessons.Where(l => l.IsActive == true))
+            .Where(t => t.Topic.IsActive)
             .Include(t => t.Topic)
             .ThenInclude(d => d.Document)
-            .FirstOrDefaultAsync(l => l.Id == id);
+            .Where(t => t.Topic.Document.IsActive)
+            .FirstOrDefaultAsync(l => l.Id == id && l.IsActive);
     }
 }

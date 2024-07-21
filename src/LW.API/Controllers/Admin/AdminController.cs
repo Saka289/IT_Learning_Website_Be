@@ -41,6 +41,17 @@ namespace LW.API.Controllers.Admin
             }
             return Ok(result);
         }
+        
+        [HttpPost("login")]
+        public async Task<ActionResult<ApiResult<LoginAdminResponseDto>>> Login([FromBody] LoginAdminDto loginAdminDto)
+        {
+            var result = await _adminAuthorService.LoginAdminAsync(loginAdminDto);
+            if (!result.IsSucceeded)
+            {
+                return BadRequest(result);
+            }
+            return Ok(result);
+        }
        
         [HttpPost("assignRole/{email}/{roleName}")]
         public async Task<ActionResult<ApiResult<bool>>> AssignRoleToEmail(string email, string roleName)

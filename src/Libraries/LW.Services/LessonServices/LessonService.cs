@@ -1,4 +1,5 @@
-﻿using AutoMapper;
+﻿using System.Text;
+using AutoMapper;
 using LW.Contracts.Common;
 using LW.Data.Entities;
 using LW.Data.Repositories.LessonRepositories;
@@ -124,12 +125,17 @@ public class LessonService : ILessonService
         var filePath = new FileDto();
         if (string.IsNullOrEmpty(lessonEntity.Content) || lessonEntity.Content == null)
         {
-            filePath = await _cloudinaryService.CreateFileAsync(lessonCreateDto.FilePath, CloudinaryConstant.FolderLessonFile);
+            var htmlContent = await _cloudinaryService.ConvertPdfToHtml(lessonCreateDto.FilePath);
+            lessonEntity.Content = htmlContent.Base64Encode();
+            filePath = await _cloudinaryService.CreateFileAsync(lessonCreateDto.FilePath,
+                CloudinaryConstant.FolderLessonFile);
         }
         else
         {
             filePath = await _cloudinaryService.ConvertHtmlToPdf(lessonCreateDto.Content, lessonCreateDto.Title, CloudinaryConstant.FolderLessonFile);
+            lessonEntity.Content = lessonCreateDto.Content.Base64Encode();
         }
+
         lessonEntity.KeyWord = lessonCreateDto.Title.RemoveDiacritics();
         lessonEntity.FilePath = filePath.Url;
         lessonEntity.PublicId = filePath.PublicId;
@@ -157,29 +163,25 @@ public class LessonService : ILessonService
         }
 
         var model = _mapper.Map(lessonUpdateDto, lessonEntity);
-        model.KeyWord = lessonUpdateDto.Title.RemoveDiacritics();
+        var filePath = new FileDto();
+        var lessonEntityUpdate = await _lessonRepository.GetLessonById(lessonUpdateDto.Id);
         if (lessonUpdateDto.FilePath != null && lessonUpdateDto.FilePath.Length > 0)
         {
-            var filePath = new FileDto();
-            if (string.IsNullOrEmpty(lessonEntity.Content) || lessonEntity.Content == null)
-            {
-                filePath = await _cloudinaryService.CreateFileAsync(lessonUpdateDto.FilePath, CloudinaryConstant.FolderLessonFile);
-            }
-            else
-            {
-                filePath = await _cloudinaryService.ConvertHtmlToPdf(lessonUpdateDto.Content, lessonUpdateDto.Title, CloudinaryConstant.FolderLessonFile);
-            }
-            model.FilePath = filePath.Url;
-            model.PublicId = filePath.PublicId;
-            model.UrlDownload = filePath.UrlDownload;
-            var updateLessonFile = await _lessonRepository.UpdateLesson(model);
-            await _lessonRepository.SaveChangesAsync();
-            model.Topic = topicEntity;
-            var resultFile = _mapper.Map<LessonDto>(updateLessonFile);
-            _elasticSearchService.UpdateDocumentAsync(ElasticConstant.ElasticLessons, resultFile, lessonUpdateDto.Id);
-            return new ApiSuccessResult<LessonDto>(resultFile);
+            var htmlContent = await _cloudinaryService.ConvertPdfToHtml(lessonUpdateDto.FilePath);
+            lessonEntity.Content = htmlContent.Base64Encode(); 
+            filePath = await _cloudinaryService.UpdateFileAsync(lessonEntityUpdate.PublicId, lessonUpdateDto.FilePath);
         }
-
+        else
+        {
+            _cloudinaryService.DeleteFileAsync(lessonEntityUpdate.PublicId);
+            filePath = await _cloudinaryService.ConvertHtmlToPdf(lessonUpdateDto.Content, lessonUpdateDto.Title, CloudinaryConstant.FolderLessonFile);
+            lessonEntity.Content = lessonUpdateDto.Content.Base64Encode();
+        }
+        
+        model.FilePath = filePath.Url;
+        model.PublicId = filePath.PublicId;
+        model.UrlDownload = filePath.UrlDownload;
+        model.KeyWord = lessonUpdateDto.Title.RemoveDiacritics();
         var updateLesson = await _lessonRepository.UpdateLesson(model);
         await _lessonRepository.SaveChangesAsync();
         model.Topic = topicEntity;
@@ -196,12 +198,9 @@ public class LessonService : ILessonService
             return new ApiResult<bool>(false, "Lesson not found !!!");
         }
 
-        var topicEntity = await _topicRepository.GetTopicById(lessonEntity.TopicId);
-
         lessonEntity.IsActive = !lessonEntity.IsActive;
         await _lessonRepository.UpdateLesson(lessonEntity);
         await _lessonRepository.SaveChangesAsync();
-        lessonEntity.Topic = topicEntity;
         var result = _mapper.Map<LessonDto>(lessonEntity);
         _elasticSearchService.UpdateDocumentAsync(ElasticConstant.ElasticLessons, result, id);
         return new ApiSuccessResult<bool>(true, "Lesson update successfully !!!");
@@ -237,18 +236,21 @@ public class LessonService : ILessonService
             {
                 _logger.Information($"Lesson not found with id {itemId} !!!");
             }
-
-            listId.Add(lessonEntity);
+            else
+            {
+                lessonEntity.IsActive = false;
+                listId.Add(lessonEntity);
+            }
         }
 
-        var lesson = await _lessonRepository.DeleteRangeLesson(listId);
+        var lesson = await _lessonRepository.UpdateRangeLesson(listId);
         if (!lesson)
         {
             return new ApiResult<bool>(false, "Failed Delete Lesson not found !!!");
         }
 
-        await _cloudinaryService.DeleteRangeFileAsync(listId.Select(l => l.PublicId).ToList());
-        _elasticSearchService.DeleteDocumentRangeAsync(ElasticConstant.ElasticLessons, ids);
+        var result = _mapper.Map<IEnumerable<LessonDto>>(listId);
+        _elasticSearchService.UpdateDocumentRangeAsync(ElasticConstant.ElasticLessons, result, l => l.Id);
 
         return new ApiSuccessResult<bool>(true, "Delete Lessons Successfully !!!");
     }

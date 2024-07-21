@@ -38,13 +38,17 @@ public class CommentDocumentService : ICommentDocumentService
         return new ApiSuccessResult<PagedList<CommentDocumentDto>>(pagedResult);
     }
 
-    public async Task<ApiResult<PagedList<CommentDocumentDto>>> GetAllCommentDocumentByUserIdPagination(string id,
-        PagingRequestParameters pagingRequestParameters)
+    public async Task<ApiResult<PagedList<CommentDocumentDto>>> GetAllCommentDocumentByUserIdPagination(string id, int documentId ,PagingRequestParameters pagingRequestParameters)
     {
         var commentList = await _commentDocumentRepository.GetAllCommentByUserIdPagination(id);
         if (commentList == null)
         {
             return new ApiResult<PagedList<CommentDocumentDto>>(false, "Comment is null !!!");
+        }
+
+        if (documentId > 0)
+        {
+            commentList = commentList.Where(c => c.DocumentId == documentId);
         }
 
         var result = _mapper.ProjectTo<CommentDocumentDto>(commentList);

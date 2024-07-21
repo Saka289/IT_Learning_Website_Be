@@ -5,13 +5,26 @@ namespace LW.Infrastructure.Extensions;
 
 public static class EncodeHelperExtensions
 {
-    public static string EncodeDocument(string bookCollection,string bookType, int publicationYear, int edition)
+    public static string EncodeDocument(string bookCollection, string bookType, int publicationYear, int edition)
     {
         // CanhDieu, SGK, 2022, 1 -> CanhDieu-SGK-2022-01-xxxx
         var codeString = $"{bookCollection}-{bookType}-{publicationYear}-{edition:D2}";
-        var result = codeString +"-"+ GenerateHash(codeString);
+        var result = codeString + "-" + GenerateHash(codeString);
         return result;
     }
+
+    public static string Base64Encode(this string plainText)
+    {
+        var plainTextBytes = Encoding.UTF8.GetBytes(plainText);
+        return Convert.ToBase64String(plainTextBytes);
+    }
+
+    public static string Base64Decode(this string base64EncodedData)
+    {
+        var base64EncodedBytes = Convert.FromBase64String(base64EncodedData);
+        return Encoding.UTF8.GetString(base64EncodedBytes);
+    }
+
     private static string GenerateHash(string input)
     {
         using (SHA256 sha256Hash = SHA256.Create())
@@ -23,6 +36,7 @@ public static class EncodeHelperExtensions
             {
                 builder.Append(bytes[i].ToString("X2"));
             }
+
             return builder.ToString();
         }
     }

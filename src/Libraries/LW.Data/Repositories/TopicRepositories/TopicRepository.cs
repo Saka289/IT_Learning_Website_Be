@@ -22,9 +22,21 @@ public class TopicRepository : RepositoryBase<Topic, int>, ITopicRepository
         return UpdateAsync(topic);
     }
 
+    public async Task<bool> UpdateRangeTopic(IEnumerable<Topic> topics)
+    {
+        topics = topics.Where(t => t != null);
+        if (!topics.Any())
+        {
+            return false;
+        }
+
+        await UpdateListAsync(topics);
+        return true;
+    }
+
     public async Task<bool> DeleteTopic(int id)
     {
-        var topic = await GetTopicById(id);
+        var topic = await GetByIdAsync(id);
         if (topic != null)
         {
             await DeleteAsync(topic);
@@ -65,6 +77,11 @@ public class TopicRepository : RepositoryBase<Topic, int>, ITopicRepository
             .Where(x => x.DocumentId == id && x.ParentId == null).ToListAsync();
     }
 
+    public async Task<IEnumerable<Topic>> GetAllTopicChildByParentId(int parentId)
+    {
+        return await FindAll().Where(x => x.ParentId == parentId).ToListAsync();
+    }
+
     public Task<IQueryable<Topic>> GetAllTopicPagination()
     {
         var result = FindAll()
@@ -75,12 +92,12 @@ public class TopicRepository : RepositoryBase<Topic, int>, ITopicRepository
     public async Task<Topic> GetAllTopicIndex(int id)
     {
         return await FindAll()
-            .Include(d => d.Document)
-            .Include(c => c.ChildTopics)
-            .ThenInclude(l => l.Lessons)
+            .Include(d => d.Document).Where(d => d.Document.IsActive == true)
+            .Include(c => c.ChildTopics.Where(c => c.IsActive == true))
+            .ThenInclude(l => l.Lessons.Where(l => l.IsActive))
             .Include(p => p.ParentTopic)
-            .ThenInclude(l => l.Lessons)
-            .Include(l => l.Lessons)
-            .FirstOrDefaultAsync(t => t.Id == id);
+            .ThenInclude(l => l.Lessons.Where(l => l.IsActive))
+            .Include(l => l.Lessons.Where(l => l.IsActive))
+            .FirstOrDefaultAsync(t => t.Id == id && t.IsActive);
     }
 }
