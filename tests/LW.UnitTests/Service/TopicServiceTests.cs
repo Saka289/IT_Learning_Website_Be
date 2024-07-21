@@ -4,11 +4,11 @@ using LW.Data.Entities;
 using LW.Data.Repositories.DocumentRepositories;
 using LW.Data.Repositories.LessonRepositories;
 using LW.Data.Repositories.TopicRepositories;
-using LW.Infrastructure.Common;
 using LW.Services.TopicServices;
 using LW.Shared.Constant;
 using LW.Shared.DTOs.Lesson;
 using LW.Shared.DTOs.Topic;
+using LW.Shared.SeedWork;
 using NSubstitute;
 using Serilog;
 
@@ -78,7 +78,13 @@ namespace LW.UnitTests.Service
             topicRepository.CreateTopic(topic).Returns(Task.CompletedTask);
             topicRepository.GetTopicById(topic.Id).Returns(topic);
             mapper.Map<TopicDto>(topic).Returns(topicDto);
-            elasticSearchService.CreateDocumentAsync(ElasticConstant.ElasticTopics, topicDto, Arg.Any<Func<TopicDto, int>>()).Returns(Task.CompletedTask);
+            // Assuming CreateDocumentAsync returns a Task<string>
+            elasticSearchService.CreateDocumentAsync(
+                ElasticConstant.ElasticTopics,
+                topicDto,
+                Arg.Any<Func<TopicDto, int>>()
+            ).Returns(Task.FromResult("DocumentCreated")); // Adjust according to actual return type
+
 
             // Act
             var result = await topicService.Create(model);
@@ -103,7 +109,13 @@ namespace LW.UnitTests.Service
             topicRepository.CreateTopic(topic).Returns(Task.CompletedTask);
             topicRepository.GetTopicById(Convert.ToInt32(model.ParentId)).Returns(parentTopic);
             mapper.Map<TopicDto>(parentTopic).Returns(topicDto);
-            elasticSearchService.UpdateDocumentAsync(ElasticConstant.ElasticTopics, topicDto, Convert.ToInt32(model.ParentId)).Returns(Task.CompletedTask);
+            // Assuming CreateDocumentAsync returns a Task<string>
+            elasticSearchService.CreateDocumentAsync(
+                ElasticConstant.ElasticTopics,
+                topicDto,
+                Arg.Any<Func<TopicDto, int>>()
+            ).Returns(Task.FromResult("DocumentCreated")); // Adjust according to actual return type
+
 
             // Act
             var result = await topicService.Create(model);
@@ -111,6 +123,318 @@ namespace LW.UnitTests.Service
             // Assert
             Assert.IsTrue(result.IsSucceeded);
             Assert.AreEqual("Create topic successfully", result.Message);
+        }
+
+        [Test]
+        public async Task Update_ShouldReturnFalse_WhenDocumentNotFound()
+        {
+            // Arrange
+            var model = new TopicUpdateDto { DocumentId = 1, Id = 1, Title = "Crème Brûlée" };
+            documentRepository.GetDocumentById(model.DocumentId).Returns(Task.FromResult<Document>(null));
+
+            // Act
+            var result = await topicService.Update(model);
+
+            // Assert
+            Assert.IsFalse(result.IsSucceeded);
+            Assert.AreEqual("Document of topic not found !!!", result.Message);
+        }
+
+        [Test]
+        public async Task Update_ShouldReturnFalse_WhenTopicNotFound()
+        {
+            // Arrange
+            var model = new TopicUpdateDto { DocumentId = 1, Id = 1, Title = "Crème Brûlée" };
+            var document = new Document();
+            documentRepository.GetDocumentById(model.DocumentId).Returns(Task.FromResult(document));
+            topicRepository.GetTopicById(model.Id).Returns(Task.FromResult<Topic>(null));
+
+            // Act
+            var result = await topicService.Update(model);
+
+            // Assert
+            Assert.IsFalse(result.IsSucceeded);
+            Assert.AreEqual("Topic is not found !!!", result.Message);
+        }
+
+        [Test]
+        public async Task Update_ShouldUpdateTopicSuccessfully_WhenValidInput()
+        {
+            // Arrange
+            var model = new TopicUpdateDto { DocumentId = 1, Id = 1, Title = "Crème Brûlée", ParentId = 2 };
+            var document = new Document();
+            var topicEntity = new Topic { Id = 1, Title = "Creme Brulee" };
+            var updatedTopicEntity = new Topic { Id = 1, Title = "Creme Brulee Updated" };
+            var parentTopic = new Topic { Id = 2, Title = "Parent Topic" };
+            var topicDto = new TopicDto();
+
+            documentRepository.GetDocumentById(model.DocumentId).Returns(Task.FromResult(document));
+            topicRepository.GetTopicById(model.Id).Returns(Task.FromResult(topicEntity));
+            mapper.Map(model, topicEntity).Returns(updatedTopicEntity);
+            topicRepository.UpdateTopic(updatedTopicEntity).Returns(Task.CompletedTask);
+            topicRepository.GetTopicById(Convert.ToInt32(updatedTopicEntity.ParentId)).Returns(Task.FromResult(parentTopic));
+            mapper.Map<TopicDto>(parentTopic).Returns(topicDto);
+
+            // Act
+            var result = await topicService.Update(model);
+
+            // Assert
+            Assert.IsTrue(result.IsSucceeded);
+            Assert.AreEqual("Update topic successfully", result.Message);
+            await elasticSearchService.Received(1).UpdateDocumentAsync(
+                ElasticConstant.ElasticTopics, topicDto, Convert.ToInt32(updatedTopicEntity.ParentId));
+        }
+
+        [Test]
+        public async Task UpdateStatus_ShouldReturnFalse_WhenTopicNotFound()
+        {
+            // Arrange
+            int topicId = 1;
+            topicRepository.GetTopicById(topicId).Returns(Task.FromResult<Topic>(null));
+
+            // Act
+            var result = await topicService.UpdateStatus(topicId);
+
+            // Assert
+            Assert.IsFalse(result.IsSucceeded);
+            Assert.AreEqual("Not found !", result.Message);
+        }
+
+        [Test]
+        public async Task UpdateStatus_ShouldUpdateStatusSuccessfully_WhenValidInput()
+        {
+            // Arrange
+            int topicId = 1;
+            var topicEntity = new Topic { Id = topicId, IsActive = true, ParentId = 2 };
+            var parentTopic = new Topic { Id = 2, Title = "Parent Topic" };
+            var topicDto = new TopicDto();
+
+            topicRepository.GetTopicById(topicId).Returns(Task.FromResult(topicEntity));
+            topicRepository.UpdateTopic(topicEntity).Returns(Task.CompletedTask);
+            topicRepository.GetTopicById(Convert.ToInt32(topicEntity.ParentId)).Returns(Task.FromResult(parentTopic));
+            mapper.Map<TopicDto>(parentTopic).Returns(topicDto);
+
+            // Act
+            var result = await topicService.UpdateStatus(topicId);
+
+            // Assert
+            Assert.IsTrue(result.IsSucceeded);
+            Assert.AreEqual("Update status of topic successfully", result.Message);
+            Assert.IsFalse(topicEntity.IsActive); // Ensure the IsActive status is toggled
+            await elasticSearchService.Received(1).UpdateDocumentAsync(
+                ElasticConstant.ElasticTopics, topicDto, topicId);
+        }
+
+        [Test]
+        public async Task Delete_ShouldReturnFalse_WhenTopicNotFound()
+        {
+            // Arrange
+            int topicId = 1;
+            topicRepository.GetTopicByAllId(topicId).Returns(Task.FromResult<Topic>(null));
+
+            // Act
+            var result = await topicService.Delete(topicId);
+
+            // Assert
+            Assert.IsFalse(result.IsSucceeded);
+            Assert.AreEqual("Not found !", result.Message);
+        }
+
+        [Test]
+        public async Task Delete_ShouldDeleteTopicSuccessfully_WhenNoAssociatedLessons()
+        {
+            // Arrange
+            int topicId = 1;
+            var topicEntity = new Topic { Id = topicId };
+            var emptyLessonList = new List<Lesson>();
+
+            topicRepository.GetTopicByAllId(topicId).Returns(Task.FromResult(topicEntity));
+            lessonRepository.GetAllLessonByTopic(topicId).Returns(Task.FromResult<IEnumerable<Lesson>>(emptyLessonList));
+            topicRepository.DeleteTopic(topicId).Returns(Task.FromResult(true));
+
+            // Act
+            var result = await topicService.Delete(topicId);
+
+            // Assert
+            Assert.IsTrue(result.IsSucceeded);
+            Assert.AreEqual("Delete topic successfully", result.Message);
+            await elasticSearchService.Received(1).DeleteDocumentAsync(ElasticConstant.ElasticTopics, topicId);
+        }
+
+        [Test]
+        public async Task Delete_ShouldDeleteTopicAndAssociatedLessonsSuccessfully_WhenAssociatedLessonsExist()
+        {
+            // Arrange
+            int topicId = 1;
+            var topicEntity = new Topic { Id = topicId };
+            var lessonList = new List<Lesson> { new Lesson { Id = 1 }, new Lesson { Id = 2 } };
+            var lessonDtoList = lessonList.Select(l => new LessonDto { Id = l.Id }).ToList();
+
+            topicRepository.GetTopicByAllId(topicId).Returns(Task.FromResult(topicEntity));
+            lessonRepository.GetAllLessonByTopic(topicId).Returns(Task.FromResult<IEnumerable<Lesson>>(lessonList));
+            mapper.Map<IEnumerable<LessonDto>>(lessonList).Returns(lessonDtoList);
+            topicRepository.DeleteTopic(topicId).Returns(Task.FromResult(true));
+
+            // Act
+            var result = await topicService.Delete(topicId);
+
+            // Assert
+            Assert.IsTrue(result.IsSucceeded);
+            Assert.AreEqual("Delete topic successfully", result.Message);
+            await elasticSearchService.Received(1).DeleteDocumentAsync(ElasticConstant.ElasticTopics, topicId);
+            await elasticSearchLessonService.Received(1).DeleteDocumentRangeAsync(
+                ElasticConstant.ElasticLessons, Arg.Is<List<int>>(list => list.SequenceEqual(lessonDtoList.Select(l => l.Id))));
+        }
+
+        [Test]
+        public async Task DeleteRange_ShouldLogAndContinue_WhenSomeTopicsNotFound()
+        {
+            // Arrange
+            var topicIds = new List<int> { 1, 2 };
+            var topic1 = new Topic { Id = 1, IsActive = true };
+            topicRepository.GetTopicById(1).Returns(Task.FromResult(topic1));
+            topicRepository.GetTopicById(2).Returns(Task.FromResult<Topic>(null));
+            topicRepository.UpdateRangeTopic(Arg.Any<IEnumerable<Topic>>()).Returns(Task.FromResult(true));
+            lessonRepository.GetAllLessonByTopic(1).Returns(Task.FromResult<IEnumerable<Lesson>>(new List<Lesson>()));
+            mapper.Map<IEnumerable<TopicDto>>(Arg.Any<IEnumerable<Topic>>()).Returns(new List<TopicDto>());
+
+            // Act
+            var result = await topicService.DeleteRange(topicIds);
+
+            // Assert
+            Assert.IsTrue(result.IsSucceeded);
+            Assert.AreEqual("Delete Range Topics Successfully !!!", result.Message);
+            logger.Received(1).Information("Lesson not found with id 2 !!!");
+        }
+
+        [Test]
+        public async Task DeleteRange_ShouldDeactivateAndDeleteRangeSuccessfully()
+        {
+            // Arrange
+            var topicIds = new List<int> { 1, 2 };
+            var topic1 = new Topic { Id = 1, IsActive = true };
+            var topic2 = new Topic { Id = 2, IsActive = true };
+            var lesson1 = new Lesson { Id = 1, IsActive = true };
+            var lesson2 = new Lesson { Id = 2, IsActive = true };
+            var lessons = new List<Lesson> { lesson1, lesson2 };
+
+            topicRepository.GetTopicById(1).Returns(Task.FromResult(topic1));
+            topicRepository.GetTopicById(2).Returns(Task.FromResult(topic2));
+            topicRepository.UpdateRangeTopic(Arg.Any<IEnumerable<Topic>>()).Returns(Task.FromResult(true));
+            lessonRepository.GetAllLessonByTopic(Arg.Is<int>(id => id == 1 || id == 2)).Returns(Task.FromResult<IEnumerable<Lesson>>(lessons));
+            lessonRepository.UpdateRangeLesson(Arg.Any<IEnumerable<Lesson>>()).Returns(Task.FromResult(true));
+            mapper.Map<IEnumerable<TopicDto>>(Arg.Any<IEnumerable<Topic>>()).Returns(new List<TopicDto>());
+            mapper.Map<IEnumerable<LessonDto>>(Arg.Any<IEnumerable<Lesson>>()).Returns(new List<LessonDto>());
+
+            // Act
+            var result = await topicService.DeleteRange(topicIds);
+
+            // Assert
+            Assert.IsTrue(result.IsSucceeded);
+            Assert.AreEqual("Delete Range Topics Successfully !!!", result.Message);
+            Assert.IsFalse(topic1.IsActive);
+            Assert.IsFalse(topic2.IsActive);
+            await elasticSearchService.Received(1).UpdateDocumentRangeAsync(ElasticConstant.ElasticTopics, Arg.Any<IEnumerable<TopicDto>>(), Arg.Any<Func<TopicDto, int>>());
+
+        }
+
+
+        [Test]
+        public async Task GetAll_ShouldReturnError_WhenTopicListIsNull()
+        {
+            // Arrange
+            topicRepository.GetAllTopic().Returns(Task.FromResult<IEnumerable<Topic>>(null));
+
+            // Act
+            var result = await topicService.GetAll();
+
+            // Assert
+            Assert.IsFalse(result.IsSucceeded);
+            Assert.AreEqual("List topic is null !!!", result.Message);
+        }
+
+        [Test]
+        public async Task GetAll_ShouldReturnAllTopicsSuccessfully()
+        {
+            // Arrange
+            var topics = new List<Topic>
+        {
+            new Topic { Id = 1, Title = "Topic 1" },
+            new Topic { Id = 2, Title = "Topic 2" }
+        };
+            var topicDtos = new List<TopicDto>
+        {
+            new TopicDto { Id = 1, Title = "Topic 1" },
+            new TopicDto { Id = 2, Title = "Topic 2" }
+        };
+
+            topicRepository.GetAllTopic().Returns(Task.FromResult<IEnumerable<Topic>>(topics));
+            mapper.Map<IEnumerable<TopicDto>>(topics).Returns(topicDtos);
+
+            // Act
+            var result = await topicService.GetAll();
+
+            // Assert
+            Assert.IsTrue(result.IsSucceeded);
+            Assert.AreEqual(topicDtos, result.Data);
+            Assert.AreEqual("Get all topic successfully !", result.Message);
+        }
+
+        [Test]
+        public async Task GetAllTopicPagination_ShouldReturnError_WhenTopicListIsNull()
+        {
+            // Arrange
+            topicRepository.GetAllTopicPagination().Returns(Task.FromResult<IQueryable<Topic>>(null));
+
+            // Act
+            var result = await topicService.GetAllTopicPagination(new PagingRequestParameters());
+
+            // Assert
+            Assert.IsFalse(result.IsSucceeded);
+            Assert.AreEqual("Topic is null !!!", result.Message);
+        }
+
+        [Test]
+        public async Task GetAllTopicPagination_ShouldReturnPagedTopicsSuccessfully()
+        {
+            // Arrange
+            var topics = new List<Topic>
+        {
+            new Topic { Id = 1, Title = "Topic 1" },
+            new Topic { Id = 2, Title = "Topic 2" }
+        };
+
+            var topicDtos = new List<TopicDto>
+        {
+            new TopicDto { Id = 1, Title = "Topic 1" },
+            new TopicDto { Id = 2, Title = "Topic 2" }
+        };
+
+            var pagingRequestParameters = new PagingRequestParameters
+            {
+                PageIndex = 1,
+                PageSize = 10,
+                OrderBy = "Title",
+                IsAscending = true
+            };
+
+            // Mocking the repository method
+            topicRepository.GetAllTopicPagination().Returns(Task.FromResult<IQueryable<Topic>>(topics.AsQueryable()));
+
+            // Mocking the mapping
+            mapper.ProjectTo<TopicDto>(Arg.Any<IQueryable<Topic>>()).Returns(topicDtos.AsQueryable());
+
+            // Simulating the pagination result
+            var pagedList = PagedList<TopicDto>.ToPageListAsync(topicDtos.AsQueryable(), pagingRequestParameters.PageIndex,
+                pagingRequestParameters.PageSize, pagingRequestParameters.OrderBy, pagingRequestParameters.IsAscending).Result;
+
+            // Act
+            var result = await topicService.GetAllTopicPagination(pagingRequestParameters);
+
+            // Assert
+            Assert.IsTrue(result.IsSucceeded);
+            Assert.AreEqual(pagedList, result.Data);
+            Assert.AreEqual("Get all topic successfully !", result.Message);
         }
     }
 }
