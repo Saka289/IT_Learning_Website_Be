@@ -12,10 +12,10 @@ public class UserExamRepository : RepositoryBase<UserExam,int>, IUserExamReposit
     {
     }
 
-    public  Task<UserExam> CreateUserExam(UserExam userExam)
+    public async  Task<UserExam> CreateUserExam(UserExam userExam)
     { 
-        CreateAsync(userExam);
-       return Task.FromResult(userExam);
+       await CreateAsync(userExam);
+       return userExam;
     }
 
     public async Task CreateRangeUserExam(IEnumerable<UserExam> userExams)
