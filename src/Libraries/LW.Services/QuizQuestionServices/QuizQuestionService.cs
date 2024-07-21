@@ -533,7 +533,7 @@ public class QuizQuestionService : IQuizQuestionService
                 "Đáp án đúng - Chọn một câu trả lời đúng theo số (1;2;3;4;5;6) ",
                 "Mức độ câu hỏi",
                 "Trộn câu hỏi",
-                "Gợi ý câu hỏi",
+                "Gợi ý câu trả lời",
                 };
             if (Ids != null)
             {
@@ -1004,22 +1004,25 @@ public class QuizQuestionService : IQuizQuestionService
     {
         bool isValid = true;
 
-        if (int.Parse(dto.Type) == 0)
+        if (!int.TryParse(dto.Type, out int typeValue) || typeValue == 0)
         {
-            AddImportError(dto, $"Không tìm thấy loại câu hỏi");
+            AddImportError(dto, $"Không tìm thấy loại câu hỏi {dto.TypeName}");
             isValid = false;
         }
 
-        if (int.Parse(dto.QuestionLevel) == 0)
+        if (!int.TryParse(dto.QuestionLevel, out int questionLevelValue) || questionLevelValue == 0)
         {
-            AddImportError(dto, "Không tìm thấy cấp độ câu hỏi");
+
+            AddImportError(dto, $"Không tìm thấy cấp độ câu hỏi {dto.QuestionLevelName}");
             isValid = false;
         }
+
         if (string.IsNullOrEmpty(dto.Content))
         {
-            AddImportError(dto, "Không tìm thấy câu hỏi");
+            AddImportError(dto, $"Không tìm thấy nội dung câu hỏi");
             isValid = false;
         }
+
 
         return isValid;
     }
