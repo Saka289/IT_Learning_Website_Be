@@ -98,6 +98,24 @@ public class ExamAnswerService : IExamAnswerService
         return new ApiResult<bool>(true, $"Create Range Answer For ExamCode with id= {examAnswerCreateRangeDtos.ExamCodeId} Successfully");
     }
 
+    public async Task<ApiResult<bool>> UpdateRangeExamAnswer(ExamAnswerUpdateRangeDto examAnswers)
+    {
+        var examCode = await _examCodeRepository.GetExamCodeById(examAnswers.ExamCodeId);
+        if (examCode == null)
+        {
+            return new ApiResult<bool>(false, "ExamCode not found");
+        }
+        var listExamAnswer = examAnswers.AnswerUpdateDtos.Select(dto => new ExamAnswer()
+        {
+            Id = dto.Id,
+            ExamCodeId = examAnswers.ExamCodeId,
+            NumberOfQuestion = dto.NumberOfQuestion,
+            Answer = dto.Answer
+        }).ToList();
+        await _examAnswerRepository.UpdateRangeExamAnswer(listExamAnswer);
+        return new ApiResult<bool>(true, $"Create Range Answer For ExamCode with id= {examAnswers.ExamCodeId} Successfully");
+    }
+
     public async  Task<ApiResult<ExamAnswerDto>> UpdateExamAnswer(ExamAnswerUpdateDto examAnswerUpdateDto)
     {
         var answerCheck = await _examAnswerRepository.GetExamAnswerById(examAnswerUpdateDto.Id);
