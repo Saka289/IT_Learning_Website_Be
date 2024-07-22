@@ -4,7 +4,7 @@ using LW.Contracts.Domains;
 
 namespace LW.Data.Entities;
 
-public class ExamCode: EntityBase<int>
+public class ExamCode: EntityAuditBase<int>
 {
     [Required]
     public string Code { get; set; }

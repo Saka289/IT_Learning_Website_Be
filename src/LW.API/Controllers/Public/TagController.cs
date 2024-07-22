@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using LW.API.Application.Validators.TagValidatior;
+using LW.Data.Entities;
 using LW.Services.TagServices;
 using LW.Shared.DTOs.Tag;
 using LW.Shared.SeedWork;
@@ -43,6 +44,20 @@ namespace LW.API.Controllers.Public
             {
                 return NotFound(result);
             }
+            Response.Headers.Add("X-Pagination", JsonConvert.SerializeObject(result.Data.GetMetaData()));
+            return Ok(result);
+        }
+        
+        [HttpGet("SearchByTagPagination")]
+        public async Task<ActionResult<ApiResult<PagedList<TagDto>>>> SearchByTagPagination(
+            [FromQuery] SearchTagDto searchTagDto)
+        {
+            var result = await _tagService.SearchTagPagination(searchTagDto);
+            if (!result.IsSucceeded)
+            {
+                return NotFound(result);
+            }
+
             Response.Headers.Add("X-Pagination", JsonConvert.SerializeObject(result.Data.GetMetaData()));
             return Ok(result);
         }

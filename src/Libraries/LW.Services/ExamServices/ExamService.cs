@@ -117,6 +117,7 @@ public class ExamService : IExamService
                 CloudinaryConstant.FolderExamFilePdf);
             obj.ExamSolutionFile = filePath.Url;
             obj.PublicExamEssaySolutionId = filePath.PublicId;
+            obj.UrlDownloadSolutionFile = filePath.UrlDownload;
         }
 
         var keyWordValue = examCreateDto.tagValues.ConvertToTagString();
@@ -150,6 +151,7 @@ public class ExamService : IExamService
                 examUpdateDto.ExamSolutionFileUpload);
             objUpdate.PublicExamEssaySolutionId = filePath.PublicId;
             objUpdate.ExamSolutionFile = filePath.Url;
+            objUpdate.UrlDownloadSolutionFile = filePath.UrlDownload;
         }
 
         if (examUpdateDto.tagValues != null && examUpdateDto.tagValues.Any())
@@ -218,4 +220,6 @@ public class ExamService : IExamService
         await _elasticSearchService.DeleteDocumentAsync(ElasticConstant.ElasticExams, exam.Id);
         return new ApiResult<bool>(true, "Delete Exam Successfully");
     }
+
+    
 }

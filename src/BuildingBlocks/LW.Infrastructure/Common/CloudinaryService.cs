@@ -316,7 +316,8 @@ public class CloudinaryService : ICloudinaryService
                 RasterImagesSavingMode = HtmlSaveOptions.RasterImagesSavingModes.AsEmbeddedPartsOfPngPageBackground,
                 FontSavingMode = HtmlSaveOptions.FontSavingModes.SaveInAllFormats,
                 PartsEmbeddingMode = HtmlSaveOptions.PartsEmbeddingModes.EmbedAllIntoHtml,
-                LettersPositioningMethod = HtmlSaveOptions.LettersPositioningMethods.UseEmUnitsAndCompensationOfRoundingErrorsInCss,
+                LettersPositioningMethod = HtmlSaveOptions.LettersPositioningMethods
+                    .UseEmUnitsAndCompensationOfRoundingErrorsInCss,
             };
 
             document.Save(outputStream, saveOptions);
@@ -330,5 +331,29 @@ public class CloudinaryService : ICloudinaryService
         }
 
         return htmlContent;
+    }
+
+    public async Task<FileDto> GetFileAsync(string publicId)
+    {
+        if (string.IsNullOrEmpty(publicId))
+        {
+            return null;
+        }
+
+        var resource = await _cloudinary.GetResourceAsync(new GetResourceParams(publicId)
+        {
+            ResourceType = ResourceType.Raw
+        });
+        
+        if (resource == null || resource.StatusCode != System.Net.HttpStatusCode.OK)
+        {
+            return null;
+        }
+        return new FileDto
+        {
+            Url = resource.Url,
+            PublicId = resource.PublicId,
+            UrlDownload = resource.Url
+        };
     }
 }

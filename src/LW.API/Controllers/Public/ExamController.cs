@@ -90,6 +90,7 @@ namespace LW.API.Controllers.Public
             return Ok(result);
         }
 
+        
         [HttpPost("CreateExam")]
         public async Task<ActionResult<ApiResult<GradeDto>>> CreateExam([FromForm] ExamCreateDto examCreateDto)
         {
