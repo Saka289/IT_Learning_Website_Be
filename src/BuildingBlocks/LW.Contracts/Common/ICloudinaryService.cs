@@ -15,6 +15,5 @@ public interface ICloudinaryService
     Task<bool> DeleteFolderAsync(string folderName);
     Task<FileDto> ConvertHtmlToPdf(string htmlFile, string fileName, string folderName);
     Task<string> ConvertPdfToHtml(IFormFile file);
-    Task<FileDto> GetFileAsync(string publicId);
 
 }

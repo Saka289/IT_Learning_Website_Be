@@ -17,6 +17,5 @@ public interface IExamService
     Task<ApiResult<ExamDto>> UpdateExam(ExamUpdateDto examUpdateDto);
     Task<ApiResult<bool>> UpdateExamStatus(int id);
     Task<ApiResult<bool>> DeleteExam(int id);
-    Task<ApiResult<FileDto>> DownloadSolutionEssayFileAsync(string publicId);
 
 }

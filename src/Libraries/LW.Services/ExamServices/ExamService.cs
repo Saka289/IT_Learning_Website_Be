@@ -117,6 +117,7 @@ public class ExamService : IExamService
                 CloudinaryConstant.FolderExamFilePdf);
             obj.ExamSolutionFile = filePath.Url;
             obj.PublicExamEssaySolutionId = filePath.PublicId;
+            obj.UrlDownloadSolutionFile = filePath.UrlDownload;
         }
 
         var keyWordValue = examCreateDto.tagValues.ConvertToTagString();
@@ -150,6 +151,7 @@ public class ExamService : IExamService
                 examUpdateDto.ExamSolutionFileUpload);
             objUpdate.PublicExamEssaySolutionId = filePath.PublicId;
             objUpdate.ExamSolutionFile = filePath.Url;
+            objUpdate.UrlDownloadSolutionFile = filePath.UrlDownload;
         }
 
         if (examUpdateDto.tagValues != null && examUpdateDto.tagValues.Any())
@@ -219,24 +221,5 @@ public class ExamService : IExamService
         return new ApiResult<bool>(true, "Delete Exam Successfully");
     }
 
-    public async Task<ApiResult<FileDto>> DownloadSolutionEssayFileAsync(string publicId)
-    {
-        if (string.IsNullOrEmpty(publicId))
-        {
-            return new ApiResult<FileDto>(false, "Public ID is required.");
-        }
-        var fileResult = await _cloudinaryService.GetFileAsync(publicId);
-        if (fileResult == null)
-        {
-            return new ApiResult<FileDto>(false, "File not found.");
-        }
-        var fileDto = new FileDto
-        {
-            Url = fileResult.Url,
-            PublicId = fileResult.PublicId,
-            UrlDownload = fileResult.UrlDownload
-        };
-        return new ApiResult<FileDto>(true, fileDto, "File downloaded successfully.");
-    }
     
 }

@@ -21,6 +21,9 @@ public class Exam : EntityAuditBase<int>
     public string? ExamEssayFile { get; set; }
     
     public string? ExamSolutionFile { get; set; }
+    
+    public string? UrlDownloadSolutionFile { get; set; }
+
     [Required]
     public string? Description { get; set; }
     [Required]

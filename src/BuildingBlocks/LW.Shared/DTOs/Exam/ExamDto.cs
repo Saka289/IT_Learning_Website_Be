@@ -9,6 +9,7 @@ public class ExamDto
     public string? Province { get; set; }
     public string? ExamEssayFile { get; set; }
     public string? ExamSolutionFile { get; set; }
+    public string? UrlDownloadSolutionFile { get; set; }
     public string? Description { get; set; }
     public int Year { set; get; }
     public int NumberQuestion { set; get; }
