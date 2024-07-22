@@ -90,6 +90,18 @@ namespace LW.API.Controllers.Public
             return Ok(result);
         }
 
+        [HttpGet("DownloadFileSolutionEssay")]
+        public async Task<ActionResult<ApiResult<bool>>> DownloadFileSolutionEssay([FromQuery] string publicId)
+        {
+            var result = await _examService.DownloadSolutionEssayFileAsync(publicId);
+            if (!result.IsSucceeded)
+            {
+                return BadRequest(result);
+            }
+            return Ok(result);
+        }
+        
+        
         [HttpPost("CreateExam")]
         public async Task<ActionResult<ApiResult<GradeDto>>> CreateExam([FromForm] ExamCreateDto examCreateDto)
         {

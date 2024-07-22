@@ -40,7 +40,12 @@ namespace LW.API.Controllers.Admin
             var result = await _cloudinaryService.DeleteImageAsync(publicId);
             return Ok(result);
         }
-
+        [HttpGet("GetFile")]
+        public async Task<IActionResult> GetFile([FromQuery]string publicId)
+        {
+            var result = await _cloudinaryService.GetFileAsync(publicId);
+            return Ok(result);
+        }
         [HttpPost("CreateFile")]
         public async Task<IActionResult> CreateFile(IFormFile file, [Required] string folderName)
         {

@@ -9,5 +9,7 @@ public class ExamCodeDto
     public int ExamId { get; set; }
     public string ExamTitle { get; set; }
     public int NumberQuestion { get; set; }
+    public DateTimeOffset CreatedDate { get; set; }
+    public DateTimeOffset? LastModifiedDate { get; set; }
     
 }

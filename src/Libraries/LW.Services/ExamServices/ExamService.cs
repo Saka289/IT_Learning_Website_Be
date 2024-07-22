@@ -218,4 +218,25 @@ public class ExamService : IExamService
         await _elasticSearchService.DeleteDocumentAsync(ElasticConstant.ElasticExams, exam.Id);
         return new ApiResult<bool>(true, "Delete Exam Successfully");
     }
+
+    public async Task<ApiResult<FileDto>> DownloadSolutionEssayFileAsync(string publicId)
+    {
+        if (string.IsNullOrEmpty(publicId))
+        {
+            return new ApiResult<FileDto>(false, "Public ID is required.");
+        }
+        var fileResult = await _cloudinaryService.GetFileAsync(publicId);
+        if (fileResult == null)
+        {
+            return new ApiResult<FileDto>(false, "File not found.");
+        }
+        var fileDto = new FileDto
+        {
+            Url = fileResult.Url,
+            PublicId = fileResult.PublicId,
+            UrlDownload = fileResult.UrlDownload
+        };
+        return new ApiResult<FileDto>(true, fileDto, "File downloaded successfully.");
+    }
+    
 }

@@ -1,4 +1,5 @@
 ﻿using LW.Shared.DTOs.Exam;
+using LW.Shared.DTOs.File;
 using LW.Shared.DTOs.Lesson;
 using LW.Shared.Enums;
 using LW.Shared.SeedWork;
@@ -16,4 +17,6 @@ public interface IExamService
     Task<ApiResult<ExamDto>> UpdateExam(ExamUpdateDto examUpdateDto);
     Task<ApiResult<bool>> UpdateExamStatus(int id);
     Task<ApiResult<bool>> DeleteExam(int id);
+    Task<ApiResult<FileDto>> DownloadSolutionEssayFileAsync(string publicId);
+
 }
