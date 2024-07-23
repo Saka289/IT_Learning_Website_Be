@@ -65,7 +65,8 @@ public class QuizQuestionService : IQuizQuestionService
         return new ApiSuccessResult<PagedList<QuizQuestionDto>>(pagedResult);
     }
 
-    public async Task<ApiResult<IEnumerable<QuizQuestionDto>>> GetAllQuizQuestionByQuizIdPractice(int quizId, int? size = 0)
+    public async Task<ApiResult<IEnumerable<QuizQuestionDto>>> GetAllQuizQuestionByQuizIdPractice(int quizId,
+        int? size = 0)
     {
         var quizQuestionList = await _quizQuestionRepository.GetAllQuizQuestionByQuizId(quizId);
         if (!quizQuestionList.Any())
@@ -97,7 +98,8 @@ public class QuizQuestionService : IQuizQuestionService
         return new ApiSuccessResult<IEnumerable<QuizQuestionDto>>(result);
     }
 
-    public async Task<ApiResult<IEnumerable<QuizQuestionTestDto>>> GetAllQuizQuestionByQuizIdTest(int quizId, int? size = 0)
+    public async Task<ApiResult<IEnumerable<QuizQuestionTestDto>>> GetAllQuizQuestionByQuizIdTest(int quizId,
+        int? size = 0)
     {
         var quizQuestionList = await _quizQuestionRepository.GetAllQuizQuestionByQuizId(quizId);
         if (!quizQuestionList.Any())
@@ -284,16 +286,33 @@ public class QuizQuestionService : IQuizQuestionService
         modelQuestion.Image = quizQuestion.Image;
         modelQuestion.PublicId = quizQuestion.PublicId;
         var quizQuestionUpdate = await _quizQuestionRepository.UpdateQuizQuestion(modelQuestion);
-        foreach (var item in quizQuestionUpdateDto.QuizAnswers)
+        if (quizQuestion.Type.Equals(quizQuestionUpdateDto.Type))
         {
-            var quizAnswer = await _quizAnswerRepository.GetQuizAnswerById(item.Id);
-            var modelAnswer = _mapper.Map(item, quizAnswer);
-            await _quizAnswerRepository.UpdateQuizAnswer(modelAnswer);
+            foreach (var item in quizQuestionUpdateDto.QuizAnswers)
+            {
+                var quizAnswer = await _quizAnswerRepository.GetQuizAnswerById(item.Id);
+                if (quizAnswer is null)
+                {
+                    return new ApiResult<QuizQuestionDto>(false, "Quiz answer not found !!!");
+                }
+                var modelAnswer = _mapper.Map(item, quizAnswer);
+                await _quizAnswerRepository.UpdateQuizAnswer(modelAnswer);
+            }
+        }
+        else
+        {
+            var quizAnswers = await _quizAnswerRepository.GetAllQuizAnswerByQuizQuestionId(quizQuestionUpdateDto.Id);
+            if (quizAnswers.Any())
+            {
+                await _quizAnswerRepository.DeleteRangeAnswer(quizAnswers);
+                var quizAnswer = _mapper.Map<IEnumerable<QuizAnswer>>(quizQuestionUpdateDto.QuizAnswers);
+                await _quizAnswerRepository.CreateRangeQuizAnswer(quizAnswer);
+                quizQuestionUpdate.QuizAnswers = quizAnswer.ToList();
+            }
         }
 
         var result = _mapper.Map<QuizQuestionDto>(quizQuestionUpdate);
-        _elasticSearchService.UpdateDocumentAsync(ElasticConstant.ElasticQuizQuestion, result,
-            quizQuestionUpdateDto.Id);
+        _elasticSearchService.UpdateDocumentAsync(ElasticConstant.ElasticQuizQuestion, result, quizQuestionUpdateDto.Id);
         return new ApiSuccessResult<QuizQuestionDto>(result);
     }
 
@@ -358,8 +377,7 @@ public class QuizQuestionService : IQuizQuestionService
         return new ApiSuccessResult<bool>(true);
     }
 
-    public async Task<ApiResult<bool>> UpdateRangeQuizQuestion(
-        IEnumerable<QuizQuestionUpdateDto> quizQuestionsUpdateDto)
+    public async Task<ApiResult<bool>> UpdateRangeQuizQuestion(IEnumerable<QuizQuestionUpdateDto> quizQuestionsUpdateDto)
     {
         foreach (var item in quizQuestionsUpdateDto)
         {
@@ -417,11 +435,29 @@ public class QuizQuestionService : IQuizQuestionService
             modelQuestion.Image = quizQuestion.Image;
             modelQuestion.PublicId = quizQuestion.PublicId;
             var quizQuestionUpdate = await _quizQuestionRepository.UpdateQuizQuestion(modelQuestion);
-            foreach (var itemAnswer in item.QuizAnswers)
+            if (quizQuestion.Type.Equals(item.Type))
             {
-                var quizAnswer = await _quizAnswerRepository.GetQuizAnswerById(itemAnswer.Id);
-                var modelAnswer = _mapper.Map(itemAnswer, quizAnswer);
-                await _quizAnswerRepository.UpdateQuizAnswer(modelAnswer);
+                foreach (var itemAnswer in item.QuizAnswers)
+                {
+                    var quizAnswer = await _quizAnswerRepository.GetQuizAnswerById(itemAnswer.Id);
+                    if (quizAnswer is null)
+                    {
+                        return new ApiResult<bool>(false, "Quiz answer not found !!!");
+                    }
+                    var modelAnswer = _mapper.Map(itemAnswer, quizAnswer);
+                    await _quizAnswerRepository.UpdateQuizAnswer(modelAnswer);
+                }
+            }
+            else
+            {
+                var quizAnswers = await _quizAnswerRepository.GetAllQuizAnswerByQuizQuestionId(item.Id);
+                if (quizAnswers.Any())
+                {
+                    await _quizAnswerRepository.DeleteRangeAnswer(quizAnswers);
+                    var quizAnswer = _mapper.Map<IEnumerable<QuizAnswer>>(item.QuizAnswers);
+                    await _quizAnswerRepository.CreateRangeQuizAnswer(quizAnswer);
+                    quizQuestionUpdate.QuizAnswers = quizAnswer.ToList();
+                }
             }
 
             var result = _mapper.Map<QuizQuestionDto>(quizQuestionUpdate);

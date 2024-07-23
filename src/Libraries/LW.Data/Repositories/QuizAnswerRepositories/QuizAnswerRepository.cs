@@ -84,4 +84,16 @@ public class QuizAnswerRepository : RepositoryBase<QuizAnswer, int>, IQuizAnswer
         await DeleteAsync(quizAnswer);
         return true;
     }
+
+    public async Task<bool> DeleteRangeAnswer(IEnumerable<QuizAnswer> quizAnswers)
+    {
+        quizAnswers = quizAnswers.Where(l => l != null);
+        if (!quizAnswers.Any())
+        {
+            return false;
+        }
+
+        await DeleteListAsync(quizAnswers);
+        return true;
+    }
 }
