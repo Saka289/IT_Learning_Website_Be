@@ -1,4 +1,4 @@
-<Project Sdk="Microsoft.NET.Sdk">
+﻿<Project Sdk="Microsoft.NET.Sdk">
 
     <PropertyGroup>
         <TargetFramework>net6.0</TargetFramework>
@@ -12,6 +12,9 @@
     <ItemGroup>
         <PackageReference Include="coverlet.collector" Version="3.2.0" />
         <PackageReference Include="Microsoft.NET.Test.Sdk" Version="17.5.0" />
+        <PackageReference Include="MockQueryable.Core" Version="7.0.1" />
+        <PackageReference Include="MockQueryable.Moq" Version="7.0.1" />
+        <PackageReference Include="MockQueryable.NSubstitute" Version="7.0.1" />
         <PackageReference Include="NSubstitute" Version="5.1.0" />
         <PackageReference Include="NSubstitute.Analyzers.CSharp" Version="1.0.17">
           <PrivateAssets>all</PrivateAssets>

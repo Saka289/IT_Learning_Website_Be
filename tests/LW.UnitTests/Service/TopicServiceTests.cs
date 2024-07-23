@@ -9,6 +9,7 @@ using LW.Shared.Constant;
 using LW.Shared.DTOs.Lesson;
 using LW.Shared.DTOs.Topic;
 using LW.Shared.SeedWork;
+using MockQueryable.Moq;
 using NSubstitute;
 using Serilog;
 
@@ -18,7 +19,7 @@ namespace LW.UnitTests.Service
     [TestFixture]
     public class TopicServiceTests
     {
-       
+
         private ITopicRepository topicRepository;
         private IMapper mapper;
         private IDocumentRepository documentRepository;
@@ -54,12 +55,12 @@ namespace LW.UnitTests.Service
         [Test]
         public async Task CreateServiceDocumentNotFoundReturnDocumentNotFound()
         {
-         // arrange
-         TopicCreateDto topicCreateDto = new TopicCreateDto();
-           NSubstitute.Core.ConfiguredCall configuredCall = documentRepository.GetDocumentById(topicCreateDto.DocumentId).Returns((Document)null);
+            // arrange
+            TopicCreateDto topicCreateDto = new TopicCreateDto();
+            NSubstitute.Core.ConfiguredCall configuredCall = documentRepository.GetDocumentById(topicCreateDto.DocumentId).Returns((Document)null);
 
             // act 
-           var result =  await topicService.Create(topicCreateDto);
+            var result = await topicService.Create(topicCreateDto);
             // assert 
             Assert.IsNotNull(result);
             Assert.IsFalse(result.IsSucceeded);
@@ -418,15 +419,22 @@ namespace LW.UnitTests.Service
                 IsAscending = true
             };
 
-            // Mocking the repository method
-            topicRepository.GetAllTopicPagination().Returns(Task.FromResult<IQueryable<Topic>>(topics.AsQueryable()));
+            // Mocking the repository method to return a mock async queryable
+            var mockTopics = topics.AsQueryable().BuildMock();
+            topicRepository.GetAllTopicPagination().Returns(mockTopics);
 
             // Mocking the mapping
-            mapper.ProjectTo<TopicDto>(Arg.Any<IQueryable<Topic>>()).Returns(topicDtos.AsQueryable());
+            var mockTopicDtos = topicDtos.AsQueryable().BuildMock();
+            mapper.ProjectTo<TopicDto>(Arg.Any<IQueryable<Topic>>()).Returns(mockTopicDtos);
 
             // Simulating the pagination result
-            var pagedList = PagedList<TopicDto>.ToPageListAsync(topicDtos.AsQueryable(), pagingRequestParameters.PageIndex,
-                pagingRequestParameters.PageSize, pagingRequestParameters.OrderBy, pagingRequestParameters.IsAscending).Result;
+            var pagedList = await PagedList<TopicDto>.ToPageListAsync(
+                mockTopicDtos,
+                pagingRequestParameters.PageIndex,
+                pagingRequestParameters.PageSize,
+                pagingRequestParameters.OrderBy,
+                pagingRequestParameters.IsAscending
+            );
 
             // Act
             var result = await topicService.GetAllTopicPagination(pagingRequestParameters);
@@ -434,7 +442,143 @@ namespace LW.UnitTests.Service
             // Assert
             Assert.IsTrue(result.IsSucceeded);
             Assert.AreEqual(pagedList, result.Data);
+            Assert.AreEqual("Success", result.Message);
+        }
+        [Test]
+        public async Task GetAllTopicByDocument_ShouldReturnError_WhenTopicListIsNull()
+        {
+            // Arrange
+            int documentId = 1;
+            topicRepository.GetAllTopicByDocument(documentId).Returns(Task.FromResult<IEnumerable<Topic>>(null));
+
+            // Act
+            var result = await topicService.GetAllTopicByDocument(documentId);
+
+            // Assert
+            Assert.IsFalse(result.IsSucceeded);
+            Assert.AreEqual("List topic is null !!!", result.Message);
+        }
+
+        [Test]
+        public async Task GetAllTopicByDocument_ShouldReturnTopicsSuccessfully()
+        {
+            // Arrange
+            int documentId = 1;
+            var topics = new List<Topic>
+        {
+            new Topic { Id = 1, Title = "Topic 1" },
+            new Topic { Id = 2, Title = "Topic 2" }
+        };
+
+            var topicDtos = new List<TopicDto>
+        {
+            new TopicDto { Id = 1, Title = "Topic 1" },
+            new TopicDto { Id = 2, Title = "Topic 2" }
+        };
+
+            topicRepository.GetAllTopicByDocument(documentId).Returns(Task.FromResult<IEnumerable<Topic>>(topics));
+            mapper.Map<IEnumerable<TopicDto>>(topics).Returns(topicDtos);
+
+            // Act
+            var result = await topicService.GetAllTopicByDocument(documentId);
+
+            // Assert
+            Assert.IsTrue(result.IsSucceeded);
+            Assert.AreEqual(topicDtos, result.Data);
             Assert.AreEqual("Get all topic successfully !", result.Message);
+        }
+
+        [Test]
+        public async Task SearchTopicPagination_ShouldReturnError_WhenTopicsNotFound()
+        {
+            // Arrange
+            var searchTopicDto = new SearchTopicDto { Key = "nonexistent" };
+            elasticSearchService.SearchDocumentAsync(ElasticConstant.ElasticTopics, searchTopicDto)
+                .Returns(Task.FromResult<IEnumerable<TopicDto>>(null));
+
+            // Act
+            var result = await topicService.SearchTopicPagination(searchTopicDto);
+
+            // Assert
+            Assert.IsFalse(result.IsSucceeded);
+            Assert.AreEqual($"Topics not found by {searchTopicDto.Key} !!!", result.Message);
+        }
+
+        [Test]
+        public async Task SearchTopicPagination_ShouldReturnPagedTopicsSuccessfully()
+        {
+            // Arrange
+            var searchTopicDto = new SearchTopicDto
+            {
+                Key = "topic",
+                PageIndex = 1,
+                PageSize = 10,
+                DocumentId = 1,
+                OrderBy = "Title",
+                IsAscending = true
+            };
+
+            var topics = new List<TopicDto>
+        {
+            new TopicDto { Id = 1, Title = "Topic 1", DocumentId = 1 },
+            new TopicDto { Id = 2, Title = "Topic 2", DocumentId = 2 }
+        };
+
+            var filteredTopics = topics.Where(t => t.DocumentId == searchTopicDto.DocumentId).ToList();
+
+            var mockTopics = topics.AsQueryable().BuildMock();
+            elasticSearchService.SearchDocumentAsync(ElasticConstant.ElasticTopics, searchTopicDto)
+                .Returns(Task.FromResult<IEnumerable<TopicDto>>(mockTopics));
+
+            var mockFilteredTopics = filteredTopics.AsQueryable().BuildMock();
+            mapper.Map<IEnumerable<TopicDto>>(filteredTopics).Returns(mockFilteredTopics);
+
+            var pagedTopics = await PagedList<TopicDto>.ToPageListAsync(mockFilteredTopics.AsQueryable(), searchTopicDto.PageIndex,
+                searchTopicDto.PageSize, searchTopicDto.OrderBy, searchTopicDto.IsAscending);
+
+            // Act
+            var result = await topicService.SearchTopicPagination(searchTopicDto);
+
+            // Assert
+            Assert.IsTrue(result.IsSucceeded);
+            Assert.AreEqual(pagedTopics, result.Data);
+            Assert.AreEqual("Get all topic successfully !", result.Message);
+        }
+        [Test]
+        public async Task GetById_ShouldReturnTopicSuccessfully_WhenTopicExists()
+        {
+            // Arrange
+            var topicId = 1;
+            var topic = new Topic { Id = topicId, Title = "Sample Topic" };
+            var topicDto = new TopicDto { Id = topicId, Title = "Sample Topic" };
+
+            topicRepository.GetTopicById(topicId).Returns(Task.FromResult(topic));
+            mapper.Map<TopicDto>(topic).Returns(topicDto);
+
+            // Act
+            var result = await topicService.GetById(topicId);
+
+            // Assert
+            Assert.IsTrue(result.IsSucceeded);
+            Assert.AreEqual(topicDto, result.Data);
+            Assert.AreEqual("Get topic by id successfully !", result.Message);
+        }
+
+        [Test]
+        public async Task GetById_ShouldReturnNotFound_WhenTopicDoesNotExist()
+        {
+            // Arrange
+            var topicId = 1;
+
+            topicRepository.GetTopicById(topicId).Returns(Task.FromResult<Topic>(null));
+
+            // Act
+            var result = await topicService.GetById(topicId);
+
+            // Assert
+            Assert.IsFalse(result.IsSucceeded);
+            Assert.IsNull(result.Data);
+            Assert.AreEqual("Not found !", result.Message);
         }
     }
 }
