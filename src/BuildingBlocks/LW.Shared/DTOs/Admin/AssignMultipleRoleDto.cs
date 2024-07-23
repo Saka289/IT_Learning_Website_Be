@@ -1,6 +1,6 @@
 ﻿namespace LW.Shared.DTOs.Admin;
 
-public class AssignMutipleRoleDto
+public class AssignMultipleRoleDto
 
 {
     public string UserId { get; set; }

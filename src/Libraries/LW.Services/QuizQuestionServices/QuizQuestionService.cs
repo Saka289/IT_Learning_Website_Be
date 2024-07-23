@@ -279,10 +279,7 @@ public class QuizQuestionService : IQuizQuestionService
             quizQuestionEntity.PublicId = filePath.PublicId;
         }
 
-        modelQuestion.QuizQuestionRelations = new List<QuizQuestionRelation>
-        {
-            new() { QuizId = quizQuestionUpdateDto.QuizId, QuizQuestionId = quizQuestionUpdateDto.Id }
-        };
+        modelQuestion.QuizQuestionRelations = quizQuestion.QuizQuestionRelations;
         modelQuestion.KeyWord = quizQuestionUpdateDto.Content.RemoveDiacritics();
         modelQuestion.Image = quizQuestion.Image;
         modelQuestion.PublicId = quizQuestion.PublicId;
@@ -415,10 +412,7 @@ public class QuizQuestionService : IQuizQuestionService
                 quizQuestionEntity.PublicId = filePath.PublicId;
             }
 
-            modelQuestion.QuizQuestionRelations = new List<QuizQuestionRelation>
-            {
-                new() { QuizId = item.QuizId, QuizQuestionId = item.Id }
-            };
+            modelQuestion.QuizQuestionRelations = quizQuestion.QuizQuestionRelations;
             modelQuestion.KeyWord = item.Content.RemoveDiacritics();
             modelQuestion.Image = quizQuestion.Image;
             modelQuestion.PublicId = quizQuestion.PublicId;
