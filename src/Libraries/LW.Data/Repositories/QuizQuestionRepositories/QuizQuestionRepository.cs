@@ -38,6 +38,7 @@ public class QuizQuestionRepository : RepositoryBase<QuizQuestion, int>, IQuizQu
     {
         return FindByCondition(g => g.Id == id)
             .Include(qa => qa.QuizAnswers)
+            .Include(qr => qr.QuizQuestionRelations)
             .FirstOrDefaultAsync();
     }
 

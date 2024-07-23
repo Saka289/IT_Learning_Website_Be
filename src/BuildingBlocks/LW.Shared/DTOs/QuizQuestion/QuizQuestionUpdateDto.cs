@@ -15,6 +15,5 @@ public class QuizQuestionUpdateDto
     public bool IsShuffle { get; set; }
     public bool IsActive { get; set; }
     public EQuestionLevel QuestionLevel { get; set; }
-    public int QuizId { get; set; }
     public IEnumerable<QuizAnswerUpdateDto> QuizAnswers { get; set; }
 }
