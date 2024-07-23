@@ -8,6 +8,7 @@ public class CreateExamCommandValidator:AbstractValidator<ExamCreateDto>
 {
     public CreateExamCommandValidator()
     {
+        RuleFor(x => x.CompetitionId).NotNull().NotEmpty().GreaterThan(0);
         RuleFor(x => x.Type).NotNull().NotEmpty().IsInEnum();
         RuleFor(x => x.Title).NotNull().NotEmpty();
         RuleFor(x => x.Province).NotNull().NotEmpty();

@@ -4,6 +4,7 @@ using LW.Infrastructure.Extensions;
 using LW.Shared.DTOs;
 using LW.Shared.DTOs.Admin;
 using LW.Shared.DTOs.CommentDocumentDto;
+using LW.Shared.DTOs.Competition;
 using LW.Shared.DTOs.Grade;
 using LW.Shared.DTOs.Level;
 using LW.Shared.DTOs.User;
@@ -173,6 +174,7 @@ public class MappingProfile : Profile
         CreateMap<Exam, ExamDto>()
             // .ForMember(x => x.Type,
             //         y => y.MapFrom(src => EnumHelperExtensions.GetDisplayName(src.Type).ToString()))
+            .ForMember(x=>x.CompetitionTitle, y=> y.MapFrom(src=>src.Competition.Title))
             .ReverseMap();
         CreateMap<Exam, ExamCreateDto>().ReverseMap();
         CreateMap<Exam, ExamUpdateDto>().ReverseMap();
@@ -222,5 +224,9 @@ public class MappingProfile : Profile
         CreateMap<Tag, TagUpdateDto>().ReverseMap();
         //QuizQuestionRelation
         CreateMap<QuizQuestionRelation, QuizQuestionRelationDto>().ReverseMap();
+        // Competition
+        CreateMap<Competition, CompetitionDto>().ReverseMap();
+        CreateMap<Competition, CompetitionCreateDto>().ReverseMap();
+        CreateMap<Competition, CompetitionUpdateDto>().ReverseMap();
     }
 }

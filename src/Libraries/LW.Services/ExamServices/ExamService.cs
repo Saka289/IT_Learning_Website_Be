@@ -1,6 +1,7 @@
 ﻿using AutoMapper;
 using LW.Contracts.Common;
 using LW.Data.Entities;
+using LW.Data.Repositories.CompetitionRepositories;
 using LW.Data.Repositories.ExamCodeRepositories;
 using LW.Data.Repositories.ExamRepositories;
 using LW.Infrastructure.Extensions;
@@ -22,16 +23,18 @@ public class ExamService : IExamService
     private readonly IElasticSearchService<ExamDto, int> _elasticSearchService;
     private readonly ICloudinaryService _cloudinaryService;
     private readonly IExamCodeRepository _examCodeRepository;
+    private readonly ICompetitionRepository _competitionRepository;
 
     public ExamService(IMapper mapper, IExamRepository examRepository,
         IElasticSearchService<ExamDto, int> elasticSearchService, ICloudinaryService cloudinaryService,
-        IExamCodeRepository examCodeRepository)
+        IExamCodeRepository examCodeRepository, ICompetitionRepository competitionRepository)
     {
         _mapper = mapper;
         _examRepository = examRepository;
         _elasticSearchService = elasticSearchService;
         _cloudinaryService = cloudinaryService;
         _examCodeRepository = examCodeRepository;
+        _competitionRepository = competitionRepository;
     }
 
     public async Task<ApiResult<IEnumerable<ExamDto>>> GetAllExam()
@@ -102,6 +105,11 @@ public class ExamService : IExamService
 
     public async Task<ApiResult<ExamDto>> CreateExam(ExamCreateDto examCreateDto)
     {
+        var competition = await _competitionRepository.GetCompetitionById(examCreateDto.CompetitionId);
+        if (competition == null)
+        {
+            return new ApiResult<ExamDto>(false, "Competition not found !!!");
+        }
         var obj = _mapper.Map<Exam>(examCreateDto);
         if (examCreateDto.ExamEssayFileUpload != null && examCreateDto.ExamEssayFileUpload.Length > 0)
         {
@@ -130,6 +138,12 @@ public class ExamService : IExamService
 
     public async Task<ApiResult<ExamDto>> UpdateExam(ExamUpdateDto examUpdateDto)
     {
+        var competition = await _competitionRepository.GetCompetitionById(examUpdateDto.CompetitionId);
+        if (competition == null)
+        {
+            return new ApiResult<ExamDto>(false, "Competition not found !!!");
+        }
+        
         var exam = await _examRepository.GetExamById(examUpdateDto.Id);
         if (exam == null)
         {
@@ -202,13 +216,11 @@ public class ExamService : IExamService
         }
 
         // delete file multichoice for examcode
-        var examCode = await _examCodeRepository.GetAllExamCodeByExamId(exam.Id);
-        if (examCode.Any())
+        var examCodes = await _examCodeRepository.GetAllExamCodeByExamId(exam.Id);
+        if (examCodes.Any())
         {
-            foreach (var ec in examCode)
-            {
-                await _cloudinaryService.DeleteFileAsync(ec.PublicExamId);
-            }
+            var listPublicId = examCodes.Select(x => x.PublicExamId).ToList();
+            await _cloudinaryService.DeleteRangeFileAsync(listPublicId);
         }
 
         var result = await _examRepository.DeleteExam(id);

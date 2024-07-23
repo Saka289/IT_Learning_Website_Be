@@ -9,6 +9,7 @@ using LW.Data.Common.Interfaces;
 using LW.Data.Entities;
 using LW.Data.Persistence;
 using LW.Data.Repositories.CommentDocumentRepositories;
+using LW.Data.Repositories.CompetitionRepositories;
 using LW.Data.Repositories.GradeRepositories;
 using LW.Data.Repositories.LevelRepositories;
 using LW.Infrastructure.Common;
@@ -45,6 +46,7 @@ using LW.Data.Repositories.UserExamRepositories;
 using LW.Data.Repositories.UserGradeRepositories;
 using LW.Data.Repositories.UserQuizRepositories;
 using LW.Services.CommentDocumentServices;
+using LW.Services.CompetitionServices;
 using LW.Services.EnumServices;
 using LW.Services.ExamAnswerServices;
 using LW.Services.ExamCodeServices;
@@ -280,6 +282,7 @@ public static class ServiceExtensions
         services.AddScoped<ITagRepository, TagRepository>();
         services.AddScoped<IQuizQuestionRelationRepository, QuizQuestionRelationRepository>();
         services.AddScoped<IExamCodeRepository, ExamCodeRepository>();
+        services.AddScoped<ICompetitionRepository, CompetitionRepository>();
         // IService 
         services.AddScoped<IAdminAuthorService, AdminAuthorService>();
         services.AddScoped<IUserService, UserService>();
@@ -304,6 +307,7 @@ public static class ServiceExtensions
         services.AddScoped<ITagService, TagService>();
         services.AddScoped<IQuizQuestionRelationService, QuizQuestionRelationService>();
         services.AddScoped<IExamCodeService, ExamCodeService>();
+        services.AddScoped<ICompetitionService, CompetitionService>();
         return services;
     }
 }
