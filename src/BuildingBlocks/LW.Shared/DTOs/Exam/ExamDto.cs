@@ -3,6 +3,7 @@
 public class ExamDto
 {
     public int Id { get; set; }
+    public int CompetitionId { get; set; }
     public string? CompetitionTitle { get; set; }
     public int Type { get; set; }
     public string? Title { get; set; }
