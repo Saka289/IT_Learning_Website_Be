@@ -1,6 +1,14 @@
 #docker-compose.override
 name: myapp
 
+#x-logging
+x-logging:
+  &default-logging
+  logging:
+    driver: json-file
+    options:
+      max-size: 100M
+
 services:
   #database section
   
@@ -14,10 +22,28 @@ services:
       - lw_mysql_data:/var/lib/mysql
     ports:
       - "3306:3306"
-
+  
+  
+  #judge0Db: postgresql
+  judge0Db:
+    container_name: judge0Db
+    env_file: judge0.conf
+    <<: *default-logging
+    restart: always
+    ports:
+      - "5433:5432"
+    volumes:
+      - lw_judge0_data:/var/lib/postgresql/data
+  
   #cacheDB: redis
   cacheDB:
     container_name: cacheDB
+    command: [
+      "bash", "-c",
+      'docker-entrypoint.sh --appendonly no --requirepass "$$REDIS_PASSWORD"'
+    ]
+    env_file: judge0.conf
+    <<: *default-logging
     restart: always
     ports:
       - "6379:6379"
@@ -47,6 +73,25 @@ services:
       - lw_elasticsearch
     ports:
       - "5601:5601"
+  
+  lw_judge0Server:
+    container_name: lw_judge0Server
+    privileged: true
+    <<: *default-logging
+    restart: always
+    volumes:
+      - lw_judge0Server_data:./judge0.conf:/judge0.conf:ro
+    ports:
+      - "2358:2358"
+  
+  lw_judge0Workers:
+    container_name: lw_judge0Workers
+    command: [ "./scripts/workers" ]
+    privileged: true
+    <<: *default-logging
+    restart: always
+    volumes:
+      - lw_judge0Workers_data:./judge0.conf:/judge0.conf:ro
 
   #services api section
   lw.api:

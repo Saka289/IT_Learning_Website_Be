@@ -8,12 +8,21 @@ services:
   cacheDB:
     image: redis:alpine
   
+  judge0Db:
+    image: postgres:16.2
+  
   #infrastructure section
   lw_elasticsearch:
     image: docker.elastic.co/elasticsearch/elasticsearch:7.17.22
 
   lw_kibana:
     image: docker.elastic.co/kibana/kibana:7.17.22
+  
+  lw_judge0Server:
+    image: judge0/judge0:1.13.1
+
+  lw_judge0Workers:
+    image: judge0/judge0:1.13.1
 
   #api section
   lw.api:
@@ -36,3 +45,9 @@ volumes:
     name: lw_elasticsearch_data
   lw_jaeger_data:
     name: lw_jaeger_data
+  lw_judge0_data:
+    name: lw_judge0_data
+  lw_judge0Server_data:
+    name: lw_judge0Server_data
+  lw_judge0Workers_data:
+    name: lw_judge0Workers_data
