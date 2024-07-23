@@ -94,7 +94,7 @@ public class LevelService : ILevelService
         var objLevel = await _levelRepository.GetLevelById(id);
         if (objLevel == null)
         {
-            return new ApiResult<bool>(true, "Not found !");
+            return new ApiResult<bool>(false, "Not found !");
         }
 
         objLevel.IsActive = !objLevel.IsActive;

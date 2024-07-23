@@ -25,7 +25,7 @@ public class UserExamRepository : RepositoryBase<UserExam,int>, IUserExamReposit
 
     public async Task<UserExam> GetUserExamById(int id)
     {
-        return await FindByCondition(x => x.Id == id).Include(x=>x.ApplicationUser).Include(x=>x.ExamCode).FirstOrDefaultAsync();
+        return await FindByCondition(x => x.Id == id).Include(x=>x.ApplicationUser).Include(x=>x.ExamCode).Include(x=>x.ExamCode.Exam).FirstOrDefaultAsync();
     }
 
     public async Task<IEnumerable<UserExam>> GetAllUserExam()

@@ -8,6 +8,7 @@ public class UpdateExamCommandValidator:AbstractValidator<ExamUpdateDto>
 {
     public UpdateExamCommandValidator()
     {
+        RuleFor(x => x.CompetitionId).NotNull().NotEmpty().GreaterThan(0);
         RuleFor(x => x.Id).NotNull().NotEmpty().GreaterThan(0);
         RuleFor(x => x.Title).NotNull().NotEmpty();
         RuleFor(x => x.Type).NotNull().NotEmpty();

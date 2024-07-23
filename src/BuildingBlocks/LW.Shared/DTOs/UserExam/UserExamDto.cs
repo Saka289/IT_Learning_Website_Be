@@ -11,6 +11,10 @@ public class UserExamDto
     public int ExamId { get; set; }
 
     public string? ExamName { get; set; }
+    
+    public int ExamCodeId { get; set; }
+
+    public string? Code { get; set; }
 
     public decimal Score { get; set; }
 

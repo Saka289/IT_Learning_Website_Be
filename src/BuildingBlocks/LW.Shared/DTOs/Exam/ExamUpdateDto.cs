@@ -5,6 +5,7 @@ namespace LW.Shared.DTOs.Exam;
 
 public class ExamUpdateDto
 {
+    public int CompetitionId { get; set; }
     public int Id { get; set; }
     
     public EExamType Type { get; set; } // TL-1 TN-2

@@ -4,6 +4,7 @@ using LW.Infrastructure.Extensions;
 using LW.Shared.DTOs;
 using LW.Shared.DTOs.Admin;
 using LW.Shared.DTOs.CommentDocumentDto;
+using LW.Shared.DTOs.Competition;
 using LW.Shared.DTOs.Grade;
 using LW.Shared.DTOs.Level;
 using LW.Shared.DTOs.User;
@@ -173,6 +174,8 @@ public class MappingProfile : Profile
         CreateMap<Exam, ExamDto>()
             // .ForMember(x => x.Type,
             //         y => y.MapFrom(src => EnumHelperExtensions.GetDisplayName(src.Type).ToString()))
+            .ForMember(x=>x.CompetitionId, y=> y.MapFrom(src=>src.Competition.Id))
+            .ForMember(x=>x.CompetitionTitle, y=> y.MapFrom(src=>src.Competition.Title))
             .ReverseMap();
         CreateMap<Exam, ExamCreateDto>().ReverseMap();
         CreateMap<Exam, ExamUpdateDto>().ReverseMap();
@@ -191,7 +194,10 @@ public class MappingProfile : Profile
         CreateMap<UserExam,UserExamDto>()
             .ForMember(x => x.HistoryExam, y => y.MapFrom(src => JsonConvert.DeserializeObject<List<HistoryAnswer>>(src.HistoryExam)))
             .ForMember(x=>x.UserName, y=>y.MapFrom(src =>src.ApplicationUser.UserName))
-          //  .ForMember(x=>x.ExamName, y=>y.MapFrom(src =>src.Exam.Title))
+            .ForMember(x=>x.ExamName, y=>y.MapFrom(src =>src.ExamCode.Exam.Title))
+            .ForMember(x=>x.ExamId, y=>y.MapFrom(src =>src.ExamCode.Exam.Id))
+            .ForMember(x=>x.ExamCodeId, y=>y.MapFrom(src =>src.ExamCode.Id))
+            .ForMember(x=>x.Code, y=>y.MapFrom(src =>src.ExamCode.Code))
             .ReverseMap();
         //Quiz
         CreateMap<Quiz, QuizDto>()
@@ -219,5 +225,9 @@ public class MappingProfile : Profile
         CreateMap<Tag, TagUpdateDto>().ReverseMap();
         //QuizQuestionRelation
         CreateMap<QuizQuestionRelation, QuizQuestionRelationDto>().ReverseMap();
+        // Competition
+        CreateMap<Competition, CompetitionDto>().ReverseMap();
+        CreateMap<Competition, CompetitionCreateDto>().ReverseMap();
+        CreateMap<Competition, CompetitionUpdateDto>().ReverseMap();
     }
 }

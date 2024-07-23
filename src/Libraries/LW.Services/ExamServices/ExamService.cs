@@ -1,6 +1,8 @@
-﻿using AutoMapper;
+﻿using System.Reflection.Metadata;
+using AutoMapper;
 using LW.Contracts.Common;
 using LW.Data.Entities;
+using LW.Data.Repositories.CompetitionRepositories;
 using LW.Data.Repositories.ExamCodeRepositories;
 using LW.Data.Repositories.ExamRepositories;
 using LW.Infrastructure.Extensions;
@@ -22,16 +24,18 @@ public class ExamService : IExamService
     private readonly IElasticSearchService<ExamDto, int> _elasticSearchService;
     private readonly ICloudinaryService _cloudinaryService;
     private readonly IExamCodeRepository _examCodeRepository;
+    private readonly ICompetitionRepository _competitionRepository;
 
     public ExamService(IMapper mapper, IExamRepository examRepository,
         IElasticSearchService<ExamDto, int> elasticSearchService, ICloudinaryService cloudinaryService,
-        IExamCodeRepository examCodeRepository)
+        IExamCodeRepository examCodeRepository, ICompetitionRepository competitionRepository)
     {
         _mapper = mapper;
         _examRepository = examRepository;
         _elasticSearchService = elasticSearchService;
         _cloudinaryService = cloudinaryService;
         _examCodeRepository = examCodeRepository;
+        _competitionRepository = competitionRepository;
     }
 
     public async Task<ApiResult<IEnumerable<ExamDto>>> GetAllExam()
@@ -93,7 +97,23 @@ public class ExamService : IExamService
         {
             return new ApiResult<PagedList<ExamDto>>(false, $"Exam not found by {searchExamDto.Key} !!!");
         }
-
+        if (searchExamDto.CompetitionId > 0)
+        {
+            listExam = listExam.Where(t => t.CompetitionId == searchExamDto.CompetitionId).ToList();
+        }
+        if (!string.IsNullOrEmpty(searchExamDto.Province))
+        {
+            listExam = listExam.Where(t => t.Province.ToLower().Contains(searchExamDto.Province.ToLower())).ToList();
+        }
+        if (searchExamDto.Year > 0)
+        {
+            listExam = listExam.Where(t => t.Year == searchExamDto.Year).ToList();
+        }
+        if (searchExamDto.Type > 0)
+        {
+            listExam = listExam.Where(t => t.Type == searchExamDto.Type).ToList();
+        }
+        
         var result = _mapper.Map<IEnumerable<ExamDto>>(listExam);
         var pagedResult = await PagedList<ExamDto>.ToPageListAsync(result.AsQueryable().BuildMock(),
             searchExamDto.PageIndex, searchExamDto.PageSize, searchExamDto.OrderBy, searchExamDto.IsAscending);
@@ -102,6 +122,11 @@ public class ExamService : IExamService
 
     public async Task<ApiResult<ExamDto>> CreateExam(ExamCreateDto examCreateDto)
     {
+        var competition = await _competitionRepository.GetCompetitionById(examCreateDto.CompetitionId);
+        if (competition == null)
+        {
+            return new ApiResult<ExamDto>(false, "Competition not found !!!");
+        }
         var obj = _mapper.Map<Exam>(examCreateDto);
         if (examCreateDto.ExamEssayFileUpload != null && examCreateDto.ExamEssayFileUpload.Length > 0)
         {
@@ -117,11 +142,13 @@ public class ExamService : IExamService
                 CloudinaryConstant.FolderExamFilePdf);
             obj.ExamSolutionFile = filePath.Url;
             obj.PublicExamEssaySolutionId = filePath.PublicId;
+            obj.UrlDownloadSolutionFile = filePath.UrlDownload;
         }
 
         var keyWordValue = examCreateDto.tagValues.ConvertToTagString();
         obj.KeyWord = keyWordValue;
         await _examRepository.CreateExam(obj);
+        obj.Competition = competition;
         var result = _mapper.Map<ExamDto>(obj);
         await _elasticSearchService.CreateDocumentAsync(ElasticConstant.ElasticExams, result, x => x.Id);
         return new ApiResult<ExamDto>(true, result, "Create exam successfully");
@@ -129,6 +156,12 @@ public class ExamService : IExamService
 
     public async Task<ApiResult<ExamDto>> UpdateExam(ExamUpdateDto examUpdateDto)
     {
+        var competition = await _competitionRepository.GetCompetitionById(examUpdateDto.CompetitionId);
+        if (competition == null)
+        {
+            return new ApiResult<ExamDto>(false, "Competition not found !!!");
+        }
+        
         var exam = await _examRepository.GetExamById(examUpdateDto.Id);
         if (exam == null)
         {
@@ -150,6 +183,7 @@ public class ExamService : IExamService
                 examUpdateDto.ExamSolutionFileUpload);
             objUpdate.PublicExamEssaySolutionId = filePath.PublicId;
             objUpdate.ExamSolutionFile = filePath.Url;
+            objUpdate.UrlDownloadSolutionFile = filePath.UrlDownload;
         }
 
         if (examUpdateDto.tagValues != null && examUpdateDto.tagValues.Any())
@@ -200,13 +234,11 @@ public class ExamService : IExamService
         }
 
         // delete file multichoice for examcode
-        var examCode = await _examCodeRepository.GetAllExamCodeByExamId(exam.Id);
-        if (examCode.Any())
+        var examCodes = await _examCodeRepository.GetAllExamCodeByExamId(exam.Id);
+        if (examCodes.Any())
         {
-            foreach (var ec in examCode)
-            {
-                await _cloudinaryService.DeleteFileAsync(ec.PublicExamId);
-            }
+            var listPublicId = examCodes.Select(x => x.PublicExamId).ToList();
+            await _cloudinaryService.DeleteRangeFileAsync(listPublicId);
         }
 
         var result = await _examRepository.DeleteExam(id);
@@ -218,4 +250,6 @@ public class ExamService : IExamService
         await _elasticSearchService.DeleteDocumentAsync(ElasticConstant.ElasticExams, exam.Id);
         return new ApiResult<bool>(true, "Delete Exam Successfully");
     }
+
+    
 }

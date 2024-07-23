@@ -3,6 +3,7 @@ using System;
 using LW.Data.Persistence;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
@@ -10,9 +11,10 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace LW.Data.Persistence.Migrations
 {
     [DbContext(typeof(AppDbContext))]
-    partial class AppDbContextModelSnapshot : ModelSnapshot
+    [Migration("20240722151021_Init_Update_Table_For_Module_Exam_7")]
+    partial class Init_Update_Table_For_Module_Exam_7
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -151,41 +153,6 @@ namespace LW.Data.Persistence.Migrations
                     b.ToTable("CommentDocuments");
                 });
 
-            modelBuilder.Entity("LW.Data.Entities.Competition", b =>
-                {
-                    b.Property<int>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("int");
-
-                    b.Property<string>("CreatedBy")
-                        .IsRequired()
-                        .HasColumnType("longtext");
-
-                    b.Property<DateTimeOffset>("CreatedDate")
-                        .HasColumnType("datetime(6)");
-
-                    b.Property<string>("Description")
-                        .IsRequired()
-                        .HasColumnType("longtext");
-
-                    b.Property<bool>("IsActive")
-                        .HasColumnType("tinyint(1)");
-
-                    b.Property<string>("LastModifiedBy")
-                        .HasColumnType("longtext");
-
-                    b.Property<DateTimeOffset?>("LastModifiedDate")
-                        .HasColumnType("datetime(6)");
-
-                    b.Property<string>("Title")
-                        .IsRequired()
-                        .HasColumnType("longtext");
-
-                    b.HasKey("Id");
-
-                    b.ToTable("Competitions");
-                });
-
             modelBuilder.Entity("LW.Data.Entities.Document", b =>
                 {
                     b.Property<int>("Id")
@@ -256,9 +223,6 @@ namespace LW.Data.Persistence.Migrations
                         .ValueGeneratedOnAdd()
                         .HasColumnType("int");
 
-                    b.Property<int>("CompetitionId")
-                        .HasColumnType("int");
-
                     b.Property<string>("CreatedBy")
                         .IsRequired()
                         .HasColumnType("longtext");
@@ -316,8 +280,6 @@ namespace LW.Data.Persistence.Migrations
                         .HasColumnType("int");
 
                     b.HasKey("Id");
-
-                    b.HasIndex("CompetitionId");
 
                     b.ToTable("Exams");
                 });
@@ -1044,17 +1006,6 @@ namespace LW.Data.Persistence.Migrations
                     b.Navigation("Grade");
                 });
 
-            modelBuilder.Entity("LW.Data.Entities.Exam", b =>
-                {
-                    b.HasOne("LW.Data.Entities.Competition", "Competition")
-                        .WithMany("Exams")
-                        .HasForeignKey("CompetitionId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.Navigation("Competition");
-                });
-
             modelBuilder.Entity("LW.Data.Entities.ExamAnswer", b =>
                 {
                     b.HasOne("LW.Data.Entities.ExamCode", "ExamCode")
@@ -1282,11 +1233,6 @@ namespace LW.Data.Persistence.Migrations
             modelBuilder.Entity("LW.Data.Entities.CommentDocument", b =>
                 {
                     b.Navigation("ChildCommentDocuments");
-                });
-
-            modelBuilder.Entity("LW.Data.Entities.Competition", b =>
-                {
-                    b.Navigation("Exams");
                 });
 
             modelBuilder.Entity("LW.Data.Entities.Document", b =>

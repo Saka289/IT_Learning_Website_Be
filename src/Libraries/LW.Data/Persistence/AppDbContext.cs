@@ -40,6 +40,7 @@ public class AppDbContext : IdentityDbContext<ApplicationUser>
     public DbSet<UserQuiz> UserQuizzes { get; set; }
     public DbSet<Tag> Tags { get; set; }
     public DbSet<ExamCode> ExamCodes { get; set; }
+    public DbSet<Competition> Competitions { get; set; }
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
