@@ -1,4 +1,5 @@
 ﻿using System.ComponentModel.DataAnnotations;
+using System.ComponentModel.DataAnnotations.Schema;
 using LW.Contracts.Domains;
 using LW.Shared.Enums;
 
@@ -32,7 +33,10 @@ public class Exam : EntityAuditBase<int>
     public int NumberQuestion { set; get; }
     [Required]
     public bool IsActive { get; set; }
-    
+    [Required]
+    public int CompetitionId { get; set; }
+    [ForeignKey(nameof(CompetitionId))]
+    public virtual Competition Competition { get; set; }
     public virtual ICollection<ExamCode>? ExamCodes { get; set; }
 
     

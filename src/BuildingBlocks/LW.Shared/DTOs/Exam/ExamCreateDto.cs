@@ -8,6 +8,8 @@ namespace LW.Shared.DTOs.Exam;
 public class ExamCreateDto
 {
     [Required]
+    public int CompetitionId { get; set; }
+    [Required]
     public EExamType Type { get; set; } // TL-1 TN-2
     [Required]
     public string? Title { get; set; }
