@@ -1,4 +1,5 @@
-﻿using AutoMapper;
+﻿using System.Reflection.Metadata;
+using AutoMapper;
 using LW.Contracts.Common;
 using LW.Data.Entities;
 using LW.Data.Repositories.CompetitionRepositories;
@@ -96,7 +97,23 @@ public class ExamService : IExamService
         {
             return new ApiResult<PagedList<ExamDto>>(false, $"Exam not found by {searchExamDto.Key} !!!");
         }
-
+        if (searchExamDto.CompetitionId > 0)
+        {
+            listExam = listExam.Where(t => t.CompetitionId == searchExamDto.CompetitionId).ToList();
+        }
+        if (!string.IsNullOrEmpty(searchExamDto.Province))
+        {
+            listExam = listExam.Where(t => t.Province.ToLower().Contains(searchExamDto.Province.ToLower())).ToList();
+        }
+        if (searchExamDto.Year > 0)
+        {
+            listExam = listExam.Where(t => t.Year == searchExamDto.Year).ToList();
+        }
+        if (searchExamDto.Type > 0)
+        {
+            listExam = listExam.Where(t => t.Type == searchExamDto.Type).ToList();
+        }
+        
         var result = _mapper.Map<IEnumerable<ExamDto>>(listExam);
         var pagedResult = await PagedList<ExamDto>.ToPageListAsync(result.AsQueryable().BuildMock(),
             searchExamDto.PageIndex, searchExamDto.PageSize, searchExamDto.OrderBy, searchExamDto.IsAscending);
@@ -131,6 +148,7 @@ public class ExamService : IExamService
         var keyWordValue = examCreateDto.tagValues.ConvertToTagString();
         obj.KeyWord = keyWordValue;
         await _examRepository.CreateExam(obj);
+        obj.Competition = competition;
         var result = _mapper.Map<ExamDto>(obj);
         await _elasticSearchService.CreateDocumentAsync(ElasticConstant.ElasticExams, result, x => x.Id);
         return new ApiResult<ExamDto>(true, result, "Create exam successfully");
