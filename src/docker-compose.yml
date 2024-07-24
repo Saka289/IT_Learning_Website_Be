@@ -5,10 +5,10 @@ services:
   educationDB:
     image: mysql:8.0.37
   
-  cacheDB:
-    image: redis:alpine
+  redis:
+    image: redis:7.2.4
   
-  judge0Db:
+  db:
     image: postgres:16.2
   
   #infrastructure section
@@ -47,7 +47,3 @@ volumes:
     name: lw_jaeger_data
   lw_judge0_data:
     name: lw_judge0_data
-  lw_judge0Server_data:
-    name: lw_judge0Server_data
-  lw_judge0Workers_data:
-    name: lw_judge0Workers_data

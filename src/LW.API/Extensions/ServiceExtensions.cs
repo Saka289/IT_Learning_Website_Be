@@ -62,6 +62,7 @@ using LW.Services.UserExamServices;
 using LW.Services.UserGradeServices;
 using LW.Services.UserQuizServices;
 using Nest;
+using StackExchange.Redis;
 
 namespace LW.API.Extensions;
 
@@ -224,7 +225,10 @@ public static class ServiceExtensions
             throw new ArgumentNullException("Redis Connection string is not configured.");
         }
 
-        services.AddStackExchangeRedisCache(options => { options.Configuration = settings.ConnectionString; });
+        var configurationOptions = ConfigurationOptions.Parse(settings.ConnectionString);
+        configurationOptions.Password = settings.Password;
+
+        services.AddStackExchangeRedisCache(options => { options.ConfigurationOptions = configurationOptions; });
         return services;
     }
 
@@ -248,7 +252,8 @@ public static class ServiceExtensions
         {
             options.AddDefaultPolicy(builder =>
             {
-                builder.WithOrigins(settings.ClientUrl).AllowAnyHeader().AllowAnyMethod().WithExposedHeaders("X-Pagination");
+                builder.WithOrigins(settings.ClientUrl).AllowAnyHeader().AllowAnyMethod()
+                    .WithExposedHeaders("X-Pagination");
             });
         });
         return service;
