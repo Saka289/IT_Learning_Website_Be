@@ -6,6 +6,7 @@ public class QuizDto
     public string Title { get; set; }
     public string KeyWord { get; set; }
     public string Description { get; set; }
+    public string Type { get; set; }
     public decimal Score { get; set; }
     public bool IsActive { get; set; }
     public int? TopicId { get; set; }

@@ -7,6 +7,7 @@ using LW.Contracts.Common;
 using LW.Contracts.Services;
 using LW.Data.Entities;
 using LW.Data.Persistence;
+using LW.Services.Common.ModelMapping;
 using LW.Services.FacebookServices;
 using LW.Services.JwtTokenServices;
 using LW.Shared.Configurations;
@@ -14,6 +15,7 @@ using LW.Shared.Constant;
 using LW.Shared.DTOs.Email;
 using LW.Shared.DTOs.Facebook;
 using LW.Shared.DTOs.Google;
+using LW.Shared.DTOs.Member;
 using LW.Shared.DTOs.Token;
 using LW.Shared.DTOs.User;
 using LW.Shared.Enums;
@@ -44,12 +46,13 @@ public class UserService : IUserService
     private readonly GoogleSettings _googleSettings;
     private readonly IFacebookService _facebookService;
     private readonly ICloudinaryService _cloudinaryService;
+    private readonly IElasticSearchService<MemberDto, string> _elasticSearchService;
 
     public UserService(UserManager<ApplicationUser> userManager, RoleManager<IdentityRole> roleManager, IMapper mapper,
         ISmtpEmailService emailService, ILogger logger, IOptions<VerifyEmailSettings> verifyEmailSettings,
         IOptions<UrlBase> urlBase, IRedisCache<VerifyEmailTokenDto> redisCacheService,
         ISerializeService serializeService, IJwtTokenService jwtTokenService, IOptions<GoogleSettings> googleSettings,
-        IFacebookService facebookService, ICloudinaryService cloudinaryService)
+        IFacebookService facebookService, ICloudinaryService cloudinaryService, IElasticSearchService<MemberDto, string> elasticSearchService)
     {
         _roleManager = roleManager ?? throw new ArgumentNullException(nameof(roleManager));
         _mapper = mapper ?? throw new ArgumentNullException(nameof(mapper));
@@ -60,6 +63,7 @@ public class UserService : IUserService
         _jwtTokenService = jwtTokenService ?? throw new ArgumentNullException(nameof(jwtTokenService));
         _facebookService = facebookService ?? throw new ArgumentNullException(nameof(facebookService));
         _cloudinaryService = cloudinaryService;
+        _elasticSearchService = elasticSearchService;
         _googleSettings = googleSettings.Value;
         _urlBase = urlBase.Value;
         _verifyEmailSettings = verifyEmailSettings.Value;
@@ -114,6 +118,7 @@ public class UserService : IUserService
             FullName = user.FirstName + " " + user.LastName,
             PhoneNumber = user.PhoneNumber,
         };
+        _elasticSearchService.CreateDocumentAsync(ElasticConstant.ElasticUsers, user.ToMemberDto(_userManager), a => a.Id);
         return new ApiResult<RegisterResponseUserDto>(true, userDto, "Create User Successfully");
     }
 
@@ -215,6 +220,7 @@ public class UserService : IUserService
             AccessToken = accessToken,
             RefreshToken = refreshToken
         };
+        _elasticSearchService.CreateDocumentAsync(ElasticConstant.ElasticUsers, user.ToMemberDto(_userManager), a => a.Id);
         return new ApiResult<LoginResponseUserDto>(true, loginResponseUserDto, "Login successfully !!!");
     }
 
@@ -266,6 +272,7 @@ public class UserService : IUserService
             AccessToken = accessToken,
             RefreshToken = refreshToken
         };
+        _elasticSearchService.CreateDocumentAsync(ElasticConstant.ElasticUsers, user.ToMemberDto(_userManager), a => a.Id);
         return new ApiResult<LoginResponseUserDto>(true, loginResponseUserDto, "Login successfully !!!");
     }
 
@@ -474,7 +481,7 @@ public class UserService : IUserService
                 PhoneNumber = user.PhoneNumber,
                 Image = user.Image
             };
-
+            _elasticSearchService.UpdateDocumentAsync(ElasticConstant.ElasticUsers, user.ToMemberDto(_userManager), updateUserDto.UserId);
             return new ApiResult<UpdateResponseUserDto>(true, userResponseCreate, $"Update User Successfully !");
         }
 
@@ -489,7 +496,7 @@ public class UserService : IUserService
                 PhoneNumber = user.PhoneNumber,
                 Image = user.Image
             };
-
+            _elasticSearchService.UpdateDocumentAsync(ElasticConstant.ElasticUsers, user.ToMemberDto(_userManager), updateUserDto.UserId);
             return new ApiResult<UpdateResponseUserDto>(true, userResponseCreate, $"Update User Successfully !");
         }
 
@@ -508,7 +515,7 @@ public class UserService : IUserService
             Image = user.Image,
             Dob = user.Dob.ToString()
         };
-
+        _elasticSearchService.UpdateDocumentAsync(ElasticConstant.ElasticUsers, user.ToMemberDto(_userManager), updateUserDto.UserId);
         return new ApiResult<UpdateResponseUserDto>(true, userResponseUpdate, $"Update User Successfully !");
     }
 

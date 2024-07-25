@@ -24,7 +24,7 @@ namespace LW.API.Controllers.Public
         }
 
         [HttpPost("SubmitExam")]
-        public async Task<ActionResult<ApiResult<bool>>> SubmitExam(
+        public async Task<ActionResult<ApiResult<int>>> SubmitExam(
             [FromBody] ExamFormSubmitDto examFormSubmitDto)
         {
             // var validationResult = await new CreateUserCommandValidator().ValidateAsync(registerUserDto);

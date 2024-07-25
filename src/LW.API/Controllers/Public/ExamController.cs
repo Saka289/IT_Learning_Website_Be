@@ -7,6 +7,7 @@ using LW.API.Application.Validators.GradeValidator;
 using LW.Services.ExamServices;
 using LW.Shared.DTOs.Exam;
 using LW.Shared.DTOs.Grade;
+using LW.Shared.Enums;
 using LW.Shared.SeedWork;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
@@ -37,7 +38,17 @@ namespace LW.API.Controllers.Public
 
             return Ok(result);
         }
+        [HttpGet("GetAllExamByType")]
+        public async Task<ActionResult<ApiResult<IEnumerable<ExamDto>>>> GetAllExamByType(EExamType type)
+        {
+            var result = await _examService.GetExamByType(type);
+            if (!result.IsSucceeded)
+            {
+                return NotFound(result);
+            }
 
+            return Ok(result);
+        }
 
         [HttpGet("GetAllExamPagination")]
         public async Task<ActionResult<ApiResult<PagedList<ExamDto>>>> GetAllExamPagination(
@@ -79,6 +90,7 @@ namespace LW.API.Controllers.Public
             return Ok(result);
         }
 
+        
         [HttpPost("CreateExam")]
         public async Task<ActionResult<ApiResult<GradeDto>>> CreateExam([FromForm] ExamCreateDto examCreateDto)
         {

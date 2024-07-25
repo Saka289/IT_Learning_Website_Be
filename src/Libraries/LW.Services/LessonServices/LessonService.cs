@@ -126,14 +126,14 @@ public class LessonService : ILessonService
         if (string.IsNullOrEmpty(lessonEntity.Content) || lessonEntity.Content == null)
         {
             var htmlContent = await _cloudinaryService.ConvertPdfToHtml(lessonCreateDto.FilePath);
-            var htmlContentBytes = Encoding.UTF8.GetBytes(htmlContent);
-            lessonEntity.Content = Convert.ToBase64String(htmlContentBytes);
-            filePath = await _cloudinaryService.CreateFileAsync(lessonCreateDto.FilePath, CloudinaryConstant.FolderLessonFile);
+            lessonEntity.Content = htmlContent.Base64Encode();
+            filePath = await _cloudinaryService.CreateFileAsync(lessonCreateDto.FilePath,
+                CloudinaryConstant.FolderLessonFile);
         }
         else
         {
-            filePath = await _cloudinaryService.ConvertHtmlToPdf(lessonCreateDto.Content, lessonCreateDto.Title,
-                CloudinaryConstant.FolderLessonFile);
+            filePath = await _cloudinaryService.ConvertHtmlToPdf(lessonCreateDto.Content, lessonCreateDto.Title, CloudinaryConstant.FolderLessonFile);
+            lessonEntity.Content = lessonCreateDto.Content.Base64Encode();
         }
 
         lessonEntity.KeyWord = lessonCreateDto.Title.RemoveDiacritics();
@@ -163,33 +163,25 @@ public class LessonService : ILessonService
         }
 
         var model = _mapper.Map(lessonUpdateDto, lessonEntity);
-        model.KeyWord = lessonUpdateDto.Title.RemoveDiacritics();
+        var filePath = new FileDto();
+        var lessonEntityUpdate = await _lessonRepository.GetLessonById(lessonUpdateDto.Id);
         if (lessonUpdateDto.FilePath != null && lessonUpdateDto.FilePath.Length > 0)
         {
-            var filePath = new FileDto();
-            if (string.IsNullOrEmpty(lessonEntity.Content) || lessonEntity.Content == null)
-            {
-                var htmlContent = await _cloudinaryService.ConvertPdfToHtml(lessonUpdateDto.FilePath);
-                var htmlContentBytes = Encoding.UTF8.GetBytes(htmlContent);
-                lessonEntity.Content = Convert.ToBase64String(htmlContentBytes);
-                filePath = await _cloudinaryService.CreateFileAsync(lessonUpdateDto.FilePath, CloudinaryConstant.FolderLessonFile);
-            }
-            else
-            {
-                filePath = await _cloudinaryService.ConvertHtmlToPdf(lessonUpdateDto.Content, lessonUpdateDto.Title, CloudinaryConstant.FolderLessonFile);
-            }
-
-            model.FilePath = filePath.Url;
-            model.PublicId = filePath.PublicId;
-            model.UrlDownload = filePath.UrlDownload;
-            var updateLessonFile = await _lessonRepository.UpdateLesson(model);
-            await _lessonRepository.SaveChangesAsync();
-            model.Topic = topicEntity;
-            var resultFile = _mapper.Map<LessonDto>(updateLessonFile);
-            _elasticSearchService.UpdateDocumentAsync(ElasticConstant.ElasticLessons, resultFile, lessonUpdateDto.Id);
-            return new ApiSuccessResult<LessonDto>(resultFile);
+            var htmlContent = await _cloudinaryService.ConvertPdfToHtml(lessonUpdateDto.FilePath);
+            lessonEntity.Content = htmlContent.Base64Encode(); 
+            filePath = await _cloudinaryService.UpdateFileAsync(lessonEntityUpdate.PublicId, lessonUpdateDto.FilePath);
         }
-
+        else
+        {
+            _cloudinaryService.DeleteFileAsync(lessonEntityUpdate.PublicId);
+            filePath = await _cloudinaryService.ConvertHtmlToPdf(lessonUpdateDto.Content, lessonUpdateDto.Title, CloudinaryConstant.FolderLessonFile);
+            lessonEntity.Content = lessonUpdateDto.Content.Base64Encode();
+        }
+        
+        model.FilePath = filePath.Url;
+        model.PublicId = filePath.PublicId;
+        model.UrlDownload = filePath.UrlDownload;
+        model.KeyWord = lessonUpdateDto.Title.RemoveDiacritics();
         var updateLesson = await _lessonRepository.UpdateLesson(model);
         await _lessonRepository.SaveChangesAsync();
         model.Topic = topicEntity;

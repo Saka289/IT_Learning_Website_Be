@@ -1,5 +1,6 @@
 ﻿using Elasticsearch.Net;
 using LW.Contracts.Common;
+using LW.Shared.SeedWork;
 using Nest;
 using Serilog;
 using SearchRequestParameters = LW.Shared.SeedWork.SearchRequestParameters;
@@ -148,6 +149,53 @@ public class ElasticSearchService<T, K> : IElasticSearchService<T, K> where T : 
             .Index(indexName)
             .Size(searchRequestParameters.Size)
             .Sort(o => o.Ascending("id"))
+            .Query(q => q
+                .MatchAll()
+            )
+        );
+
+        if (!response.IsValid || response.Total == 0)
+        {
+            _logger.Error($"Get all failed: {response.IsValid.ToString()}");
+            return null;
+        }
+
+        var result = response.Hits.Select(hit => hit.Source).ToList();
+        return result;
+    }
+
+    public async Task<IEnumerable<T>> SearchDocumentAllFieldAsync(string indexName, SearchRequestValue searchRequestValue)
+    {
+        object searchValue = searchRequestValue.Value;
+        if (int.TryParse(searchRequestValue.Value, out int intValue))
+        {
+            searchValue = intValue;
+        }
+
+        if (searchValue != null)
+        {
+            var responseSearch = await _elasticClient.SearchAsync<T>(s => s
+                .Index(indexName)
+                .Query(q => q
+                    .QueryString(d => d
+                        .Query(searchValue is int ? searchValue.ToString() : '*' + searchValue.ToString() + '*')
+                        .DefaultField("*")
+                    )
+                )
+                .Size(searchRequestValue.Size)
+            );
+            if (!responseSearch.IsValid || responseSearch.Total == 0)
+            {
+                _logger.Information($"Search query failed: {responseSearch.IsValid.ToString()}");
+                return null;
+            }
+
+            var resultSearch = responseSearch.Hits.Select(hit => hit.Source).ToList();
+            return resultSearch;
+        }
+        var response = await _elasticClient.SearchAsync<T>(s => s
+            .Index(indexName)
+            .Size(searchRequestValue.Size)
             .Query(q => q
                 .MatchAll()
             )

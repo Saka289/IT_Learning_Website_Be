@@ -1,10 +1,13 @@
-﻿namespace LW.Shared.DTOs.Quiz;
+﻿using LW.Shared.Enums;
+
+namespace LW.Shared.DTOs.Quiz;
 
 public class QuizUpdateDto
 {
     public int Id { get; set; }
     public string Title { get; set; }
     public string Description { get; set; }
+    public ETypeQuiz Type { get; set; }
     public decimal Score { get; set; }
     public bool IsActive { get; set; }
     public int? TopicId { get; set; }

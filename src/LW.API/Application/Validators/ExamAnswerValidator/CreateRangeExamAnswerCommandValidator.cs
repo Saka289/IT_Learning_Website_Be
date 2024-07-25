@@ -7,10 +7,10 @@ public class CreateRangeExamAnswerCommandValidator : AbstractValidator<ExamAnswe
 {
     public CreateRangeExamAnswerCommandValidator()
     {
-        RuleFor(x => x.ExamId)
-            .NotEmpty().WithMessage("ExamId is required.")
-            .NotNull().WithMessage("ExamId cannot be null.")
-            .GreaterThan(0).WithMessage("ExamId must be greater than 0.");
+        RuleFor(x => x.ExamCodeId)
+            .NotEmpty().WithMessage("ExamCodeId is required.")
+            .NotNull().WithMessage("ExamCodeId cannot be null.")
+            .GreaterThan(0).WithMessage("ExamCodeId must be greater than 0.");
         
         RuleForEach(x => x.AnswerDtos).SetValidator(new AnswerDtoValidator());
     }

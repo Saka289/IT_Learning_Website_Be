@@ -7,6 +7,7 @@ using LW.Data.Repositories.TopicRepositories;
 using LW.Infrastructure.Extensions;
 using LW.Shared.Constant;
 using LW.Shared.DTOs.Quiz;
+using LW.Shared.Enums;
 using LW.Shared.SeedWork;
 using MockQueryable.Moq;
 using Serilog;
@@ -46,7 +47,7 @@ public class QuizService : IQuizService
         return new ApiSuccessResult<IEnumerable<QuizDto>>(result);
     }
 
-    public async Task<ApiResult<PagedList<QuizDto>>> GetAllQuizPagination(
+    public async Task<ApiResult<PagedList<QuizDto>>> GetAllQuizPagination(ETypeQuiz typeQuiz,
         PagingRequestParameters pagingRequestParameters)
     {
         var quizList = await _quizRepository.GetAllQuizPagination();
@@ -55,19 +56,9 @@ public class QuizService : IQuizService
             return new ApiResult<PagedList<QuizDto>>(false, "Quiz is null !!!");
         }
 
-        var result = _mapper.ProjectTo<QuizDto>(quizList);
-        var pagedResult = await PagedList<QuizDto>.ToPageListAsync(result, pagingRequestParameters.PageIndex,
-            pagingRequestParameters.PageSize, pagingRequestParameters.OrderBy, pagingRequestParameters.IsAscending);
-        return new ApiSuccessResult<PagedList<QuizDto>>(pagedResult);
-    }
-
-    public async Task<ApiResult<PagedList<QuizDto>>> GetAllQuizByTopicIdPagination(int topicId,
-        PagingRequestParameters pagingRequestParameters)
-    {
-        var quizList = await _quizRepository.GetAllQuizByTopicIdPagination(topicId);
-        if (!quizList.Any())
+        if (typeQuiz > 0)
         {
-            return new ApiResult<PagedList<QuizDto>>(false, "Quiz is null !!!");
+            quizList = quizList.Where(q => q.Type == typeQuiz);
         }
 
         var result = _mapper.ProjectTo<QuizDto>(quizList);
@@ -76,13 +67,38 @@ public class QuizService : IQuizService
         return new ApiSuccessResult<PagedList<QuizDto>>(pagedResult);
     }
 
-    public async Task<ApiResult<PagedList<QuizDto>>> GetAllQuizByLessonIdPagination(int lessonId,
+    public async Task<ApiResult<PagedList<QuizDto>>> GetAllQuizByTopicIdPagination(int topicId, ETypeQuiz typeQuiz,
+        PagingRequestParameters pagingRequestParameters)
+    {
+        var quizList = await _quizRepository.GetAllQuizByTopicIdPagination(topicId);
+        if (!quizList.Any())
+        {
+            return new ApiResult<PagedList<QuizDto>>(false, "Quiz is null !!!");
+        }
+
+        if (typeQuiz > 0)
+        {
+            quizList = quizList.Where(q => q.Type == typeQuiz);
+        }
+
+        var result = _mapper.ProjectTo<QuizDto>(quizList);
+        var pagedResult = await PagedList<QuizDto>.ToPageListAsync(result, pagingRequestParameters.PageIndex,
+            pagingRequestParameters.PageSize, pagingRequestParameters.OrderBy, pagingRequestParameters.IsAscending);
+        return new ApiSuccessResult<PagedList<QuizDto>>(pagedResult);
+    }
+
+    public async Task<ApiResult<PagedList<QuizDto>>> GetAllQuizByLessonIdPagination(int lessonId, ETypeQuiz typeQuiz,
         PagingRequestParameters pagingRequestParameters)
     {
         var quizList = await _quizRepository.GetAllQuizByLessonIdPagination(lessonId);
         if (!quizList.Any())
         {
             return new ApiResult<PagedList<QuizDto>>(false, "Quiz is null !!!");
+        }
+
+        if (typeQuiz > 0)
+        {
+            quizList = quizList.Where(q => q.Type == typeQuiz);
         }
 
         var result = _mapper.ProjectTo<QuizDto>(quizList);
@@ -107,6 +123,11 @@ public class QuizService : IQuizService
         if (searchQuizDto.LessonId > 0)
         {
             quizEntity = quizEntity.Where(t => t.LessonId == searchQuizDto.LessonId).ToList();
+        }
+
+        if (searchQuizDto.Type > 0)
+        {
+            quizEntity = quizEntity.Where(q => q.Type.Equals(searchQuizDto.Type.ToString()));
         }
 
         var result = _mapper.Map<IEnumerable<QuizDto>>(quizEntity);

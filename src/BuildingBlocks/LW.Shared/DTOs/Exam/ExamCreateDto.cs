@@ -1,5 +1,6 @@
 ﻿using System.ComponentModel.DataAnnotations;
 using LW.Shared.DTOs.Tag;
+using LW.Shared.Enums;
 using Microsoft.AspNetCore.Http;
 
 namespace LW.Shared.DTOs.Exam;
@@ -7,11 +8,17 @@ namespace LW.Shared.DTOs.Exam;
 public class ExamCreateDto
 {
     [Required]
+    public int CompetitionId { get; set; }
+    [Required]
+    public EExamType Type { get; set; } // TL-1 TN-2
+    [Required]
     public string? Title { get; set; }
     [Required]
     public string? Province { get; set; }
     
-    public IFormFile? ExamFile { get; set; } //pdf
+    public IFormFile? ExamEssayFileUpload { get; set; } //pdf
+    public IFormFile? ExamSolutionFileUpload { get; set; } //pdf
+    
     [Required]
     public string? Description { get; set; }
     [Required]
@@ -24,8 +31,5 @@ public class ExamCreateDto
     
     [Required] public bool IsActive { get; set; } = false;
     
-    
-    
-    public List<IFormFile>? Images { get; set; } 
     
 }

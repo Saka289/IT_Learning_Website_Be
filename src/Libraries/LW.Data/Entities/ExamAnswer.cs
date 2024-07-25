@@ -9,7 +9,7 @@ public class ExamAnswer: EntityBase<int>
     
     public char Answer { get; set; }
     
-    public int ExamId { get; set; }
-    [ForeignKey(nameof(ExamId))] 
-    public virtual Exam Exam { get; set; }
+    public int ExamCodeId { get; set; }
+    [ForeignKey(nameof(ExamCodeId))] 
+    public virtual ExamCode? ExamCode { get; set; }
 }

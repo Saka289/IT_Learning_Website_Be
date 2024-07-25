@@ -1,4 +1,5 @@
 ﻿using LW.Shared.DTOs.QuizAnswer;
+using LW.Shared.DTOs.QuizQuestionRelation;
 using LW.Shared.Enums;
 
 namespace LW.Shared.DTOs.QuizQuestion;
@@ -15,7 +16,6 @@ public class QuizQuestionDto
     public bool IsShuffle { get; set; }
     public bool IsActive { get; set; }
     public string QuestionLevel { get; set; }
-   
-    public int QuizId { get; set; }
-    public IEnumerable<QuizAnswerDto>? QuizAnswers { get; set; }
+    public IEnumerable<QuizQuestionRelationDto> QuizQuestionRelations { get; set; }
+    public IEnumerable<QuizAnswerDto> QuizAnswers { get; set; }
 }

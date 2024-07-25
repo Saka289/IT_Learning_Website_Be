@@ -3,8 +3,11 @@ using AutoMapper;
 using LW.Contracts.Common;
 using LW.Data.Entities;
 using LW.Data.Repositories.TagRepositories;
+using LW.Shared.Constant;
+using LW.Shared.DTOs.Lesson;
 using LW.Shared.DTOs.Tag;
 using LW.Shared.SeedWork;
+using MockQueryable.Moq;
 
 namespace LW.Services.TagServices;
 
@@ -49,6 +52,21 @@ public class TagService : ITagService
         return new ApiSuccessResult<PagedList<TagDto>>(pagedResult);
     }
 
+    public async Task<ApiResult<PagedList<TagDto>>> SearchTagPagination(SearchTagDto searchTagDto)
+    {
+        var listTag =
+            await _elasticSearchService.SearchDocumentAsync(ElasticConstant.ElasticTags, searchTagDto);
+        if (listTag is null)
+        {
+            return new ApiResult<PagedList<TagDto>>(false, $"List tag not found by {searchTagDto.Key} !!!");
+        }
+
+        var result = _mapper.Map<IEnumerable<TagDto>>(listTag);
+        var pagedResult = await PagedList<TagDto>.ToPageListAsync(result.AsQueryable().BuildMock(),
+            searchTagDto.PageIndex, searchTagDto.PageSize, searchTagDto.OrderBy, searchTagDto.IsAscending);
+        return new ApiSuccessResult<PagedList<TagDto>>(pagedResult);
+    }
+
     public async Task<ApiResult<TagDto>> GetTagById(int id)
     {
         var tag = await _tagRepository.GetTagById(id);
@@ -71,6 +89,8 @@ public class TagService : ITagService
 
         tag.IsActive = !tag.IsActive;
         await _tagRepository.UpdateTag(tag);
+        var result = _mapper.Map<TagDto>(tag);
+        _elasticSearchService.UpdateDocumentAsync(ElasticConstant.ElasticTags, result, id);
         return new ApiResult<bool>(true, "Update status of tag successfully");
     }
 
@@ -82,9 +102,11 @@ public class TagService : ITagService
             return new ApiResult<TagDto>(false,
                 "It seems that there is already a tag with the same value as the tag just created");
         }
+
         var tag = _mapper.Map<Tag>(tagCreateDto);
         await _tagRepository.CreateTag(tag);
         var result = _mapper.Map<TagDto>(tag);
+        _elasticSearchService.CreateDocumentAsync(ElasticConstant.ElasticTags, result, g => g.Id);
         return new ApiResult<TagDto>(true, result, "Create Tag Successfully");
     }
 
@@ -95,9 +117,11 @@ public class TagService : ITagService
         {
             return new ApiResult<TagDto>(false, "Not found tag to update");
         }
-        var tag = _mapper.Map(tagUpdateDto,check);
+
+        var tag = _mapper.Map(tagUpdateDto, check);
         await _tagRepository.UpdateTag(tag);
         var result = _mapper.Map<TagDto>(tag);
+        _elasticSearchService.UpdateDocumentAsync(ElasticConstant.ElasticTags, result, tagUpdateDto.Id);
         return new ApiResult<TagDto>(true, result, "Update tag successfully");
     }
 
@@ -110,6 +134,7 @@ public class TagService : ITagService
         }
 
         await _tagRepository.DeleteTag(id);
+        _elasticSearchService.DeleteDocumentAsync(ElasticConstant.ElasticTags, id);
         return new ApiResult<bool>(true, "Delete Tag Successully");
     }
 }

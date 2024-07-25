@@ -9,6 +9,7 @@ using LW.Data.Common.Interfaces;
 using LW.Data.Entities;
 using LW.Data.Persistence;
 using LW.Data.Repositories.CommentDocumentRepositories;
+using LW.Data.Repositories.CompetitionRepositories;
 using LW.Data.Repositories.GradeRepositories;
 using LW.Data.Repositories.LevelRepositories;
 using LW.Infrastructure.Common;
@@ -32,10 +33,11 @@ using MySqlConnector;
 using LW.Services.DocumentServices;
 using LW.Data.Repositories.DocumentRepositories;
 using LW.Data.Repositories.ExamAnswerRepositories;
-using LW.Data.Repositories.ExamImageRepositories;
+using LW.Data.Repositories.ExamCodeRepositories;
 using LW.Data.Repositories.ExamRepositories;
 using LW.Data.Repositories.LessonRepositories;
 using LW.Data.Repositories.QuizAnswerRepositories;
+using LW.Data.Repositories.QuizQuestionRelationRepositories;
 using LW.Data.Repositories.QuizQuestionRepositories;
 using LW.Data.Repositories.QuizRepositories;
 using LW.Data.Repositories.TagRepositories;
@@ -44,12 +46,14 @@ using LW.Data.Repositories.UserExamRepositories;
 using LW.Data.Repositories.UserGradeRepositories;
 using LW.Data.Repositories.UserQuizRepositories;
 using LW.Services.CommentDocumentServices;
+using LW.Services.CompetitionServices;
 using LW.Services.EnumServices;
 using LW.Services.ExamAnswerServices;
-using LW.Services.ExamImageServices;
+using LW.Services.ExamCodeServices;
 using LW.Services.ExamServices;
 using LW.Services.IndexServices;
 using LW.Services.LessonServices;
+using LW.Services.QuizQuestionRelationServices;
 using LW.Services.QuizQuestionServices;
 using LW.Services.QuizServices;
 using LW.Services.TagServices;
@@ -58,6 +62,7 @@ using LW.Services.UserExamServices;
 using LW.Services.UserGradeServices;
 using LW.Services.UserQuizServices;
 using Nest;
+using StackExchange.Redis;
 
 namespace LW.API.Extensions;
 
@@ -220,7 +225,10 @@ public static class ServiceExtensions
             throw new ArgumentNullException("Redis Connection string is not configured.");
         }
 
-        services.AddStackExchangeRedisCache(options => { options.Configuration = settings.ConnectionString; });
+        var configurationOptions = ConfigurationOptions.Parse(settings.ConnectionString);
+        configurationOptions.Password = settings.Password;
+
+        services.AddStackExchangeRedisCache(options => { options.ConfigurationOptions = configurationOptions; });
         return services;
     }
 
@@ -244,7 +252,8 @@ public static class ServiceExtensions
         {
             options.AddDefaultPolicy(builder =>
             {
-                builder.WithOrigins(settings.ClientUrl).AllowAnyHeader().AllowAnyMethod().WithExposedHeaders("X-Pagination");
+                builder.WithOrigins(settings.ClientUrl).AllowAnyHeader().AllowAnyMethod()
+                    .WithExposedHeaders("X-Pagination");
             });
         });
         return service;
@@ -269,7 +278,6 @@ public static class ServiceExtensions
         services.AddScoped<ICommentDocumentRepository, CommentDocumentRepository>();
         services.AddScoped<IUserGradeRepository, UserGradeRepository>();
         services.AddScoped<IExamRepository, ExamRepository>();
-        services.AddScoped<IExamImageRepository, ExamImageRepository>();
         services.AddScoped<IExamAnswerRepository, ExamAnswerRepository>();
         services.AddScoped<IUserExamRepository, UserExamRepository>();
         services.AddScoped<IQuizRepository, QuizRepository>();
@@ -277,6 +285,9 @@ public static class ServiceExtensions
         services.AddScoped<IQuizAnswerRepository, QuizAnswerRepository>();
         services.AddScoped<IUserQuizRepository, UserQuizRepository>();
         services.AddScoped<ITagRepository, TagRepository>();
+        services.AddScoped<IQuizQuestionRelationRepository, QuizQuestionRelationRepository>();
+        services.AddScoped<IExamCodeRepository, ExamCodeRepository>();
+        services.AddScoped<ICompetitionRepository, CompetitionRepository>();
         // IService 
         services.AddScoped<IAdminAuthorService, AdminAuthorService>();
         services.AddScoped<IUserService, UserService>();
@@ -292,7 +303,6 @@ public static class ServiceExtensions
         services.AddScoped<IIndexService, IndexService>();
         services.AddScoped<IEnumService, EnumService>();
         services.AddScoped<IExamService, ExamService>();
-        services.AddScoped<IExamImageService, ExamImageService>();
         services.AddScoped<IExamAnswerService, ExamAnswerService>();
         services.AddScoped<IUserExamService, UserExamService>();
         services.AddScoped<IUserGradeService, UserGradeService>();
@@ -300,6 +310,9 @@ public static class ServiceExtensions
         services.AddScoped<IQuizQuestionService, QuizQuestionService>();
         services.AddScoped<IUserQuizService, UserQuizService>();
         services.AddScoped<ITagService, TagService>();
+        services.AddScoped<IQuizQuestionRelationService, QuizQuestionRelationService>();
+        services.AddScoped<IExamCodeService, ExamCodeService>();
+        services.AddScoped<ICompetitionService, CompetitionService>();
         return services;
     }
 }

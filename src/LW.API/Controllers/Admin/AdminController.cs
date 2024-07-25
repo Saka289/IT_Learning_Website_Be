@@ -1,17 +1,21 @@
 using System;
 using System.Collections.Generic;
+using System.ComponentModel.DataAnnotations;
 using System.Linq;
 using System.Threading.Tasks;
 using LW.API.Application.Validators.AdminValidator;
 using LW.Contracts.Common;
 using LW.Data.Entities;
 using LW.Services.AdminServices;
+using LW.Shared.Constant;
 using LW.Shared.DTOs.Admin;
+using LW.Shared.DTOs.Member;
 using LW.Shared.SeedWork;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
+using Newtonsoft.Json;
 
 namespace LW.API.Controllers.Admin
 {
@@ -27,21 +31,24 @@ namespace LW.API.Controllers.Admin
         }
 
         [HttpPost("register")]
-        public async Task<ActionResult<ApiResult<RegisterMemberResponseDto>>> Register([FromBody] RegisterMemberDto registerMemberDto)
+        public async Task<ActionResult<ApiResult<RegisterMemberResponseDto>>> Register(
+            [FromBody] RegisterMemberDto registerMemberDto)
         {
             var validationResult = await new RegisterMemberCommandValidator().ValidateAsync(registerMemberDto);
             if (!validationResult.IsValid)
             {
                 return BadRequest(validationResult);
             }
+
             var result = await _adminAuthorService.RegisterMemberAsync(registerMemberDto);
             if (!result.IsSucceeded)
             {
                 return BadRequest(result);
             }
+
             return Ok(result);
         }
-        
+
         [HttpPost("login")]
         public async Task<ActionResult<ApiResult<LoginAdminResponseDto>>> Login([FromBody] LoginAdminDto loginAdminDto)
         {
@@ -50,9 +57,10 @@ namespace LW.API.Controllers.Admin
             {
                 return BadRequest(result);
             }
+
             return Ok(result);
         }
-       
+
         [HttpPost("assignRole/{email}/{roleName}")]
         public async Task<ActionResult<ApiResult<bool>>> AssignRoleToEmail(string email, string roleName)
         {
@@ -61,9 +69,35 @@ namespace LW.API.Controllers.Admin
             {
                 return BadRequest(result);
             }
+
+            return Ok(result);
+        }
+
+        [HttpGet("GetAllMemberByRolePagination")]
+        public async Task<ActionResult<ApiResult<PagedList<MemberDto>>>> GetAllMemberByRolePagination(string? role,[FromQuery] PagingRequestParameters pagingRequestParameters)
+        {
+            var result = await _adminAuthorService.GetAllMemberByRolePagination(role, pagingRequestParameters);
+            if (!result.IsSucceeded)
+            {
+                return BadRequest(result);
+            }
+            Response.Headers.Add("X-Pagination", JsonConvert.SerializeObject(result.Data.GetMetaData()));
             return Ok(result);
         }
         
+        [HttpGet("SearchMemberByRolePagination")]
+        public async Task<ActionResult<ApiResult<PagedList<MemberDto>>>> SearchMemberByRolePagination(string? role,[FromQuery] SearchRequestValue searchRequestValue)
+        {
+            var result = await _adminAuthorService.SearchMemberByRolePagination(role, searchRequestValue);
+            if (!result.IsSucceeded)
+            {
+                return BadRequest(result);
+            }
+            
+            Response.Headers.Add("X-Pagination", JsonConvert.SerializeObject(result.Data.GetMetaData()));
+            return Ok(result);
+        }
+
         [HttpPut("update")]
         public async Task<ActionResult<ApiResult<UpdateAdminDto>>> UpdateAdmin([FromForm] UpdateAdminDto updateAdminDto)
         {
@@ -72,13 +106,16 @@ namespace LW.API.Controllers.Admin
             {
                 return BadRequest(validationResult);
             }
+
             var result = await _adminAuthorService.UpdateAdminAsync(updateAdminDto);
             if (!result.IsSucceeded)
             {
                 return BadRequest(result);
             }
+
             return Ok(result);
         }
+
         [HttpDelete("deleteMember")]
         public async Task<ActionResult<ApiResult<bool>>> DeleteMember(string UserId)
         {
@@ -87,9 +124,10 @@ namespace LW.API.Controllers.Admin
             {
                 return BadRequest(result);
             }
+
             return Ok(result);
         }
-        
+
         [HttpPost("lockMember")]
         public async Task<ActionResult<ApiResult<bool>>> LockMember(string UserId)
         {
@@ -98,8 +136,10 @@ namespace LW.API.Controllers.Admin
             {
                 return BadRequest(result);
             }
+
             return Ok(result);
         }
+
         [HttpPost("unlockMember")]
         public async Task<ActionResult<ApiResult<bool>>> UnlockMember(string UserId)
         {
@@ -108,10 +148,11 @@ namespace LW.API.Controllers.Admin
             {
                 return BadRequest(result);
             }
+
             return Ok(result);
         }
 
-        [HttpGet("getAllRoles")] 
+        [HttpGet("getAllRoles")]
         public async Task<ActionResult<ApiResult<List<string>>>> GetAllRoles()
         {
             var result = await _adminAuthorService.GetApplicationRolesAsync();
@@ -119,8 +160,10 @@ namespace LW.API.Controllers.Admin
             {
                 return NotFound(result);
             }
+
             return Ok(result);
         }
+
         [HttpGet("getMemberById")]
         public async Task<ActionResult<ApiResult<AdminDto>>> GetMemberById(string UserId)
         {
@@ -129,8 +172,10 @@ namespace LW.API.Controllers.Admin
             {
                 return NotFound(result);
             }
+
             return Ok(result);
         }
+
         [HttpGet("getMemberByEmail")]
         public async Task<ActionResult<ApiResult<AdminDto>>> GetMemberByEmail(string Email)
         {
@@ -139,37 +184,46 @@ namespace LW.API.Controllers.Admin
             {
                 return NotFound(result);
             }
+
             return Ok(result);
         }
+
         [HttpPost("ChangePassword")]
-        public async Task<ActionResult<ApiResult<bool>>> ChangePassword([FromBody] ChangePasswordAdminDto changePasswordAdminDto)
+        public async Task<ActionResult<ApiResult<bool>>> ChangePassword(
+            [FromBody] ChangePasswordAdminDto changePasswordAdminDto)
         {
             var result = await _adminAuthorService.ChangePasswordAsync(changePasswordAdminDto);
             if (!result.IsSucceeded)
             {
                 return BadRequest(result);
             }
+
             return Ok(result);
-        }   
+        }
+
         [HttpPost("ForgotPassword")]
-        public async Task<ActionResult<ApiResult<bool>>> ForgotPassword( string email)
+        public async Task<ActionResult<ApiResult<bool>>> ForgotPassword(string email)
         {
             var result = await _adminAuthorService.ForgotPasswordAsync(email);
             if (!result.IsSucceeded)
             {
                 return BadRequest(result);
             }
+
             return Ok(result);
-        }   
+        }
+
         [HttpPost("ResetPassword")]
-        public async Task<ActionResult<ApiResult<bool>>> ResetPassword( [FromBody] ResetPasswordAdminDto resetPasswordAdminDto)
+        public async Task<ActionResult<ApiResult<bool>>> ResetPassword(
+            [FromBody] ResetPasswordAdminDto resetPasswordAdminDto)
         {
             var result = await _adminAuthorService.ResetPasswordAsync(resetPasswordAdminDto);
             if (!result.IsSucceeded)
             {
                 return BadRequest(result);
             }
+
             return Ok(result);
-        }   
+        }
     }
 }

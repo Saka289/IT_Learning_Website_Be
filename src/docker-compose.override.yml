@@ -1,6 +1,14 @@
 #docker-compose.override
 name: myapp
 
+#x-logging
+x-logging:
+  &default-logging
+  logging:
+    driver: json-file
+    options:
+      max-size: 100M
+
 services:
   #database section
   
@@ -14,10 +22,28 @@ services:
       - lw_mysql_data:/var/lib/mysql
     ports:
       - "3306:3306"
-
+  
+  
+  #judge0Db: postgresql
+  db:
+    container_name: db
+    env_file: judge0.conf
+    <<: *default-logging
+    restart: always
+    ports:
+      - "5432:5432"
+    volumes:
+      - lw_judge0_data:/var/lib/postgresql/data
+  
   #cacheDB: redis
-  cacheDB:
-    container_name: cacheDB
+  redis:
+    container_name: redis
+    command: [
+      "bash", "-c",
+      'docker-entrypoint.sh --appendonly no --requirepass "$$REDIS_PASSWORD"'
+    ]
+    env_file: judge0.conf
+    <<: *default-logging
     restart: always
     ports:
       - "6379:6379"
@@ -47,6 +73,31 @@ services:
       - lw_elasticsearch
     ports:
       - "5601:5601"
+  
+  lw_judge0Server:
+    container_name: lw_judge0Server
+    volumes:
+      - ./judge0.conf:/judge0.conf:ro
+    ports:
+      - "2358:2358"
+    privileged: true
+    <<: *default-logging
+    restart: always
+    depends_on:
+      - redis
+      - db
+  
+  lw_judge0Workers:
+    container_name: lw_judge0Workers
+    command: [ "./scripts/workers" ]
+    volumes:
+      - ./judge0.conf:/judge0.conf:ro
+    privileged: true
+    <<: *default-logging
+    restart: always
+    depends_on:
+      - redis
+      - db
 
   #services api section
   lw.api:
@@ -55,7 +106,8 @@ services:
       - ASPNETCORE_ENVIRONMENT=Development
       - ASPNETCORE_URLS=http://+:80
       - "ConnectionStrings:DefaultConnectionString=Server=educationDB,Port=3306;Database=EducationDB;Uid=root;Pwd=admin@1234;"
-      - "CacheSettings:ConnectionString=cacheDB:6379"
+      - "CacheSettings:ConnectionString=redis:6379"
+      - "CacheSettings:Password=admin@1234"
       - "ElasticsearchSettings:Uri=http://lw_elasticsearch:9200"
       - "ElasticsearchSettings:DefaultIndex=defaultindex"
       - "ElasticsearchSettings:Username=elastic"

@@ -10,6 +10,7 @@ public interface IElasticSearchService<T, K> where T : class
     Task<string> UpdateDocumentAsync(string indexName, T document, K documentId);
     Task<IEnumerable<string>> UpdateDocumentRangeAsync(string indexName, IEnumerable<T> document, Func<T, K> idExtractor);
     Task<IEnumerable<T>> SearchDocumentAsync(string indexName, SearchRequestParameters searchRequestParameters);
+    Task<IEnumerable<T>> SearchDocumentAllFieldAsync(string indexName, SearchRequestValue searchRequestValue);
     Task<bool> DeleteDocumentAsync(string indexName, K documentId);
     Task<bool> DeleteDocumentRangeAsync(string indexName, IEnumerable<K> documentId);
 }

@@ -3,10 +3,12 @@ using AutoMapper;
 using LW.Contracts.Common;
 using LW.Contracts.Services;
 using LW.Data.Entities;
+using LW.Services.Common.ModelMapping;
 using LW.Services.JwtTokenServices;
 using LW.Shared.Configurations;
 using LW.Shared.Constant;
 using LW.Shared.DTOs.Admin;
+using LW.Shared.DTOs.Member;
 using LW.Shared.SeedWork;
 using LW.Shared.Services.Email;
 using Microsoft.AspNetCore.Identity;
@@ -15,6 +17,7 @@ using Microsoft.AspNetCore.WebUtilities;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Options;
+using MockQueryable.Moq;
 using Serilog;
 
 namespace LW.Services.AdminServices;
@@ -30,13 +33,14 @@ public class AdminAuthorService : IAdminAuthorService
     private readonly ISmtpEmailService _emailService;
     private readonly ILogger _logger;
     private readonly ICloudinaryService _cloudinaryService;
+    private readonly IElasticSearchService<MemberDto, string> _elasticSearchService;
 
     public AdminAuthorService(UserManager<ApplicationUser> userManager, RoleManager<IdentityRole> roleManager,
         IOptions<UrlBase> urlBase,
         IOptions<VerifyEmailSettings> verifyEmailSettings,
         ILogger logger,
         ISmtpEmailService emailService,
-        IMapper mapper, IJwtTokenService jwtTokenService, ICloudinaryService cloudinaryService)
+        IMapper mapper, IJwtTokenService jwtTokenService, ICloudinaryService cloudinaryService, IElasticSearchService<MemberDto, string> elasticSearchService)
     {
         _userManager = userManager;
         _mapper = mapper;
@@ -46,6 +50,7 @@ public class AdminAuthorService : IAdminAuthorService
         _verifyEmailSettings = verifyEmailSettings.Value;
         _jwtTokenService = jwtTokenService ?? throw new ArgumentNullException(nameof(jwtTokenService));
         _cloudinaryService = cloudinaryService;
+        _elasticSearchService = elasticSearchService;
         _emailService = emailService;
     }
 
@@ -85,8 +90,8 @@ public class AdminAuthorService : IAdminAuthorService
         }
 
         var adminDto = _mapper.Map<RegisterMemberResponseDto>(user);
-        return new ApiResult<RegisterMemberResponseDto>(true, adminDto,
-            "Register successfully");
+        _elasticSearchService.CreateDocumentAsync(ElasticConstant.ElasticUsers, user.ToMemberDto(_userManager), a => a.Id);
+        return new ApiResult<RegisterMemberResponseDto>(true, adminDto, "Register successfully");
     }
 
     public async Task<ApiResult<LoginAdminResponseDto>> LoginAdminAsync(LoginAdminDto model)
@@ -136,6 +141,39 @@ public class AdminAuthorService : IAdminAuthorService
         return new ApiResult<LoginAdminResponseDto>(true, loginAdminResponseDto, "Login Admin successfully !!!");
     }
 
+    public async Task<ApiResult<PagedList<MemberDto>>> GetAllMemberByRolePagination(string? role, PagingRequestParameters pagingRequestParameters)
+    {
+        var user = await _userManager.Users.Select(u => u.ToMemberDto(_userManager)).ToListAsync();
+        if (!user.Any())
+        {
+            return new ApiResult<PagedList<MemberDto>>(false, "user not found !!!");
+        }
+        if (!string.IsNullOrEmpty(role))
+        {
+            user = user.Where(u => u.Roles.Any(r => r.ToLower().Trim().Equals(role.ToLower().Trim()))).ToList();
+        }
+        var pagedResult = await PagedList<MemberDto>.ToPageListAsync(user.AsQueryable().BuildMock(),
+            pagingRequestParameters.PageIndex, pagingRequestParameters.PageSize, pagingRequestParameters.OrderBy,
+            pagingRequestParameters.IsAscending);
+        return new ApiSuccessResult<PagedList<MemberDto>>(pagedResult);
+    }
+
+    public async Task<ApiResult<PagedList<MemberDto>>> SearchMemberByRolePagination(string? role, SearchRequestValue searchRequestValue)
+    {
+        var user = await _elasticSearchService.SearchDocumentAllFieldAsync(ElasticConstant.ElasticUsers, searchRequestValue);
+        if (!user.Any())
+        {
+            return new ApiResult<PagedList<MemberDto>>(false, "user not found !!!");
+        }
+        if (!string.IsNullOrEmpty(role))
+        {
+            user = user.Where(u => u.Roles.Any(r => r.ToLower().Trim().Equals(role.ToLower().Trim()))).ToList();
+        }
+        var result = _mapper.Map<IEnumerable<MemberDto>>(user);
+        var pagedResult = await PagedList<MemberDto>.ToPageListAsync(result.AsQueryable().BuildMock(), searchRequestValue.PageIndex, searchRequestValue.PageSize, searchRequestValue.OrderBy, searchRequestValue.IsAscending);
+        return new ApiSuccessResult<PagedList<MemberDto>>(pagedResult);
+    }
+
     public async Task<ApiResult<bool>> AssignRoleAsync(string email, string roleName)
     {
         var user = await _userManager.FindByEmailAsync(email);
@@ -150,14 +188,13 @@ public class AdminAuthorService : IAdminAuthorService
             return new ApiResult<bool>(true,
                 $"Assign {roleName} to user with email {email} successfully !");
         }
-
-        return new ApiResult<bool>(false,
-            "Don't find user with email " + email);
+        _elasticSearchService.UpdateDocumentAsync(ElasticConstant.ElasticUsers, user.ToMemberDto(_userManager), user.Id);
+        return new ApiResult<bool>(false, "Don't find user with email " + email);
     }
 
-    public async Task<ApiResult<IEnumerable<string>>> AssignMultiRoleAsync(AssignMutipleRoleDto assignMutipleRoleDto)
+    public async Task<ApiResult<IEnumerable<string>>> AssignMultiRoleAsync(AssignMultipleRoleDto assignMultipleRoleDto)
     {
-        var user = await _userManager.FindByIdAsync(assignMutipleRoleDto.UserId);
+        var user = await _userManager.FindByIdAsync(assignMultipleRoleDto.UserId);
         if (user == null)
         {
             return new ApiResult<IEnumerable<string>>(false,
@@ -168,10 +205,10 @@ public class AdminAuthorService : IAdminAuthorService
         var oldRoleName = (await _userManager.GetRolesAsync(user)).ToArray();
 
         // If present in OldRoleName but not in new Roles, those are the roles that need to be deleted
-        var deleteRole = oldRoleName.Where(r => !assignMutipleRoleDto.Roles.Contains(r));
+        var deleteRole = oldRoleName.Where(r => !assignMultipleRoleDto.Roles.Contains(r));
 
         // If there are in new Roles but not in oldRoleName, then those are the Roles that need to be added
-        var addRole = assignMutipleRoleDto.Roles.Where(r => !oldRoleName.Contains(r));
+        var addRole = assignMultipleRoleDto.Roles.Where(r => !oldRoleName.Contains(r));
 
         // thuc hien xoa cac role o trong delete Role
         var resultDelete = await _userManager.RemoveFromRolesAsync(user, deleteRole);
@@ -187,8 +224,8 @@ public class AdminAuthorService : IAdminAuthorService
         }
 
         var roleOfUserAfterUpdate = (await _userManager.GetRolesAsync(user)).ToArray();
-        return new ApiResult<IEnumerable<string>>(true, roleOfUserAfterUpdate,
-            $"Assign multi roles for user with id = {assignMutipleRoleDto.UserId} ");
+        _elasticSearchService.UpdateDocumentAsync(ElasticConstant.ElasticUsers, user.ToMemberDto(_userManager), user.Id);
+        return new ApiResult<IEnumerable<string>>(true, roleOfUserAfterUpdate, $"Assign multi roles for user with id = {assignMultipleRoleDto.UserId} ");
     }
 
     public async Task<ApiResult<UpdateAdminDto>> UpdateAdminAsync(UpdateAdminDto updateAdminDto)
@@ -236,9 +273,8 @@ public class AdminAuthorService : IAdminAuthorService
         }
 
         await _userManager.UpdateAsync(user);
-
-        return new ApiResult<UpdateAdminDto>(true, updateAdminDto,
-            $"Update Successfully !");
+        _elasticSearchService.UpdateDocumentAsync(ElasticConstant.ElasticUsers, user.ToMemberDto(_userManager), updateAdminDto.UserId);
+        return new ApiResult<UpdateAdminDto>(true, updateAdminDto, $"Update Successfully !");
     }
 
     public async Task<ApiResult<bool>> DeleteAsync(string userId)
@@ -247,12 +283,11 @@ public class AdminAuthorService : IAdminAuthorService
         if (user != null)
         {
             await _userManager.DeleteAsync(user);
-            return new ApiResult<bool>(true,
-                $"Delete Successfully !");
+            return new ApiResult<bool>(true, $"Delete Successfully !");
         }
 
-        return new ApiResult<bool>(false,
-            $"User Not Found !");
+        _elasticSearchService.DeleteDocumentAsync(ElasticConstant.ElasticUsers, userId);
+        return new ApiResult<bool>(false, $"User Not Found !");
     }
 
     public async Task<ApiResult<bool>> LockMemberAsync(string userId)
@@ -264,9 +299,9 @@ public class AdminAuthorService : IAdminAuthorService
             return new ApiResult<bool>(true, true,
                 $"LockMember Successfully !");
         }
-
-        return new ApiResult<bool>(false,
-            $"User Not Found !");
+        
+        _elasticSearchService.UpdateDocumentAsync(ElasticConstant.ElasticUsers, user.ToMemberDto(_userManager), userId);
+        return new ApiResult<bool>(false, $"User Not Found !");
     }
 
     public async Task<ApiResult<bool>> UnLockMemberAsync(string userId)
@@ -279,14 +314,14 @@ public class AdminAuthorService : IAdminAuthorService
                 $"UnLockMember Successfully !");
         }
 
-        return new ApiResult<bool>(false,
-            $"User Not Found !");
+        _elasticSearchService.UpdateDocumentAsync(ElasticConstant.ElasticUsers, user.ToMemberDto(_userManager), userId);
+        return new ApiResult<bool>(false, $"User Not Found !");
     }
 
-    public async Task<ApiResult<List<string>>> GetApplicationRolesAsync()
+    public async Task<ApiResult<IEnumerable<string>>> GetApplicationRolesAsync()
     {
         var roles = await _roleManager.Roles.Select(x => x.Name).ToListAsync();
-        return new ApiResult<List<string>>(true, _mapper.Map<List<string>>(roles),
+        return new ApiResult<IEnumerable<string>>(true, _mapper.Map<IEnumerable<string>>(roles),
             $"Get Roles Successfully !");
     }
 
@@ -360,33 +395,6 @@ public class AdminAuthorService : IAdminAuthorService
         SendForgotPasswordEmail(user, token, new CancellationToken());
 
         return new ApiResult<bool>(true, $"Send email to: {email}");
-    }
-
-    private async Task SendForgotPasswordEmail(ApplicationUser user, string token, CancellationToken cancellationToken)
-    {
-        var url = $"{_urlBase.ClientUrl}/{_verifyEmailSettings.ResetPasswordPath}?token={token}&email={user.Email}";
-        var emailRequest = new MailRequest()
-        {
-            ToAddress = user.Email,
-            Body = $"<p>Hello: {user.FirstName} {user.LastName}</p>" +
-                   $"<p>Username: {user.UserName}.</p>" +
-                   "<p>In order to reset your password, please click on the following link.</p>" +
-                   $"<p><a href=\"{url}\">Click here</a></p>" +
-                   "<p>Thank you,</p>" +
-                   $"<br>{_verifyEmailSettings.ApplicationName}",
-            Subject = $"Hello, Forgot Password your email."
-        };
-
-        try
-        {
-            await _emailService.SendEmailAsync(emailRequest, cancellationToken);
-            _logger.Information($"Forgot Password your email {user.Email}");
-        }
-        catch (Exception ex)
-        {
-            _logger.Error(
-                $"Forgot Password your email {user.Email} failed due to an error with the email service: {ex.Message}");
-        }
     }
 
     public async Task<ApiResult<bool>> ResetPasswordAsync(ResetPasswordAdminDto resetPasswordAdminDto)
@@ -477,5 +485,32 @@ public class AdminAuthorService : IAdminAuthorService
 
         var roleDto = _mapper.Map<RoleDto>(role);
         return new ApiResult<RoleDto>(true, roleDto, "Role retrieved successfully");
+    }
+    
+    private async Task SendForgotPasswordEmail(ApplicationUser user, string token, CancellationToken cancellationToken)
+    {
+        var url = $"{_urlBase.ClientUrl}/{_verifyEmailSettings.ResetPasswordPath}?token={token}&email={user.Email}";
+        var emailRequest = new MailRequest()
+        {
+            ToAddress = user.Email,
+            Body = $"<p>Hello: {user.FirstName} {user.LastName}</p>" +
+                   $"<p>Username: {user.UserName}.</p>" +
+                   "<p>In order to reset your password, please click on the following link.</p>" +
+                   $"<p><a href=\"{url}\">Click here</a></p>" +
+                   "<p>Thank you,</p>" +
+                   $"<br>{_verifyEmailSettings.ApplicationName}",
+            Subject = $"Hello, Forgot Password your email."
+        };
+
+        try
+        {
+            await _emailService.SendEmailAsync(emailRequest, cancellationToken);
+            _logger.Information($"Forgot Password your email {user.Email}");
+        }
+        catch (Exception ex)
+        {
+            _logger.Error(
+                $"Forgot Password your email {user.Email} failed due to an error with the email service: {ex.Message}");
+        }
     }
 }

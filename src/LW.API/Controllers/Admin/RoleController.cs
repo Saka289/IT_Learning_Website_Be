@@ -89,10 +89,9 @@ namespace LW.API.Controllers.Admin
         }
 
         [HttpPost("AssignMultiRoleForUser")]
-        public async Task<ActionResult<ApiResult<IEnumerable<string>>>> AssignMultiRoleForUser(
-            AssignMutipleRoleDto assignMutipleRoleDto)
+        public async Task<ActionResult<ApiResult<IEnumerable<string>>>> AssignMultiRoleForUser(AssignMultipleRoleDto assignMultipleRoleDto)
         {
-            var result = await _adminAuthorService.AssignMultiRoleAsync(assignMutipleRoleDto);
+            var result = await _adminAuthorService.AssignMultiRoleAsync(assignMultipleRoleDto);
             if (!result.IsSucceeded)
             {
                 return NotFound(result);

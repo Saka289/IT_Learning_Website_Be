@@ -3,7 +3,6 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using LW.API.Application.Validators.ExamAnswerValidator;
-using LW.API.Application.Validators.ExamImageValidator;
 using LW.Services.ExamAnswerServices;
 using LW.Shared.DTOs;
 using LW.Shared.DTOs.ExamAnswer;
@@ -24,10 +23,10 @@ namespace LW.API.Controllers.Public
             _examAnswerService = examAnswerService;
         }
 
-        [HttpGet("GetAllExamAnswerByExamId/{examId}")]
-        public async Task<ActionResult<ApiResult<IEnumerable<ExamAnswerDto>>>> GetAllExamAnswerByExamId(int examId)
+        [HttpGet("GetAllExamAnswerByExamCodeId/{examCodeId}")]
+        public async Task<ActionResult<ApiResult<IEnumerable<ExamAnswerDto>>>> GetAllExamAnswerByExamCodeId(int examCodeId)
         {
-            var result = await _examAnswerService.GetExamAnswerByExamId(examId);
+            var result = await _examAnswerService.GetExamAnswerByExamCodeId(examCodeId);
             if (!result.IsSucceeded)
             {
                 return NotFound(result);
@@ -91,6 +90,25 @@ namespace LW.API.Controllers.Public
             }
 
             var result = await _examAnswerService.CreateRangeExamAnswer(examAnswerCreateRangeDtos);
+            if (!result.IsSucceeded)
+            {
+                return BadRequest(result);
+            }
+
+            return Ok(result);
+        }
+        [HttpPut("UpdateRangeExamAnswer")]
+        public async Task<ActionResult<ApiResult<bool>>> UpdateRangeExamAnswer(
+            [FromBody] ExamAnswerUpdateRangeDto examAnswerCreateRangeDtos)
+        {
+            var validationResult =
+                await new UpdateRangeExamAnswerCommandValidator().ValidateAsync(examAnswerCreateRangeDtos);
+            if (!validationResult.IsValid)
+            {
+                return BadRequest(validationResult);
+            }
+
+            var result = await _examAnswerService.UpdateRangeExamAnswer(examAnswerCreateRangeDtos);
             if (!result.IsSucceeded)
             {
                 return BadRequest(result);

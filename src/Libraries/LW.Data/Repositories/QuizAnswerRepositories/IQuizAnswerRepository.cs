@@ -14,4 +14,5 @@ public interface IQuizAnswerRepository : IRepositoryBase<QuizAnswer, int>
     Task<QuizAnswer> UpdateQuizAnswer(QuizAnswer quizAnswer);
     Task<bool> UpdateRangeQuizAnswer(IEnumerable<QuizAnswer> quizAnswers);
     Task<bool> DeleteQuizAnswer(int id);
+    Task<bool> DeleteRangeAnswer(IEnumerable<QuizAnswer> quizAnswers);
 }
