@@ -222,7 +222,7 @@ namespace LW.API.Controllers.Public
         [HttpPost("ImportValidate")]
         public async Task<ActionResult<ApiResult<QuizQuestionImportParentDto>>> ImportEmployee([FromForm] IFormFile fileImport, [Required] int quizId)
         {
-            var imports = await _quizQuestionService.ImportExcel(fileImport, quizId);
+            var imports = await _quizQuestionService.ImportExcel(fileImport);
             if (!imports.IsSucceeded)
             {
                 return BadRequest(imports);
@@ -231,10 +231,14 @@ namespace LW.API.Controllers.Public
             return StatusCode(200, imports);
         }
 
-        [HttpGet("ImportExcel/{id}")]
-        public async Task<IActionResult> ImportDatabase(string id)
+        [HttpGet("ImportExcel/{id}/{quizId}")]
+        public async Task<IActionResult> ImportDatabase(string id, int quizId)
         {
-            var imports = await _quizQuestionService.ImportDatabase(id);
+            var imports = await _quizQuestionService.ImportDatabase(id, quizId);
+            if (!imports.IsSucceeded)
+            {
+                return BadRequest(imports);
+            }
             return StatusCode(200, imports);
         }
     }

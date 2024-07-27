@@ -12,7 +12,6 @@ namespace LW.Shared.DTOs.QuizQuestion
         public bool IsImported { get; set; }
         public string? QuestionLevelName { get; set; }
         public string? TypeName { get; set; }
-
         public QuizQuestionImportDto()
         {
             Errors = new List<String>();

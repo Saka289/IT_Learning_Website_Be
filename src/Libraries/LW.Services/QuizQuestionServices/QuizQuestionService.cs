@@ -41,6 +41,7 @@ public class QuizQuestionService : IQuizQuestionService
 {
     private readonly IQuizAnswerRepository _quizAnswerRepository;
     private readonly IQuizQuestionRepository _quizQuestionRepository;
+    private readonly IQuizQuestionRelationRepository _quizQuestionRelationRepository;
     private readonly IQuizRepository _quizRepository;
     private readonly IElasticSearchService<QuizQuestionDto, int> _elasticSearchService;
     private readonly ICloudinaryService _cloudinaryService;
@@ -48,7 +49,7 @@ public class QuizQuestionService : IQuizQuestionService
     private readonly IRedisCache<string> _redisCacheService;
     public QuizQuestionService(IQuizAnswerRepository quizAnswerRepository,
         IQuizQuestionRepository quizQuestionRepository, IRedisCache<string> redisCacheService, IMapper mapper, IQuizRepository quizRepository,
-        IElasticSearchService<QuizQuestionDto, int> elasticSearchService, ICloudinaryService cloudinaryService)
+        IElasticSearchService<QuizQuestionDto, int> elasticSearchService, ICloudinaryService cloudinaryService, IQuizQuestionRelationRepository quizQuestionRelationRepository)
     {
         _quizAnswerRepository = quizAnswerRepository;
         _quizQuestionRepository = quizQuestionRepository;
@@ -57,6 +58,7 @@ public class QuizQuestionService : IQuizQuestionService
         _redisCacheService = redisCacheService ?? throw new ArgumentNullException(nameof(redisCacheService));
         _elasticSearchService = elasticSearchService;
         _cloudinaryService = cloudinaryService;
+        _quizQuestionRelationRepository = quizQuestionRelationRepository;
     }
 
     public async Task<ApiResult<IEnumerable<QuizQuestionDto>>> GetAllQuizQuestion()
@@ -890,7 +892,7 @@ public class QuizQuestionService : IQuizQuestionService
     }
 
 
-    public async Task<ApiResult<QuizQuestionImportParentDto>> ImportExcel(IFormFile fileImport, int quizId)
+    public async Task<ApiResult<QuizQuestionImportParentDto>> ImportExcel(IFormFile fileImport)
     {
         var quizQuestionImportParentDto = new QuizQuestionImportParentDto();
         var isExcel = CheckFileImport(fileImport);
@@ -913,7 +915,7 @@ public class QuizQuestionService : IQuizQuestionService
                 if (workSheet != null)
                 {
 
-                    ProcessWorksheet(workSheet, quizId, quizQuestionImportDtos, quizQuestionImportSuccess, quizQuestionImportFail,out int countSuccess, out int countFail);
+                    ProcessWorksheet(workSheet, quizQuestionImportDtos, quizQuestionImportSuccess, quizQuestionImportFail,out int countSuccess, out int countFail);
 
                     quizQuestionImportParentDto.CountSuccess = countSuccess;
                     quizQuestionImportParentDto.CountFail = countFail;
@@ -944,7 +946,7 @@ public class QuizQuestionService : IQuizQuestionService
         return lastRow;
     }
 
-    private void ProcessWorksheet(ExcelWorksheet workSheet, int quizId, List<QuizQuestionImportDto> quizQuestionImportDtos, List<QuizQuestion> quizQuestionImportSuccess, List<QuizQuestionImportDto> quizQuestionImportFail, out int countSuccess, out int countFail)
+    private void ProcessWorksheet(ExcelWorksheet workSheet, List<QuizQuestionImportDto> quizQuestionImportDtos, List<QuizQuestion> quizQuestionImportSuccess, List<QuizQuestionImportDto> quizQuestionImportFail, out int countSuccess, out int countFail)
     {
         countSuccess = 0;
         countFail = 0;
@@ -952,7 +954,7 @@ public class QuizQuestionService : IQuizQuestionService
         int lastRowWithData = FindLastRowWithData(workSheet, headerRow);
         for (int row = 4; row <= lastRowWithData; row++)
         {
-            var quizQuestionImportDto = CreateQuizQuestionImportDto(workSheet, row, quizId);
+            var quizQuestionImportDto = CreateQuizQuestionImportDto(workSheet, row);
 
             if (ValidateQuizQuestionImportDto(quizQuestionImportDto))
             {
@@ -972,7 +974,7 @@ public class QuizQuestionService : IQuizQuestionService
         }
     }
 
-    private QuizQuestionImportDto CreateQuizQuestionImportDto(ExcelWorksheet workSheet, int row, int quizId)
+    private QuizQuestionImportDto CreateQuizQuestionImportDto(ExcelWorksheet workSheet, int row)
     {
         var arrayShuffle = new[]
         {
@@ -993,7 +995,6 @@ public class QuizQuestionService : IQuizQuestionService
         var shuffle = GetShuffleValue(arrayShuffle, isShuffle);
         return new QuizQuestionImportDto
         {
-            QuizId = quizId,
             Content = workSheet.Cells[row, 3].Value?.ToString()?.Trim(),
             QuestionLevel = resultLevel.ToString(),
             QuestionLevelName = level,
@@ -1087,7 +1088,7 @@ public class QuizQuestionService : IQuizQuestionService
     }
 
 
-    public async Task<ApiResult<bool>> ImportDatabase(string idImport)
+    public async Task<ApiResult<bool>> ImportDatabase(string idImport, int quizId)
     {
         if (idImport == null)
         {
@@ -1108,6 +1109,18 @@ public class QuizQuestionService : IQuizQuestionService
             // Assuming CreateRangeQuizQuestion accepts dataImport in the expected format
             var quizQuestions = JsonConvert.DeserializeObject<List<QuizQuestion>>(dataImport);
             var quizQuestionCreate = await _quizQuestionRepository.CreateRangeQuizQuestion(quizQuestions);
+            List<QuizQuestion> quizQuestionList = quizQuestionCreate.ToList();
+            // Map to an array of tuples
+            var resultArray = quizQuestionList
+                .Select(q => new QuizQuestionRelation
+                {
+                    QuizId = quizId,
+                    QuizQuestionId = q.Id
+                })
+                .ToArray();
+            // map insert những thằng này vào db xong mình phải lấy ra được id của nó vừa insert rồi mới thực hiện được 
+            //var quizQuestionRelations = 
+            var quizQuestionRelationCreate = await _quizQuestionRelationRepository.CreateRangeQuizQuestionRelation(resultArray);
             return new ApiResult<bool>(true, $"Import Success: {quizQuestionCreate}");
         }
         catch (Exception ex)

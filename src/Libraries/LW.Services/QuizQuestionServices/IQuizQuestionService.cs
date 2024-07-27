@@ -22,6 +22,6 @@ public interface IQuizQuestionService
     Task<ApiResult<bool>> UpdateStatusQuizQuestion(int id);
     Task<ApiResult<bool>> DeleteQuizQuestion(int id);
     public Task<byte[]> ExportExcel(int checkData = 1, string? Ids = null);
-    public Task<ApiResult<QuizQuestionImportParentDto>> ImportExcel(IFormFile formFile, int quizId);
-    public Task<ApiResult<bool>> ImportDatabase(string idCache);
+    public Task<ApiResult<QuizQuestionImportParentDto>> ImportExcel(IFormFile formFile);
+    public Task<ApiResult<bool>> ImportDatabase(string idCache, int quizId);
 }
