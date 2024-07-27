@@ -36,6 +36,8 @@ using LW.Data.Repositories.ExamAnswerRepositories;
 using LW.Data.Repositories.ExamCodeRepositories;
 using LW.Data.Repositories.ExamRepositories;
 using LW.Data.Repositories.LessonRepositories;
+using LW.Data.Repositories.PostCommentRepositories;
+using LW.Data.Repositories.PostRepositories;
 using LW.Data.Repositories.QuizAnswerRepositories;
 using LW.Data.Repositories.QuizQuestionRelationRepositories;
 using LW.Data.Repositories.QuizQuestionRepositories;
@@ -53,6 +55,8 @@ using LW.Services.ExamCodeServices;
 using LW.Services.ExamServices;
 using LW.Services.IndexServices;
 using LW.Services.LessonServices;
+using LW.Services.PostCommentServices;
+using LW.Services.PostServices;
 using LW.Services.QuizQuestionRelationServices;
 using LW.Services.QuizQuestionServices;
 using LW.Services.QuizServices;
@@ -283,6 +287,8 @@ public static class ServiceExtensions
         services.AddScoped<IQuizQuestionRelationRepository, QuizQuestionRelationRepository>();
         services.AddScoped<IExamCodeRepository, ExamCodeRepository>();
         services.AddScoped<ICompetitionRepository, CompetitionRepository>();
+        services.AddScoped<IPostRepository, PostRepository>();
+        services.AddScoped<IPostCommentRepository, PostCommentRepository>();
         // IService 
         services.AddScoped<IAdminAuthorService, AdminAuthorService>();
         services.AddScoped<IUserService, UserService>();
@@ -308,6 +314,8 @@ public static class ServiceExtensions
         services.AddScoped<IQuizQuestionRelationService, QuizQuestionRelationService>();
         services.AddScoped<IExamCodeService, ExamCodeService>();
         services.AddScoped<ICompetitionService, CompetitionService>();
+        services.AddScoped<IPostService, PostService>();
+        services.AddScoped<IPostCommentService, PostCommentService>();
         return services;
     }
 }
