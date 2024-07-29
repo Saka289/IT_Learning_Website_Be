@@ -14,6 +14,8 @@ using LW.Shared.DTOs.ExamAnswer;
 using LW.Shared.DTOs.ExamCode;
 using LW.Shared.DTOs.Index;
 using LW.Shared.DTOs.Lesson;
+using LW.Shared.DTOs.Post;
+using LW.Shared.DTOs.PostComment;
 using LW.Shared.DTOs.Quiz;
 using LW.Shared.DTOs.QuizAnswer;
 using LW.Shared.DTOs.QuizQuestion;
@@ -229,5 +231,31 @@ public class MappingProfile : Profile
         CreateMap<Competition, CompetitionDto>().ReverseMap();
         CreateMap<Competition, CompetitionCreateDto>().ReverseMap();
         CreateMap<Competition, CompetitionUpdateDto>().ReverseMap();
+        //Post
+        CreateMap<Post, PostDto>()
+            .ForMember(x=>x.UserName, y=>y.MapFrom(src=>src.ApplicationUser.UserName))
+            .ForMember(x=>x.GradeTitle, y=>y.MapFrom(src=>src.Grade.Title))
+            .ForMember(x=>x.NumberOfComment, y=>y.MapFrom(src=>src.PostComments.Count()))
+            .ForMember(x=>x.Avatar, y=>y.MapFrom(src=>src.ApplicationUser.Image))
+            .ReverseMap();
+        CreateMap<Post, PostCreateDto>().ReverseMap();
+        CreateMap<Post, PostUpdateDto>().ReverseMap();
+        //PostComment
+        CreateMap<PostComment, PostCommentDto>()
+            .ForMember(x => x.FullName,
+                y => y.MapFrom(src => src.ApplicationUser.FirstName + " " + src.ApplicationUser.LastName))
+            .ForMember(x => x.Avatar,
+                y => y.MapFrom(src => src.ApplicationUser.Image))
+            .ForMember(x=>x.NumberOfReply, y=>y.MapFrom(src=>src.PostCommentChilds.Count()))
+
+            .ReverseMap();
+        CreateMap<PostComment, PostCommentReplyDto>()
+            .ForMember(x => x.FullName,
+                y => y.MapFrom(src => src.ApplicationUser.FirstName + " " + src.ApplicationUser.LastName))
+            .ForMember(x => x.Avatar,
+                y => y.MapFrom(src => src.ApplicationUser.Image))
+            .ReverseMap();
+        CreateMap<PostComment, PostCommentCreateDto>().ReverseMap();
+        CreateMap<PostComment, PostCommentUpdateDto>().ReverseMap();
     }
 }
