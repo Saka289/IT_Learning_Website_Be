@@ -14,6 +14,7 @@ using LW.Shared.DTOs.ExamAnswer;
 using LW.Shared.DTOs.ExamCode;
 using LW.Shared.DTOs.Index;
 using LW.Shared.DTOs.Lesson;
+using LW.Shared.DTOs.Notification;
 using LW.Shared.DTOs.Post;
 using LW.Shared.DTOs.PostComment;
 using LW.Shared.DTOs.Quiz;
@@ -257,5 +258,9 @@ public class MappingProfile : Profile
             .ReverseMap();
         CreateMap<PostComment, PostCommentCreateDto>().ReverseMap();
         CreateMap<PostComment, PostCommentUpdateDto>().ReverseMap();
+        // Notification
+        CreateMap<Notification, NotificationCreateDto>().ReverseMap();
+        CreateMap<Notification, NotificationDto>().ReverseMap();
+
     }
 }
