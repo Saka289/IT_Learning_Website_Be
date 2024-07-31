@@ -7,7 +7,7 @@ namespace LW.Shared.DTOs.QuizQuestion;
 public class QuizQuestionDto
 {
     public int Id { get; set; }
-    public string Type { get; set; }
+    public ETypeQuestion Type { get; set; }
     public string KeyWord { get; set; }
     public string Content { get; set; }
     public string? Hint { get; set; }
