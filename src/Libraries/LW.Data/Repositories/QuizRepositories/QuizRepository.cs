@@ -17,6 +17,7 @@ public class QuizRepository : RepositoryBase<Quiz, int>, IQuizRepository
         return await FindAll()
             .Include(l => l.Lesson)
             .Include(l => l.Topic)
+            .Include(q => q.QuizQuestionRelations)
             .ToListAsync();
     }
 
@@ -25,6 +26,7 @@ public class QuizRepository : RepositoryBase<Quiz, int>, IQuizRepository
         var result = FindAll()
             .Include(l => l.Lesson)
             .Include(l => l.Topic)
+            .Include(q => q.QuizQuestionRelations)
             .AsQueryable();
         return Task.FromResult(result);
     }
@@ -34,6 +36,7 @@ public class QuizRepository : RepositoryBase<Quiz, int>, IQuizRepository
         var result = FindAll()
             .Include(l => l.Lesson)
             .Include(l => l.Topic)
+            .Include(q => q.QuizQuestionRelations)
             .Where(q => q.TopicId == topicId).AsQueryable();
         return Task.FromResult(result);
     }
@@ -43,6 +46,7 @@ public class QuizRepository : RepositoryBase<Quiz, int>, IQuizRepository
         var result = FindAll()
             .Include(l => l.Lesson)
             .Include(l => l.Topic)
+            .Include(q => q.QuizQuestionRelations)
             .Where(q => q.LessonId == lessonId).AsQueryable();
         return Task.FromResult(result);
     }

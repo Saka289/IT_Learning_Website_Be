@@ -9,6 +9,7 @@ using LW.Shared.Constant;
 using LW.Shared.DTOs.Quiz;
 using LW.Shared.Enums;
 using LW.Shared.SeedWork;
+using Microsoft.EntityFrameworkCore;
 using MockQueryable.Moq;
 using Serilog;
 
@@ -175,8 +176,8 @@ public class QuizService : IQuizService
                 return new ApiResult<QuizDto>(false, "Lesson is null !!!");
             }
         }
-        
-        if(quizCreateDto.TopicId > 0)
+
+        if (quizCreateDto.TopicId > 0)
         {
             topicEntity = await _topicRepository.GetTopicById(Convert.ToInt32(quizCreateDto.TopicId));
             if (topicEntity == null)
@@ -211,7 +212,8 @@ public class QuizService : IQuizService
                 return new ApiResult<QuizDto>(false, "Lesson is null !!!");
             }
         }
-        if(quizUpdateDto.TopicId > 0)
+
+        if (quizUpdateDto.TopicId > 0)
         {
             var topicEntity = await _topicRepository.GetTopicById(Convert.ToInt32(quizUpdateDto.TopicId));
             if (topicEntity == null)
