@@ -1,6 +1,7 @@
 ﻿using AutoMapper;
 using LW.Data.Entities;
 using LW.Data.Repositories.QuizQuestionRelationRepositories;
+using LW.Data.Repositories.QuizQuestionRepositories;
 using LW.Data.Repositories.QuizRepositories;
 using LW.Shared.DTOs.QuizQuestionRelation;
 using LW.Shared.SeedWork;
@@ -11,17 +12,55 @@ namespace LW.Services.QuizQuestionRelationServices;
 public class QuizQuestionRelationService : IQuizQuestionRelationService
 {
     private readonly IQuizQuestionRelationRepository _quizQuestionRelationRepository;
+    private readonly IQuizQuestionRepository _quizQuestionRepository;
     private readonly IQuizRepository _quizRepository;
     private readonly ILogger _logger;
     private readonly IMapper _mapper;
 
     public QuizQuestionRelationService(IQuizQuestionRelationRepository quizQuestionRelationRepository, IMapper mapper,
-        IQuizRepository quizRepository, ILogger logger)
+        IQuizRepository quizRepository, ILogger logger, IQuizQuestionRepository quizQuestionRepository)
     {
         _quizQuestionRelationRepository = quizQuestionRelationRepository;
         _mapper = mapper;
         _quizRepository = quizRepository;
         _logger = logger;
+        _quizQuestionRepository = quizQuestionRepository;
+    }
+
+    public async Task<ApiResult<bool>> CreateQuizQuestionRelationByQuizCustom(QuizQuestionRelationCustomCreateDto quizQuestionRelationCustomCreateDto)
+    {
+        var quiz = await _quizRepository.GetQuizById(quizQuestionRelationCustomCreateDto.QuizId);
+        if (quiz is null)
+        {
+            return new ApiResult<bool>(false, "Quiz not found !!!");
+        }
+
+        var quizQuestionRelation = new List<QuizQuestionRelation>();
+        foreach (var item in quizQuestionRelationCustomCreateDto.QuiQuestionRelationCustomCreate)
+        {
+            var quizQuestion = await _quizQuestionRepository.GetAllQuizQuestionByQuizId(item.QuizChildId);
+            if (item.Shuffle)
+            {
+                quizQuestion = quizQuestion.ToList().OrderBy(x => Random.Shared.Next()).AsQueryable();
+            }
+            quizQuestion = quizQuestion.Take(item.NumberOfQuestion);
+            foreach (var itemQuestion in quizQuestion.Select(x => x.Id))
+            {
+                quizQuestionRelation.Add(new()
+                {
+                    QuizId = quizQuestionRelationCustomCreateDto.QuizId,
+                    QuizQuestionId = itemQuestion
+                });
+            }
+        }
+        
+        var create = await _quizQuestionRelationRepository.CreateRangeQuizQuestionRelation(quizQuestionRelation);
+        if (!create)
+        {
+            return new ApiResult<bool>(false, "Failed to create QuizQuestionRelation !!!");
+        }
+
+        return new ApiSuccessResult<bool>(create);
     }
 
     public async Task<ApiResult<bool>> CreateQuizQuestionRelation(QuizQuestionRelationCreateDto quizQuestionRelationCreateDto)
@@ -31,16 +70,7 @@ public class QuizQuestionRelationService : IQuizQuestionRelationService
         {
             return new ApiResult<bool>(false, "Quiz not found !!!");
         }
-
-        // var quizQuestionRelation = new List<QuizQuestionRelation>();
-        // foreach (var item in quizQuestionRelationCreateDto.QuizQuestionIds)
-        // {
-        //     quizQuestionRelation.Add(new()
-        //     {
-        //         QuizId = quizQuestionRelationCreateDto.QuizId,
-        //         QuizQuestionId = item
-        //     });
-        // }
+        
         var quizQuestionRelation = quizQuestionRelationCreateDto.QuizQuestionIds.Select(quizQuestionId =>
             new QuizQuestionRelation
             {
