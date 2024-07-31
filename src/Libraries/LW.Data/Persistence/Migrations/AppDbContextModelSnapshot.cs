@@ -250,6 +250,50 @@ namespace LW.Data.Persistence.Migrations
                     b.ToTable("Documents");
                 });
 
+            modelBuilder.Entity("LW.Data.Entities.Editorial", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    b.Property<string>("CreatedBy")
+                        .IsRequired()
+                        .HasColumnType("longtext");
+
+                    b.Property<DateTimeOffset>("CreatedDate")
+                        .HasColumnType("datetime(6)");
+
+                    b.Property<string>("Description")
+                        .IsRequired()
+                        .HasColumnType("longtext");
+
+                    b.Property<string>("Image")
+                        .HasColumnType("longtext");
+
+                    b.Property<string>("LastModifiedBy")
+                        .HasColumnType("longtext");
+
+                    b.Property<DateTimeOffset?>("LastModifiedDate")
+                        .HasColumnType("datetime(6)");
+
+                    b.Property<int>("ProblemId")
+                        .HasColumnType("int");
+
+                    b.Property<string>("PublicId")
+                        .HasColumnType("longtext");
+
+                    b.Property<string>("Title")
+                        .IsRequired()
+                        .HasColumnType("longtext");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("ProblemId")
+                        .IsUnique();
+
+                    b.ToTable("Editorials");
+                });
+
             modelBuilder.Entity("LW.Data.Entities.Exam", b =>
                 {
                     b.Property<int>("Id")
@@ -385,6 +429,48 @@ namespace LW.Data.Persistence.Migrations
                     b.ToTable("ExamCodes");
                 });
 
+            modelBuilder.Entity("LW.Data.Entities.ExecuteCode", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    b.Property<string>("CreatedBy")
+                        .IsRequired()
+                        .HasColumnType("longtext");
+
+                    b.Property<DateTimeOffset>("CreatedDate")
+                        .HasColumnType("datetime(6)");
+
+                    b.Property<int>("LanguageId")
+                        .HasColumnType("int");
+
+                    b.Property<string>("LastModifiedBy")
+                        .HasColumnType("longtext");
+
+                    b.Property<DateTimeOffset?>("LastModifiedDate")
+                        .HasColumnType("datetime(6)");
+
+                    b.Property<string>("MainCode")
+                        .IsRequired()
+                        .HasColumnType("longtext");
+
+                    b.Property<int>("ProblemId")
+                        .HasColumnType("int");
+
+                    b.Property<string>("SampleCode")
+                        .IsRequired()
+                        .HasColumnType("longtext");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("LanguageId");
+
+                    b.HasIndex("ProblemId");
+
+                    b.ToTable("ExecuteCodes");
+                });
+
             modelBuilder.Entity("LW.Data.Entities.Grade", b =>
                 {
                     b.Property<int>("Id")
@@ -510,6 +596,92 @@ namespace LW.Data.Persistence.Migrations
                     b.HasKey("Id");
 
                     b.ToTable("Levels");
+                });
+
+            modelBuilder.Entity("LW.Data.Entities.Problem", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    b.Property<string>("CreatedBy")
+                        .IsRequired()
+                        .HasColumnType("longtext");
+
+                    b.Property<DateTimeOffset>("CreatedDate")
+                        .HasColumnType("datetime(6)");
+
+                    b.Property<string>("Description")
+                        .IsRequired()
+                        .HasColumnType("longtext");
+
+                    b.Property<int>("Difficulty")
+                        .HasColumnType("int");
+
+                    b.Property<bool>("IsActive")
+                        .HasColumnType("tinyint(1)");
+
+                    b.Property<string>("KeyWord")
+                        .IsRequired()
+                        .HasColumnType("longtext");
+
+                    b.Property<string>("LastModifiedBy")
+                        .HasColumnType("longtext");
+
+                    b.Property<DateTimeOffset?>("LastModifiedDate")
+                        .HasColumnType("datetime(6)");
+
+                    b.Property<int?>("LessonId")
+                        .HasColumnType("int");
+
+                    b.Property<string>("Title")
+                        .IsRequired()
+                        .HasColumnType("longtext");
+
+                    b.Property<int?>("TopicId")
+                        .HasColumnType("int");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("LessonId");
+
+                    b.HasIndex("TopicId");
+
+                    b.ToTable("Problems");
+                });
+
+            modelBuilder.Entity("LW.Data.Entities.ProgramLanguage", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    b.Property<int>("BaseId")
+                        .HasColumnType("int");
+
+                    b.Property<string>("CreatedBy")
+                        .IsRequired()
+                        .HasColumnType("longtext");
+
+                    b.Property<DateTimeOffset>("CreatedDate")
+                        .HasColumnType("datetime(6)");
+
+                    b.Property<bool>("IsActive")
+                        .HasColumnType("tinyint(1)");
+
+                    b.Property<string>("LastModifiedBy")
+                        .HasColumnType("longtext");
+
+                    b.Property<DateTimeOffset?>("LastModifiedDate")
+                        .HasColumnType("datetime(6)");
+
+                    b.Property<string>("Name")
+                        .IsRequired()
+                        .HasColumnType("longtext");
+
+                    b.HasKey("Id");
+
+                    b.ToTable("ProgramLanguages");
                 });
 
             modelBuilder.Entity("LW.Data.Entities.Quiz", b =>
@@ -680,6 +852,109 @@ namespace LW.Data.Persistence.Migrations
                     b.ToTable("QuizQuestionRelations");
                 });
 
+            modelBuilder.Entity("LW.Data.Entities.Solution", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    b.Property<string>("Coding")
+                        .IsRequired()
+                        .HasColumnType("longtext");
+
+                    b.Property<string>("CreatedBy")
+                        .IsRequired()
+                        .HasColumnType("longtext");
+
+                    b.Property<DateTimeOffset>("CreatedDate")
+                        .HasColumnType("datetime(6)");
+
+                    b.Property<string>("Description")
+                        .IsRequired()
+                        .HasColumnType("longtext");
+
+                    b.Property<bool>("IsActive")
+                        .HasColumnType("tinyint(1)");
+
+                    b.Property<string>("LastModifiedBy")
+                        .HasColumnType("longtext");
+
+                    b.Property<DateTimeOffset?>("LastModifiedDate")
+                        .HasColumnType("datetime(6)");
+
+                    b.Property<int>("ProblemId")
+                        .HasColumnType("int");
+
+                    b.Property<string>("Title")
+                        .IsRequired()
+                        .HasColumnType("longtext");
+
+                    b.Property<string>("UserId")
+                        .IsRequired()
+                        .HasColumnType("varchar(255)");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("ProblemId");
+
+                    b.HasIndex("UserId");
+
+                    b.ToTable("Solutions");
+                });
+
+            modelBuilder.Entity("LW.Data.Entities.Submission", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    b.Property<string>("CreatedBy")
+                        .IsRequired()
+                        .HasColumnType("longtext");
+
+                    b.Property<DateTimeOffset>("CreatedDate")
+                        .HasColumnType("datetime(6)");
+
+                    b.Property<decimal>("ExecutionTime")
+                        .HasColumnType("decimal(65,30)");
+
+                    b.Property<int>("LanguageId")
+                        .HasColumnType("int");
+
+                    b.Property<string>("LastModifiedBy")
+                        .HasColumnType("longtext");
+
+                    b.Property<DateTimeOffset?>("LastModifiedDate")
+                        .HasColumnType("datetime(6)");
+
+                    b.Property<decimal>("MemoryUsage")
+                        .HasColumnType("decimal(65,30)");
+
+                    b.Property<int>("ProblemId")
+                        .HasColumnType("int");
+
+                    b.Property<string>("SourceCode")
+                        .IsRequired()
+                        .HasColumnType("longtext");
+
+                    b.Property<int>("Status")
+                        .HasColumnType("int");
+
+                    b.Property<string>("UserId")
+                        .IsRequired()
+                        .HasColumnType("varchar(255)");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("LanguageId");
+
+                    b.HasIndex("ProblemId");
+
+                    b.HasIndex("UserId");
+
+                    b.ToTable("Submissions");
+                });
+
             modelBuilder.Entity("LW.Data.Entities.Tag", b =>
                 {
                     b.Property<int>("Id")
@@ -713,6 +988,49 @@ namespace LW.Data.Persistence.Migrations
                     b.HasKey("Id");
 
                     b.ToTable("Tags");
+                });
+
+            modelBuilder.Entity("LW.Data.Entities.TestCase", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    b.Property<string>("CreatedBy")
+                        .IsRequired()
+                        .HasColumnType("longtext");
+
+                    b.Property<DateTimeOffset>("CreatedDate")
+                        .HasColumnType("datetime(6)");
+
+                    b.Property<string>("Input")
+                        .IsRequired()
+                        .HasColumnType("longtext");
+
+                    b.Property<bool>("IsActive")
+                        .HasColumnType("tinyint(1)");
+
+                    b.Property<bool>("IsHidden")
+                        .HasColumnType("tinyint(1)");
+
+                    b.Property<string>("LastModifiedBy")
+                        .HasColumnType("longtext");
+
+                    b.Property<DateTimeOffset?>("LastModifiedDate")
+                        .HasColumnType("datetime(6)");
+
+                    b.Property<string>("Output")
+                        .IsRequired()
+                        .HasColumnType("longtext");
+
+                    b.Property<int>("ProblemId")
+                        .HasColumnType("int");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("ProblemId");
+
+                    b.ToTable("TestCases");
                 });
 
             modelBuilder.Entity("LW.Data.Entities.Topic", b =>
@@ -1044,6 +1362,17 @@ namespace LW.Data.Persistence.Migrations
                     b.Navigation("Grade");
                 });
 
+            modelBuilder.Entity("LW.Data.Entities.Editorial", b =>
+                {
+                    b.HasOne("LW.Data.Entities.Problem", "Problem")
+                        .WithOne("Editorial")
+                        .HasForeignKey("LW.Data.Entities.Editorial", "ProblemId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Problem");
+                });
+
             modelBuilder.Entity("LW.Data.Entities.Exam", b =>
                 {
                     b.HasOne("LW.Data.Entities.Competition", "Competition")
@@ -1077,6 +1406,25 @@ namespace LW.Data.Persistence.Migrations
                     b.Navigation("Exam");
                 });
 
+            modelBuilder.Entity("LW.Data.Entities.ExecuteCode", b =>
+                {
+                    b.HasOne("LW.Data.Entities.ProgramLanguage", "ProgramLanguage")
+                        .WithMany("ExecuteCodes")
+                        .HasForeignKey("LanguageId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("LW.Data.Entities.Problem", "Problem")
+                        .WithMany("ExecuteCodes")
+                        .HasForeignKey("ProblemId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Problem");
+
+                    b.Navigation("ProgramLanguage");
+                });
+
             modelBuilder.Entity("LW.Data.Entities.Grade", b =>
                 {
                     b.HasOne("LW.Data.Entities.Level", "Level")
@@ -1095,6 +1443,21 @@ namespace LW.Data.Persistence.Migrations
                         .HasForeignKey("TopicId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
+
+                    b.Navigation("Topic");
+                });
+
+            modelBuilder.Entity("LW.Data.Entities.Problem", b =>
+                {
+                    b.HasOne("LW.Data.Entities.Lesson", "Lesson")
+                        .WithMany("Problems")
+                        .HasForeignKey("LessonId");
+
+                    b.HasOne("LW.Data.Entities.Topic", "Topic")
+                        .WithMany("Problems")
+                        .HasForeignKey("TopicId");
+
+                    b.Navigation("Lesson");
 
                     b.Navigation("Topic");
                 });
@@ -1142,6 +1505,63 @@ namespace LW.Data.Persistence.Migrations
                     b.Navigation("Quiz");
 
                     b.Navigation("QuizQuestion");
+                });
+
+            modelBuilder.Entity("LW.Data.Entities.Solution", b =>
+                {
+                    b.HasOne("LW.Data.Entities.Problem", "Problem")
+                        .WithMany("Solutions")
+                        .HasForeignKey("ProblemId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("LW.Data.Entities.ApplicationUser", "ApplicationUser")
+                        .WithMany()
+                        .HasForeignKey("UserId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("ApplicationUser");
+
+                    b.Navigation("Problem");
+                });
+
+            modelBuilder.Entity("LW.Data.Entities.Submission", b =>
+                {
+                    b.HasOne("LW.Data.Entities.ProgramLanguage", "ProgramLanguage")
+                        .WithMany("Submissions")
+                        .HasForeignKey("LanguageId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("LW.Data.Entities.Problem", "Problem")
+                        .WithMany("Submissions")
+                        .HasForeignKey("ProblemId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("LW.Data.Entities.ApplicationUser", "ApplicationUser")
+                        .WithMany("Submissions")
+                        .HasForeignKey("UserId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("ApplicationUser");
+
+                    b.Navigation("Problem");
+
+                    b.Navigation("ProgramLanguage");
+                });
+
+            modelBuilder.Entity("LW.Data.Entities.TestCase", b =>
+                {
+                    b.HasOne("LW.Data.Entities.Problem", "Problem")
+                        .WithMany("TestCases")
+                        .HasForeignKey("ProblemId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Problem");
                 });
 
             modelBuilder.Entity("LW.Data.Entities.Topic", b =>
@@ -1272,6 +1692,8 @@ namespace LW.Data.Persistence.Migrations
 
             modelBuilder.Entity("LW.Data.Entities.ApplicationUser", b =>
                 {
+                    b.Navigation("Submissions");
+
                     b.Navigation("UserExams");
 
                     b.Navigation("UserGrades");
@@ -1315,12 +1737,35 @@ namespace LW.Data.Persistence.Migrations
 
             modelBuilder.Entity("LW.Data.Entities.Lesson", b =>
                 {
+                    b.Navigation("Problems");
+
                     b.Navigation("Quizzes");
                 });
 
             modelBuilder.Entity("LW.Data.Entities.Level", b =>
                 {
                     b.Navigation("Grades");
+                });
+
+            modelBuilder.Entity("LW.Data.Entities.Problem", b =>
+                {
+                    b.Navigation("Editorial")
+                        .IsRequired();
+
+                    b.Navigation("ExecuteCodes");
+
+                    b.Navigation("Solutions");
+
+                    b.Navigation("Submissions");
+
+                    b.Navigation("TestCases");
+                });
+
+            modelBuilder.Entity("LW.Data.Entities.ProgramLanguage", b =>
+                {
+                    b.Navigation("ExecuteCodes");
+
+                    b.Navigation("Submissions");
                 });
 
             modelBuilder.Entity("LW.Data.Entities.Quiz", b =>
@@ -1342,6 +1787,8 @@ namespace LW.Data.Persistence.Migrations
                     b.Navigation("ChildTopics");
 
                     b.Navigation("Lessons");
+
+                    b.Navigation("Problems");
 
                     b.Navigation("Quizzes");
                 });

@@ -9,20 +9,26 @@ using LW.Shared.DTOs.Grade;
 using LW.Shared.DTOs.Level;
 using LW.Shared.DTOs.User;
 using LW.Shared.DTOs.Document;
+using LW.Shared.DTOs.Editorial;
 using LW.Shared.DTOs.Exam;
 using LW.Shared.DTOs.ExamAnswer;
 using LW.Shared.DTOs.ExamCode;
+using LW.Shared.DTOs.ExecuteCode;
 using LW.Shared.DTOs.Index;
 using LW.Shared.DTOs.Lesson;
+using LW.Shared.DTOs.Problem;
+using LW.Shared.DTOs.ProgramLanguage;
 using LW.Shared.DTOs.Quiz;
 using LW.Shared.DTOs.QuizAnswer;
 using LW.Shared.DTOs.QuizQuestion;
 using LW.Shared.DTOs.QuizQuestionRelation;
 using LW.Shared.DTOs.Tag;
+using LW.Shared.DTOs.TestCase;
 using LW.Shared.DTOs.Topic;
 using LW.Shared.DTOs.UserExam;
 using LW.Shared.DTOs.UserQuiz;
 using LW.Shared.Enums;
+using LW.Shared.Solution;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.OpenApi.Extensions;
 using Newtonsoft.Json;
@@ -229,5 +235,32 @@ public class MappingProfile : Profile
         CreateMap<Competition, CompetitionDto>().ReverseMap();
         CreateMap<Competition, CompetitionCreateDto>().ReverseMap();
         CreateMap<Competition, CompetitionUpdateDto>().ReverseMap();
+        // ProgramLanguage
+        CreateMap<ProgramLanguage, ProgramLanguageDto>().ReverseMap();
+        CreateMap<ProgramLanguage, ProgramLanguageCreateDto>().ReverseMap();
+        CreateMap<ProgramLanguage, ProgramLanguageUpdateDto>().ReverseMap();
+        // Solution
+        CreateMap<Solution, SolutionDto>()
+            .ForMember(x => x.FullName, y => y.MapFrom(src => src.ApplicationUser.FirstName + " " + src.ApplicationUser.LastName))
+            .ForMember(x => x.Image, y => y.MapFrom(src => src.ApplicationUser.Image))
+            .ReverseMap();
+        CreateMap<Solution, SolutionCreateDto>().ReverseMap();
+        CreateMap<Solution, SolutionUpdateDto>().ReverseMap();
+        // Problem
+        CreateMap<Problem, ProblemDto>().ReverseMap();
+        CreateMap<Problem, ProblemCreateDto>().ReverseMap();
+        CreateMap<Problem, ProblemUpdateDto>().ReverseMap();
+        // Editorial 
+        CreateMap<Editorial, EditorialDto>().ReverseMap();
+        CreateMap<Editorial, EditorialCreateDto>().ReverseMap();
+        CreateMap<Editorial, EditorialUpdateDto>().ReverseMap();
+        // TestCase
+        CreateMap<TestCase, TestCaseDto>().ReverseMap();
+        CreateMap<TestCase, TestCaseCreateDto>().ReverseMap();
+        CreateMap<TestCase, TestCaseUpdateDto>().ReverseMap();
+        // ExecuteCde
+        CreateMap<ExecuteCode, ExecuteCodeDto>().ReverseMap();
+        CreateMap<ExecuteCode, ExecuteCodeCreateDto>().ReverseMap();
+        CreateMap<ExecuteCode, ExecuteCodeUpdateDto>().ReverseMap();
     }
 }

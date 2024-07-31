@@ -160,7 +160,7 @@ public class AdminAuthorService : IAdminAuthorService
 
     public async Task<ApiResult<PagedList<MemberDto>>> SearchMemberByRolePagination(string? role, SearchRequestValue searchRequestValue)
     {
-        var user = await _elasticSearchService.SearchDocumentAllFieldAsync(ElasticConstant.ElasticUsers, searchRequestValue);
+        var user = await _elasticSearchService.SearchAllDocumentFieldAsync(ElasticConstant.ElasticUsers, searchRequestValue);
         if (!user.Any())
         {
             return new ApiResult<PagedList<MemberDto>>(false, "user not found !!!");

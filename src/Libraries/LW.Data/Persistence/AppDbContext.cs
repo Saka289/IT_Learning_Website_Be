@@ -41,6 +41,13 @@ public class AppDbContext : IdentityDbContext<ApplicationUser>
     public DbSet<Tag> Tags { get; set; }
     public DbSet<ExamCode> ExamCodes { get; set; }
     public DbSet<Competition> Competitions { get; set; }
+    public DbSet<Problem> Problems { get; set; }
+    public DbSet<Submission> Submissions { get; set; }
+    public DbSet<Solution> Solutions { get; set; }
+    public DbSet<ExecuteCode> ExecuteCodes { get; set; }
+    public DbSet<ProgramLanguage> ProgramLanguages { get; set; }
+    public DbSet<TestCase> TestCases { get; set; }
+    public DbSet<Editorial> Editorials { get; set; }
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
@@ -92,12 +99,8 @@ public class AppDbContext : IdentityDbContext<ApplicationUser>
                         {
                             var tokenHandler = new JwtSecurityTokenHandler();
                             var token = tokenHandler.ReadToken(accessToken) as JwtSecurityToken;
-                            string familyName =
-                                token.Claims.FirstOrDefault(u => u.Type == JwtRegisteredClaimNames.FamilyName)?.Value ??
-                                String.Empty;
-                            string givenName =
-                                token.Claims.FirstOrDefault(u => u.Type == JwtRegisteredClaimNames.GivenName)?.Value ??
-                                String.Empty;
+                            string familyName = token.Claims.FirstOrDefault(u => u.Type == JwtRegisteredClaimNames.FamilyName)?.Value ?? string.Empty;
+                            string givenName = token.Claims.FirstOrDefault(u => u.Type == JwtRegisteredClaimNames.GivenName)?.Value ?? string.Empty;
                             addedUserEntity.LastModifiedBy = $"{familyName} {givenName}";
                             item.State = EntityState.Added;
                         }
@@ -124,12 +127,8 @@ public class AppDbContext : IdentityDbContext<ApplicationUser>
                         {
                             var tokenHandler = new JwtSecurityTokenHandler();
                             var token = tokenHandler.ReadToken(accessToken) as JwtSecurityToken;
-                            string familyName =
-                                token.Claims.FirstOrDefault(u => u.Type == JwtRegisteredClaimNames.FamilyName)?.Value ??
-                                String.Empty;
-                            string givenName =
-                                token.Claims.FirstOrDefault(u => u.Type == JwtRegisteredClaimNames.GivenName)?.Value ??
-                                String.Empty;
+                            string familyName = token.Claims.FirstOrDefault(u => u.Type == JwtRegisteredClaimNames.FamilyName)?.Value ?? string.Empty;
+                            string givenName = token.Claims.FirstOrDefault(u => u.Type == JwtRegisteredClaimNames.GivenName)?.Value ?? string.Empty;
                             modifiedUserEntity.LastModifiedBy = $"{familyName} {givenName}";
                             item.State = EntityState.Modified;
                         }
