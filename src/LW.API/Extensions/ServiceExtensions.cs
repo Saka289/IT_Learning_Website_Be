@@ -125,42 +125,16 @@ public static class ServiceExtensions
             .AddEntityFrameworkStores<AppDbContext>()
             .AddSignInManager<SignInManager<ApplicationUser>>()
             .AddDefaultTokenProviders();
+
         //Add services HttpClient 
         services.AddHttpClient("Facebook",
             facebookOptions =>
             {
                 facebookOptions.BaseAddress = new Uri(configuration.GetValue<string>("FacebookSettings:BaseUrl"));
             });
+        services.AddHttpClient("SendAPI");
 
-        // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
-        services.AddEndpointsApiExplorer();
-        services.AddSwaggerGen(option =>
-        {
-            option.AddSecurityDefinition(name: JwtBearerDefaults.AuthenticationScheme,
-                securityScheme: new OpenApiSecurityScheme()
-                {
-                    Name = "Authorization",
-                    Description = "Enter the Bearer Authorization string as following: `Bearer Generated-JWT-Token`",
-                    In = ParameterLocation.Header,
-                    Type = SecuritySchemeType.ApiKey,
-                    BearerFormat = "JWT",
-                    Scheme = "Bearer"
-                });
-            option.AddSecurityRequirement(new OpenApiSecurityRequirement
-            {
-                {
-                    new OpenApiSecurityScheme
-                    {
-                        Reference = new OpenApiReference
-                        {
-                            Type = ReferenceType.SecurityScheme,
-                            Id = JwtBearerDefaults.AuthenticationScheme
-                        }
-                    },
-                    new List<string>()
-                }
-            });
-        });
+        services.ConfigureSwagger();
         services.ConfigureAppDbContext(configuration);
         services.ConfigureRedis(configuration);
         services.ConfigureElasticSearch();
@@ -210,6 +184,40 @@ public static class ServiceExtensions
         });
 
         return builder;
+    }
+
+    private static IServiceCollection ConfigureSwagger(this IServiceCollection services)
+    {
+        // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
+        services.AddEndpointsApiExplorer();
+        services.AddSwaggerGen(option =>
+        {
+            option.AddSecurityDefinition(name: JwtBearerDefaults.AuthenticationScheme,
+                securityScheme: new OpenApiSecurityScheme()
+                {
+                    Name = "Authorization",
+                    Description = "Enter the Bearer Authorization string as following: `Bearer Generated-JWT-Token`",
+                    In = ParameterLocation.Header,
+                    Type = SecuritySchemeType.ApiKey,
+                    BearerFormat = "JWT",
+                    Scheme = "Bearer"
+                });
+            option.AddSecurityRequirement(new OpenApiSecurityRequirement
+            {
+                {
+                    new OpenApiSecurityScheme
+                    {
+                        Reference = new OpenApiReference
+                        {
+                            Type = ReferenceType.SecurityScheme,
+                            Id = JwtBearerDefaults.AuthenticationScheme
+                        }
+                    },
+                    new List<string>()
+                }
+            });
+        });
+        return services;
     }
 
     private static IServiceCollection ConfigureAppDbContext(this IServiceCollection services,
