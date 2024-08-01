@@ -17,9 +17,7 @@ using LW.Infrastructure.Configurations;
 using LW.Infrastructure.Extensions;
 using LW.Services.AdminServices;
 using LW.Infrastructure.Services;
-using LW.Services.FacebookServices;
 using LW.Services.GradeServices;
-using LW.Services.JwtTokenServices;
 using LW.Services.LevelServices;
 using LW.Services.UserServices;
 using LW.Shared.Configurations;
@@ -59,8 +57,11 @@ using LW.Data.Repositories.UserQuizRepositories;
 using LW.Data.Repositories.VoteCommentRepositories;
 using LW.Infrastructure.Hubs;
 using LW.Services.CommentDocumentServices;
-using LW.Services.Common.Services.CompileService;
 using LW.Services.Common;
+using LW.Services.Common.CommonServices.CompileServices;
+using LW.Services.Common.CommonServices.FacebookServices;
+using LW.Services.Common.CommonServices.JwtTokenServices;
+using LW.Services.Common.CommonServices.NotificationServices;
 using LW.Services.CompetitionServices;
 using LW.Services.EditorialServices;
 using LW.Services.EnumServices;
@@ -130,8 +131,8 @@ public static class ServiceExtensions
     public static IServiceCollection AddInfrastructure(this IServiceCollection services, IConfiguration configuration)
     {
         // Add services to the container.
-        services.AddSignalR();
         services.AddControllers();
+        services.AddSignalR();
         services.AddHttpContextAccessor();
         services.Configure<RouteOptions>(options => options.LowercaseUrls = true);
         services.AddIdentity<ApplicationUser, IdentityRole>(options => { options.SignIn.RequireConfirmedEmail = true; })
@@ -257,11 +258,16 @@ public static class ServiceExtensions
         {
             throw new ArgumentNullException("Redis Connection string is not configured.");
         }
-
+        
         var configurationOptions = ConfigurationOptions.Parse(settings.ConnectionString);
         configurationOptions.Password = settings.Password;
-        services.AddSingleton<IConnectionMultiplexer>(ConnectionMultiplexer.Connect(configurationOptions));
+        
+        var lazyConnection = new Lazy<IConnectionMultiplexer>(() => ConnectionMultiplexer.Connect(configurationOptions));
+
+        services.AddSingleton(lc => lazyConnection.Value);
+        
         services.AddStackExchangeRedisCache(options => { options.ConfigurationOptions = configurationOptions; });
+        
         return services;
     }
 

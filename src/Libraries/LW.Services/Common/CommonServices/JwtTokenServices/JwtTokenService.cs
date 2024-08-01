@@ -7,7 +7,7 @@ using LW.Shared.Configurations;
 using Microsoft.Extensions.Options;
 using Microsoft.IdentityModel.Tokens;
 
-namespace LW.Services.JwtTokenServices;
+namespace LW.Services.Common.CommonServices.JwtTokenServices;
 
 public class JwtTokenService : IJwtTokenService
 {

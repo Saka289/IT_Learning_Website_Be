@@ -4,7 +4,7 @@ using LW.Shared.SeedWork;
 using Microsoft.Extensions.Options;
 using Serilog;
 
-namespace LW.Services.FacebookServices;
+namespace LW.Services.Common.CommonServices.FacebookServices;
 
 public class FacebookService : IFacebookService
 {
@@ -22,7 +22,7 @@ public class FacebookService : IFacebookService
         _serializeService = serializeService;
     }
 
-    public async Task<ApiResult<FacebookTokenValidationResponse>> ValidateFacebookToken(string accessToken)
+    public async Task<FacebookTokenValidationResponse?> ValidateFacebookToken(string accessToken)
     {
         try
         {
@@ -33,9 +33,8 @@ public class FacebookService : IFacebookService
             if (response.IsSuccessStatusCode)
             {
                 var responseAsString = await response.Content.ReadAsStringAsync();
-                var tokenValidationResponse =
-                    _serializeService.Deserialize<FacebookTokenValidationResponse>(responseAsString);
-                return new ApiSuccessResult<FacebookTokenValidationResponse>(tokenValidationResponse);
+                var tokenValidationResponse = _serializeService.Deserialize<FacebookTokenValidationResponse>(responseAsString);
+                return tokenValidationResponse;
             }
         }
         catch (Exception ex)
@@ -43,10 +42,10 @@ public class FacebookService : IFacebookService
             _logger.Error(ex.Message, ex);
         }
 
-        return new ApiResult<FacebookTokenValidationResponse>(false, null, "Failed to get response");
+        return null;
     }
 
-    public async Task<ApiResult<FacebookUserInfoResponse>> GetFacebookUserInformation(string accessToken)
+    public async Task<FacebookUserInfoResponse?> GetFacebookUserInformation(string accessToken)
     {
         try
         {
@@ -58,7 +57,7 @@ public class FacebookService : IFacebookService
             {
                 var responseAsString = await response.Content.ReadAsStringAsync();
                 var userInfoResponse = _serializeService.Deserialize<FacebookUserInfoResponse>(responseAsString);
-                return new ApiSuccessResult<FacebookUserInfoResponse>(userInfoResponse);
+                return userInfoResponse;
             }
         }
         catch (Exception ex)
@@ -66,6 +65,6 @@ public class FacebookService : IFacebookService
             _logger.Error(ex.Message, ex);
         }
 
-        return new ApiResult<FacebookUserInfoResponse>(false, null, "Failed to get response");
+        return null;
     }
 }

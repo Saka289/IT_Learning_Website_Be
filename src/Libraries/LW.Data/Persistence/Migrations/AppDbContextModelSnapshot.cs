@@ -1265,7 +1265,6 @@ namespace LW.Data.Persistence.Migrations
                         .HasColumnType("int");
 
                     b.Property<string>("HistoryExam")
-                        .IsRequired()
                         .HasColumnType("json");
 
                     b.Property<string>("LastModifiedBy")
@@ -1675,7 +1674,7 @@ namespace LW.Data.Persistence.Migrations
                         .IsRequired();
 
                     b.HasOne("LW.Data.Entities.ApplicationUser", "ApplicationUser")
-                        .WithMany()
+                        .WithMany("Posts")
                         .HasForeignKey("UserId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
@@ -1699,7 +1698,7 @@ namespace LW.Data.Persistence.Migrations
                         .IsRequired();
 
                     b.HasOne("LW.Data.Entities.ApplicationUser", "ApplicationUser")
-                        .WithMany()
+                        .WithMany("PostComments")
                         .HasForeignKey("UserId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
@@ -1780,7 +1779,7 @@ namespace LW.Data.Persistence.Migrations
                         .IsRequired();
 
                     b.HasOne("LW.Data.Entities.ApplicationUser", "ApplicationUser")
-                        .WithMany()
+                        .WithMany("Solutions")
                         .HasForeignKey("UserId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
@@ -1976,6 +1975,12 @@ namespace LW.Data.Persistence.Migrations
             modelBuilder.Entity("LW.Data.Entities.ApplicationUser", b =>
                 {
                     b.Navigation("FavoritePosts");
+
+                    b.Navigation("PostComments");
+
+                    b.Navigation("Posts");
+
+                    b.Navigation("Solutions");
 
                     b.Navigation("Submissions");
 

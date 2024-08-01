@@ -9,13 +9,12 @@ using LW.Shared.DTOs.Notification;
 using LW.Shared.Enums;
 using Microsoft.AspNetCore.SignalR;
 
-namespace LW.Services.Common;
+namespace LW.Services.Common.CommonServices.NotificationServices;
 
 public class NotificationService : INotificationService
 {
     private readonly INotificationRepository _notificationRepository;
     private readonly IMapper _mapper;
-    //private readonly INotificationHub _notificationHub;
     private readonly IHubContext<NotificationHub> _notificationHub;
     private readonly IRedisCache<HubConnection> _redis;
 

@@ -5,7 +5,7 @@ using LW.Shared.DTOs.Request;
 using LW.Shared.Enums;
 using Microsoft.Extensions.Options;
 
-namespace LW.Services.Common.Services.CompileService;
+namespace LW.Services.Common.CommonServices.CompileServices;
 
 public class CompileService : ICompileService
 {

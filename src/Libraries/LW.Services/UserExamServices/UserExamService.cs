@@ -84,7 +84,7 @@ public class UserExamService : IUserExamService
             UserId = examFormSubmitDto.UserId,
             ExamCodeId =  examFormSubmitDto.ExamCodeId,
             Score = totalScore,
-            HistoryExam = JsonConvert.SerializeObject(historyAnswers)
+            HistoryExam = historyAnswers
         };
         var userExamResult =  await _userExamRepository.CreateUserExam(userExam);
         return new ApiResult<int>(true,userExamResult.Id, "Create result of user successfully");

@@ -6,6 +6,5 @@ public class ExamAnswerCreateRangeDto
 {
     [Required]
     public int ExamCodeId { get; set; }
-
     public IEnumerable<AnswerDto> AnswerDtos { get; set; }
 }

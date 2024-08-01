@@ -38,6 +38,4 @@ public class Exam : EntityAuditBase<int>
     [ForeignKey(nameof(CompetitionId))]
     public virtual Competition Competition { get; set; }
     public virtual ICollection<ExamCode>? ExamCodes { get; set; }
-
-    
 }

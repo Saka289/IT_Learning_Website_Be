@@ -11,7 +11,7 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace LW.Data.Persistence.Migrations
 {
     [DbContext(typeof(AppDbContext))]
-    [Migration("20240801092539_Init_Add_All_Class")]
+    [Migration("20240801171552_Init_Add_All_Class")]
     partial class Init_Add_All_Class
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -1267,7 +1267,6 @@ namespace LW.Data.Persistence.Migrations
                         .HasColumnType("int");
 
                     b.Property<string>("HistoryExam")
-                        .IsRequired()
                         .HasColumnType("json");
 
                     b.Property<string>("LastModifiedBy")
@@ -1677,7 +1676,7 @@ namespace LW.Data.Persistence.Migrations
                         .IsRequired();
 
                     b.HasOne("LW.Data.Entities.ApplicationUser", "ApplicationUser")
-                        .WithMany()
+                        .WithMany("Posts")
                         .HasForeignKey("UserId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
@@ -1701,7 +1700,7 @@ namespace LW.Data.Persistence.Migrations
                         .IsRequired();
 
                     b.HasOne("LW.Data.Entities.ApplicationUser", "ApplicationUser")
-                        .WithMany()
+                        .WithMany("PostComments")
                         .HasForeignKey("UserId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
@@ -1782,7 +1781,7 @@ namespace LW.Data.Persistence.Migrations
                         .IsRequired();
 
                     b.HasOne("LW.Data.Entities.ApplicationUser", "ApplicationUser")
-                        .WithMany()
+                        .WithMany("Solutions")
                         .HasForeignKey("UserId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
@@ -1978,6 +1977,12 @@ namespace LW.Data.Persistence.Migrations
             modelBuilder.Entity("LW.Data.Entities.ApplicationUser", b =>
                 {
                     b.Navigation("FavoritePosts");
+
+                    b.Navigation("PostComments");
+
+                    b.Navigation("Posts");
+
+                    b.Navigation("Solutions");
 
                     b.Navigation("Submissions");
 

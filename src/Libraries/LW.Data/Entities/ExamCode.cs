@@ -4,18 +4,17 @@ using LW.Contracts.Domains;
 
 namespace LW.Data.Entities;
 
-public class ExamCode: EntityAuditBase<int>
+public class ExamCode : EntityAuditBase<int>
 {
-    [Required]
+    [Required] 
     public string Code { get; set; }
-    [Required]
+    [Required] 
     public string ExamFile { get; set; }
-    
+
     public string? PublicExamId { get; set; }
-    [Required]
+    [Required] 
     public int ExamId { get; set; }
     [ForeignKey(nameof(ExamId))] 
     public virtual Exam? Exam { get; set; }
-    
     public ICollection<ExamAnswer> ExamAnswers { get; set; }
 }

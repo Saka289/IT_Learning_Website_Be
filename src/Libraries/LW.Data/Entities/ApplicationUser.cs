@@ -19,4 +19,7 @@ public class ApplicationUser : IdentityUser
     public virtual ICollection<Submission> Submissions { get; set; }
     public virtual ICollection<VoteComment> VoteComments { get; set; }
     public virtual ICollection<FavoritePost> FavoritePosts { get; set; }
+    public virtual ICollection<Post> Posts { get; set; }
+    public virtual ICollection<PostComment> PostComments { get; set; }
+    public virtual ICollection<Solution> Solutions { get; set; }
 }
