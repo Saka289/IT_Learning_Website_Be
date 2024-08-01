@@ -24,18 +24,34 @@ namespace LW.API.Controllers.Public
             _postCommentService = postCommentService;
         }
 
-        [HttpGet("GetAllCommentByPostId")]
-        public async Task<ActionResult<ApiResult<IEnumerable<PostCommentDto>>>> GetAllCommentByPostId(
-            [Required] int postId)
+        [HttpGet("GetAllCommentByPostIdPagination")]
+        public async Task<ActionResult<ApiResult<PagedList<PostCommentDto>>>> GetAllCommentByPostIdPagination(
+            [Required] int postId, [FromQuery] PagingRequestParameters pagingRequestParameters)
         {
-            var result = await _postCommentService.GetAllPostCommentByPostId(postId);
+            var result = await _postCommentService.GetAllPostCommentByPostIdPagination(postId, pagingRequestParameters);
+            if (!result.IsSucceeded)
+            {
+                return NotFound(result);
+            }
+            Response.Headers.Add("X-Pagination", JsonConvert.SerializeObject(result.Data.GetMetaData()));
+            return Ok(result);
+        }
+
+        [HttpGet("GetAllCommentByParentIdPagination")]
+        public async Task<ActionResult<ApiResult<PagedList<PostCommentDto>>>> GetAllCommentByParentIdPagination(
+            [Required] int parentId, [FromQuery] PagingRequestParameters pagingRequestParameters)
+        {
+            var result =
+                await _postCommentService.GetAllPostCommentByParentIdPagination(parentId, pagingRequestParameters);
             if (!result.IsSucceeded)
             {
                 return NotFound(result);
             }
 
+            Response.Headers.Add("X-Pagination", JsonConvert.SerializeObject(result.Data.GetMetaData()));
             return Ok(result);
         }
+
 
         [HttpGet("GetPostCommentById/{id}")]
         public async Task<ActionResult<ApiResult<PostCommentDto>>> GetCommentDocumentById(
@@ -46,9 +62,10 @@ namespace LW.API.Controllers.Public
             {
                 return NotFound(result);
             }
+
             return Ok(result);
         }
-        
+
         [HttpPost("CreatePostComment")]
         public async Task<ActionResult<ApiResult<PostCommentDto>>> CreatePostComment(
             PostCommentCreateDto postCommentCreateDto)
@@ -68,6 +85,7 @@ namespace LW.API.Controllers.Public
 
             return Ok(result);
         }
+
         [HttpPut("UpdatePostComment")]
         public async Task<ActionResult<ApiResult<PostCommentDto>>> UpdatePostComment(
             PostCommentUpdateDto postCommentUpdateDto)
@@ -87,6 +105,7 @@ namespace LW.API.Controllers.Public
 
             return Ok(result);
         }
+
         [HttpDelete("DeletePostComment/{id}")]
         public async Task<ActionResult<ApiResult<bool>>> DeletePostComment(int id)
         {
@@ -98,11 +117,12 @@ namespace LW.API.Controllers.Public
 
             return Ok(result);
         }
-        [HttpPost("VotePostComment/{id}")]
+
+        [HttpPost("VotePostComment")]
         public async Task<ActionResult<ApiResult<bool>>> VotePostComment(
-            int id)
+           [Required] int commentId,[Required] string userId)
         {
-            var result = await _postCommentService.VoteCorrectPostComment(id);
+            var result = await _postCommentService.VoteCorrectPostComment(commentId, userId);
             if (!result.IsSucceeded)
             {
                 return BadRequest(result);

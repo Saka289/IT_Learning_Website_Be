@@ -93,7 +93,43 @@ namespace LW.API.Controllers.Public
             return Ok(result);
         }
     
-
+        [HttpGet("GetAllPostByUserAndGradePagination")]
+        public async Task<ActionResult<ApiResult<PagedList<PostDto>>>> GetAllPostByUserAndGradePagination([Required] string userId,[Required] int gradeId,
+            [FromQuery] PagingRequestParameters pagingRequestParameters)
+        {
+            var result = await _postService.GetAllPostByUserAndGradePagination(userId,gradeId ,pagingRequestParameters);
+            if (!result.IsSucceeded)
+            {
+                return NotFound(result);
+            }
+            Response.Headers.Add("X-Pagination", JsonConvert.SerializeObject(result.Data.GetMetaData()));
+            return Ok(result);
+        }
+        [HttpGet("GetAllPostNotAnswerPagination")]
+        public async Task<ActionResult<ApiResult<PagedList<PostDto>>>> GetAllPostNotAnswerPagination([Required] string userId,[Required] int gradeId,
+            [FromQuery] PagingRequestParameters pagingRequestParameters)
+        {
+            var result = await _postService.GetAllPostNotAnswerPagination(pagingRequestParameters);
+            if (!result.IsSucceeded)
+            {
+                return NotFound(result);
+            }
+            Response.Headers.Add("X-Pagination", JsonConvert.SerializeObject(result.Data.GetMetaData()));
+            return Ok(result);
+        }
+        [HttpGet("GetAllPostNotAnswerByGradePagination")]
+        public async Task<ActionResult<ApiResult<PagedList<PostDto>>>> GetAllPostNotAnswerByGradePagination([Required] int gradeId,
+            [FromQuery] PagingRequestParameters pagingRequestParameters)
+        {
+            var result = await _postService.GetAllPostNotAnswerByGradePagination(gradeId,pagingRequestParameters);
+            if (!result.IsSucceeded)
+            {
+                return NotFound(result);
+            }
+            Response.Headers.Add("X-Pagination", JsonConvert.SerializeObject(result.Data.GetMetaData()));
+            return Ok(result);
+        }
+        
         [HttpGet("GetPostById")]
         public async Task<ActionResult<ApiResult<PostDto>>> GetPostById(int id)
         {
@@ -155,5 +191,6 @@ namespace LW.API.Controllers.Public
 
             return Ok(result);
         }
+        
     }
 }

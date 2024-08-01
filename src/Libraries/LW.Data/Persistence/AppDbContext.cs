@@ -41,10 +41,11 @@ public class AppDbContext : IdentityDbContext<ApplicationUser>
     public DbSet<Tag> Tags { get; set; }
     public DbSet<ExamCode> ExamCodes { get; set; }
     public DbSet<Competition> Competitions { get; set; }
-    
+
     public DbSet<Post> Posts { get; set; }
     public DbSet<PostComment> PostComments { get; set; }
     public DbSet<Notification> Notifications { get; set; }
+    public DbSet<VoteComment> VoteComments { get; set; }
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {

@@ -25,6 +25,7 @@ using LW.Shared.DTOs.Tag;
 using LW.Shared.DTOs.Topic;
 using LW.Shared.DTOs.UserExam;
 using LW.Shared.DTOs.UserQuiz;
+using LW.Shared.DTOs.VoteComment;
 using LW.Shared.Enums;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.OpenApi.Extensions;
@@ -262,6 +263,9 @@ public class MappingProfile : Profile
         // Notification
         CreateMap<Notification, NotificationCreateDto>().ReverseMap();
         CreateMap<Notification, NotificationDto>().ReverseMap();
-
+        //VoteComment
+        CreateMap<VoteComment, VoteCommentDto>().ReverseMap();
+        CreateMap<VoteComment, VoteCommentCreateDto>().ReverseMap();
+        CreateMap<VoteComment, VoteCommentUpdateDto>().ReverseMap();
     }
 }

@@ -71,6 +71,31 @@ public class PostService : IPostService
         var result = _mapper.Map<IEnumerable<PostDto>>(posts);
         return new ApiResult<IEnumerable<PostDto>>(true, result, "Get all post by user successfully");
     }
+    public async Task<ApiResult<PagedList<PostDto>>> GetAllPostByUserAndGradePagination(string userId, int gradeId,PagingRequestParameters pagingRequestParameters)
+    {
+        var user = await _userManager.FindByIdAsync(userId);
+        if (user == null)
+        {
+            return new ApiResult<PagedList<PostDto>>(false, "User not found");
+        }
+        var grade = await _gradeRepository.GetGradeById(gradeId);
+        if (grade == null)
+        {
+            return new ApiResult<PagedList<PostDto>>(false, "Grade not found");
+        }
+
+        var posts = await _postRepository.GetAllPostByUserAndGradePagination(userId, gradeId);
+        if (!posts.Any())
+        {
+            return new ApiResult<PagedList<PostDto>>(false, "Not found list post");
+        }
+
+        var result = _mapper.ProjectTo<PostDto>(posts);
+        var pagedResult = await PagedList<PostDto>.ToPageListAsync(result, pagingRequestParameters.PageIndex,
+            pagingRequestParameters.PageSize, pagingRequestParameters.OrderBy, pagingRequestParameters.IsAscending);
+
+        return new ApiSuccessResult<PagedList<PostDto>>(pagedResult);
+    }
 
     public async Task<ApiResult<PagedList<PostDto>>> GetAllPostPagination(
         PagingRequestParameters pagingRequestParameters)
@@ -199,5 +224,36 @@ public class PostService : IPostService
 
         await _postRepository.DeletePost(id);
         return new ApiResult<bool>(true, "Delete post successfully");
+    }
+    
+    public async Task<ApiResult<PagedList<PostDto>>> GetAllPostNotAnswerPagination(
+        PagingRequestParameters pagingRequestParameters)
+    {
+        var posts = await _postRepository.GetAllPostNotAnswerPagination();
+        if (!posts.Any())
+        {
+            return new ApiResult<PagedList<PostDto>>(false, "List Posts is null !!!");
+        }
+
+        var result = _mapper.ProjectTo<PostDto>(posts);
+        var pagedResult = await PagedList<PostDto>.ToPageListAsync(result, pagingRequestParameters.PageIndex,
+            pagingRequestParameters.PageSize, pagingRequestParameters.OrderBy, pagingRequestParameters.IsAscending);
+
+        return new ApiSuccessResult<PagedList<PostDto>>(pagedResult);
+    }
+    public async Task<ApiResult<PagedList<PostDto>>> GetAllPostNotAnswerByGradePagination(int gradeId,
+        PagingRequestParameters pagingRequestParameters)
+    {
+        var posts = await _postRepository.GetAllPostNotAnswerByGradePagination(gradeId);
+        if (!posts.Any())
+        {
+            return new ApiResult<PagedList<PostDto>>(false, "List Posts is null !!!");
+        }
+
+        var result = _mapper.ProjectTo<PostDto>(posts);
+        var pagedResult = await PagedList<PostDto>.ToPageListAsync(result, pagingRequestParameters.PageIndex,
+            pagingRequestParameters.PageSize, pagingRequestParameters.OrderBy, pagingRequestParameters.IsAscending);
+
+        return new ApiSuccessResult<PagedList<PostDto>>(pagedResult);
     }
 }

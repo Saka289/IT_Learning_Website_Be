@@ -48,6 +48,7 @@ using LW.Data.Repositories.TopicRepositories;
 using LW.Data.Repositories.UserExamRepositories;
 using LW.Data.Repositories.UserGradeRepositories;
 using LW.Data.Repositories.UserQuizRepositories;
+using LW.Data.Repositories.VoteCommentRepositories;
 using LW.Infrastructure.Hubs;
 using LW.Services.CommentDocumentServices;
 using LW.Services.Common;
@@ -300,6 +301,7 @@ public static class ServiceExtensions
         services.AddScoped<IPostRepository, PostRepository>();
         services.AddScoped<IPostCommentRepository, PostCommentRepository>();
         services.AddScoped<INotificationRepository, NotificationRepository>();
+        services.AddScoped<IVoteCommentRepository, VoteCommentRepository>();
         
         // IService 
         services.AddScoped<IAdminAuthorService, AdminAuthorService>();

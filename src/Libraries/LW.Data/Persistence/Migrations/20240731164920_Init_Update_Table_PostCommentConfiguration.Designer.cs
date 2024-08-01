@@ -3,6 +3,7 @@ using System;
 using LW.Data.Persistence;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
@@ -10,9 +11,10 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace LW.Data.Persistence.Migrations
 {
     [DbContext(typeof(AppDbContext))]
-    partial class AppDbContextModelSnapshot : ModelSnapshot
+    [Migration("20240731164920_Init_Update_Table_PostCommentConfiguration")]
+    partial class Init_Update_Table_PostCommentConfiguration
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -1003,44 +1005,6 @@ namespace LW.Data.Persistence.Migrations
                     b.ToTable("UserQuizzes");
                 });
 
-            modelBuilder.Entity("LW.Data.Entities.VoteComment", b =>
-                {
-                    b.Property<int>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("int");
-
-                    b.Property<string>("CreatedBy")
-                        .IsRequired()
-                        .HasColumnType("longtext");
-
-                    b.Property<DateTimeOffset>("CreatedDate")
-                        .HasColumnType("datetime(6)");
-
-                    b.Property<bool>("IsCorrectVote")
-                        .HasColumnType("tinyint(1)");
-
-                    b.Property<string>("LastModifiedBy")
-                        .HasColumnType("longtext");
-
-                    b.Property<DateTimeOffset?>("LastModifiedDate")
-                        .HasColumnType("datetime(6)");
-
-                    b.Property<int>("PostCommentId")
-                        .HasColumnType("int");
-
-                    b.Property<string>("UserId")
-                        .IsRequired()
-                        .HasColumnType("varchar(255)");
-
-                    b.HasKey("Id");
-
-                    b.HasIndex("PostCommentId");
-
-                    b.HasIndex("UserId");
-
-                    b.ToTable("VoteComments");
-                });
-
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityRole", b =>
                 {
                     b.Property<string>("Id")
@@ -1426,25 +1390,6 @@ namespace LW.Data.Persistence.Migrations
                     b.Navigation("Quiz");
                 });
 
-            modelBuilder.Entity("LW.Data.Entities.VoteComment", b =>
-                {
-                    b.HasOne("LW.Data.Entities.PostComment", "PostComment")
-                        .WithMany("VoteComments")
-                        .HasForeignKey("PostCommentId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.HasOne("LW.Data.Entities.ApplicationUser", "ApplicationUser")
-                        .WithMany("VoteComments")
-                        .HasForeignKey("UserId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.Navigation("ApplicationUser");
-
-                    b.Navigation("PostComment");
-                });
-
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityRoleClaim<string>", b =>
                 {
                     b.HasOne("Microsoft.AspNetCore.Identity.IdentityRole", null)
@@ -1503,8 +1448,6 @@ namespace LW.Data.Persistence.Migrations
                     b.Navigation("UserGrades");
 
                     b.Navigation("UserQuizzes");
-
-                    b.Navigation("VoteComments");
                 });
 
             modelBuilder.Entity("LW.Data.Entities.CommentDocument", b =>
@@ -1561,8 +1504,6 @@ namespace LW.Data.Persistence.Migrations
             modelBuilder.Entity("LW.Data.Entities.PostComment", b =>
                 {
                     b.Navigation("PostCommentChilds");
-
-                    b.Navigation("VoteComments");
                 });
 
             modelBuilder.Entity("LW.Data.Entities.Quiz", b =>

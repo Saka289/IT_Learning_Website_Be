@@ -17,4 +17,7 @@ public interface IPostRepository : IRepositoryBase<Post, int>
     Task<Post> CreatePost(Post post);
     Task<Post> UpdatePost(Post post);
     Task<bool> DeletePost(int id);
+    Task<IQueryable<Post>> GetAllPostByUserAndGradePagination(string userId, int gradeId);
+    Task<IQueryable<Post>> GetAllPostNotAnswerPagination();
+    Task<IQueryable<Post>> GetAllPostNotAnswerByGradePagination(int gradeId);
 }

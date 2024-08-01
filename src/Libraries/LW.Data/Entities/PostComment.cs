@@ -27,5 +27,6 @@ public class PostComment : EntityAuditBase<int>
     
     public ICollection<PostComment> PostCommentChilds { get; set; }
     
-    
+    public ICollection<VoteComment> VoteComments { get; set; }
+
 }
