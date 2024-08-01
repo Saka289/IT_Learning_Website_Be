@@ -8,5 +8,5 @@ public interface ISubmissionService
 {
     Task<ApiResult<IEnumerable<SubmissionDto>>> GetAllSubmission(SubmissionRequestDto submissionRequestDto);
     Task<ApiResult<SubmissionDto>> GetSubmission(SubmissionRequestDto submissionRequestDto);
-    Task<ApiResult<SubmissionDto>> SubmitProblem(SubmitProblemDto submitProblemDto);
+    Task<ApiResult<IEnumerable<SubmissionDto>>> SubmitProblem(SubmitProblemDto submitProblemDto);
 }

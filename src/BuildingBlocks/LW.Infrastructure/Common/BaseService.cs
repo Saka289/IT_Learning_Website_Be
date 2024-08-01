@@ -62,7 +62,7 @@ public class BaseService<T> : IBaseService<T> where T : class
 
             apiResponse = await client.SendAsync(message);
 
-            if (apiResponse.StatusCode != HttpStatusCode.OK)
+            if (apiResponse.StatusCode != HttpStatusCode.OK && apiResponse.StatusCode != HttpStatusCode.Accepted && apiResponse.StatusCode != HttpStatusCode.Created)
             {
                 _logger.Error($"HTTP Error: {apiResponse.StatusCode}");
                 return default(T);

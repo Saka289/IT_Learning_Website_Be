@@ -8,11 +8,12 @@ public class Submission : EntityAuditBase<int>
 {
     public string SourceCode { get; set; }
     public EStatusSubmission Status { get; set; }
-    public decimal ExecutionTime { get; set; }
-    public decimal MemoryUsage { get; set; }
+    public float? ExecutionTime { get; set; }
+    public float? MemoryUsage { get; set; }
     public int LanguageId { get; set; }
     public int ProblemId { get; set; }
     public string UserId { get; set; }
+    public bool Submit { get; set; }
     [ForeignKey(nameof(LanguageId))]
     public virtual ProgramLanguage ProgramLanguage { get; set; }
     [ForeignKey(nameof(ProblemId))]

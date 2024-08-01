@@ -28,6 +28,11 @@ public class ProgramLanguageRepository : RepositoryBase<ProgramLanguage, int>, I
         return await FindByCondition(x => x.Id == id).FirstOrDefaultAsync();
     }
 
+    public async Task<ProgramLanguage?> GetProgramLanguageByBaseId(int id)
+    {
+        return await FindByCondition(x => x.BaseId == id).FirstOrDefaultAsync();
+    }
+
     public async Task<ProgramLanguage> CreateProgramLanguage(ProgramLanguage programLanguage)
     {
         await CreateAsync(programLanguage);

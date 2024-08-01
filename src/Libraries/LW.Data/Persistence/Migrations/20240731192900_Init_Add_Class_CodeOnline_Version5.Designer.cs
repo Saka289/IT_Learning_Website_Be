@@ -3,6 +3,7 @@ using System;
 using LW.Data.Persistence;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
@@ -10,9 +11,10 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace LW.Data.Persistence.Migrations
 {
     [DbContext(typeof(AppDbContext))]
-    partial class AppDbContextModelSnapshot : ModelSnapshot
+    [Migration("20240731192900_Init_Add_Class_CodeOnline_Version5")]
+    partial class Init_Add_Class_CodeOnline_Version5
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -915,7 +917,7 @@ namespace LW.Data.Persistence.Migrations
                     b.Property<DateTimeOffset>("CreatedDate")
                         .HasColumnType("datetime(6)");
 
-                    b.Property<float?>("ExecutionTime")
+                    b.Property<float>("ExecutionTime")
                         .HasColumnType("float");
 
                     b.Property<int>("LanguageId")
@@ -927,7 +929,7 @@ namespace LW.Data.Persistence.Migrations
                     b.Property<DateTimeOffset?>("LastModifiedDate")
                         .HasColumnType("datetime(6)");
 
-                    b.Property<float?>("MemoryUsage")
+                    b.Property<float>("MemoryUsage")
                         .HasColumnType("float");
 
                     b.Property<int>("ProblemId")
@@ -939,9 +941,6 @@ namespace LW.Data.Persistence.Migrations
 
                     b.Property<int>("Status")
                         .HasColumnType("int");
-
-                    b.Property<bool>("Submit")
-                        .HasColumnType("tinyint(1)");
 
                     b.Property<string>("UserId")
                         .IsRequired()

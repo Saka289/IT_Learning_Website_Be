@@ -3,8 +3,9 @@ using LW.Data.Entities;
 using LW.Infrastructure.Extensions;
 using LW.Shared.DTOs;
 using LW.Shared.DTOs.Admin;
-using LW.Shared.DTOs.CommentDocumentDto;
+using LW.Shared.DTOs.CommentDocument;
 using LW.Shared.DTOs.Competition;
+using LW.Shared.DTOs.Compile;
 using LW.Shared.DTOs.Grade;
 using LW.Shared.DTOs.Level;
 using LW.Shared.DTOs.User;
@@ -22,6 +23,7 @@ using LW.Shared.DTOs.Quiz;
 using LW.Shared.DTOs.QuizAnswer;
 using LW.Shared.DTOs.QuizQuestion;
 using LW.Shared.DTOs.QuizQuestionRelation;
+using LW.Shared.DTOs.Submission;
 using LW.Shared.DTOs.Tag;
 using LW.Shared.DTOs.TestCase;
 using LW.Shared.DTOs.Topic;
@@ -180,30 +182,31 @@ public class MappingProfile : Profile
         CreateMap<Exam, ExamDto>()
             // .ForMember(x => x.Type,
             //         y => y.MapFrom(src => EnumHelperExtensions.GetDisplayName(src.Type).ToString()))
-            .ForMember(x=>x.CompetitionId, y=> y.MapFrom(src=>src.Competition.Id))
-            .ForMember(x=>x.CompetitionTitle, y=> y.MapFrom(src=>src.Competition.Title))
+            .ForMember(x => x.CompetitionId, y => y.MapFrom(src => src.Competition.Id))
+            .ForMember(x => x.CompetitionTitle, y => y.MapFrom(src => src.Competition.Title))
             .ReverseMap();
         CreateMap<Exam, ExamCreateDto>().ReverseMap();
         CreateMap<Exam, ExamUpdateDto>().ReverseMap();
         //ExamCode
-        CreateMap<ExamCode,ExamCodeDto>()
-            .ForMember(x=>x.ExamTitle, y=>y.MapFrom(src=>src.Exam.Title))
-            .ForMember(x=>x.NumberQuestion, y=>y.MapFrom(src=>src.Exam.NumberQuestion))
+        CreateMap<ExamCode, ExamCodeDto>()
+            .ForMember(x => x.ExamTitle, y => y.MapFrom(src => src.Exam.Title))
+            .ForMember(x => x.NumberQuestion, y => y.MapFrom(src => src.Exam.NumberQuestion))
             .ReverseMap();
-        CreateMap<ExamCode,ExamCodeCreateDto>().ReverseMap();
-        CreateMap<ExamCode,ExamCodeUpdateDto>().ReverseMap();
+        CreateMap<ExamCode, ExamCodeCreateDto>().ReverseMap();
+        CreateMap<ExamCode, ExamCodeUpdateDto>().ReverseMap();
         //ExamAnswer
         CreateMap<ExamAnswer, ExamAnswerDto>().ReverseMap();
         CreateMap<ExamAnswer, ExamAnswerCreateDto>().ReverseMap();
         CreateMap<ExamAnswer, ExamAnswerUpdateDto>().ReverseMap();
         //UserExam
-        CreateMap<UserExam,UserExamDto>()
-            .ForMember(x => x.HistoryExam, y => y.MapFrom(src => JsonConvert.DeserializeObject<List<HistoryAnswer>>(src.HistoryExam)))
-            .ForMember(x=>x.UserName, y=>y.MapFrom(src =>src.ApplicationUser.UserName))
-            .ForMember(x=>x.ExamName, y=>y.MapFrom(src =>src.ExamCode.Exam.Title))
-            .ForMember(x=>x.ExamId, y=>y.MapFrom(src =>src.ExamCode.Exam.Id))
-            .ForMember(x=>x.ExamCodeId, y=>y.MapFrom(src =>src.ExamCode.Id))
-            .ForMember(x=>x.Code, y=>y.MapFrom(src =>src.ExamCode.Code))
+        CreateMap<UserExam, UserExamDto>()
+            .ForMember(x => x.HistoryExam,
+                y => y.MapFrom(src => JsonConvert.DeserializeObject<List<HistoryAnswer>>(src.HistoryExam)))
+            .ForMember(x => x.UserName, y => y.MapFrom(src => src.ApplicationUser.UserName))
+            .ForMember(x => x.ExamName, y => y.MapFrom(src => src.ExamCode.Exam.Title))
+            .ForMember(x => x.ExamId, y => y.MapFrom(src => src.ExamCode.Exam.Id))
+            .ForMember(x => x.ExamCodeId, y => y.MapFrom(src => src.ExamCode.Id))
+            .ForMember(x => x.Code, y => y.MapFrom(src => src.ExamCode.Code))
             .ReverseMap();
         //Quiz
         CreateMap<Quiz, QuizDto>()
@@ -241,7 +244,8 @@ public class MappingProfile : Profile
         CreateMap<ProgramLanguage, ProgramLanguageUpdateDto>().ReverseMap();
         // Solution
         CreateMap<Solution, SolutionDto>()
-            .ForMember(x => x.FullName, y => y.MapFrom(src => src.ApplicationUser.FirstName + " " + src.ApplicationUser.LastName))
+            .ForMember(x => x.FullName,
+                y => y.MapFrom(src => src.ApplicationUser.FirstName + " " + src.ApplicationUser.LastName))
             .ForMember(x => x.Image, y => y.MapFrom(src => src.ApplicationUser.Image))
             .ReverseMap();
         CreateMap<Solution, SolutionCreateDto>().ReverseMap();
@@ -258,9 +262,13 @@ public class MappingProfile : Profile
         CreateMap<TestCase, TestCaseDto>().ReverseMap();
         CreateMap<TestCase, TestCaseCreateDto>().ReverseMap();
         CreateMap<TestCase, TestCaseUpdateDto>().ReverseMap();
-        // ExecuteCde
+        // ExecuteCode
         CreateMap<ExecuteCode, ExecuteCodeDto>().ReverseMap();
         CreateMap<ExecuteCode, ExecuteCodeCreateDto>().ReverseMap();
         CreateMap<ExecuteCode, ExecuteCodeUpdateDto>().ReverseMap();
+        // Submission
+        CreateMap<Submission, SubmissionDto>()
+            .ForMember(x => x.StatusId, y => y.MapFrom(src => (int)src.Status))
+            .ReverseMap();
     }
 }

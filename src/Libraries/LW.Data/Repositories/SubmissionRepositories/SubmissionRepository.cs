@@ -2,6 +2,7 @@
 using LW.Data.Common.Interfaces;
 using LW.Data.Entities;
 using LW.Data.Persistence;
+using LW.Shared.Enums;
 using Microsoft.EntityFrameworkCore;
 
 namespace LW.Data.Repositories.SubmissionRepositories;
@@ -15,6 +16,21 @@ public class SubmissionRepository : RepositoryBase<Submission, int>, ISubmission
     public async Task<IEnumerable<Submission>> GetAllSubmission()
     {
         return await FindAll().ToListAsync();
+    }
+
+    public async Task<IEnumerable<Submission>> GetAllSubmissionByProblemIdUserId(int problemId, string userId)
+    {
+        return await FindAll()
+            .Where(s => s.ProblemId == problemId && s.UserId.Equals(userId) && s.Submit)
+            .ToListAsync();
+    }
+
+    public async Task<Submission?> GetSubmissionByProblemIdUserId(int problemId, string userId, int languageId)
+    {
+        return await FindAll()
+            .Where(s => s.ProblemId == problemId && s.UserId.Equals(userId) && s.LanguageId == languageId && s.Status == EStatusSubmission.Accepted && s.Submit)
+            .OrderByDescending(s => s.CreatedDate)
+            .FirstOrDefaultAsync();
     }
 
     public Task<IQueryable<Submission>> GetAllSubmissionPagination()

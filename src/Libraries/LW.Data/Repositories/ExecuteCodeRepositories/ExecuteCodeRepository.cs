@@ -33,6 +33,11 @@ public class ExecuteCodeRepository : RepositoryBase<ExecuteCode, int>, IExecuteC
         return await FindByCondition(x => x.Id == id).FirstOrDefaultAsync();
     }
 
+    public async Task<ExecuteCode?> GetExecuteCodeByProblemIdLanguageId(int problemId, int languageId)
+    {
+        return await FindAll().FirstOrDefaultAsync(e => e.ProblemId == problemId && e.LanguageId == languageId);
+    }
+
     public async Task<ExecuteCode> CreateExecuteCode(ExecuteCode executeCode)
     {
         await CreateAsync(executeCode);

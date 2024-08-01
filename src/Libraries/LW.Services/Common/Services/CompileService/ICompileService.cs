@@ -1,6 +1,8 @@
-﻿namespace LW.Services.Common.Services.CompileService;
+﻿using LW.Shared.DTOs.Compile;
 
-public interface ICompileService 
+namespace LW.Services.Common.Services.CompileService;
+
+public interface ICompileService
 {
-    
+    Task<CompileDto> SubmitCompile(CompileCreateDto compileCreateDto);
 }

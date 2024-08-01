@@ -45,6 +45,7 @@ using LW.Data.Repositories.QuizQuestionRelationRepositories;
 using LW.Data.Repositories.QuizQuestionRepositories;
 using LW.Data.Repositories.QuizRepositories;
 using LW.Data.Repositories.SolutionRepositories;
+using LW.Data.Repositories.SubmissionRepositories;
 using LW.Data.Repositories.TagRepositories;
 using LW.Data.Repositories.TestCaseRepositories;
 using LW.Data.Repositories.TopicRepositories;
@@ -52,6 +53,7 @@ using LW.Data.Repositories.UserExamRepositories;
 using LW.Data.Repositories.UserGradeRepositories;
 using LW.Data.Repositories.UserQuizRepositories;
 using LW.Services.CommentDocumentServices;
+using LW.Services.Common.Services.CompileService;
 using LW.Services.CompetitionServices;
 using LW.Services.EditorialServices;
 using LW.Services.EnumServices;
@@ -67,6 +69,7 @@ using LW.Services.QuizQuestionRelationServices;
 using LW.Services.QuizQuestionServices;
 using LW.Services.QuizServices;
 using LW.Services.SolutionServices;
+using LW.Services.SubmissionServices;
 using LW.Services.TagServices;
 using LW.Services.TestCaseServices;
 using LW.Services.TopicServices;
@@ -287,6 +290,7 @@ public static class ServiceExtensions
         services.AddScoped(typeof(IRepositoryBase<,>), typeof(RepositoryQueryBase<,>));
         services.AddScoped(typeof(ISmtpEmailService), typeof(SmtpEmailService));
         services.AddScoped(typeof(IElasticSearchService<,>), typeof(ElasticSearchService<,>));
+        services.AddScoped(typeof(IBaseService<>), typeof(BaseService<>));
         services.AddTransient(typeof(IRedisCache<>), typeof(RedisCache<>));
         services.AddTransient<ISerializeService, SerializeService>();
         // IRepository 
@@ -314,6 +318,7 @@ public static class ServiceExtensions
         services.AddScoped<IEditorialRepository, EditorialRepository>();
         services.AddScoped<ITestCaseRepository, TestCaseRepository>();
         services.AddScoped<IExecuteCodeRepository, ExecuteCodeRepository>();
+        services.AddScoped<ISubmissionRepository, SubmissionRepository>();
         // IService 
         services.AddScoped<IAdminAuthorService, AdminAuthorService>();
         services.AddScoped<IUserService, UserService>();
@@ -346,6 +351,8 @@ public static class ServiceExtensions
         services.AddScoped<IEditorialService, EditorialService>();
         services.AddScoped<ITestCaseService, TestCaseService>();
         services.AddScoped<IExecuteCodeService, ExecuteCodeService>();
+        services.AddScoped<ICompileService, CompileService>();
+        services.AddScoped<ISubmissionService, SubmissionService>();
         return services;
     }
 }
