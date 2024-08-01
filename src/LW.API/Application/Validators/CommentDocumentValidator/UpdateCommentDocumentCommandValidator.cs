@@ -1,5 +1,5 @@
 ﻿using FluentValidation;
-using LW.Shared.DTOs.CommentDocumentDto;
+using LW.Shared.DTOs.CommentDocument;
 
 namespace LW.API.Application.Validators.CommentDocumentValidator;
 

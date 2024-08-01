@@ -1,5 +1,5 @@
 ﻿using LW.Data.Entities;
-using LW.Shared.DTOs.CommentDocumentDto;
+using LW.Shared.DTOs.CommentDocument;
 using LW.Shared.SeedWork;
 
 namespace LW.Services.CommentDocumentServices;

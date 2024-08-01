@@ -140,7 +140,7 @@ namespace LW.API.Controllers.Public
             return Ok(result);
         }
 
-        [HttpPut("UpdateStatusQuiz")]
+        [HttpPut("UpdateStatusQuiz/{id}")]
         public async Task<ActionResult<ApiResult<bool>>> UpdateStatusQuiz([Required] int id)
         {
             var result = await _quizService.UpdateQuizStatus(id);
@@ -158,7 +158,7 @@ namespace LW.API.Controllers.Public
             var result = await _quizService.DeleteQuiz(id);
             if (!result.IsSucceeded)
             {
-                return NotFound(result);
+                return BadRequest(result);
             }
 
             return Ok(result);

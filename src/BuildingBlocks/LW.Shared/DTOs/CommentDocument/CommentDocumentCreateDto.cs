@@ -1,8 +1,7 @@
-﻿namespace LW.Shared.DTOs.CommentDocumentDto;
+﻿namespace LW.Shared.DTOs.CommentDocument;
 
-public class CommentDocumentUpdateDto
+public class CommentDocumentCreateDto
 {
-    public int Id { get; set; }
     public string Note { get; set; }
     public int Rating { get; set; }
     public int? ParentId { get; set; }

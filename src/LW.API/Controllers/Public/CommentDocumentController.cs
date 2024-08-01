@@ -5,7 +5,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using LW.API.Application.Validators.CommentDocumentValidator;
 using LW.Services.CommentDocumentServices;
-using LW.Shared.DTOs.CommentDocumentDto;
+using LW.Shared.DTOs.CommentDocument;
 using LW.Shared.SeedWork;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
