@@ -3,7 +3,7 @@ using LW.Shared.DTOs.Tag;
 
 namespace LW.API.Application.Validators.TagValidatior;
 
-public class CreateTagCommandValidator:AbstractValidator<TagCreateDto>
+public class CreateTagCommandValidator : AbstractValidator<TagCreateDto>
 {
     public CreateTagCommandValidator()
     {

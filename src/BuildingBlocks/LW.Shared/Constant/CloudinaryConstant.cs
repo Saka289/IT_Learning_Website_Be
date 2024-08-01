@@ -11,4 +11,5 @@ public class CloudinaryConstant
     public const string FolderExamFilePdf = "ExamFile";
     public const string FolderExamImage = "ExamImage";
     public const string FolderQuestionImage = "QuestionImage";
+    public const string FolderEditorialImage = "EditorialImage";
 }

@@ -13,4 +13,6 @@ public class ElasticConstant
     public const string ElasticTags = "tags";
     public const string ElasticUsers = "users";
     public const string ElasticCompetitions = "competitions";
+    public const string ElasticSolutions = "solutions";
+    public const string ElasticProblems = "problems";
 }

@@ -1,4 +1,4 @@
-﻿namespace LW.Shared.DTOs.CommentDocumentDto;
+﻿namespace LW.Shared.DTOs.CommentDocument;
 
 public class CommentDocumentDto
 {
