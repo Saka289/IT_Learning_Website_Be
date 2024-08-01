@@ -637,7 +637,7 @@ namespace LW.Data.Persistence.Migrations
                     Id = table.Column<int>(type: "int", nullable: false)
                         .Annotation("MySql:ValueGenerationStrategy", MySqlValueGenerationStrategy.IdentityColumn),
                     Score = table.Column<decimal>(type: "decimal(12,2)", nullable: false),
-                    HistoryExam = table.Column<string>(type: "json", nullable: false)
+                    HistoryExam = table.Column<string>(type: "json", nullable: true)
                         .Annotation("MySql:CharSet", "utf8mb4"),
                     UserId = table.Column<string>(type: "varchar(255)", nullable: false)
                         .Annotation("MySql:CharSet", "utf8mb4"),

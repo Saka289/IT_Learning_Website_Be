@@ -1,4 +1,4 @@
-﻿namespace LW.Shared.DTOs.ExamAnswer;
+﻿namespace LW.Data.Entities;
 
 public class HistoryAnswer
 {
@@ -6,5 +6,4 @@ public class HistoryAnswer
     public string? UserAnswer { get; set; }
     public bool IsCorrect { get; set; }
     public string? CorrectAnswer { get; set; }
-
 }

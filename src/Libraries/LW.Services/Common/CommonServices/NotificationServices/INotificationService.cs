@@ -1,7 +1,7 @@
 ﻿using LW.Shared.DTOs.Notification;
 using LW.Shared.SeedWork;
 
-namespace LW.Services.Common;
+namespace LW.Services.Common.CommonServices.NotificationServices;
 
 public interface INotificationService
 {

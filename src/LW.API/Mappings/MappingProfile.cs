@@ -204,14 +204,14 @@ public class MappingProfile : Profile
         CreateMap<ExamAnswer, ExamAnswerUpdateDto>().ReverseMap();
         //UserExam
         CreateMap<UserExam, UserExamDto>()
-            .ForMember(x => x.HistoryExam,
-                y => y.MapFrom(src => JsonConvert.DeserializeObject<List<HistoryAnswer>>(src.HistoryExam)))
+            // .ForMember(x => x.HistoryExam, y => y.MapFrom(src => JsonConvert.DeserializeObject<List<HistoryAnswer>>(src.HistoryExam)))
             .ForMember(x => x.UserName, y => y.MapFrom(src => src.ApplicationUser.UserName))
             .ForMember(x => x.ExamName, y => y.MapFrom(src => src.ExamCode.Exam.Title))
             .ForMember(x => x.ExamId, y => y.MapFrom(src => src.ExamCode.Exam.Id))
             .ForMember(x => x.ExamCodeId, y => y.MapFrom(src => src.ExamCode.Id))
             .ForMember(x => x.Code, y => y.MapFrom(src => src.ExamCode.Code))
             .ReverseMap();
+        CreateMap<HistoryAnswer, HistoryAnswerDto>().ReverseMap();
         //Quiz
         CreateMap<Quiz, QuizDto>()
             .ForMember(x => x.TopicTitle, y => y.MapFrom(src => src.Topic.Title))

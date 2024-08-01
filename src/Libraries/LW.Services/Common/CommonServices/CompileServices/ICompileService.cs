@@ -1,6 +1,6 @@
 ﻿using LW.Shared.DTOs.Compile;
 
-namespace LW.Services.Common.Services.CompileService;
+namespace LW.Services.Common.CommonServices.CompileServices;
 
 public interface ICompileService
 {

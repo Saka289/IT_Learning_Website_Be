@@ -11,7 +11,7 @@ public class UserExam : EntityAuditBase<int>
     public decimal Score { get; set; }
     [Required]
     [Column(TypeName = "json")]
-     public string HistoryExam { get; set; }
+    public List<HistoryAnswer> HistoryExam { get; set; }
     [Required]
     public string? UserId { get; set; }
     [ForeignKey(nameof(UserId))]
