@@ -19,6 +19,9 @@ using LW.Shared.DTOs.Index;
 using LW.Shared.DTOs.Lesson;
 using LW.Shared.DTOs.Problem;
 using LW.Shared.DTOs.ProgramLanguage;
+using LW.Shared.DTOs.Notification;
+using LW.Shared.DTOs.Post;
+using LW.Shared.DTOs.PostComment;
 using LW.Shared.DTOs.Quiz;
 using LW.Shared.DTOs.QuizAnswer;
 using LW.Shared.DTOs.QuizQuestion;
@@ -29,6 +32,7 @@ using LW.Shared.DTOs.TestCase;
 using LW.Shared.DTOs.Topic;
 using LW.Shared.DTOs.UserExam;
 using LW.Shared.DTOs.UserQuiz;
+using LW.Shared.DTOs.VoteComment;
 using LW.Shared.Enums;
 using LW.Shared.Solution;
 using Microsoft.AspNetCore.Identity;
@@ -212,6 +216,7 @@ public class MappingProfile : Profile
         CreateMap<Quiz, QuizDto>()
             .ForMember(x => x.TopicTitle, y => y.MapFrom(src => src.Topic.Title))
             .ForMember(x => x.LessonTitle, y => y.MapFrom(src => src.Lesson.Title))
+            .ForMember(x => x.TotalQuestion, y => y.MapFrom(src => src.QuizQuestionRelations.Count))
             .ReverseMap();
         CreateMap<Quiz, QuizCreateDto>().ReverseMap();
         CreateMap<Quiz, QuizUpdateDto>().ReverseMap();
@@ -270,5 +275,38 @@ public class MappingProfile : Profile
         CreateMap<Submission, SubmissionDto>()
             .ForMember(x => x.StatusId, y => y.MapFrom(src => (int)src.Status))
             .ReverseMap();
+        //Post
+        CreateMap<Post, PostDto>()
+            .ForMember(x=>x.UserName, y=>y.MapFrom(src=>src.ApplicationUser.UserName))
+            .ForMember(x=>x.GradeTitle, y=>y.MapFrom(src=>src.Grade.Title))
+            .ForMember(x=>x.NumberOfComment, y=>y.MapFrom(src=>src.PostComments.Count()))
+            .ForMember(x=>x.Avatar, y=>y.MapFrom(src=>src.ApplicationUser.Image))
+            .ReverseMap();
+        CreateMap<Post, PostCreateDto>().ReverseMap();
+        CreateMap<Post, PostUpdateDto>().ReverseMap();
+        //PostComment
+        CreateMap<PostComment, PostCommentDto>()
+            .ForMember(x => x.FullName,
+                y => y.MapFrom(src => src.ApplicationUser.FirstName + " " + src.ApplicationUser.LastName))
+            .ForMember(x => x.Avatar,
+                y => y.MapFrom(src => src.ApplicationUser.Image))
+            .ForMember(x=>x.NumberOfReply, y=>y.MapFrom(src=>src.PostCommentChilds.Count()))
+
+            .ReverseMap();
+        CreateMap<PostComment, PostCommentReplyDto>()
+            .ForMember(x => x.FullName,
+                y => y.MapFrom(src => src.ApplicationUser.FirstName + " " + src.ApplicationUser.LastName))
+            .ForMember(x => x.Avatar,
+                y => y.MapFrom(src => src.ApplicationUser.Image))
+            .ReverseMap();
+        CreateMap<PostComment, PostCommentCreateDto>().ReverseMap();
+        CreateMap<PostComment, PostCommentUpdateDto>().ReverseMap();
+        // Notification
+        CreateMap<Notification, NotificationCreateDto>().ReverseMap();
+        CreateMap<Notification, NotificationDto>().ReverseMap();
+        //VoteComment
+        CreateMap<VoteComment, VoteCommentDto>().ReverseMap();
+        CreateMap<VoteComment, VoteCommentCreateDto>().ReverseMap();
+        CreateMap<VoteComment, VoteCommentUpdateDto>().ReverseMap();
     }
 }

@@ -22,6 +22,24 @@ namespace LW.API.Controllers.Public
         {
             _quizQuestionRelationService = quizQuestionRelationService;
         }
+        
+        [HttpPost("CreateQuizQuestionRelationByQuizCustom")]
+        public async Task<ActionResult<ApiResult<bool>>> CreateQuizQuestionRelationByQuizCustom([FromBody] QuizQuestionRelationCustomCreateDto quizQuestionRelationCustomCreateDto)
+        {
+            var validationResult = await new CreateQuizQuestionRelationCustomCreateCommandValidator().ValidateAsync(quizQuestionRelationCustomCreateDto);
+            if (!validationResult.IsValid)
+            {
+                return BadRequest(validationResult);
+            }
+
+            var result = await _quizQuestionRelationService.CreateQuizQuestionRelationByQuizCustom(quizQuestionRelationCustomCreateDto);
+            if (!result.IsSucceeded)
+            {
+                return BadRequest(result);
+            }
+
+            return Ok(result);
+        }
 
         [HttpPost("CreateQuizQuestionRelation")]
         public async Task<ActionResult<ApiResult<bool>>> CreateQuizQuestionRelation([FromBody] QuizQuestionRelationCreateDto quizQuestionRelationCreateDto)
@@ -41,7 +59,7 @@ namespace LW.API.Controllers.Public
             return Ok(result);
         }
         
-        [HttpPut("CreateQuizQuestionRelation")]
+        [HttpPut("UpdateQuizQuestionRelation")]
         public async Task<ActionResult<ApiResult<bool>>> UpdateQuizQuestionRelation([FromBody] QuizQuestionRelationUpdateDto quizQuestionRelationUpdateDto)
         {
             var validationResult = await new UpdateQuizQuestionRelationCommandValidator().ValidateAsync(quizQuestionRelationUpdateDto);
@@ -59,7 +77,7 @@ namespace LW.API.Controllers.Public
             return Ok(result);
         }
         
-        [HttpDelete("CreateQuizQuestionRelation")]
+        [HttpDelete("DeleteQuizQuestionRelation/{id}")]
         public async Task<ActionResult<ApiResult<bool>>> DeleteQuizQuestionRelation([Required] int id)
         {
             var result = await _quizQuestionRelationService.DeleteQuizQuestionRelation(id);

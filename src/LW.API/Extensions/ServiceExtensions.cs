@@ -40,6 +40,9 @@ using LW.Data.Repositories.ExecuteCodeRepositories;
 using LW.Data.Repositories.LessonRepositories;
 using LW.Data.Repositories.ProblemRepositories;
 using LW.Data.Repositories.ProgramLanguageRepositories;
+using LW.Data.Repositories.NotificationRepositories;
+using LW.Data.Repositories.PostCommentRepositories;
+using LW.Data.Repositories.PostRepositories;
 using LW.Data.Repositories.QuizAnswerRepositories;
 using LW.Data.Repositories.QuizQuestionRelationRepositories;
 using LW.Data.Repositories.QuizQuestionRepositories;
@@ -52,8 +55,11 @@ using LW.Data.Repositories.TopicRepositories;
 using LW.Data.Repositories.UserExamRepositories;
 using LW.Data.Repositories.UserGradeRepositories;
 using LW.Data.Repositories.UserQuizRepositories;
+using LW.Data.Repositories.VoteCommentRepositories;
+using LW.Infrastructure.Hubs;
 using LW.Services.CommentDocumentServices;
 using LW.Services.Common.Services.CompileService;
+using LW.Services.Common;
 using LW.Services.CompetitionServices;
 using LW.Services.EditorialServices;
 using LW.Services.EnumServices;
@@ -65,6 +71,8 @@ using LW.Services.IndexServices;
 using LW.Services.LessonServices;
 using LW.Services.ProblemServices;
 using LW.Services.ProgramLanguageServices;
+using LW.Services.PostCommentServices;
+using LW.Services.PostServices;
 using LW.Services.QuizQuestionRelationServices;
 using LW.Services.QuizQuestionServices;
 using LW.Services.QuizServices;
@@ -121,6 +129,7 @@ public static class ServiceExtensions
     public static IServiceCollection AddInfrastructure(this IServiceCollection services, IConfiguration configuration)
     {
         // Add services to the container.
+        services.AddSignalR();
         services.AddControllers();
         services.AddHttpContextAccessor();
         services.Configure<RouteOptions>(options => options.LowercaseUrls = true);
@@ -250,7 +259,7 @@ public static class ServiceExtensions
 
         var configurationOptions = ConfigurationOptions.Parse(settings.ConnectionString);
         configurationOptions.Password = settings.Password;
-
+        services.AddSingleton<IConnectionMultiplexer>(ConnectionMultiplexer.Connect(configurationOptions));
         services.AddStackExchangeRedisCache(options => { options.ConfigurationOptions = configurationOptions; });
         return services;
     }
@@ -319,6 +328,10 @@ public static class ServiceExtensions
         services.AddScoped<ITestCaseRepository, TestCaseRepository>();
         services.AddScoped<IExecuteCodeRepository, ExecuteCodeRepository>();
         services.AddScoped<ISubmissionRepository, SubmissionRepository>();
+        services.AddScoped<IPostRepository, PostRepository>();
+        services.AddScoped<IPostCommentRepository, PostCommentRepository>();
+        services.AddScoped<INotificationRepository, NotificationRepository>();
+        services.AddScoped<IVoteCommentRepository, VoteCommentRepository>();
         // IService 
         services.AddScoped<IAdminAuthorService, AdminAuthorService>();
         services.AddScoped<IUserService, UserService>();
@@ -353,6 +366,9 @@ public static class ServiceExtensions
         services.AddScoped<IExecuteCodeService, ExecuteCodeService>();
         services.AddScoped<ICompileService, CompileService>();
         services.AddScoped<ISubmissionService, SubmissionService>();
+        services.AddScoped<IPostService, PostService>();
+        services.AddScoped<IPostCommentService, PostCommentService>();
+        services.AddScoped<INotificationService, NotificationService>();
         return services;
     }
 }

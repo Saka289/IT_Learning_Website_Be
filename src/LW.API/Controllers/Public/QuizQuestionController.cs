@@ -71,6 +71,17 @@ namespace LW.API.Controllers.Public
             return Ok(result);
         }
         
+        [HttpGet("GetAllQuizQuestionByQuizId/{quizId}")]
+        public async Task<ActionResult<ApiResult<PagedList<QuizQuestionTestDto>>>> GetAllQuizQuestionByQuizIdTest([Required] int quizId,bool shuffle, int? size)
+        {
+            var result = await _quizQuestionService.GetAllQuizQuestionByQuizId(quizId, shuffle, size);
+            if (!result.IsSucceeded)
+            {
+                return NotFound(result);
+            }
+            return Ok(result);
+        }
+        
         [HttpGet("SearchQuizQuestionPagination")]
         public async Task<ActionResult<ApiResult<IEnumerable<QuizQuestionDto>>>> SearchQuizQuestionPagination([FromQuery] SearchQuizQuestionDto searchQuizQuestionDto)
         {

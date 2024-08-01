@@ -49,6 +49,11 @@ public class AppDbContext : IdentityDbContext<ApplicationUser>
     public DbSet<TestCase> TestCases { get; set; }
     public DbSet<Editorial> Editorials { get; set; }
 
+    public DbSet<Post> Posts { get; set; }
+    public DbSet<PostComment> PostComments { get; set; }
+    public DbSet<Notification> Notifications { get; set; }
+    public DbSet<VoteComment> VoteComments { get; set; }
+
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
         modelBuilder.ApplyConfigurationsFromAssembly(Assembly.GetExecutingAssembly());

@@ -131,6 +131,28 @@ public class QuizQuestionService : IQuizQuestionService
         return new ApiSuccessResult<IEnumerable<QuizQuestionTestDto>>(result);
     }
 
+    public async Task<ApiResult<IEnumerable<QuizQuestionDto>>> GetAllQuizQuestionByQuizId(int quizId, bool shuffle = true, int? size = 0)
+    {
+        var quizQuestionList = await _quizQuestionRepository.GetAllQuizQuestionByQuizId(quizId);
+        if (!quizQuestionList.Any())
+        {
+            return new ApiResult<IEnumerable<QuizQuestionDto>>(false, "Quiz Question is null !!!");
+        }
+
+        if (shuffle)
+        {
+            quizQuestionList = quizQuestionList.ToList().OrderBy(x => Random.Shared.Next()).AsQueryable();
+        }
+        
+        if (size > 0)
+        {
+            quizQuestionList = quizQuestionList.Take(Convert.ToInt32(size));
+        }
+        
+        var result = _mapper.Map<IEnumerable<QuizQuestionDto>>(quizQuestionList);
+        return new ApiSuccessResult<IEnumerable<QuizQuestionDto>>(result);
+    }
+
     public async Task<ApiResult<PagedList<QuizQuestionDto>>> SearchQuizQuestion(
         SearchQuizQuestionDto searchQuizQuestionDto)
     {
@@ -184,13 +206,6 @@ public class QuizQuestionService : IQuizQuestionService
                 if (countAnswer != 4)
                 {
                     return new ApiResult<QuizQuestionDto>(false, "Question is four answer !!!");
-                }
-
-                break;
-            case ETypeQuestion.QuestionFiveAnswer:
-                if (countAnswer != 5)
-                {
-                    return new ApiResult<QuizQuestionDto>(false, "Question is five answer !!!");
                 }
 
                 break;
@@ -251,13 +266,6 @@ public class QuizQuestionService : IQuizQuestionService
                 if (countAnswer != 4)
                 {
                     return new ApiResult<QuizQuestionDto>(false, "Question is four answer !!!");
-                }
-
-                break;
-            case ETypeQuestion.QuestionFiveAnswer:
-                if (countAnswer != 5)
-                {
-                    return new ApiResult<QuizQuestionDto>(false, "Question is five answer !!!");
                 }
 
                 break;
@@ -339,13 +347,6 @@ public class QuizQuestionService : IQuizQuestionService
                     }
 
                     break;
-                case ETypeQuestion.QuestionFiveAnswer:
-                    if (countAnswer != 5)
-                    {
-                        return new ApiResult<bool>(false, "Question is five answer !!!");
-                    }
-
-                    break;
                 case ETypeQuestion.QuestionMultiChoice:
                     if (countAnswer != 6 || countAnswerTrue < 1)
                     {
@@ -402,13 +403,6 @@ public class QuizQuestionService : IQuizQuestionService
                     if (countAnswer != 4)
                     {
                         return new ApiResult<bool>(false, "Question is four answer !!!");
-                    }
-
-                    break;
-                case ETypeQuestion.QuestionFiveAnswer:
-                    if (countAnswer != 5)
-                    {
-                        return new ApiResult<bool>(false, "Question is five answer !!!");
                     }
 
                     break;

@@ -1,4 +1,6 @@
-﻿namespace LW.API.Extensions;
+﻿using LW.Infrastructure.Hubs;
+
+namespace LW.API.Extensions;
 
 public static class ApplicationExtensions
 {
@@ -23,6 +25,7 @@ public static class ApplicationExtensions
         app.UseEndpoints(endpoints =>
         {
             endpoints.MapDefaultControllerRoute();
+            endpoints.MapHub<NotificationHub>("/notificationHub");
         });
     }
 }

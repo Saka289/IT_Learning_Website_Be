@@ -650,7 +650,45 @@ namespace LW.Data.Persistence.Migrations
                     b.ToTable("Problems");
                 });
 
-            modelBuilder.Entity("LW.Data.Entities.ProgramLanguage", b =>
+            modelBuilder.Entity("LW.Data.Entities.Notification", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    b.Property<string>("Description")
+                        .HasColumnType("longtext");
+
+                    b.Property<bool?>("IsRead")
+                        .HasColumnType("tinyint(1)");
+
+                    b.Property<string>("Link")
+                        .HasColumnType("longtext");
+
+                    b.Property<DateTime?>("NotificationTime")
+                        .HasColumnType("datetime(6)");
+
+                    b.Property<int>("NotificationType")
+                        .HasColumnType("int");
+
+                    b.Property<string>("UserReceiveId")
+                        .HasColumnType("longtext");
+
+                    b.Property<string>("UserReceiveName")
+                        .HasColumnType("longtext");
+
+                    b.Property<string>("UserSendId")
+                        .HasColumnType("longtext");
+
+                    b.Property<string>("UserSendName")
+                        .HasColumnType("longtext");
+
+                    b.HasKey("Id");
+
+                    b.ToTable("Notifications");
+                });
+                
+          modelBuilder.Entity("LW.Data.Entities.ProgramLanguage", b =>
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
@@ -682,6 +720,92 @@ namespace LW.Data.Persistence.Migrations
                     b.HasKey("Id");
 
                     b.ToTable("ProgramLanguages");
+                });
+
+            modelBuilder.Entity("LW.Data.Entities.Post", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    b.Property<string>("Content")
+                        .IsRequired()
+                        .HasColumnType("longtext");
+
+                    b.Property<string>("CreatedBy")
+                        .IsRequired()
+                        .HasColumnType("longtext");
+
+                    b.Property<DateTimeOffset>("CreatedDate")
+                        .HasColumnType("datetime(6)");
+
+                    b.Property<int>("GradeId")
+                        .HasColumnType("int");
+
+                    b.Property<string>("LastModifiedBy")
+                        .HasColumnType("longtext");
+
+                    b.Property<DateTimeOffset?>("LastModifiedDate")
+                        .HasColumnType("datetime(6)");
+
+                    b.Property<string>("UserId")
+                        .IsRequired()
+                        .HasColumnType("varchar(255)");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("GradeId");
+
+                    b.HasIndex("UserId");
+
+                    b.ToTable("Posts");
+                });
+
+          modelBuilder.Entity("LW.Data.Entities.PostComment", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    b.Property<string>("Content")
+                        .IsRequired()
+                        .HasColumnType("longtext");
+
+                    b.Property<int?>("CorrectVote")
+                        .HasColumnType("int");
+
+                    b.Property<string>("CreatedBy")
+                        .IsRequired()
+                        .HasColumnType("longtext");
+
+                    b.Property<DateTimeOffset>("CreatedDate")
+                        .HasColumnType("datetime(6)");
+
+                    b.Property<string>("LastModifiedBy")
+                        .HasColumnType("longtext");
+
+                    b.Property<DateTimeOffset?>("LastModifiedDate")
+                        .HasColumnType("datetime(6)");
+
+                    b.Property<int?>("ParentId")
+                        .HasColumnType("int");
+
+                    b.Property<int>("PostId")
+                        .HasColumnType("int");
+
+                    b.Property<string>("UserId")
+                        .IsRequired()
+                        .HasColumnType("varchar(255)");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("ParentId");
+
+                    b.HasIndex("PostId");
+
+                    b.HasIndex("UserId");
+
+                    b.ToTable("PostComments");
                 });
 
             modelBuilder.Entity("LW.Data.Entities.Quiz", b =>
@@ -1200,6 +1324,44 @@ namespace LW.Data.Persistence.Migrations
                     b.ToTable("UserQuizzes");
                 });
 
+            modelBuilder.Entity("LW.Data.Entities.VoteComment", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    b.Property<string>("CreatedBy")
+                        .IsRequired()
+                        .HasColumnType("longtext");
+
+                    b.Property<DateTimeOffset>("CreatedDate")
+                        .HasColumnType("datetime(6)");
+
+                    b.Property<bool>("IsCorrectVote")
+                        .HasColumnType("tinyint(1)");
+
+                    b.Property<string>("LastModifiedBy")
+                        .HasColumnType("longtext");
+
+                    b.Property<DateTimeOffset?>("LastModifiedDate")
+                        .HasColumnType("datetime(6)");
+
+                    b.Property<int>("PostCommentId")
+                        .HasColumnType("int");
+
+                    b.Property<string>("UserId")
+                        .IsRequired()
+                        .HasColumnType("varchar(255)");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("PostCommentId");
+
+                    b.HasIndex("UserId");
+
+                    b.ToTable("VoteComments");
+                });
+
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityRole", b =>
                 {
                     b.Property<string>("Id")
@@ -1450,6 +1612,7 @@ namespace LW.Data.Persistence.Migrations
                     b.Navigation("Topic");
                 });
 
+
             modelBuilder.Entity("LW.Data.Entities.Problem", b =>
                 {
                     b.HasOne("LW.Data.Entities.Lesson", "Lesson")
@@ -1463,6 +1626,49 @@ namespace LW.Data.Persistence.Migrations
                     b.Navigation("Lesson");
 
                     b.Navigation("Topic");
+            modelBuilder.Entity("LW.Data.Entities.Post", b =>
+                {
+                    b.HasOne("LW.Data.Entities.Grade", "Grade")
+                        .WithMany("Posts")
+                        .HasForeignKey("GradeId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("LW.Data.Entities.ApplicationUser", "ApplicationUser")
+                        .WithMany()
+                        .HasForeignKey("UserId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("ApplicationUser");
+
+                    b.Navigation("Grade");
+                });
+
+            modelBuilder.Entity("LW.Data.Entities.PostComment", b =>
+                {
+                    b.HasOne("LW.Data.Entities.PostComment", "PostCommentParent")
+                        .WithMany("PostCommentChilds")
+                        .HasForeignKey("ParentId")
+                        .OnDelete(DeleteBehavior.Cascade);
+
+                    b.HasOne("LW.Data.Entities.Post", "Post")
+                        .WithMany("PostComments")
+                        .HasForeignKey("PostId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("LW.Data.Entities.ApplicationUser", "ApplicationUser")
+                        .WithMany()
+                        .HasForeignKey("UserId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("ApplicationUser");
+
+                    b.Navigation("Post");
+
+                    b.Navigation("PostCommentParent");
                 });
 
             modelBuilder.Entity("LW.Data.Entities.Quiz", b =>
@@ -1642,6 +1848,25 @@ namespace LW.Data.Persistence.Migrations
                     b.Navigation("Quiz");
                 });
 
+            modelBuilder.Entity("LW.Data.Entities.VoteComment", b =>
+                {
+                    b.HasOne("LW.Data.Entities.PostComment", "PostComment")
+                        .WithMany("VoteComments")
+                        .HasForeignKey("PostCommentId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("LW.Data.Entities.ApplicationUser", "ApplicationUser")
+                        .WithMany("VoteComments")
+                        .HasForeignKey("UserId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("ApplicationUser");
+
+                    b.Navigation("PostComment");
+                });
+
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityRoleClaim<string>", b =>
                 {
                     b.HasOne("Microsoft.AspNetCore.Identity.IdentityRole", null)
@@ -1702,6 +1927,8 @@ namespace LW.Data.Persistence.Migrations
                     b.Navigation("UserGrades");
 
                     b.Navigation("UserQuizzes");
+
+                    b.Navigation("VoteComments");
                 });
 
             modelBuilder.Entity("LW.Data.Entities.CommentDocument", b =>
@@ -1734,6 +1961,8 @@ namespace LW.Data.Persistence.Migrations
             modelBuilder.Entity("LW.Data.Entities.Grade", b =>
                 {
                     b.Navigation("Documents");
+
+                    b.Navigation("Posts");
 
                     b.Navigation("UserGrades");
                 });
@@ -1769,6 +1998,18 @@ namespace LW.Data.Persistence.Migrations
                     b.Navigation("ExecuteCodes");
 
                     b.Navigation("Submissions");
+
+            modelBuilder.Entity("LW.Data.Entities.Post", b =>
+                {
+                    b.Navigation("PostComments");
+                });
+
+            modelBuilder.Entity("LW.Data.Entities.PostComment", b =>
+                {
+                    b.Navigation("PostCommentChilds");
+
+                    b.Navigation("VoteComments");
+
                 });
 
             modelBuilder.Entity("LW.Data.Entities.Quiz", b =>
