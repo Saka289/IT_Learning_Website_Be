@@ -53,6 +53,7 @@ public class AppDbContext : IdentityDbContext<ApplicationUser>
     public DbSet<PostComment> PostComments { get; set; }
     public DbSet<Notification> Notifications { get; set; }
     public DbSet<VoteComment> VoteComments { get; set; }
+    public DbSet<FavoritePost> FavoritePosts { get; set; }
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {

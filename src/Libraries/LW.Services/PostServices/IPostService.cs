@@ -26,4 +26,7 @@ public interface IPostService
 
      Task<ApiResult<PagedList<PostDto>>> GetAllPostNotAnswerByGradePagination(int gradeId,
          PagingRequestParameters pagingRequestParameters);
+     Task<ApiResult<bool>> VoteFavoritePost(string userId, int postId);
+     Task<ApiResult<PagedList<PostDto>>> GetAllFavoritePostOfUserPagination(string userId, PagingRequestParameters pagingRequestParameters);
+
 }

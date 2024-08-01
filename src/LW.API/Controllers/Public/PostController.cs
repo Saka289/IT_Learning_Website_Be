@@ -129,6 +129,18 @@ namespace LW.API.Controllers.Public
             Response.Headers.Add("X-Pagination", JsonConvert.SerializeObject(result.Data.GetMetaData()));
             return Ok(result);
         }
+        [HttpGet("GetAllFavoritePostByUserPagination")]
+        public async Task<ActionResult<ApiResult<PagedList<PostDto>>>> GetAllFavoritePostByUserPagination([Required] string userId,
+            [FromQuery] PagingRequestParameters pagingRequestParameters)
+        {
+            var result = await _postService.GetAllFavoritePostOfUserPagination(userId,pagingRequestParameters);
+            if (!result.IsSucceeded)
+            {
+                return NotFound(result);
+            }
+            Response.Headers.Add("X-Pagination", JsonConvert.SerializeObject(result.Data.GetMetaData()));
+            return Ok(result);
+        }
         
         [HttpGet("GetPostById")]
         public async Task<ActionResult<ApiResult<PostDto>>> GetPostById(int id)
@@ -152,6 +164,17 @@ namespace LW.API.Controllers.Public
             }
 
             var result = await _postService.CreatePost(model);
+            if (!result.IsSucceeded)
+            {
+                return BadRequest(result);
+            }
+
+            return Ok(result);
+        }
+        [HttpPost("VoteFavoritePost")]
+        public async Task<ActionResult<ApiResult<bool>>> VoteFavoritePost([Required] string userId, [Required] int postId)
+        {
+            var result = await _postService.VoteFavoritePost(userId, postId);
             if (!result.IsSucceeded)
             {
                 return BadRequest(result);

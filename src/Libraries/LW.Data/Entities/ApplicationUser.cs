@@ -18,4 +18,5 @@ public class ApplicationUser : IdentityUser
     public virtual ICollection<UserQuiz> UserQuizzes { get; set; }
     public virtual ICollection<Submission> Submissions { get; set; }
     public virtual ICollection<VoteComment> VoteComments { get; set; }
+    public virtual ICollection<FavoritePost> FavoritePosts { get; set; }
 }
