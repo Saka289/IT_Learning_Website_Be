@@ -35,6 +35,7 @@ using LW.Data.Repositories.DocumentRepositories;
 using LW.Data.Repositories.ExamAnswerRepositories;
 using LW.Data.Repositories.ExamCodeRepositories;
 using LW.Data.Repositories.ExamRepositories;
+using LW.Data.Repositories.FavoritePostRepositories;
 using LW.Data.Repositories.LessonRepositories;
 using LW.Data.Repositories.NotificationRepositories;
 using LW.Data.Repositories.PostCommentRepositories;
@@ -302,6 +303,7 @@ public static class ServiceExtensions
         services.AddScoped<IPostCommentRepository, PostCommentRepository>();
         services.AddScoped<INotificationRepository, NotificationRepository>();
         services.AddScoped<IVoteCommentRepository, VoteCommentRepository>();
+        services.AddScoped<IFavoritePostRepository, FavoritePostRepository>();
         
         // IService 
         services.AddScoped<IAdminAuthorService, AdminAuthorService>();
