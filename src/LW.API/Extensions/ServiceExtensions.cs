@@ -69,7 +69,6 @@ using LW.Services.TopicServices;
 using LW.Services.UserExamServices;
 using LW.Services.UserGradeServices;
 using LW.Services.UserQuizServices;
-using LW.Services.VoteCommentServices;
 using Nest;
 using StackExchange.Redis;
 
@@ -332,7 +331,6 @@ public static class ServiceExtensions
         services.AddScoped<IPostService, PostService>();
         services.AddScoped<IPostCommentService, PostCommentService>();
         services.AddScoped<INotificationService, NotificationService>();
-        services.AddScoped<IVoteCommentService, VoteCommentService>();
         return services;
     }
 }
