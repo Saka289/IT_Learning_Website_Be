@@ -10,5 +10,9 @@ public interface IPostCommentService
     Task<ApiResult<PostCommentDto>> CreatePostComment(PostCommentCreateDto postCommentCreate);
     Task<ApiResult<PostCommentDto>> UpdatePostComment(PostCommentUpdateDto postCommentUpdate);
     Task<ApiResult<bool>> DeletePostComment(int id);
-    Task<ApiResult<bool>> VoteCorrectPostComment(int id);
+    Task<ApiResult<bool>> VoteCorrectPostComment(int postCommentId, string userId);
+    Task<ApiResult<PagedList<PostCommentDto>>> GetAllPostCommentByPostIdPagination(int postId, PagingRequestParameters pagingRequestParameters);
+    Task<ApiResult<PagedList<PostCommentDto>>> GetAllPostCommentByParentIdPagination(int postId, PagingRequestParameters pagingRequestParameters);
+    
+
 }

@@ -48,6 +48,7 @@ using LW.Data.Repositories.TopicRepositories;
 using LW.Data.Repositories.UserExamRepositories;
 using LW.Data.Repositories.UserGradeRepositories;
 using LW.Data.Repositories.UserQuizRepositories;
+using LW.Data.Repositories.VoteCommentRepositories;
 using LW.Infrastructure.Hubs;
 using LW.Services.CommentDocumentServices;
 using LW.Services.Common;
@@ -68,6 +69,7 @@ using LW.Services.TopicServices;
 using LW.Services.UserExamServices;
 using LW.Services.UserGradeServices;
 using LW.Services.UserQuizServices;
+using LW.Services.VoteCommentServices;
 using Nest;
 using StackExchange.Redis;
 
@@ -300,6 +302,7 @@ public static class ServiceExtensions
         services.AddScoped<IPostRepository, PostRepository>();
         services.AddScoped<IPostCommentRepository, PostCommentRepository>();
         services.AddScoped<INotificationRepository, NotificationRepository>();
+        services.AddScoped<IVoteCommentRepository, VoteCommentRepository>();
         
         // IService 
         services.AddScoped<IAdminAuthorService, AdminAuthorService>();
@@ -329,6 +332,7 @@ public static class ServiceExtensions
         services.AddScoped<IPostService, PostService>();
         services.AddScoped<IPostCommentService, PostCommentService>();
         services.AddScoped<INotificationService, NotificationService>();
+        services.AddScoped<IVoteCommentService, VoteCommentService>();
         return services;
     }
 }
