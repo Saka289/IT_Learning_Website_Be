@@ -17,7 +17,6 @@ public class Post: EntityAuditBase<int>
     public int GradeId { get; set; }
     [ForeignKey(nameof(GradeId))]
     public virtual Grade Grade { get; set; }
-    
     public ICollection<PostComment> PostComments { get; set; }
     public virtual ICollection<FavoritePost> FavoritePosts { get; set; }
 

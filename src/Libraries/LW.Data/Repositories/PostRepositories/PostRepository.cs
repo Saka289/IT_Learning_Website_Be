@@ -72,8 +72,11 @@ public class PostRepository : RepositoryBase<Post, int>, IPostRepository
 
     public async Task<Post> GetPostById(int id)
     {
-        return await FindByCondition(x => x.Id == id).Include(x => x.Grade).Include(x => x.ApplicationUser)
-            .Include(x => x.PostComments).FirstOrDefaultAsync();
+        return await FindByCondition(x => x.Id == id)
+            .Include(x => x.Grade)
+            .Include(x => x.ApplicationUser)
+            .Include(x => x.PostComments)
+            .FirstOrDefaultAsync();
     }
 
     public async Task<Post> CreatePost(Post post)

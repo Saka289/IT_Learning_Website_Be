@@ -113,7 +113,7 @@ public class PostCommentService : IPostCommentService
         {
             return new ApiResult<bool>(false, "Not found comment");
         }
-        await _postCommentRepository.DeletePostComment(comment.Id);
+        await _postCommentRepository.DeletePostComment(id);
         
         return new ApiResult<bool>(true, "Delete comment successfully");
     }

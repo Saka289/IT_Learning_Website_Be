@@ -17,5 +17,4 @@ public class VoteComment : EntityAuditBase<int>
     public virtual PostComment PostComment { get; set; }
     
     public bool IsCorrectVote { get; set; }
-    
 }

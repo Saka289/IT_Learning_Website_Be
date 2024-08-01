@@ -43,10 +43,11 @@ public class PostCommentRepository : RepositoryBase<PostComment, int>, IPostComm
 
     public async Task<PostComment> GetPostCommentById(int id)
     {
-        var postComment = await FindByCondition(x => x.Id == id, false)
+        var postComment = await FindByCondition(x => x.Id == id)
             .Include(x => x.ApplicationUser)
             .Include(x => x.Post)
-            .Include(x => x.PostCommentChilds).ThenInclude(x => x.ApplicationUser)
+            .Include(x => x.PostCommentChilds)
+            .ThenInclude(x => x.ApplicationUser)
             .FirstOrDefaultAsync();
 
         if (postComment != null)
