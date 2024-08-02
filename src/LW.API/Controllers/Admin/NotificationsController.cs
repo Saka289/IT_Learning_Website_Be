@@ -3,8 +3,9 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using LW.Services.Common;
-using LW.Services.Common.CommonServices.NotificationServices;
+using LW.Services.NotificationServices;
 using LW.Shared.DTOs.Notification;
+using LW.Shared.SeedWork;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 
@@ -20,27 +21,50 @@ namespace LW.API.Controllers.Admin
         {
             _notificationService = notificationService;
         }
+        
         [HttpPost("CreateNotification")]
-        public async Task<IActionResult> CreateNotification(NotificationCreateDto model)
+        public async Task<ActionResult<ApiResult<NotificationDto>>> CreateNotification([FromBody] NotificationCreateDto model)
         {
             var result = await _notificationService.CreateNotification(model);
-            if(result == null)
+            if(!result.IsSucceeded)
             {
                 return BadRequest();
             }
-            return Ok("Tạo thành công");
+            return Ok(result);
         }
         
         [HttpPost("CreateNotificationPersonal")]
-        public async Task<IActionResult> CreateNotificationPersonal(NotificationCreateDto notificationDto)
+        public async Task<ActionResult<ApiResult<NotificationDto>>> CreateNotificationPersonal([FromBody] NotificationCreateDto notificationDto)
         {
           
             var result = await _notificationService.CreateNotification(notificationDto);
-            if(result == null)
+            if(!result.IsSucceeded)
             {
                 return BadRequest();
             }
-            return Ok("Tạo thành công");
+            return Ok(result);
+        }
+        
+        [HttpGet("GetAllNotificationByUser/{userId}")]
+        public async Task<ActionResult<ApiResult<IEnumerable<NotificationDto>>>> GetAllNotificationByUser(string userId)
+        {
+            var result = await _notificationService.GetAllNotificationByUser(userId);
+            if(!result.IsSucceeded)
+            {
+                return NotFound();
+            }
+            return Ok(result);
+        }
+        
+        [HttpDelete("DeleteAllNotificationByUser/{userId}")]
+        public async Task<ActionResult<ApiResult<bool>>> DeleteAllNotificationByUser(string userId)
+        {
+            var result = await _notificationService.DeleteAllNotificationOfUser(userId);
+            if(!result.IsSucceeded)
+            {
+                return NotFound();
+            }
+            return Ok(result);
         }
     }
 }

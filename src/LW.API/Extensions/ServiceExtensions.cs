@@ -61,7 +61,7 @@ using LW.Services.Common;
 using LW.Services.Common.CommonServices.CompileServices;
 using LW.Services.Common.CommonServices.FacebookServices;
 using LW.Services.Common.CommonServices.JwtTokenServices;
-using LW.Services.Common.CommonServices.NotificationServices;
+using LW.Services.NotificationServices;
 using LW.Services.CompetitionServices;
 using LW.Services.EditorialServices;
 using LW.Services.EnumServices;
