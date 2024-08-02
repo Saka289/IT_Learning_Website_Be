@@ -48,92 +48,51 @@ public class QuizService : IQuizService
         return new ApiSuccessResult<IEnumerable<QuizDto>>(result);
     }
 
-    public async Task<ApiResult<PagedList<QuizDto>>> GetAllQuizPagination(ETypeQuiz typeQuiz,
-        PagingRequestParameters pagingRequestParameters)
+    public async Task<ApiResult<PagedList<QuizDto>>> GetAllQuizPagination(SearchQuizDto searchQuizDto)
     {
         var quizList = await _quizRepository.GetAllQuizPagination();
         if (!quizList.Any())
         {
             return new ApiResult<PagedList<QuizDto>>(false, "Quiz is null !!!");
         }
-
-        if (typeQuiz > 0)
+        
+        if (!string.IsNullOrEmpty(searchQuizDto.Value))
         {
-            quizList = quizList.Where(q => q.Type == typeQuiz);
-        }
-
-        var result = _mapper.ProjectTo<QuizDto>(quizList);
-        var pagedResult = await PagedList<QuizDto>.ToPageListAsync(result, pagingRequestParameters.PageIndex,
-            pagingRequestParameters.PageSize, pagingRequestParameters.OrderBy, pagingRequestParameters.IsAscending);
-        return new ApiSuccessResult<PagedList<QuizDto>>(pagedResult);
-    }
-
-    public async Task<ApiResult<PagedList<QuizDto>>> GetAllQuizByTopicIdPagination(int topicId, ETypeQuiz typeQuiz,
-        PagingRequestParameters pagingRequestParameters)
-    {
-        var quizList = await _quizRepository.GetAllQuizByTopicIdPagination(topicId);
-        if (!quizList.Any())
-        {
-            return new ApiResult<PagedList<QuizDto>>(false, "Quiz is null !!!");
-        }
-
-        if (typeQuiz > 0)
-        {
-            quizList = quizList.Where(q => q.Type == typeQuiz);
-        }
-
-        var result = _mapper.ProjectTo<QuizDto>(quizList);
-        var pagedResult = await PagedList<QuizDto>.ToPageListAsync(result, pagingRequestParameters.PageIndex,
-            pagingRequestParameters.PageSize, pagingRequestParameters.OrderBy, pagingRequestParameters.IsAscending);
-        return new ApiSuccessResult<PagedList<QuizDto>>(pagedResult);
-    }
-
-    public async Task<ApiResult<PagedList<QuizDto>>> GetAllQuizByLessonIdPagination(int lessonId, ETypeQuiz typeQuiz,
-        PagingRequestParameters pagingRequestParameters)
-    {
-        var quizList = await _quizRepository.GetAllQuizByLessonIdPagination(lessonId);
-        if (!quizList.Any())
-        {
-            return new ApiResult<PagedList<QuizDto>>(false, "Quiz is null !!!");
-        }
-
-        if (typeQuiz > 0)
-        {
-            quizList = quizList.Where(q => q.Type == typeQuiz);
-        }
-
-        var result = _mapper.ProjectTo<QuizDto>(quizList);
-        var pagedResult = await PagedList<QuizDto>.ToPageListAsync(result, pagingRequestParameters.PageIndex,
-            pagingRequestParameters.PageSize, pagingRequestParameters.OrderBy, pagingRequestParameters.IsAscending);
-        return new ApiSuccessResult<PagedList<QuizDto>>(pagedResult);
-    }
-
-    public async Task<ApiResult<PagedList<QuizDto>>> SearchQuizPagination(SearchQuizDto searchQuizDto)
-    {
-        var quizEntity = await _elasticSearchService.SearchDocumentAsync(ElasticConstant.ElasticQuizzes, searchQuizDto);
-        if (quizEntity is null)
-        {
-            return new ApiResult<PagedList<QuizDto>>(false, $"Lesson not found by {searchQuizDto.Key} !!!");
+            var quizListSearch = await _elasticSearchService.SearchDocumentFieldAsync(ElasticConstant.ElasticQuizzes, new SearchRequestValue
+                {
+                    Value = searchQuizDto.Value,
+                    Size = searchQuizDto.Size,
+                });
+            if (quizListSearch is null)
+            {
+                return new ApiResult<PagedList<QuizDto>>(false, "Quiz not found !!!");
+            }
+            
+            quizList = _mapper.Map(quizListSearch, quizList);
         }
 
         if (searchQuizDto.TopicId > 0)
         {
-            quizEntity = quizEntity.Where(t => t.TopicId == searchQuizDto.TopicId).ToList();
+            quizList = quizList.Where(t => t.TopicId == searchQuizDto.TopicId);
         }
 
         if (searchQuizDto.LessonId > 0)
         {
-            quizEntity = quizEntity.Where(t => t.LessonId == searchQuizDto.LessonId).ToList();
+            quizList = quizList.Where(t => t.LessonId == searchQuizDto.LessonId);
+        }
+
+        if (searchQuizDto.Custom)
+        {
+            quizList = quizList.Where(t => t.LessonId == null && t.TopicId == null);
         }
 
         if (searchQuizDto.Type > 0)
         {
-            quizEntity = quizEntity.Where(q => q.Type.Equals(searchQuizDto.Type.ToString()));
+            quizList = quizList.Where(q => q.Type.Equals(searchQuizDto.Type));
         }
 
-        var result = _mapper.Map<IEnumerable<QuizDto>>(quizEntity);
-        var pagedResult = await PagedList<QuizDto>.ToPageListAsync(result.AsQueryable().BuildMock(),
-            searchQuizDto.PageIndex, searchQuizDto.PageSize, searchQuizDto.OrderBy, searchQuizDto.IsAscending);
+        var result = _mapper.Map<IEnumerable<QuizDto>>(quizList);
+        var pagedResult = await PagedList<QuizDto>.ToPageListAsync(result.AsQueryable().BuildMock(), searchQuizDto.PageIndex, searchQuizDto.PageSize, searchQuizDto.OrderBy, searchQuizDto.IsAscending);
         return new ApiSuccessResult<PagedList<QuizDto>>(pagedResult);
     }
 
