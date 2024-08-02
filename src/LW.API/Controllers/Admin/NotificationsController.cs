@@ -30,8 +30,8 @@ namespace LW.API.Controllers.Admin
             }
             return Ok("Tạo thành công");
         }
+        
         [HttpPost("CreateNotificationPersonal")]
-
         public async Task<IActionResult> CreateNotificationPersonal(NotificationCreateDto notificationDto)
         {
           
