@@ -26,13 +26,13 @@ public class NotificationRepository : RepositoryBase<Notification, int>, INotifi
 
     public async Task<bool> DeleteNotification(int id)
     {
-        var noti = await GetNotificationById(id);
-        if (noti == null)
+        var notification = await GetNotificationById(id);
+        if (notification == null)
         {
             return false;
         }
 
-        await DeleteAsync(noti);
+        await DeleteAsync(notification);
         return true;
     }
 
@@ -49,20 +49,20 @@ public class NotificationRepository : RepositoryBase<Notification, int>, INotifi
 
     public async Task<IEnumerable<Notification>> GetAllNotificationByUser(string userId)
     {
-        return await FindByCondition(x => x.UserReceiveId == userId).OrderByDescending(x => x.NotificationTime)
+        return await FindByCondition(x => x.UserReceiveId == userId).OrderByDescending(x => x.CreatedDate)
             .ToListAsync();
     }
 
     public async Task<bool> UpdateStatusOfNotification(int id)
     {
-        var noti = await GetNotificationById(id);
-        if (noti == null)
+        var notification = await GetNotificationById(id);
+        if (notification == null)
         {
             return false;
         }
 
-        noti.IsRead = true;
-        await UpdateNotification(noti);
+        notification.IsRead = true;
+        await UpdateNotification(notification);
         return true;
     }
 }
