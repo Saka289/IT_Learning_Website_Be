@@ -118,7 +118,7 @@ public class NotificationService : INotificationService
         var listNotifications = await _notificationRepository.GetAllNotificationByUser(userId);
         if (!listNotifications.Any())
         {
-            return new ApiResult<int>(false, 0);
+            return new ApiResult<int>(true, 0);
         }
 
         return new ApiResult<int>(true, listNotifications.Count());
