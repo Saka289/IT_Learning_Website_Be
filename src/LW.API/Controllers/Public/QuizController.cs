@@ -38,51 +38,9 @@ namespace LW.API.Controllers.Public
         }
 
         [HttpGet("GetAllQuizPagination")]
-        public async Task<ActionResult<ApiResult<PagedList<QuizDto>>>> GetAllQuizPagination(
-            [FromQuery] PagingRequestParameters pagingRequestParameters, ETypeQuiz typeQuiz)
+        public async Task<ActionResult<ApiResult<PagedList<QuizDto>>>> GetAllQuizPagination([FromQuery] SearchQuizDto searchQuizDto)
         {
-            var result = await _quizService.GetAllQuizPagination(typeQuiz, pagingRequestParameters);
-            if (!result.IsSucceeded)
-            {
-                return NotFound(result);
-            }
-
-            Response.Headers.Add("X-Pagination", JsonConvert.SerializeObject(result.Data.GetMetaData()));
-            return Ok(result);
-        }
-
-        [HttpGet("GetAllQuizByTopicIdPagination/{topicId}")]
-        public async Task<ActionResult<ApiResult<IEnumerable<QuizDto>>>> GetAllQuizByTopicIdPagination(
-            [Required] int topicId, [FromQuery] PagingRequestParameters pagingRequestParameters, ETypeQuiz typeQuiz)
-        {
-            var result = await _quizService.GetAllQuizByTopicIdPagination(topicId, typeQuiz, pagingRequestParameters);
-            if (!result.IsSucceeded)
-            {
-                return NotFound(result);
-            }
-
-            Response.Headers.Add("X-Pagination", JsonConvert.SerializeObject(result.Data.GetMetaData()));
-            return Ok(result);
-        }
-
-        [HttpGet("GetAllQuizByLessonIdPagination/{lessonId}")]
-        public async Task<ActionResult<ApiResult<IEnumerable<QuizDto>>>> GetAllQuizByLessonIdPagination(
-            [Required] int lessonId, [FromQuery] PagingRequestParameters pagingRequestParameters, ETypeQuiz typeQuiz)
-        {
-            var result = await _quizService.GetAllQuizByLessonIdPagination(lessonId, typeQuiz, pagingRequestParameters);
-            if (!result.IsSucceeded)
-            {
-                return NotFound(result);
-            }
-
-            Response.Headers.Add("X-Pagination", JsonConvert.SerializeObject(result.Data.GetMetaData()));
-            return Ok(result);
-        }
-
-        [HttpGet("SearchQuizPagination")]
-        public async Task<ActionResult<ApiResult<IEnumerable<QuizDto>>>> SearchQuizPagination([FromQuery] SearchQuizDto searchQuizDto)
-        {
-            var result = await _quizService.SearchQuizPagination(searchQuizDto);
+            var result = await _quizService.GetAllQuizPagination(searchQuizDto);
             if (!result.IsSucceeded)
             {
                 return NotFound(result);
