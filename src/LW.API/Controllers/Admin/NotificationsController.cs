@@ -55,7 +55,16 @@ namespace LW.API.Controllers.Admin
             }
             return Ok(result);
         }
-        
+        [HttpGet("GetNumberOfNotificationByUser/{userId}")]
+        public async Task<ActionResult<ApiResult<int>>> GetNumberOfNotificationByUser(string userId)
+        {
+            var result = await _notificationService.GetNumberNotificationOfUser(userId);
+            if(!result.IsSucceeded)
+            {
+                return NotFound();
+            }
+            return Ok(result);
+        }
         [HttpDelete("DeleteAllNotificationByUser/{userId}")]
         public async Task<ActionResult<ApiResult<bool>>> DeleteAllNotificationByUser(string userId)
         {
