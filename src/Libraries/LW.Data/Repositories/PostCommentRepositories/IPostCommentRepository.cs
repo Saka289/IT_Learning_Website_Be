@@ -11,8 +11,6 @@ public interface IPostCommentRepository : IRepositoryBase<PostComment, int>
     Task<PostComment> GetPostCommentById(int id);
     Task<IEnumerable<PostComment>> GetAllPostCommentByPostId(int postId);
     Task<IQueryable<PostComment>> GetAllPostCommentByPostIdPagination(int postId);
-    
     Task<IQueryable<PostComment>> GetAllPostCommentByParentIdPagination(int parentId);
     Task<IEnumerable<PostComment>> GetAllPostCommentByParentId(int parentId);
-
 }

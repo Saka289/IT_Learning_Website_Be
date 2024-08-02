@@ -21,8 +21,9 @@ namespace LW.API.Controllers.Admin
         {
             _notificationService = notificationService;
         }
+        
         [HttpPost("CreateNotification")]
-        public async Task<ActionResult<ApiResult<NotificationDto>>> CreateNotification(NotificationCreateDto model)
+        public async Task<ActionResult<ApiResult<NotificationDto>>> CreateNotification([FromBody] NotificationCreateDto model)
         {
             var result = await _notificationService.CreateNotification(model);
             if(!result.IsSucceeded)
@@ -31,9 +32,9 @@ namespace LW.API.Controllers.Admin
             }
             return Ok(result);
         }
+        
         [HttpPost("CreateNotificationPersonal")]
-
-        public async Task<ActionResult<ApiResult<NotificationDto>>> CreateNotificationPersonal(NotificationCreateDto notificationDto)
+        public async Task<ActionResult<ApiResult<NotificationDto>>> CreateNotificationPersonal([FromBody] NotificationCreateDto notificationDto)
         {
           
             var result = await _notificationService.CreateNotification(notificationDto);
@@ -43,7 +44,8 @@ namespace LW.API.Controllers.Admin
             }
             return Ok(result);
         }
-        [HttpGet("GetAllNotificationByUser")]
+        
+        [HttpGet("GetAllNotificationByUser/{userId}")]
         public async Task<ActionResult<ApiResult<IEnumerable<NotificationDto>>>> GetAllNotificationByUser(string userId)
         {
             var result = await _notificationService.GetAllNotificationByUser(userId);
@@ -54,7 +56,7 @@ namespace LW.API.Controllers.Admin
             return Ok(result);
         }
         
-        [HttpDelete("DeleteAllNotificationByUser")]
+        [HttpDelete("DeleteAllNotificationByUser/{userId}")]
         public async Task<ActionResult<ApiResult<bool>>> DeleteAllNotificationByUser(string userId)
         {
             var result = await _notificationService.DeleteAllNotificationOfUser(userId);

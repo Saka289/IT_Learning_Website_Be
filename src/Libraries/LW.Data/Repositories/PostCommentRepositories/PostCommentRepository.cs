@@ -26,7 +26,7 @@ public class PostCommentRepository : RepositoryBase<PostComment, int>, IPostComm
 
     public async Task<bool> DeletePostComment(int id)
     {
-        var postComment = await FindByCondition(x=>x.Id==id).FirstOrDefaultAsync();
+        var postComment = await GetByIdAsync(id);
         if (postComment == null)
         {
             return false;
@@ -35,7 +35,6 @@ public class PostCommentRepository : RepositoryBase<PostComment, int>, IPostComm
         await DeleteAsync(postComment);
         return true;
     }
-  
 
     public async Task<PostComment> GetPostCommentById(int id)
     {
@@ -58,45 +57,49 @@ public class PostCommentRepository : RepositoryBase<PostComment, int>, IPostComm
 
     public async Task<IEnumerable<PostComment>> GetAllPostCommentByPostId(int postId)
     {
-        return await  FindByCondition(x => x.PostId == postId && x.ParentId == null)
-            .Include(x => x.ApplicationUser)
-            .Include(x => x.Post)
-            .Include(x => x.PostCommentChilds).ThenInclude(x => x.ApplicationUser)
-            .ToListAsync();    }
-
-    public async Task<IEnumerable<PostComment>> GetAllPostCommentByParentId(int parentId)
-    {
-        return await FindByCondition(x => x.ParentId == parentId, trackChanges:false)
+        return await FindByCondition(x => x.PostId == postId && x.ParentId == null)
             .Include(x => x.ApplicationUser)
             .Include(x => x.Post)
             .Include(x => x.PostCommentChilds).ThenInclude(x => x.ApplicationUser)
             .ToListAsync();
     }
 
-    public async Task<IQueryable<PostComment>> GetAllPostCommentPagination()
+    public async Task<IEnumerable<PostComment>> GetAllPostCommentByParentId(int parentId)
     {
-        return FindAll()
+        return await FindByCondition(x => x.ParentId == parentId, trackChanges: false)
             .Include(x => x.ApplicationUser)
             .Include(x => x.Post)
             .Include(x => x.PostCommentChilds).ThenInclude(x => x.ApplicationUser)
-            .AsQueryable();
-    }
-    public async Task<IQueryable<PostComment>> GetAllPostCommentByPostIdPagination(int postId)
-    {
-        return  FindByCondition(x => x.PostId == postId && x.ParentId == null)
-            .Include(x => x.ApplicationUser)
-            .Include(x => x.Post)
-            .Include(x => x.PostCommentChilds).ThenInclude(x => x.ApplicationUser)
-            .AsQueryable();
+            .ToListAsync();
     }
 
-    public async Task<IQueryable<PostComment>> GetAllPostCommentByParentIdPagination(int parentId)
+    public Task<IQueryable<PostComment>> GetAllPostCommentPagination()
     {
-        return  FindByCondition(x => x.ParentId == parentId)
+        var result = FindAll()
             .Include(x => x.ApplicationUser)
             .Include(x => x.Post)
             .Include(x => x.PostCommentChilds).ThenInclude(x => x.ApplicationUser)
             .AsQueryable();
+        return Task.FromResult(result);
     }
-   
+
+    public Task<IQueryable<PostComment>> GetAllPostCommentByPostIdPagination(int postId)
+    {
+        var result = FindByCondition(x => x.PostId == postId && x.ParentId == null)
+            .Include(x => x.ApplicationUser)
+            .Include(x => x.Post)
+            .Include(x => x.PostCommentChilds).ThenInclude(x => x.ApplicationUser)
+            .AsQueryable();
+        return Task.FromResult(result);
+    }
+
+    public Task<IQueryable<PostComment>> GetAllPostCommentByParentIdPagination(int parentId)
+    {
+        var result = FindByCondition(x => x.ParentId == parentId)
+            .Include(x => x.ApplicationUser)
+            .Include(x => x.Post)
+            .Include(x => x.PostCommentChilds).ThenInclude(x => x.ApplicationUser)
+            .AsQueryable();
+        return Task.FromResult(result);
+    }
 }

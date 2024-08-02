@@ -21,14 +21,14 @@ public class QuizRepository : RepositoryBase<Quiz, int>, IQuizRepository
             .ToListAsync();
     }
 
-    public Task<IQueryable<Quiz>> GetAllQuizPagination()
+    public async Task<IEnumerable<Quiz>> GetAllQuizPagination()
     {
-        var result = FindAll()
+        var result = await FindAll()
             .Include(l => l.Lesson)
             .Include(l => l.Topic)
             .Include(q => q.QuizQuestionRelations)
-            .AsQueryable();
-        return Task.FromResult(result);
+            .ToListAsync();
+        return result;
     }
 
     public Task<IQueryable<Quiz>> GetAllQuizByTopicIdPagination(int topicId)
