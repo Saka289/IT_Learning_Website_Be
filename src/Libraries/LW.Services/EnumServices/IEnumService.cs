@@ -12,4 +12,7 @@ public interface IEnumService
     Task<ApiResult<IEnumerable<EnumDto>>> GetAllLevelQuestion();
     Task<ApiResult<IEnumerable<EnumDto>>> GetAllQuizType();
     Task<ApiResult<IEnumerable<EnumDto>>> GetAllTypeOfExam();
+    Task<ApiResult<IEnumerable<EnumDto>>> GetAllStatusSubmission();
+    Task<ApiResult<IEnumerable<EnumDto>>> GetAllStatusProblem();
+    Task<ApiResult<IEnumerable<EnumDto>>> GetAllTypeDifficulty();
 }

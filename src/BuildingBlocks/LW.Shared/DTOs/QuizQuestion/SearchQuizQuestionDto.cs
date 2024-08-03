@@ -1,9 +1,12 @@
-﻿using LW.Shared.SeedWork;
+﻿using System.ComponentModel.DataAnnotations;
+using LW.Shared.Enums;
+using LW.Shared.SeedWork;
 
 namespace LW.Shared.DTOs.QuizQuestion;
 
-public class SearchQuizQuestionDto : SearchRequestParameters
+public class SearchQuizQuestionDto : SearchRequestValue
 {
-    public override string? Key { get; set; } = "keyWord";
-    public int? QuizId { get; set; }
+    [Required]
+    public int QuizId { get; set; } = 0;
+    public int NumberOfQuestion { get; set; } = 0;
 }

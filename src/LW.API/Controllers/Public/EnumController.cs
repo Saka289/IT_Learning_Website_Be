@@ -96,5 +96,42 @@ namespace LW.API.Controllers.Public
 
             return Ok(result);
         }
+        
+        [HttpGet("GetAllStatusSubmission")]
+        public async Task<ActionResult<ApiResult<IEnumerable<EnumDto>>>> GetAllStatusSubmission()
+        {
+            var result = await _enumService.GetAllStatusSubmission();
+
+            if (!result.IsSucceeded)
+            {
+                return NotFound(result);
+            }
+
+            return Ok(result);
+        }
+        [HttpGet("GetAllStatusProblem")]
+        public async Task<ActionResult<ApiResult<IEnumerable<EnumDto>>>> GetAllStatusProblem()
+        {
+            var result = await _enumService.GetAllStatusProblem();
+
+            if (!result.IsSucceeded)
+            {
+                return NotFound(result);
+            }
+
+            return Ok(result);
+        }
+        [HttpGet("GetAllTypeDifficulty")]
+        public async Task<ActionResult<ApiResult<IEnumerable<EnumDto>>>> GetAllTypeDifficulty()
+        {
+            var result = await _enumService.GetAllTypeDifficulty();
+
+            if (!result.IsSucceeded)
+            {
+                return NotFound(result);
+            }
+
+            return Ok(result);
+        }
     }
 }

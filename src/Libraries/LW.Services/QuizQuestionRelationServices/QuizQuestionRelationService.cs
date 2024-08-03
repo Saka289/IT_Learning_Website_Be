@@ -36,21 +36,39 @@ public class QuizQuestionRelationService : IQuizQuestionRelationService
         }
 
         var quizQuestionRelation = new List<QuizQuestionRelation>();
+        var quizQuestionOld = (await _quizQuestionRepository.GetAllQuizQuestionByQuizId(quizQuestionRelationCustomCreateDto.QuizId)).Select(q => q.Id);
         foreach (var item in quizQuestionRelationCustomCreateDto.QuiQuestionRelationCustomCreate)
         {
             var quizQuestion = await _quizQuestionRepository.GetAllQuizQuestionByQuizId(item.QuizChildId);
+            if (!quizQuestion.Any())
+            {
+                _logger.Information($"Quiz Question: Get all quiz question by quizId {item.QuizChildId} not found !!!");
+            }
             if (item.Shuffle)
             {
                 quizQuestion = quizQuestion.ToList().OrderBy(x => Random.Shared.Next()).AsQueryable();
             }
             quizQuestion = quizQuestion.Take(item.NumberOfQuestion);
-            foreach (var itemQuestion in quizQuestion.Select(x => x.Id))
+            
+            foreach (var itemBoth in quizQuestion.Select(q => q.Id).Intersect(quizQuestionOld))
             {
-                quizQuestionRelation.Add(new()
+                _logger.Information($"Quiz Relation: Quiz Question ID {itemBoth} is exits !!!");
+            }
+            foreach (var itemQuestion in quizQuestion.Select(q => q.Id).Except(quizQuestionOld))
+            {
+                var quizQuestionCheck = quizQuestionRelation.Any(x => x.QuizQuestionId == itemQuestion);
+                if (!quizQuestionCheck)
                 {
-                    QuizId = quizQuestionRelationCustomCreateDto.QuizId,
-                    QuizQuestionId = itemQuestion
-                });
+                    quizQuestionRelation.Add(new()
+                    {
+                        QuizId = quizQuestionRelationCustomCreateDto.QuizId,
+                        QuizQuestionId = itemQuestion
+                    });
+                }
+                else
+                {
+                    _logger.Information($"Quiz Relation: Quiz Question ID {itemQuestion} is exits !!!");
+                }
             }
         }
         
@@ -70,8 +88,16 @@ public class QuizQuestionRelationService : IQuizQuestionRelationService
         {
             return new ApiResult<bool>(false, "Quiz not found !!!");
         }
+
+        var quizQuestionOld = (await _quizQuestionRepository.GetAllQuizQuestionByQuizId(quizQuestionRelationCreateDto.QuizId)).Select(q => q.Id);
+
+        var quizQuestionRelationBoth = quizQuestionRelationCreateDto.QuizQuestionIds.Intersect(quizQuestionOld).ToList();
+        foreach (var item in quizQuestionRelationBoth)
+        {
+            _logger.Information($"Quiz Relation: Quiz Question ID {item} is exits !!!");
+        }
         
-        var quizQuestionRelation = quizQuestionRelationCreateDto.QuizQuestionIds.Select(quizQuestionId =>
+        var quizQuestionRelation = quizQuestionRelationCreateDto.QuizQuestionIds.Except(quizQuestionOld).Select(quizQuestionId =>
             new QuizQuestionRelation
             {
                 QuizId = quizQuestionRelationCreateDto.QuizId,
