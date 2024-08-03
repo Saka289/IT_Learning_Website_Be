@@ -8,7 +8,9 @@ public interface INotificationService
     Task<ApiResult<IEnumerable<NotificationDto>>> GetAllNotificationByUser(string userId);
     Task<ApiResult<NotificationDto>> GetNotificationById(int id);
     Task<ApiResult<NotificationDto>> CreateNotification(NotificationCreateDto competitionCreateDto);
+    Task<ApiResult<NotificationDto>> UpdateStatusNotification(int id);
     Task<ApiResult<bool>> DeleteNotification(int id);
     Task<ApiResult<bool>> DeleteAllNotificationOfUser(string userId);
+    Task<ApiResult<bool>> MarkAllAsReadAsync(string userId);
     Task<ApiResult<int>> GetNumberNotificationOfUser(string userId);
 }

@@ -21,7 +21,9 @@ public class NotificationService : INotificationService
     private readonly IRedisCache<HubConnection> _redis;
     private readonly UserManager<ApplicationUser> _userManager;
 
-    public NotificationService(INotificationRepository notificationRepository, IMapper mapper, IHubContext<NotificationHub> notificationHub, IRedisCache<HubConnection> redis, UserManager<ApplicationUser> userManager)
+    public NotificationService(INotificationRepository notificationRepository, IMapper mapper,
+        IHubContext<NotificationHub> notificationHub, IRedisCache<HubConnection> redis,
+        UserManager<ApplicationUser> userManager)
     {
         _notificationRepository = notificationRepository;
         _mapper = mapper;
@@ -32,6 +34,12 @@ public class NotificationService : INotificationService
 
     public async Task<ApiResult<IEnumerable<NotificationDto>>> GetAllNotificationByUser(string userId)
     {
+        var userExist = await _userManager.FindByIdAsync(userId);
+        if (userExist == null)
+        {
+            return new ApiResult<IEnumerable<NotificationDto>>(false, "User not found");
+        }
+
         var listNotifications = await _notificationRepository.GetAllNotificationByUser(userId);
         if (!listNotifications.Any())
         {
@@ -39,6 +47,16 @@ public class NotificationService : INotificationService
         }
 
         var result = _mapper.Map<IEnumerable<NotificationDto>>(listNotifications);
+        //image
+        foreach (var notificationDto in result)
+        {
+            var userSend = await _userManager.FindByIdAsync(notificationDto.UserSendId);
+            if (userSend != null)
+            {
+                notificationDto.UserSendImage = userSend.Image;
+            }
+        }
+
         return new ApiResult<IEnumerable<NotificationDto>>(true, result, "Get all list notification successfully");
     }
 
@@ -61,32 +79,54 @@ public class NotificationService : INotificationService
         {
             return new ApiResult<NotificationDto>(false, "Not found user send notification");
         }
+
         var userReceive = await _userManager.FindByIdAsync(notificationCreateDto.UserReceiveId);
         if (userReceive == null)
         {
             return new ApiResult<NotificationDto>(false, "Not found user Receive notification");
         }
+
         var createNotification = _mapper.Map<Notification>(notificationCreateDto);
         var notification = await _notificationRepository.CreateNotification(createNotification);
         var result = _mapper.Map<NotificationDto>(notification);
         // Gửi notification = hub 
         if (notificationCreateDto.NotificationType == ENotificationType.All)
         {
-            _notificationHub.Clients.All.SendAsync("ReceivedNotification",notificationCreateDto.Description);
+            _notificationHub.Clients.All.SendAsync("ReceivedNotification", notificationCreateDto.Description);
         }
-        else if(notificationCreateDto.NotificationType == ENotificationType.Personal)
+        else if (notificationCreateDto.NotificationType == ENotificationType.Personal)
         {
-            var hubConnections = await _redis.GetAllKeysByPattern(RedisPatternConstant.PatternHub, "UserId", notificationCreateDto.UserReceiveId);
+            var hubConnections = await _redis.GetAllKeysByPattern(RedisPatternConstant.PatternHub, "UserId",
+                notificationCreateDto.UserReceiveId);
             if (hubConnections.Any())
             {
                 foreach (var hubConnection in hubConnections)
                 {
                     await _notificationHub.Clients.Client(hubConnection.ConnectionId)
-                        .SendAsync("ReceivedPersonalNotification", notificationCreateDto.Description, notificationCreateDto.UserReceiveId, notificationCreateDto.UserSendId);
+                        .SendAsync("ReceivedPersonalNotification", notificationCreateDto.Description,
+                            notificationCreateDto.UserReceiveId, notificationCreateDto.UserSendId);
                 }
             }
         }
+
         return new ApiResult<NotificationDto>(true, result, "Create notification successfully");
+    }
+
+    public async Task<ApiResult<NotificationDto>> UpdateStatusNotification(int id)
+    {
+        var notification = await _notificationRepository.GetNotificationById(id);
+        if (notification == null)
+        {
+            return new ApiResult<NotificationDto>(false, "Not found");
+        }
+
+        var result = await _notificationRepository.UpdateStatusOfNotification(id);
+        if (result == false)
+        {
+            return new ApiResult<NotificationDto>(false, "Update status fail");
+        }
+
+        return new ApiResult<NotificationDto>(true, "Update status success");
     }
 
     public async Task<ApiResult<bool>> DeleteNotification(int id)
@@ -113,9 +153,22 @@ public class NotificationService : INotificationService
         return new ApiResult<bool>(true);
     }
 
+    public async Task<ApiResult<bool>> MarkAllAsReadAsync(string userId)
+    {
+        var user = await _userManager.FindByIdAsync(userId);
+        if (user == null)
+        {
+            return new ApiResult<bool>(false, "Not found user");
+        }
+
+        await _notificationRepository.MarkAllAsRead(userId);
+        return new ApiResult<bool>(true, "Mark all as read success");
+    }
+
     public async Task<ApiResult<int>> GetNumberNotificationOfUser(string userId)
     {
         var listNotifications = await _notificationRepository.GetAllNotificationByUser(userId);
+        var listNotificationNotRead = listNotifications.Where(x => x.IsRead == false);
         if (!listNotifications.Any())
         {
             return new ApiResult<int>(true, 0);

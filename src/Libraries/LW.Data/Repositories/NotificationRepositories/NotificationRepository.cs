@@ -65,4 +65,21 @@ public class NotificationRepository : RepositoryBase<Notification, int>, INotifi
         await UpdateNotification(notification);
         return true;
     }
+
+    public async Task<bool> MarkAllAsRead(string userId)
+    {
+        var notifications = await FindByCondition(x => x.UserReceiveId == userId).ToListAsync();
+        if (!notifications.Any())
+        {
+            return false;
+        }
+
+        foreach (var notification in notifications)
+        {
+            notification.IsRead = true;
+        }
+
+        await UpdateListAsync(notifications);
+        return true;
+    }
 }

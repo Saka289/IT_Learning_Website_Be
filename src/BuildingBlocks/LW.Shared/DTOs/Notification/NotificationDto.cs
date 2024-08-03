@@ -7,6 +7,7 @@ public class NotificationDto
 
     public string? UserSendId { get; set; }
     public string? UserSendName { get; set; }
+    public string? UserSendImage { get; set; }
 
     public string? UserReceiveId { get; set; }
     public string? UserReceiveName { get; set; }
