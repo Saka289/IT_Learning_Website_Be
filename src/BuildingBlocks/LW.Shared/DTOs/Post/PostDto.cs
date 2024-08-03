@@ -1,4 +1,6 @@
-﻿namespace LW.Shared.DTOs.Post;
+﻿using LW.Shared.DTOs.FavoritePost;
+
+namespace LW.Shared.DTOs.Post;
 
 public class PostDto
 {
@@ -13,4 +15,5 @@ public class PostDto
     public int NumberOfComment { get; set; }
     public DateTimeOffset CreatedDate { get; set; }
     public DateTimeOffset? LastModifiedDate { get; set; }
+    public ICollection<FavoritePostDto> FavoritePosts { get; set; }
 }

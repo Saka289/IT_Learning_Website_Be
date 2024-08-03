@@ -1,4 +1,6 @@
-﻿namespace LW.Shared.DTOs.PostComment;
+﻿using LW.Shared.DTOs.VoteComment;
+
+namespace LW.Shared.DTOs.PostComment;
 
 public class PostCommentDto
 {
@@ -16,4 +18,5 @@ public class PostCommentDto
     public DateTimeOffset? LastModifiedDate { get; set; }
     public string CreatedBy { get; set; }
     public string? LastModifiedBy { get; set; }
+    public ICollection<VoteCommentDto> VoteComments { get; set; }
 }

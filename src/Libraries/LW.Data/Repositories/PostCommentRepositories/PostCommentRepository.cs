@@ -42,6 +42,7 @@ public class PostCommentRepository : RepositoryBase<PostComment, int>, IPostComm
             .Include(x => x.ApplicationUser)
             .Include(x => x.Post)
             .Include(x => x.PostCommentChilds)
+            .Include(x=>x.VoteComments)
             .ThenInclude(x => x.ApplicationUser)
             .FirstOrDefaultAsync();
 
@@ -60,6 +61,7 @@ public class PostCommentRepository : RepositoryBase<PostComment, int>, IPostComm
         return await FindByCondition(x => x.PostId == postId && x.ParentId == null)
             .Include(x => x.ApplicationUser)
             .Include(x => x.Post)
+            .Include(x=>x.VoteComments)
             .Include(x => x.PostCommentChilds).ThenInclude(x => x.ApplicationUser)
             .ToListAsync();
     }
@@ -69,6 +71,7 @@ public class PostCommentRepository : RepositoryBase<PostComment, int>, IPostComm
         return await FindByCondition(x => x.ParentId == parentId, trackChanges: false)
             .Include(x => x.ApplicationUser)
             .Include(x => x.Post)
+            .Include(x=>x.VoteComments)
             .Include(x => x.PostCommentChilds).ThenInclude(x => x.ApplicationUser)
             .ToListAsync();
     }
@@ -78,6 +81,7 @@ public class PostCommentRepository : RepositoryBase<PostComment, int>, IPostComm
         var result = FindAll()
             .Include(x => x.ApplicationUser)
             .Include(x => x.Post)
+            .Include(x=>x.VoteComments)
             .Include(x => x.PostCommentChilds).ThenInclude(x => x.ApplicationUser)
             .AsQueryable();
         return Task.FromResult(result);
@@ -88,6 +92,7 @@ public class PostCommentRepository : RepositoryBase<PostComment, int>, IPostComm
         var result = FindByCondition(x => x.PostId == postId && x.ParentId == null)
             .Include(x => x.ApplicationUser)
             .Include(x => x.Post)
+            .Include(x=>x.VoteComments)
             .Include(x => x.PostCommentChilds).ThenInclude(x => x.ApplicationUser)
             .AsQueryable();
         return Task.FromResult(result);
@@ -98,6 +103,7 @@ public class PostCommentRepository : RepositoryBase<PostComment, int>, IPostComm
         var result = FindByCondition(x => x.ParentId == parentId)
             .Include(x => x.ApplicationUser)
             .Include(x => x.Post)
+            .Include(x=>x.VoteComments)
             .Include(x => x.PostCommentChilds).ThenInclude(x => x.ApplicationUser)
             .AsQueryable();
         return Task.FromResult(result);

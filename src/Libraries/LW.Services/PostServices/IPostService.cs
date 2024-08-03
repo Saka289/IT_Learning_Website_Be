@@ -20,10 +20,6 @@ public interface IPostService
     Task<ApiResult<bool>> DeletePost(int id);
      Task<ApiResult<PagedList<PostDto>>> GetAllPostByUserAndGradePagination(string userId, int gradeId,
         PagingRequestParameters pagingRequestParameters);
-
-     Task<ApiResult<PagedList<PostDto>>> GetAllPostNotAnswerPagination(
-         PagingRequestParameters pagingRequestParameters);
-
      Task<ApiResult<PagedList<PostDto>>> GetAllPostNotAnswerByGradePagination(int gradeId,
          PagingRequestParameters pagingRequestParameters);
      Task<ApiResult<bool>> VoteFavoritePost(string userId, int postId);

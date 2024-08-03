@@ -32,7 +32,10 @@ public class PostRepository : RepositoryBase<Post, int>, IPostRepository
 
     public async Task<IQueryable<Post>> GetAllPostPagination()
     {
-        return FindAll().Include(x => x.Grade).Include(x => x.ApplicationUser).Include(x => x.PostComments)
+        return FindAll().Include(x => x.Grade)
+            .Include(x => x.ApplicationUser)
+            .Include(x => x.PostComments)
+            .Include(x=>x.FavoritePosts)
             .AsQueryable();
     }
 
@@ -64,7 +67,7 @@ public class PostRepository : RepositoryBase<Post, int>, IPostRepository
 
     public async Task<IQueryable<Post>> GetAllPostNotAnswerByGradePagination(int gradeId)
     {
-        return FindByCondition(x => x.PostComments.Count == 0 && x.GradeId==gradeId)
+        return FindByCondition(x => x.PostComments.Count == 0 && x.GradeId == gradeId)
             .Include(x => x.Grade)
             .Include(x => x.ApplicationUser)
             .Include(x => x.PostComments).AsQueryable();

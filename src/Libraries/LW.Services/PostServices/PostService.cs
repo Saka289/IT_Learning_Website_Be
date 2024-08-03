@@ -235,26 +235,18 @@ public class PostService : IPostService
         return new ApiResult<bool>(true, "Delete post successfully");
     }
 
-    public async Task<ApiResult<PagedList<PostDto>>> GetAllPostNotAnswerPagination(
-        PagingRequestParameters pagingRequestParameters)
-    {
-        var posts = await _postRepository.GetAllPostNotAnswerPagination();
-        if (!posts.Any())
-        {
-            return new ApiResult<PagedList<PostDto>>(false, "List Posts is null !!!");
-        }
-
-        var result = _mapper.ProjectTo<PostDto>(posts);
-        var pagedResult = await PagedList<PostDto>.ToPageListAsync(result, pagingRequestParameters.PageIndex,
-            pagingRequestParameters.PageSize, pagingRequestParameters.OrderBy, pagingRequestParameters.IsAscending);
-
-        return new ApiSuccessResult<PagedList<PostDto>>(pagedResult);
-    }
-
     public async Task<ApiResult<PagedList<PostDto>>> GetAllPostNotAnswerByGradePagination(int gradeId,
         PagingRequestParameters pagingRequestParameters)
     {
-        var posts = await _postRepository.GetAllPostNotAnswerByGradePagination(gradeId);
+        IQueryable<Post> posts  ;
+        if (gradeId >0 )
+        {
+            posts= await _postRepository.GetAllPostNotAnswerByGradePagination(gradeId);
+        }
+        else
+        {
+            posts= await _postRepository.GetAllPostNotAnswerPagination();
+        }
         if (!posts.Any())
         {
             return new ApiResult<PagedList<PostDto>>(false, "List Posts is null !!!");

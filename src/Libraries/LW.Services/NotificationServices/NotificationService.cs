@@ -82,7 +82,7 @@ public class NotificationService : INotificationService
                 foreach (var hubConnection in hubConnections)
                 {
                     await _notificationHub.Clients.Client(hubConnection.ConnectionId)
-                        .SendAsync("ReceivedPersonalNotification", notificationCreateDto.Description, notificationCreateDto.UserReceiveId);
+                        .SendAsync("ReceivedPersonalNotification", notificationCreateDto.Description, notificationCreateDto.UserReceiveId, notificationCreateDto.UserSendId);
                 }
             }
         }
