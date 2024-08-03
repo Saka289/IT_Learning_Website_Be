@@ -22,40 +22,8 @@ namespace LW.API.Controllers.Public
         public PostController(IPostService postService)
         {
             _postService = postService;
-            
         }
-         [HttpGet("GetAllPost")]
-        public async Task<ActionResult<ApiResult<PostDto>>> GetAllPost()
-        {
-            var result = await _postService.GetAllPost();
-            if (!result.IsSucceeded)
-            {
-                return NotFound(result);
-            }
-            return Ok(result);
-        }
-        [HttpGet("GetAllPostByGrade/{gradeId}")]
-        public async Task<ActionResult<ApiResult<IEnumerable<PostDto>>>> GetAllPostByGrade(int gradeId)
-        {
-            var result = await _postService.GetAllPostByGrade(gradeId);
-            if (!result.IsSucceeded)
-            {
-                return NotFound(result);
-            }
-            return Ok(result);
-        }
-        [HttpGet("GetAllPostByUser/{userId}")]
-        public async Task<ActionResult<ApiResult<IEnumerable<PostDto>>>> GetAllPostByUser(string userId)
-        {
-            var result = await _postService.GetAllPostByUser(userId);
-            if (!result.IsSucceeded)
-            {
-                return NotFound(result);
-            }
-            return Ok(result);
-        }
-        
-        
+
         [HttpGet("GetAllPostPagination")]
         public async Task<ActionResult<ApiResult<PagedList<PostDto>>>> GetAllPostPagination(
             [FromQuery] PagingRequestParameters pagingRequestParameters)
@@ -65,11 +33,14 @@ namespace LW.API.Controllers.Public
             {
                 return NotFound(result);
             }
+
             Response.Headers.Add("X-Pagination", JsonConvert.SerializeObject(result.Data.GetMetaData()));
             return Ok(result);
         }
+
         [HttpGet("GetAllPostByGradePagination")]
-        public async Task<ActionResult<ApiResult<PagedList<PostDto>>>> GetAllPostByGradePagination([Required] int gradeId,
+        public async Task<ActionResult<ApiResult<PagedList<PostDto>>>> GetAllPostByGradePagination(
+            [Required] int gradeId,
             [FromQuery] PagingRequestParameters pagingRequestParameters)
         {
             var result = await _postService.GetAllPostByGradePagination(gradeId, pagingRequestParameters);
@@ -77,11 +48,14 @@ namespace LW.API.Controllers.Public
             {
                 return NotFound(result);
             }
+
             Response.Headers.Add("X-Pagination", JsonConvert.SerializeObject(result.Data.GetMetaData()));
             return Ok(result);
         }
+
         [HttpGet("GetAllPostByUserPagination")]
-        public async Task<ActionResult<ApiResult<PagedList<PostDto>>>> GetAllPostByUserPagination([Required] string userId,
+        public async Task<ActionResult<ApiResult<PagedList<PostDto>>>> GetAllPostByUserPagination(
+            [Required] string userId,
             [FromQuery] PagingRequestParameters pagingRequestParameters)
         {
             var result = await _postService.GetAllPostByUserPagination(userId, pagingRequestParameters);
@@ -89,48 +63,56 @@ namespace LW.API.Controllers.Public
             {
                 return NotFound(result);
             }
+
             Response.Headers.Add("X-Pagination", JsonConvert.SerializeObject(result.Data.GetMetaData()));
             return Ok(result);
         }
-    
+
         [HttpGet("GetAllPostByUserAndGradePagination")]
-        public async Task<ActionResult<ApiResult<PagedList<PostDto>>>> GetAllPostByUserAndGradePagination([Required] string userId,[Required] int gradeId,
+        public async Task<ActionResult<ApiResult<PagedList<PostDto>>>> GetAllPostByUserAndGradePagination(
+            [Required] string userId, [Required] int gradeId,
             [FromQuery] PagingRequestParameters pagingRequestParameters)
         {
-            var result = await _postService.GetAllPostByUserAndGradePagination(userId,gradeId ,pagingRequestParameters);
+            var result =
+                await _postService.GetAllPostByUserAndGradePagination(userId, gradeId, pagingRequestParameters);
             if (!result.IsSucceeded)
             {
                 return NotFound(result);
             }
+
             Response.Headers.Add("X-Pagination", JsonConvert.SerializeObject(result.Data.GetMetaData()));
             return Ok(result);
         }
-       
+
         [HttpGet("GetAllPostNotAnswerByGradePagination")]
         public async Task<ActionResult<ApiResult<PagedList<PostDto>>>> GetAllPostNotAnswerByGradePagination(int gradeId,
             [FromQuery] PagingRequestParameters pagingRequestParameters)
         {
-            var result = await _postService.GetAllPostNotAnswerByGradePagination(gradeId,pagingRequestParameters);
+            var result = await _postService.GetAllPostNotAnswerByGradePagination(gradeId, pagingRequestParameters);
             if (!result.IsSucceeded)
             {
                 return NotFound(result);
             }
+
             Response.Headers.Add("X-Pagination", JsonConvert.SerializeObject(result.Data.GetMetaData()));
             return Ok(result);
         }
+
         [HttpGet("GetAllFavoritePostByUserPagination")]
-        public async Task<ActionResult<ApiResult<PagedList<PostDto>>>> GetAllFavoritePostByUserPagination([Required] string userId,
+        public async Task<ActionResult<ApiResult<PagedList<PostDto>>>> GetAllFavoritePostByUserPagination(
+            [Required] string userId,
             [FromQuery] PagingRequestParameters pagingRequestParameters)
         {
-            var result = await _postService.GetAllFavoritePostOfUserPagination(userId,pagingRequestParameters);
+            var result = await _postService.GetAllFavoritePostOfUserPagination(userId, pagingRequestParameters);
             if (!result.IsSucceeded)
             {
                 return NotFound(result);
             }
+
             Response.Headers.Add("X-Pagination", JsonConvert.SerializeObject(result.Data.GetMetaData()));
             return Ok(result);
         }
-        
+
         [HttpGet("GetPostById")]
         public async Task<ActionResult<ApiResult<PostDto>>> GetPostById(int id)
         {
@@ -160,8 +142,10 @@ namespace LW.API.Controllers.Public
 
             return Ok(result);
         }
+
         [HttpPost("VoteFavoritePost")]
-        public async Task<ActionResult<ApiResult<bool>>> VoteFavoritePost([Required] string userId, [Required] int postId)
+        public async Task<ActionResult<ApiResult<bool>>> VoteFavoritePost([Required] string userId,
+            [Required] int postId)
         {
             var result = await _postService.VoteFavoritePost(userId, postId);
             if (!result.IsSucceeded)
@@ -190,7 +174,6 @@ namespace LW.API.Controllers.Public
             return Ok(result);
         }
 
-       
 
         [HttpDelete("DeletePost/{id}")]
         public async Task<ActionResult<ApiResult<bool>>> DeletePost(int id)
@@ -203,6 +186,5 @@ namespace LW.API.Controllers.Public
 
             return Ok(result);
         }
-        
     }
 }

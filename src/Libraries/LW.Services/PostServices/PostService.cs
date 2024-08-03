@@ -1,4 +1,5 @@
-﻿using AutoMapper;
+﻿using System.Collections;
+using AutoMapper;
 using LW.Data.Entities;
 using LW.Data.Repositories.FavoritePostRepositories;
 using LW.Data.Repositories.GradeRepositories;
@@ -28,59 +29,11 @@ public class PostService : IPostService
         _favoritePostRepository = favoritePostRepository;
     }
 
-    public async Task<ApiResult<IEnumerable<PostDto>>> GetAllPost()
-    {
-        var posts = await _postRepository.GetAllPost();
-        if (!posts.Any())
-        {
-            return new ApiResult<IEnumerable<PostDto>>(false, "Not found");
-        }
-
-        var result = _mapper.Map<IEnumerable<PostDto>>(posts);
-        return new ApiResult<IEnumerable<PostDto>>(true, result, "Get all post successfully");
-    }
-
-    public async Task<ApiResult<IEnumerable<PostDto>>> GetAllPostByGrade(int gradeId)
-    {
-        var grade = await _gradeRepository.GetGradeById(gradeId);
-        if (grade == null)
-        {
-            return new ApiResult<IEnumerable<PostDto>>(false, "Grade not found");
-        }
-
-        var posts = await _postRepository.GetAllPostByGrade(gradeId);
-        if (!posts.Any())
-        {
-            return new ApiResult<IEnumerable<PostDto>>(false, "Not found list post");
-        }
-
-        var result = _mapper.Map<IEnumerable<PostDto>>(posts);
-        return new ApiResult<IEnumerable<PostDto>>(true, result, "Get all post by grade successfully");
-    }
-
-    public async Task<ApiResult<IEnumerable<PostDto>>> GetAllPostByUser(string userId)
-    {
-        var user = await _userManager.FindByIdAsync(userId);
-        if (user == null)
-        {
-            return new ApiResult<IEnumerable<PostDto>>(false, "User not found");
-        }
-
-        var posts = await _postRepository.GetAllPostByUser(userId);
-        if (!posts.Any())
-        {
-            return new ApiResult<IEnumerable<PostDto>>(false, "Not found list post");
-        }
-
-        var result = _mapper.Map<IEnumerable<PostDto>>(posts);
-        return new ApiResult<IEnumerable<PostDto>>(true, result, "Get all post by user successfully");
-    }
-
     public async Task<ApiResult<PagedList<PostDto>>> GetAllPostByUserAndGradePagination(string userId, int gradeId,
         PagingRequestParameters pagingRequestParameters)
     {
-        var user = await _userManager.FindByIdAsync(userId);
-        if (user == null)
+        var userCheck = await _userManager.FindByIdAsync(userId);
+        if (userCheck == null)
         {
             return new ApiResult<PagedList<PostDto>>(false, "User not found");
         }
@@ -97,8 +50,15 @@ public class PostService : IPostService
             return new ApiResult<PagedList<PostDto>>(false, "Not found list post");
         }
 
-        var result = _mapper.ProjectTo<PostDto>(posts);
-        var pagedResult = await PagedList<PostDto>.ToPageListAsync(result, pagingRequestParameters.PageIndex,
+        var result = _mapper.Map<IEnumerable<PostDto>>(posts);
+        // assign role for each poster
+        foreach (var p in result)
+        {
+            var user = await _userManager.FindByIdAsync(p.UserId);
+            var roles = (await _userManager.GetRolesAsync(user)).ToArray();
+            p.Roles = roles;
+        }
+        var pagedResult = await PagedList<PostDto>.ToPageListAsync(result.AsQueryable().BuildMock(), pagingRequestParameters.PageIndex,
             pagingRequestParameters.PageSize, pagingRequestParameters.OrderBy, pagingRequestParameters.IsAscending);
 
         return new ApiSuccessResult<PagedList<PostDto>>(pagedResult);
@@ -113,8 +73,15 @@ public class PostService : IPostService
             return new ApiResult<PagedList<PostDto>>(false, "List Posts is null !!!");
         }
 
-        var result = _mapper.ProjectTo<PostDto>(posts);
-        var pagedResult = await PagedList<PostDto>.ToPageListAsync(result, pagingRequestParameters.PageIndex,
+        var result = _mapper.Map<IEnumerable<PostDto>>(posts);
+        // assign role for each poster
+        foreach (var p in result)
+        {
+            var user = await _userManager.FindByIdAsync(p.UserId);
+            var roles = (await _userManager.GetRolesAsync(user)).ToArray();
+            p.Roles = roles;
+        }
+        var pagedResult = await PagedList<PostDto>.ToPageListAsync(result.AsQueryable().BuildMock(), pagingRequestParameters.PageIndex,
             pagingRequestParameters.PageSize, pagingRequestParameters.OrderBy, pagingRequestParameters.IsAscending);
 
         return new ApiSuccessResult<PagedList<PostDto>>(pagedResult);
@@ -135,8 +102,15 @@ public class PostService : IPostService
             return new ApiResult<PagedList<PostDto>>(false, "List Posts by grade is null !!!");
         }
 
-        var result = _mapper.ProjectTo<PostDto>(posts);
-        var pagedResult = await PagedList<PostDto>.ToPageListAsync(result, pagingRequestParameters.PageIndex,
+        var result = _mapper.Map<IEnumerable<PostDto>>(posts);
+        // assign role for each poster
+        foreach (var p in result)
+        {
+            var user = await _userManager.FindByIdAsync(p.UserId);
+            var roles = (await _userManager.GetRolesAsync(user)).ToArray();
+            p.Roles = roles;
+        }
+        var pagedResult = await PagedList<PostDto>.ToPageListAsync(result.AsQueryable().BuildMock(), pagingRequestParameters.PageIndex,
             pagingRequestParameters.PageSize, pagingRequestParameters.OrderBy, pagingRequestParameters.IsAscending);
 
         return new ApiSuccessResult<PagedList<PostDto>>(pagedResult);
@@ -145,8 +119,8 @@ public class PostService : IPostService
     public async Task<ApiResult<PagedList<PostDto>>> GetAllPostByUserPagination(string userId,
         PagingRequestParameters pagingRequestParameters)
     {
-        var user = await _userManager.FindByIdAsync(userId);
-        if (user == null)
+        var userCheck = await _userManager.FindByIdAsync(userId);
+        if (userCheck == null)
         {
             return new ApiResult<PagedList<PostDto>>(false, "User not found");
         }
@@ -157,8 +131,15 @@ public class PostService : IPostService
             return new ApiResult<PagedList<PostDto>>(false, "List Posts by userId is null !!!");
         }
 
-        var result = _mapper.ProjectTo<PostDto>(posts);
-        var pagedResult = await PagedList<PostDto>.ToPageListAsync(result, pagingRequestParameters.PageIndex,
+        var result = _mapper.Map<IEnumerable<PostDto>>(posts);
+        // assign role for each poster
+        foreach (var p in result)
+        {
+            var user = await _userManager.FindByIdAsync(p.UserId);
+            var roles = (await _userManager.GetRolesAsync(user)).ToArray();
+            p.Roles = roles;
+        }
+        var pagedResult = await PagedList<PostDto>.ToPageListAsync(result.AsQueryable().BuildMock(), pagingRequestParameters.PageIndex,
             pagingRequestParameters.PageSize, pagingRequestParameters.OrderBy, pagingRequestParameters.IsAscending);
 
         return new ApiSuccessResult<PagedList<PostDto>>(pagedResult);
@@ -238,7 +219,7 @@ public class PostService : IPostService
     public async Task<ApiResult<PagedList<PostDto>>> GetAllPostNotAnswerByGradePagination(int gradeId,
         PagingRequestParameters pagingRequestParameters)
     {
-        IQueryable<Post> posts  ;
+        IEnumerable<Post> posts  ;
         if (gradeId >0 )
         {
             posts= await _postRepository.GetAllPostNotAnswerByGradePagination(gradeId);
@@ -252,8 +233,15 @@ public class PostService : IPostService
             return new ApiResult<PagedList<PostDto>>(false, "List Posts is null !!!");
         }
 
-        var result = _mapper.ProjectTo<PostDto>(posts);
-        var pagedResult = await PagedList<PostDto>.ToPageListAsync(result, pagingRequestParameters.PageIndex,
+        var result = _mapper.Map<IEnumerable<PostDto>>(posts);
+        // assign role for each poster
+        foreach (var p in result)
+        {
+            var user = await _userManager.FindByIdAsync(p.UserId);
+            var roles = (await _userManager.GetRolesAsync(user)).ToArray();
+            p.Roles = roles;
+        }
+        var pagedResult = await PagedList<PostDto>.ToPageListAsync(result.AsQueryable().BuildMock(), pagingRequestParameters.PageIndex,
             pagingRequestParameters.PageSize, pagingRequestParameters.OrderBy, pagingRequestParameters.IsAscending);
 
         return new ApiSuccessResult<PagedList<PostDto>>(pagedResult);
@@ -312,8 +300,15 @@ public class PostService : IPostService
         {
             return new ApiResult<PagedList<PostDto>>(false, "Not found list favorite post of this user");
         }
-        var result = _mapper.ProjectTo<PostDto>(posts.AsQueryable().BuildMock());
-        var pagedResult = await PagedList<PostDto>.ToPageListAsync(result, pagingRequestParameters.PageIndex,
+        var result = _mapper.Map<IEnumerable<PostDto>>(posts);
+        // assign role for each poster
+        foreach (var p in result)
+        {
+            var user = await _userManager.FindByIdAsync(p.UserId);
+            var roles = (await _userManager.GetRolesAsync(user)).ToArray();
+            p.Roles = roles;
+        }
+        var pagedResult = await PagedList<PostDto>.ToPageListAsync(result.AsQueryable().BuildMock(), pagingRequestParameters.PageIndex,
             pagingRequestParameters.PageSize, pagingRequestParameters.OrderBy, pagingRequestParameters.IsAscending);
         return new ApiSuccessResult<PagedList<PostDto>>(pagedResult);
     }
