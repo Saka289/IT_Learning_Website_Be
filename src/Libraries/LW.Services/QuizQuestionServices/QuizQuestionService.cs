@@ -60,7 +60,7 @@ public class QuizQuestionService : IQuizQuestionService
 
         if (searchAllQuizQuestionDto.QuizId > 0)
         {
-            quizQuestionList = quizQuestionList.Where(q => q.Id == searchAllQuizQuestionDto.QuizId);
+            quizQuestionList = quizQuestionList.Where(q => q.QuizQuestionRelations.Any(q => q.QuizId == searchAllQuizQuestionDto.QuizId));
         }
 
         if (!string.IsNullOrEmpty(searchAllQuizQuestionDto.Value))
