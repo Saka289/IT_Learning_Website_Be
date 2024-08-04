@@ -58,6 +58,11 @@ public class QuizQuestionService : IQuizQuestionService
             return new ApiResult<PagedList<QuizQuestionDto>>(false, "Quiz Question is null !!!");
         }
 
+        if (searchAllQuizQuestionDto.QuizId > 0)
+        {
+            quizQuestionList = quizQuestionList.Where(q => q.Id == searchAllQuizQuestionDto.QuizId);
+        }
+
         if (!string.IsNullOrEmpty(searchAllQuizQuestionDto.Value))
         {
             var quizQuestionListSearch = await _elasticSearchService.SearchDocumentFieldAsync(
