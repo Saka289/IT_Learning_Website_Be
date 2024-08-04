@@ -21,7 +21,10 @@ public class QuizQuestionRepository : RepositoryBase<QuizQuestion, int>, IQuizQu
 
     public async Task<IEnumerable<QuizQuestion>> GetAllQuizQuestionPagination()
     {
-        var result = await FindAll().Include(qa => qa.QuizAnswers).ToListAsync();
+        var result = await FindAll()
+            .Include(qa => qa.QuizAnswers)
+            .Include(qr => qr.QuizQuestionRelations)
+            .ToListAsync();
         return result;
     }
 
