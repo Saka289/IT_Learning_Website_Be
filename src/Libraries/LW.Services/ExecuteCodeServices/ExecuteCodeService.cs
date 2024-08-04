@@ -86,8 +86,6 @@ public class ExecuteCodeService : IExecuteCodeService
         }
 
         var executeCodeMapper = _mapper.Map<ExecuteCode>(executeCodeCreateDto);
-        executeCodeMapper.MainCode = executeCodeCreateDto.MainCode.Base64Encode();
-        executeCodeMapper.SampleCode = executeCodeCreateDto.SampleCode.Base64Encode();
         var executeCodeCreate = await _executeCodeRepository.CreateExecuteCode(executeCodeMapper);
         var result = _mapper.Map<ExecuteCodeDto>(executeCodeCreate);
         return new ApiSuccessResult<ExecuteCodeDto>(result);
@@ -112,10 +110,7 @@ public class ExecuteCodeService : IExecuteCodeService
         {
             return new ApiResult<ExecuteCodeDto>(false, "Execute not found !!!");
         }
-
-        executeCodeUpdateDto.MainCode = executeCodeUpdateDto.MainCode.Base64Encode();
-        executeCodeUpdateDto.SampleCode = executeCodeUpdateDto.SampleCode.Base64Encode();
-
+        
         var executeCodeMapper = _mapper.Map(executeCodeUpdateDto, executeCode);
         var executeCodeCreate = await _executeCodeRepository.UpdateExecuteCode(executeCodeMapper);
         var result = _mapper.Map<ExecuteCodeDto>(executeCodeCreate);
@@ -156,8 +151,6 @@ public class ExecuteCodeService : IExecuteCodeService
             }
 
             var executeCodeMapper = _mapper.Map<ExecuteCode>(item);
-            executeCodeMapper.MainCode.Base64Encode();
-            executeCodeMapper.SampleCode.Base64Encode();
             await _executeCodeRepository.CreateExecuteCode(executeCodeMapper);
         }
 
@@ -185,9 +178,6 @@ public class ExecuteCodeService : IExecuteCodeService
             {
                 return new ApiResult<bool>(false, "Execute not found !!!");
             }
-
-            item.MainCode = item.MainCode.Base64Encode();
-            item.SampleCode = item.SampleCode.Base64Encode();
 
             var executeCodeMapper = _mapper.Map(item, executeCode);
             await _executeCodeRepository.UpdateExecuteCode(executeCodeMapper);
