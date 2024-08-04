@@ -23,7 +23,8 @@ public class ProblemService : IProblemService
     private readonly IElasticSearchService<ProblemDto, int> _elasticSearchService;
 
     public ProblemService(IProblemRepository problemRepository, IMapper mapper,
-        IElasticSearchService<ProblemDto, int> elasticSearchService, ITopicRepository topicRepository, ILessonRepository lessonRepository)
+        IElasticSearchService<ProblemDto, int> elasticSearchService, ITopicRepository topicRepository,
+        ILessonRepository lessonRepository)
     {
         _problemRepository = problemRepository;
         _mapper = mapper;
@@ -47,11 +48,17 @@ public class ProblemService : IProblemService
     public async Task<ApiResult<PagedList<ProblemDto>>> GetAllProblemPagination(SearchProblemDto searchProblemDto)
     {
         var problemList = await _problemRepository.GetAllProblem();
-        foreach (var item in problemList)
+
+        if (!string.IsNullOrEmpty(searchProblemDto.UserId))
         {
-            if (item.Submissions.Any())
+            foreach (var item in problemList)
             {
-                item.Status = item.Submissions.Any(u => u.UserId.Equals(searchProblemDto.UserId)) ? EStatusProblem.Solved : EStatusProblem.ToDo;
+                if (item.Submissions.Any())
+                {
+                    item.Status = item.Submissions.Any(u => u.UserId.Equals(searchProblemDto.UserId))
+                        ? EStatusProblem.Solved
+                        : EStatusProblem.ToDo;
+                }
             }
         }
 
@@ -72,7 +79,7 @@ public class ProblemService : IProblemService
             {
                 return new ApiResult<PagedList<ProblemDto>>(false, "Problem not found !!!");
             }
-            
+
             problemList = _mapper.Map(problemListSearch, problemList);
         }
 
@@ -95,9 +102,11 @@ public class ProblemService : IProblemService
         {
             problemList = problemList.Where(p => p.Status == searchProblemDto.Status);
         }
-        
+
         var result = _mapper.Map<IEnumerable<ProblemDto>>(problemList);
-        var pagedResult = await PagedList<ProblemDto>.ToPageListAsync(result.AsQueryable().BuildMock(), searchProblemDto.PageIndex, searchProblemDto.PageSize, searchProblemDto.OrderBy, searchProblemDto.IsAscending);
+        var pagedResult = await PagedList<ProblemDto>.ToPageListAsync(result.AsQueryable().BuildMock(),
+            searchProblemDto.PageIndex, searchProblemDto.PageSize, searchProblemDto.OrderBy,
+            searchProblemDto.IsAscending);
         return new ApiSuccessResult<PagedList<ProblemDto>>(pagedResult);
     }
 
@@ -148,7 +157,7 @@ public class ProblemService : IProblemService
         {
             return new ApiResult<ProblemDto>(false, "Problem not found !!!");
         }
-        
+
         if (problemUpdateDto.TopicId > 0)
         {
             var topic = await _topicRepository.GetTopicByAllId(Convert.ToInt32(problemUpdateDto.TopicId));
