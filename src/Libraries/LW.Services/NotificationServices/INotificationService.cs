@@ -5,7 +5,8 @@ namespace LW.Services.NotificationServices;
 
 public interface INotificationService
 {
-    Task<ApiResult<IEnumerable<NotificationDto>>> GetAllNotificationByUser(string userId);
+    Task<ApiResult<PagedList<NotificationDto>>> GetAllNotificationByUser(string userId,PagingRequestParameters pagingRequestParameters);
+    Task<ApiResult<PagedList<NotificationDto>>> GetAllNotificationNotReadByUser(string userId,PagingRequestParameters pagingRequestParameters);
     Task<ApiResult<NotificationDto>> GetNotificationById(int id);
     Task<ApiResult<NotificationDto>> CreateNotification(NotificationCreateDto competitionCreateDto);
     Task<ApiResult<NotificationDto>> UpdateStatusNotification(int id);

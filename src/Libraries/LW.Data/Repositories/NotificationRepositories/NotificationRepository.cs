@@ -53,6 +53,13 @@ public class NotificationRepository : RepositoryBase<Notification, int>, INotifi
             .ToListAsync();
     }
 
+    public async Task<IEnumerable<Notification>> GetAllNotificationNotReadByUser(string userId)
+    {
+        return await FindByCondition(x => x.UserReceiveId == userId && x.IsRead == false)
+            .OrderByDescending(x => x.CreatedDate)
+            .ToListAsync();
+    }
+
     public async Task<bool> UpdateStatusOfNotification(int id)
     {
         var notification = await GetNotificationById(id);

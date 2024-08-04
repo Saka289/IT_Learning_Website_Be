@@ -10,6 +10,7 @@ using LW.Shared.Enums;
 using LW.Shared.SeedWork;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.SignalR;
+using MockQueryable.Moq;
 
 namespace LW.Services.NotificationServices;
 
@@ -32,18 +33,19 @@ public class NotificationService : INotificationService
         _userManager = userManager;
     }
 
-    public async Task<ApiResult<IEnumerable<NotificationDto>>> GetAllNotificationByUser(string userId)
+    public async Task<ApiResult<PagedList<NotificationDto>>> GetAllNotificationByUser(string userId,
+        PagingRequestParameters pagingRequestParameters)
     {
         var userExist = await _userManager.FindByIdAsync(userId);
         if (userExist == null)
         {
-            return new ApiResult<IEnumerable<NotificationDto>>(false, "User not found");
+            return new ApiResult<PagedList<NotificationDto>>(false, "User not found");
         }
 
         var listNotifications = await _notificationRepository.GetAllNotificationByUser(userId);
         if (!listNotifications.Any())
         {
-            return new ApiResult<IEnumerable<NotificationDto>>(false);
+            return new ApiResult<PagedList<NotificationDto>>(false);
         }
 
         var result = _mapper.Map<IEnumerable<NotificationDto>>(listNotifications);
@@ -57,7 +59,44 @@ public class NotificationService : INotificationService
             }
         }
 
-        return new ApiResult<IEnumerable<NotificationDto>>(true, result, "Get all list notification successfully");
+        var pagedResult = await PagedList<NotificationDto>.ToPageListAsync(result.AsQueryable().BuildMock(),
+            pagingRequestParameters.PageIndex,
+            pagingRequestParameters.PageSize, pagingRequestParameters.OrderBy, pagingRequestParameters.IsAscending);
+
+        return new ApiSuccessResult<PagedList<NotificationDto>>(pagedResult);
+    }
+
+    public async Task<ApiResult<PagedList<NotificationDto>>> GetAllNotificationNotReadByUser(string userId,
+        PagingRequestParameters pagingRequestParameters)
+    {
+        var user = await _userManager.FindByIdAsync(userId);
+        if (user == null)
+        {
+            return new ApiResult<PagedList<NotificationDto>>(false, "Not found user send notification");
+        }
+
+        var listNotifications = await _notificationRepository.GetAllNotificationNotReadByUser(userId);
+        if (!listNotifications.Any())
+        {
+            return new ApiResult<PagedList<NotificationDto>>(false);
+        }
+
+        var result = _mapper.Map<IEnumerable<NotificationDto>>(listNotifications);
+        //image
+        foreach (var notificationDto in result)
+        {
+            var userSend = await _userManager.FindByIdAsync(notificationDto.UserSendId);
+            if (userSend != null)
+            {
+                notificationDto.UserSendImage = userSend.Image;
+            }
+        }
+
+        var pagedResult = await PagedList<NotificationDto>.ToPageListAsync(result.AsQueryable().BuildMock(),
+            pagingRequestParameters.PageIndex,
+            pagingRequestParameters.PageSize, pagingRequestParameters.OrderBy, pagingRequestParameters.IsAscending);
+
+        return new ApiSuccessResult<PagedList<NotificationDto>>(pagedResult);
     }
 
     public async Task<ApiResult<NotificationDto>> GetNotificationById(int id)

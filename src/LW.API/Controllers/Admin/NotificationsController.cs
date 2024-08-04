@@ -9,6 +9,7 @@ using LW.Shared.DTOs.Notification;
 using LW.Shared.SeedWork;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
+using Newtonsoft.Json;
 
 namespace LW.API.Controllers.Admin
 {
@@ -74,17 +75,30 @@ namespace LW.API.Controllers.Admin
         }
 
         [HttpGet("GetAllNotificationByUser/{userId}")]
-        public async Task<ActionResult<ApiResult<IEnumerable<NotificationDto>>>> GetAllNotificationByUser(string userId)
+        public async Task<ActionResult<ApiResult<PagedList<NotificationDto>>>> GetAllNotificationByUser(string userId
+            ,[FromQuery] PagingRequestParameters pagingRequestParameters)
         {
-            var result = await _notificationService.GetAllNotificationByUser(userId);
+            var result = await _notificationService.GetAllNotificationByUser(userId, pagingRequestParameters);
             if (!result.IsSucceeded)
             {
                 return NotFound();
             }
-
+            Response.Headers.Add("X-Pagination", JsonConvert.SerializeObject(result.Data.GetMetaData()));
             return Ok(result);
         }
-
+        
+        [HttpGet("GetAllNotificationNotReadByUser")]
+        public async Task<ActionResult<ApiResult<PagedList<NotificationDto>>>> GetAllNotificationNotReadByUser([Required]string userId, [FromQuery] PagingRequestParameters pagingRequestParameters)
+        {
+            var result = await _notificationService.GetAllNotificationNotReadByUser(userId, pagingRequestParameters);
+            if (!result.IsSucceeded)
+            {
+                return NotFound();
+            }
+            Response.Headers.Add("X-Pagination", JsonConvert.SerializeObject(result.Data.GetMetaData()));
+            return Ok(result);
+        }
+        
         [HttpGet("GetNumberOfNotificationByUser/{userId}")]
         public async Task<ActionResult<ApiResult<int>>> GetNumberOfNotificationByUser(string userId)
         {
@@ -96,6 +110,7 @@ namespace LW.API.Controllers.Admin
 
             return Ok(result);
         }
+    
 
         [HttpDelete("DeleteAllNotificationByUser/{userId}")]
         public async Task<ActionResult<ApiResult<bool>>> DeleteAllNotificationByUser(string userId)
