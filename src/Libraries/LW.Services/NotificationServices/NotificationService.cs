@@ -78,7 +78,8 @@ public class NotificationService : INotificationService
         var listNotifications = await _notificationRepository.GetAllNotificationNotReadByUser(userId);
         if (!listNotifications.Any())
         {
-            return new ApiResult<PagedList<NotificationDto>>(false);
+            var emptyResult = new PagedList<NotificationDto>(new List<NotificationDto>(), 0, pagingRequestParameters.PageIndex, pagingRequestParameters.PageSize);
+            return new ApiResult<PagedList<NotificationDto>>(true, emptyResult, "List null");
         }
 
         var result = _mapper.Map<IEnumerable<NotificationDto>>(listNotifications);
@@ -208,11 +209,10 @@ public class NotificationService : INotificationService
     {
         var listNotifications = await _notificationRepository.GetAllNotificationByUser(userId);
         var listNotificationNotRead = listNotifications.Where(x => x.IsRead == false);
-        if (!listNotifications.Any())
+        if (!listNotificationNotRead.Any())
         {
             return new ApiResult<int>(true, 0);
         }
-
-        return new ApiResult<int>(true, listNotifications.Count());
+        return new ApiResult<int>(true, listNotificationNotRead.Count());
     }
 }
