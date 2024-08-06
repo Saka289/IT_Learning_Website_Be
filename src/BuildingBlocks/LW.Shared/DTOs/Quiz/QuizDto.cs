@@ -13,6 +13,7 @@ public class QuizDto
     public string? TopicTitle { get; set; }
     public int? LessonId { get; set; }
     public string? LessonTitle { get; set; }
+    public int TotalQuestion { get; set; }
     public DateTimeOffset CreatedDate { get; set; }
     public DateTimeOffset? LastModifiedDate { get; set; }
     public string CreatedBy { get; set; }

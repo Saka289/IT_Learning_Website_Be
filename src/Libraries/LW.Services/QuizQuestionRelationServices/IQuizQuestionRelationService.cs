@@ -5,6 +5,7 @@ namespace LW.Services.QuizQuestionRelationServices;
 
 public interface IQuizQuestionRelationService
 {
+    Task<ApiResult<bool>> CreateQuizQuestionRelationByQuizCustom(QuizQuestionRelationCustomCreateDto quizQuestionRelationCustomCreateDto);
     Task<ApiResult<bool>> CreateQuizQuestionRelation(QuizQuestionRelationCreateDto quizQuestionRelationCreateDto);
     Task<ApiResult<bool>> UpdateQuizQuestionRelation(QuizQuestionRelationUpdateDto quizQuestionRelationUpdateDto);
     Task<ApiResult<bool>> DeleteQuizQuestionRelation(int id);

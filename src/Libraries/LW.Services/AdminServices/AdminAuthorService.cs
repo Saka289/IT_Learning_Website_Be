@@ -3,8 +3,8 @@ using AutoMapper;
 using LW.Contracts.Common;
 using LW.Contracts.Services;
 using LW.Data.Entities;
+using LW.Services.Common.CommonServices.JwtTokenServices;
 using LW.Services.Common.ModelMapping;
-using LW.Services.JwtTokenServices;
 using LW.Shared.Configurations;
 using LW.Shared.Constant;
 using LW.Shared.DTOs.Admin;
@@ -160,7 +160,7 @@ public class AdminAuthorService : IAdminAuthorService
 
     public async Task<ApiResult<PagedList<MemberDto>>> SearchMemberByRolePagination(string? role, SearchRequestValue searchRequestValue)
     {
-        var user = await _elasticSearchService.SearchDocumentAllFieldAsync(ElasticConstant.ElasticUsers, searchRequestValue);
+        var user = await _elasticSearchService.SearchAllDocumentFieldAsync(ElasticConstant.ElasticUsers, searchRequestValue);
         if (!user.Any())
         {
             return new ApiResult<PagedList<MemberDto>>(false, "user not found !!!");

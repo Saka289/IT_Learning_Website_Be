@@ -7,6 +7,7 @@
     </PropertyGroup>
 
     <ItemGroup>
+      <ProjectReference Include="..\..\Libraries\LW.Cache\LW.Cache.csproj" />
       <ProjectReference Include="..\LW.Contracts\LW.Contracts.csproj" />
       <ProjectReference Include="..\LW.Logging\LW.Logging.csproj" />
     </ItemGroup>
@@ -15,6 +16,7 @@
       <PackageReference Include="Aspose.PDF" Version="24.6.0" />
       <PackageReference Include="CloudinaryDotNet" Version="1.26.2" />
       <PackageReference Include="MailKit" Version="4.6.0" />
+      <PackageReference Include="Microsoft.AspNetCore.SignalR" Version="1.0.4" />
       <PackageReference Include="NEST" Version="7.17.4" />
       <PackageReference Include="Newtonsoft.Json" Version="13.0.3" />
       <PackageReference Include="PuppeteerSharp" Version="18.0.2" />

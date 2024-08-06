@@ -24,6 +24,12 @@ public static class EncodeHelperExtensions
         var base64EncodedBytes = Convert.FromBase64String(base64EncodedData);
         return Encoding.UTF8.GetString(base64EncodedBytes);
     }
+    
+    public static bool IsBase64String(this string base64)
+    {
+        Span<byte> buffer = new Span<byte>(new byte[base64.Length]);
+        return Convert.TryFromBase64String(base64, buffer , out int bytesParsed);
+    }
 
     private static string GenerateHash(string input)
     {

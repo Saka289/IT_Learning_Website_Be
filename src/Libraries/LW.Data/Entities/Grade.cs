@@ -18,4 +18,6 @@ public class Grade : EntityAuditBase<int>
     public virtual Level Level { get; set; }
     public virtual ICollection<Document> Documents { get; set; }
     public virtual ICollection<UserGrade> UserGrades { get; set; }
+    
+    public virtual ICollection<Post> Posts { get; set; }
 }

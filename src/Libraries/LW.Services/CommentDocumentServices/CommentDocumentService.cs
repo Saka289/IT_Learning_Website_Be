@@ -1,7 +1,7 @@
 ﻿using AutoMapper;
 using LW.Data.Entities;
 using LW.Data.Repositories.CommentDocumentRepositories;
-using LW.Shared.DTOs.CommentDocumentDto;
+using LW.Shared.DTOs.CommentDocument;
 using LW.Shared.SeedWork;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;

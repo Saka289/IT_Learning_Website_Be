@@ -11,5 +11,4 @@ public class ExamCodeDto
     public int NumberQuestion { get; set; }
     public DateTimeOffset CreatedDate { get; set; }
     public DateTimeOffset? LastModifiedDate { get; set; }
-    
 }

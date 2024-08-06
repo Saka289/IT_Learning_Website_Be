@@ -7,10 +7,7 @@ public class ExamAnswerCreateDto
     [Required]
     public int NumberOfQuestion { get; set; }
     [Required]
-
     public char Answer { get; set; } //ABCD
-
     [Required]
-
     public int ExamCodeId { get; set; }
 }

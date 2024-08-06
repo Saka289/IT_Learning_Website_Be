@@ -7,9 +7,9 @@ using LW.Contracts.Common;
 using LW.Contracts.Services;
 using LW.Data.Entities;
 using LW.Data.Persistence;
+using LW.Services.Common.CommonServices.FacebookServices;
+using LW.Services.Common.CommonServices.JwtTokenServices;
 using LW.Services.Common.ModelMapping;
-using LW.Services.FacebookServices;
-using LW.Services.JwtTokenServices;
 using LW.Shared.Configurations;
 using LW.Shared.Constant;
 using LW.Shared.DTOs.Email;
@@ -227,24 +227,24 @@ public class UserService : IUserService
     public async Task<ApiResult<LoginResponseUserDto>> LoginFacebook(FacebookSignInDto facebookSignInDto)
     {
         var validatedFbToken = await _facebookService.ValidateFacebookToken(facebookSignInDto.AccessToken);
-        if (!validatedFbToken.IsSucceeded)
+        if (validatedFbToken is null)
         {
-            return new ApiResult<LoginResponseUserDto>(false, null, validatedFbToken.Message);
+            return new ApiResult<LoginResponseUserDto>(false, null, "Failed to get response");
         }
 
         var userInfo = await _facebookService.GetFacebookUserInformation(facebookSignInDto.AccessToken);
-        if (!userInfo.IsSucceeded)
+        if (userInfo is null)
         {
-            return new ApiResult<LoginResponseUserDto>(false, null, userInfo.Message);
+            return new ApiResult<LoginResponseUserDto>(false, null, "Failed to get response");
         }
 
         var userCreated = new CreateUserFromSocialLogin()
         {
-            FirstName = userInfo.Data.FirstName,
-            LastName = userInfo.Data.LastName,
-            Email = userInfo.Data.Email,
-            ProfilePicture = userInfo.Data.Picture.Data.Url.AbsoluteUri,
-            LoginProviderSubject = userInfo.Data.Id,
+            FirstName = userInfo.FirstName,
+            LastName = userInfo.LastName,
+            Email = userInfo.Email,
+            ProfilePicture = userInfo.Picture.Data.Url.AbsoluteUri,
+            LoginProviderSubject = userInfo.Id,
         };
 
         var user = await _userManager.CreateUserFromSocialLogin(userCreated, ELoginProvider.Facebook);

@@ -17,16 +17,18 @@ public class QuizRepository : RepositoryBase<Quiz, int>, IQuizRepository
         return await FindAll()
             .Include(l => l.Lesson)
             .Include(l => l.Topic)
+            .Include(q => q.QuizQuestionRelations)
             .ToListAsync();
     }
 
-    public Task<IQueryable<Quiz>> GetAllQuizPagination()
+    public async Task<IEnumerable<Quiz>> GetAllQuizPagination()
     {
-        var result = FindAll()
+        var result = await FindAll()
             .Include(l => l.Lesson)
             .Include(l => l.Topic)
-            .AsQueryable();
-        return Task.FromResult(result);
+            .Include(q => q.QuizQuestionRelations)
+            .ToListAsync();
+        return result;
     }
 
     public Task<IQueryable<Quiz>> GetAllQuizByTopicIdPagination(int topicId)
@@ -34,6 +36,7 @@ public class QuizRepository : RepositoryBase<Quiz, int>, IQuizRepository
         var result = FindAll()
             .Include(l => l.Lesson)
             .Include(l => l.Topic)
+            .Include(q => q.QuizQuestionRelations)
             .Where(q => q.TopicId == topicId).AsQueryable();
         return Task.FromResult(result);
     }
@@ -43,6 +46,7 @@ public class QuizRepository : RepositoryBase<Quiz, int>, IQuizRepository
         var result = FindAll()
             .Include(l => l.Lesson)
             .Include(l => l.Topic)
+            .Include(q => q.QuizQuestionRelations)
             .Where(q => q.LessonId == lessonId).AsQueryable();
         return Task.FromResult(result);
     }

@@ -11,6 +11,5 @@ public class Level : EntityAuditBase<int>
     public string KeyWord { get; set; }
     [Required]
     public bool IsActive { get; set; }
-    
     public virtual ICollection<Grade> Grades { get; set; }
 }

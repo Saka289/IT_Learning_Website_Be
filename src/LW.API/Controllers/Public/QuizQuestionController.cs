@@ -39,9 +39,9 @@ namespace LW.API.Controllers.Public
         }
         
         [HttpGet("GetAllQuizQuestionPagination")]
-        public async Task<ActionResult<ApiResult<PagedList<QuizQuestionDto>>>> GetAllQuizQuestionPagination([FromQuery] PagingRequestParameters pagingRequestParameters)
+        public async Task<ActionResult<ApiResult<PagedList<QuizQuestionDto>>>> GetAllQuizQuestionPagination([FromQuery] SearchAllQuizQuestionDto searchAllQuizQuestionDto)
         {
-            var result = await _quizQuestionService.GetAllQuizQuestionPagination(pagingRequestParameters);
+            var result = await _quizQuestionService.GetAllQuizQuestionPagination(searchAllQuizQuestionDto);
             if (!result.IsSucceeded)
             {
                 return NotFound(result);
@@ -50,10 +50,10 @@ namespace LW.API.Controllers.Public
             return Ok(result);
         }
         
-        [HttpGet("GetAllQuizQuestionByQuizIdPractice/{quizId}")]
-        public async Task<ActionResult<ApiResult<PagedList<QuizQuestionDto>>>> GetAllQuizQuestionByQuizIdPractice([Required] int quizId, int? size)
+        [HttpGet("GetAllQuizQuestionByQuizId")]
+        public async Task<ActionResult<ApiResult<IEnumerable<object>>>> GetAllQuizQuestionByQuizId([FromQuery] SearchQuizQuestionDto searchQuizQuestionDto)
         {
-            var result = await _quizQuestionService.GetAllQuizQuestionByQuizIdPractice(quizId, size);
+            var result = await _quizQuestionService.GetAllQuizQuestionByQuizId(searchQuizQuestionDto);
             if (!result.IsSucceeded)
             {
                 return NotFound(result);

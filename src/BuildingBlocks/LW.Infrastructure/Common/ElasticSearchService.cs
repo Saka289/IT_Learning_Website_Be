@@ -164,7 +164,7 @@ public class ElasticSearchService<T, K> : IElasticSearchService<T, K> where T : 
         return result;
     }
 
-    public async Task<IEnumerable<T>> SearchDocumentAllFieldAsync(string indexName, SearchRequestValue searchRequestValue)
+    public async Task<IEnumerable<T>> SearchAllDocumentFieldAsync(string indexName, SearchRequestValue searchRequestValue)
     {
         object searchValue = searchRequestValue.Value;
         if (int.TryParse(searchRequestValue.Value, out int intValue))
@@ -209,6 +209,41 @@ public class ElasticSearchService<T, K> : IElasticSearchService<T, K> where T : 
 
         var result = response.Hits.Select(hit => hit.Source).ToList();
         return result;
+    }
+
+    public async Task<IEnumerable<T>> SearchDocumentFieldAsync(string indexName, SearchRequestValue searchRequestValue)
+    {
+        if (string.IsNullOrEmpty(searchRequestValue.Value))
+        {
+            _logger.Information("Value is null !!!");
+            return null;
+        }
+        
+        object searchValue = searchRequestValue.Value;
+        if (int.TryParse(searchRequestValue.Value, out int intValue))
+        {
+            searchValue = intValue;
+        }
+        
+        var responseSearch = await _elasticClient.SearchAsync<T>(s => s
+            .Index(indexName)
+            .Query(q => q
+                .QueryString(d => d
+                    .Query(searchValue is int ? searchValue.ToString() : '*' + searchValue.ToString() + '*')
+                    .DefaultField("*")
+                )
+            )
+            .Size(searchRequestValue.Size)
+        );
+        
+        if (!responseSearch.IsValid || responseSearch.Total == 0)
+        {
+            _logger.Information($"Search query failed: {responseSearch.IsValid.ToString()}");
+            return null;
+        }
+
+        var resultSearch = responseSearch.Hits.Select(hit => hit.Source).ToList();
+        return resultSearch;
     }
 
     public async Task<bool> DeleteDocumentAsync(string indexName, K documentId)
