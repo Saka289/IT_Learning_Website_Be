@@ -18,4 +18,6 @@ public class ExamDto
     public bool IsActive { get; set; }
     public DateTimeOffset CreatedDate { get; set; }
     public DateTimeOffset? LastModifiedDate { get; set; }
+    public int GradeId { get; set; }
+
 }

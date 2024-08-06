@@ -29,6 +29,5 @@ public class ExamCreateDto
     public IEnumerable<string> tagValues { get; set; }
     
     [Required] public bool IsActive { get; set; } = false;
-    
-    
+    public int? GradeId { get; set; }
 }

@@ -20,4 +20,5 @@ public class Grade : EntityAuditBase<int>
     public virtual ICollection<UserGrade> UserGrades { get; set; }
     
     public virtual ICollection<Post> Posts { get; set; }
+    public virtual ICollection<Exam> Exams { get; set; }
 }

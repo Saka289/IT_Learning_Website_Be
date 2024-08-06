@@ -13,5 +13,7 @@ public class SearchExamDto:SearchRequestParameters
     public int? Year { get; set; }
     
     public int? Type { get; set; }
+    
+    public int? GradeId { get; set; }
         
 }
