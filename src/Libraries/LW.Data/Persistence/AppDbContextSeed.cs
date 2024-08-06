@@ -180,7 +180,7 @@ public class AppDbContextSeed
             EmailConfirmed = true,
             PhoneNumber = "1234567890"
         };
-        user.PasswordHash = hasher.HashPassword(user, "User@123123");
+        user.PasswordHash = hasher.HashPassword(user, "User@1234");
 
         var contentManager = new ApplicationUser()
         {
@@ -194,7 +194,7 @@ public class AppDbContextSeed
             EmailConfirmed = true,
             PhoneNumber = "1234567890"
         };
-        user.PasswordHash = hasher.HashPassword(contentManager, "Manager@123123");
+        user.PasswordHash = hasher.HashPassword(contentManager, "Manager@1234");
 
         context.Users.AddRange(admin, user, contentManager);
 

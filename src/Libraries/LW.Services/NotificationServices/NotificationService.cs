@@ -208,9 +208,9 @@ public class NotificationService : INotificationService
             return new ApiResult<bool>(false, "List user not found");
         }
 
-        foreach (var n in notifications)
+        foreach (var item in notifications)
         {
-            n.IsRead = true;
+            item.IsRead = true;
         }
 
         await _notificationRepository.UpdateListAsync(notifications);
