@@ -5,6 +5,7 @@ using LW.Data.Entities;
 using LW.Data.Repositories.CompetitionRepositories;
 using LW.Data.Repositories.ExamCodeRepositories;
 using LW.Data.Repositories.ExamRepositories;
+using LW.Data.Repositories.GradeRepositories;
 using LW.Infrastructure.Extensions;
 using LW.Shared.Constant;
 using LW.Shared.DTOs;
@@ -25,10 +26,11 @@ public class ExamService : IExamService
     private readonly ICloudinaryService _cloudinaryService;
     private readonly IExamCodeRepository _examCodeRepository;
     private readonly ICompetitionRepository _competitionRepository;
+    private readonly IGradeRepository _gradeRepository;
 
     public ExamService(IMapper mapper, IExamRepository examRepository,
         IElasticSearchService<ExamDto, int> elasticSearchService, ICloudinaryService cloudinaryService,
-        IExamCodeRepository examCodeRepository, ICompetitionRepository competitionRepository)
+        IExamCodeRepository examCodeRepository, ICompetitionRepository competitionRepository, IGradeRepository gradeRepository)
     {
         _mapper = mapper;
         _examRepository = examRepository;
@@ -36,6 +38,7 @@ public class ExamService : IExamService
         _cloudinaryService = cloudinaryService;
         _examCodeRepository = examCodeRepository;
         _competitionRepository = competitionRepository;
+        _gradeRepository = gradeRepository;
     }
 
     public async Task<ApiResult<IEnumerable<ExamDto>>> GetAllExam()
@@ -101,6 +104,10 @@ public class ExamService : IExamService
         {
             listExam = listExam.Where(t => t.CompetitionId == searchExamDto.CompetitionId).ToList();
         }
+        if (searchExamDto.GradeId > 0)
+        {
+            listExam = listExam.Where(t => t.GradeId == searchExamDto.GradeId).ToList();
+        }
         if (!string.IsNullOrEmpty(searchExamDto.Province))
         {
             listExam = listExam.Where(t => t.Province.ToLower().Contains(searchExamDto.Province.ToLower())).ToList();
@@ -127,6 +134,16 @@ public class ExamService : IExamService
         {
             return new ApiResult<ExamDto>(false, "Competition not found !!!");
         }
+
+        if (examCreateDto.GradeId > 0)
+        {
+            var gradeExist = await _gradeRepository.GetGradeById(Convert.ToInt32(examCreateDto.GradeId));
+            if (gradeExist == null)
+            {
+                return new ApiResult<ExamDto>(false, "Grade not found");
+            }
+        }
+            
         var obj = _mapper.Map<Exam>(examCreateDto);
         if (examCreateDto.ExamEssayFileUpload != null && examCreateDto.ExamEssayFileUpload.Length > 0)
         {
@@ -160,6 +177,15 @@ public class ExamService : IExamService
         if (competition == null)
         {
             return new ApiResult<ExamDto>(false, "Competition not found !!!");
+        }
+
+        if (examUpdateDto.GradeId > 0)
+        {
+            var gradeExist = await _gradeRepository.GetGradeById(Convert.ToInt32(examUpdateDto.GradeId));
+            if (gradeExist == null)
+            {
+                return new ApiResult<ExamDto>(false, "Grade not found");
+            }
         }
         
         var exam = await _examRepository.GetExamById(examUpdateDto.Id);
