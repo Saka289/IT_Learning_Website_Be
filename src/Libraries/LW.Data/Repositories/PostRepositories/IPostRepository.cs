@@ -5,19 +5,17 @@ namespace LW.Data.Repositories.PostRepositories;
 
 public interface IPostRepository : IRepositoryBase<Post, int>
 {
-    Task<IEnumerable<Post>> GetAllPost();
-    Task<IEnumerable<Post>> GetAllPostByGrade(int gradeId);
-    Task<IEnumerable<Post>> GetAllPostByUser(string userId);
-    Task<IQueryable<Post>> GetAllPostPagination();
+  
+    Task<IEnumerable<Post>> GetAllPostPagination();
     
-    Task<IQueryable<Post>> GetAllPostByGradePagination(int grade);
+    Task<IEnumerable<Post>> GetAllPostByGradePagination(int grade);
     
-    Task<IQueryable<Post>> GetAllPostByUserPagination(string userId);
+    Task<IEnumerable<Post>> GetAllPostByUserPagination(string userId);
     Task<Post> GetPostById(int id);
     Task<Post> CreatePost(Post post);
     Task<Post> UpdatePost(Post post);
     Task<bool> DeletePost(int id);
-    Task<IQueryable<Post>> GetAllPostByUserAndGradePagination(string userId, int gradeId);
-    Task<IQueryable<Post>> GetAllPostNotAnswerPagination();
-    Task<IQueryable<Post>> GetAllPostNotAnswerByGradePagination(int gradeId);
+    Task<IEnumerable<Post>> GetAllPostByUserAndGradePagination(string userId, int gradeId);
+    Task<IEnumerable<Post>> GetAllPostNotAnswerPagination();
+    Task<IEnumerable<Post>> GetAllPostNotAnswerByGradePagination(int gradeId);
 }

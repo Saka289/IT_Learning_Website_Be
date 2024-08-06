@@ -23,7 +23,6 @@ public class ExamCreateDto
     public string? Description { get; set; }
     [Required]
     public int Year { set; get; }
-    [Required]
     public int NumberQuestion { set; get; }
     
     [Required]

@@ -11,5 +11,6 @@ public interface INotificationRepository: IRepositoryBase<Notification,int>
     Task<bool> DeleteRangeNotification(IEnumerable<Notification> notifications);
     Task<Notification> GetNotificationById(int id);
     Task<IEnumerable<Notification>> GetAllNotificationByUser(string userId);
+    Task<IEnumerable<Notification>> GetAllNotificationNotReadByUser(string userId);
     Task<bool> UpdateStatusOfNotification(int id);
 }

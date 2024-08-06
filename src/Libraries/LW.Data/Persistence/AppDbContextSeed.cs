@@ -108,6 +108,7 @@ public class AppDbContextSeed
             logger.Information("Seeded data Tags for ElasticSearch associated with {IElasticClient}",
                 nameof(IElasticClient));
         }
+
         if (!context.Competitions.Any())
         {
             var dataCompetitions = SeedCompetition();
@@ -127,7 +128,8 @@ public class AppDbContextSeed
         // Seed Role
         string ADMIN_ID = Guid.NewGuid().ToString();
         string USER_ID = Guid.NewGuid().ToString();
-
+        string CONTENTMANAGER_ID = Guid.NewGuid().ToString();
+        
         context.Roles.AddRange(new List<IdentityRole>
         {
             new IdentityRole
@@ -141,6 +143,12 @@ public class AppDbContextSeed
                 Id = ADMIN_ID,
                 Name = "Admin",
                 NormalizedName = "ADMIN"
+            },
+            new IdentityRole
+            {
+                Id = CONTENTMANAGER_ID,
+                Name = "ContentManager",
+                NormalizedName = "CONTENTMANAGER"
             },
         });
 
@@ -174,7 +182,21 @@ public class AppDbContextSeed
         };
         user.PasswordHash = hasher.HashPassword(user, "User@1234");
 
-        context.Users.AddRange(admin, user);
+        var contentManager = new ApplicationUser()
+        {
+            Id = Guid.NewGuid().ToString(),
+            UserName = "contentmanager",
+            NormalizedUserName = "CONTENTMANAGER",
+            Email = "contentmanager@gmail.com",
+            FirstName = "Kavior",
+            LastName = "Salandez",
+            NormalizedEmail = "CONTENTMANAGER@GMAIL.COM",
+            EmailConfirmed = true,
+            PhoneNumber = "1234567890"
+        };
+        user.PasswordHash = hasher.HashPassword(contentManager, "Manager@1234");
+
+        context.Users.AddRange(admin, user, contentManager);
 
         // Seed UserRole
         context.UserRoles.AddRange(
@@ -187,6 +209,11 @@ public class AppDbContextSeed
             {
                 RoleId = USER_ID,
                 UserId = user.Id
+            },
+            new IdentityUserRole<string>
+            {
+                RoleId = CONTENTMANAGER_ID,
+                UserId = contentManager.Id
             }
         );
     }
@@ -970,25 +997,29 @@ public class AppDbContextSeed
             new()
             {
                 Title = "Cuộc thi tin học trẻ",
-                Description = "Cuộc thi Tin học trẻ là một sân chơi thường niên dành cho học sinh, nhằm khuyến khích và phát triển tài năng tin học trẻ. Cuộc thi bao gồm các vòng thi lý thuyết và thực hành, nơi thí sinh thể hiện khả năng lập trình, giải thuật, và xử lý các bài toán tin học. Đây là cơ hội để học sinh trau dồi kiến thức, kỹ năng công nghệ thông tin, và phát triển tư duy logic, đồng thời thúc đẩy sự đam mê học tập và nghiên cứu khoa học kỹ thuật. Các thí sinh xuất sắc có thể giành được giải thưởng và cơ hội tham gia các cuộc thi quốc gia và quốc tế.",
+                Description =
+                    "Cuộc thi Tin học trẻ là một sân chơi thường niên dành cho học sinh, nhằm khuyến khích và phát triển tài năng tin học trẻ. Cuộc thi bao gồm các vòng thi lý thuyết và thực hành, nơi thí sinh thể hiện khả năng lập trình, giải thuật, và xử lý các bài toán tin học. Đây là cơ hội để học sinh trau dồi kiến thức, kỹ năng công nghệ thông tin, và phát triển tư duy logic, đồng thời thúc đẩy sự đam mê học tập và nghiên cứu khoa học kỹ thuật. Các thí sinh xuất sắc có thể giành được giải thưởng và cơ hội tham gia các cuộc thi quốc gia và quốc tế.",
                 IsActive = true
             },
             new()
             {
                 Title = "Tốt nghiệp trung học phổ thông",
-                Description = "Kỳ thi Tốt nghiệp Trung học Phổ thông (THPT) là kỳ thi quan trọng ở Việt Nam, được tổ chức hàng năm dành cho học sinh lớp 12. Kỳ thi này nhằm đánh giá kết quả học tập sau 12 năm học và là cơ sở để xét tốt nghiệp THPT cũng như xét tuyển vào các trường đại học, cao đẳng. Trong kỳ thi này, các thí sinh phải tham gia các môn thi bắt buộc và tự chọn, trong đó có môn Tin học",
+                Description =
+                    "Kỳ thi Tốt nghiệp Trung học Phổ thông (THPT) là kỳ thi quan trọng ở Việt Nam, được tổ chức hàng năm dành cho học sinh lớp 12. Kỳ thi này nhằm đánh giá kết quả học tập sau 12 năm học và là cơ sở để xét tốt nghiệp THPT cũng như xét tuyển vào các trường đại học, cao đẳng. Trong kỳ thi này, các thí sinh phải tham gia các môn thi bắt buộc và tự chọn, trong đó có môn Tin học",
                 IsActive = true
             },
             new()
             {
                 Title = "HKICO Việt Nam",
-                Description = "Kỳ thi Olympic Tin học Quốc tế, được tổ chức thường niên bởi Trung tâm Giáo dục Vô địch Olympic Hong Kong (Olympiad Champion Education Centre from Hong Kong), nhằm truyền cảm hứng khám phá các ngôn ngữ lập trình, hướng tới phát triển các kĩ năng giải quyết vấn đề và các khái niệm Khoa học tin học. Đây là cuộc thi về lập trình dành cho các bạn từ lớp 2 đến lớp 12 với các bộ môn SCRATCH, BLOCKLY, PYTHON, JAVA, C++.  Đề thi sử dụng Tiếng Anh, được phân loại theo ngôn ngữ lập trình phù hợp với độ tuổi của học sinh. Theo đó, học sinh khối 2, 3, 4 sẽ thi ngôn ngữ lập trình SCRATCH; khối 5, 6, 7 – thi BLOCKLY; từ khối 8 đến 12 được chọn thi PYTHON, hoặc C++, hoặc JAVA.",
+                Description =
+                    "Kỳ thi Olympic Tin học Quốc tế, được tổ chức thường niên bởi Trung tâm Giáo dục Vô địch Olympic Hong Kong (Olympiad Champion Education Centre from Hong Kong), nhằm truyền cảm hứng khám phá các ngôn ngữ lập trình, hướng tới phát triển các kĩ năng giải quyết vấn đề và các khái niệm Khoa học tin học. Đây là cuộc thi về lập trình dành cho các bạn từ lớp 2 đến lớp 12 với các bộ môn SCRATCH, BLOCKLY, PYTHON, JAVA, C++.  Đề thi sử dụng Tiếng Anh, được phân loại theo ngôn ngữ lập trình phù hợp với độ tuổi của học sinh. Theo đó, học sinh khối 2, 3, 4 sẽ thi ngôn ngữ lập trình SCRATCH; khối 5, 6, 7 – thi BLOCKLY; từ khối 8 đến 12 được chọn thi PYTHON, hoặc C++, hoặc JAVA.",
                 IsActive = true
             },
             new()
             {
                 Title = "Kỳ thi tuyển sinh lớp 10",
-                Description = "Kỳ thi tuyển sinh lớp 10 là một kỳ thi quan trọng dành cho học sinh lớp 9 tại Việt Nam, nhằm đánh giá và tuyển chọn học sinh vào các trường trung học phổ thông (THPT). Đây là bước chuyển quan trọng trong quá trình học tập của học sinh, đánh dấu sự kết thúc của bậc trung học cơ sở (THCS) và bắt đầu hành trình THPT.",
+                Description =
+                    "Kỳ thi tuyển sinh lớp 10 là một kỳ thi quan trọng dành cho học sinh lớp 9 tại Việt Nam, nhằm đánh giá và tuyển chọn học sinh vào các trường trung học phổ thông (THPT). Đây là bước chuyển quan trọng trong quá trình học tập của học sinh, đánh dấu sự kết thúc của bậc trung học cơ sở (THCS) và bắt đầu hành trình THPT.",
                 IsActive = true
             },
         };

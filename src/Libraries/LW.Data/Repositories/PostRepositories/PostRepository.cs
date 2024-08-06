@@ -12,62 +12,56 @@ public class PostRepository : RepositoryBase<Post, int>, IPostRepository
     {
     }
 
-    public async Task<IEnumerable<Post>> GetAllPost()
+    public async Task<IEnumerable<Post>> GetAllPostPagination()
     {
-        return await FindAll().Include(x => x.Grade).Include(x => x.ApplicationUser).Include(x => x.PostComments)
+        return await FindAll().Include(x => x.Grade)
+            .Include(x => x.ApplicationUser)
+            .Include(x => x.PostComments)
+            .Include(x => x.FavoritePosts)
             .ToListAsync();
     }
 
-    public async Task<IEnumerable<Post>> GetAllPostByGrade(int gradeId)
+    public async Task<IEnumerable<Post>> GetAllPostByGradePagination(int grade)
     {
-        return await FindByCondition(x => x.GradeId == gradeId).Include(x => x.Grade).Include(x => x.ApplicationUser)
+        return await FindByCondition(x => x.GradeId == grade)
+            .Include(x => x.Grade)
+            .Include(x => x.ApplicationUser)
+            .Include(x => x.PostComments)
+            .ToListAsync();
+    }
+
+    public async Task<IEnumerable<Post>> GetAllPostByUserPagination(string userId)
+    {
+        return await FindByCondition(x => x.UserId == userId)
+            .Include(x => x.Grade)
+            .Include(x => x.ApplicationUser)
+            .Include(x => x.PostComments)
+            .ToListAsync();
+    }
+
+    public async Task<IEnumerable<Post>> GetAllPostByUserAndGradePagination(string userId, int gradeId)
+    {
+        return await FindByCondition(x => x.UserId == userId && x.GradeId == gradeId)
+            .Include(x => x.Grade)
+            .Include(x => x.ApplicationUser)
+            .Include(x => x.PostComments)
+            .ToListAsync();
+    }
+
+    public async Task<IEnumerable<Post>> GetAllPostNotAnswerPagination()
+    {
+        return await FindByCondition(x => x.PostComments.Count == 0)
+            .Include(x => x.Grade)
+            .Include(x => x.ApplicationUser)
             .Include(x => x.PostComments).ToListAsync();
     }
 
-    public async Task<IEnumerable<Post>> GetAllPostByUser(string userId)
+    public async Task<IEnumerable<Post>> GetAllPostNotAnswerByGradePagination(int gradeId)
     {
-        return await FindByCondition(x => x.UserId == userId).Include(x => x.Grade).Include(x => x.ApplicationUser)
+        return await FindByCondition(x => x.PostComments.Count == 0 && x.GradeId == gradeId)
+            .Include(x => x.Grade)
+            .Include(x => x.ApplicationUser)
             .Include(x => x.PostComments).ToListAsync();
-    }
-
-    public async Task<IQueryable<Post>> GetAllPostPagination()
-    {
-        return FindAll().Include(x => x.Grade).Include(x => x.ApplicationUser).Include(x => x.PostComments)
-            .AsQueryable();
-    }
-
-    public async Task<IQueryable<Post>> GetAllPostByGradePagination(int grade)
-    {
-        return FindByCondition(x => x.GradeId == grade).Include(x => x.Grade).Include(x => x.ApplicationUser)
-            .Include(x => x.PostComments).AsQueryable();
-    }
-
-    public async Task<IQueryable<Post>> GetAllPostByUserPagination(string userId)
-    {
-        return FindByCondition(x => x.UserId == userId).Include(x => x.Grade).Include(x => x.ApplicationUser)
-            .Include(x => x.PostComments).AsQueryable();
-    }
-
-    public async Task<IQueryable<Post>> GetAllPostByUserAndGradePagination(string userId, int gradeId)
-    {
-        return FindByCondition(x => x.UserId == userId && x.GradeId == gradeId).Include(x => x.Grade)
-            .Include(x => x.ApplicationUser).Include(x => x.PostComments).AsQueryable();
-    }
-
-    public async Task<IQueryable<Post>> GetAllPostNotAnswerPagination()
-    {
-        return FindByCondition(x => x.PostComments.Count == 0)
-            .Include(x => x.Grade)
-            .Include(x => x.ApplicationUser)
-            .Include(x => x.PostComments).AsQueryable();
-    }
-
-    public async Task<IQueryable<Post>> GetAllPostNotAnswerByGradePagination(int gradeId)
-    {
-        return FindByCondition(x => x.PostComments.Count == 0 && x.GradeId==gradeId)
-            .Include(x => x.Grade)
-            .Include(x => x.ApplicationUser)
-            .Include(x => x.PostComments).AsQueryable();
     }
 
     public async Task<Post> GetPostById(int id)

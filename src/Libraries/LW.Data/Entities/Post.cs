@@ -18,4 +18,7 @@ public class Post : EntityAuditBase<int>
     public virtual ApplicationUser ApplicationUser { get; set; }
     public virtual ICollection<PostComment> PostComments { get; set; }
     public virtual ICollection<FavoritePost> FavoritePosts { get; set; }
+    [NotMapped]
+    public IEnumerable<string>? Roles { get; set; }
+
 }

@@ -40,7 +40,8 @@ public class AdminAuthorService : IAdminAuthorService
         IOptions<VerifyEmailSettings> verifyEmailSettings,
         ILogger logger,
         ISmtpEmailService emailService,
-        IMapper mapper, IJwtTokenService jwtTokenService, ICloudinaryService cloudinaryService, IElasticSearchService<MemberDto, string> elasticSearchService)
+        IMapper mapper, IJwtTokenService jwtTokenService, ICloudinaryService cloudinaryService,
+        IElasticSearchService<MemberDto, string> elasticSearchService)
     {
         _userManager = userManager;
         _mapper = mapper;
@@ -90,7 +91,8 @@ public class AdminAuthorService : IAdminAuthorService
         }
 
         var adminDto = _mapper.Map<RegisterMemberResponseDto>(user);
-        _elasticSearchService.CreateDocumentAsync(ElasticConstant.ElasticUsers, user.ToMemberDto(_userManager), a => a.Id);
+        _elasticSearchService.CreateDocumentAsync(ElasticConstant.ElasticUsers, user.ToMemberDto(_userManager),
+            a => a.Id);
         return new ApiResult<RegisterMemberResponseDto>(true, adminDto, "Register successfully");
     }
 
@@ -141,36 +143,45 @@ public class AdminAuthorService : IAdminAuthorService
         return new ApiResult<LoginAdminResponseDto>(true, loginAdminResponseDto, "Login Admin successfully !!!");
     }
 
-    public async Task<ApiResult<PagedList<MemberDto>>> GetAllMemberByRolePagination(string? role, PagingRequestParameters pagingRequestParameters)
+    public async Task<ApiResult<PagedList<MemberDto>>> GetAllMemberByRolePagination(string? role,
+        PagingRequestParameters pagingRequestParameters)
     {
         var user = await _userManager.Users.Select(u => u.ToMemberDto(_userManager)).ToListAsync();
         if (!user.Any())
         {
             return new ApiResult<PagedList<MemberDto>>(false, "user not found !!!");
         }
+
         if (!string.IsNullOrEmpty(role))
         {
             user = user.Where(u => u.Roles.Any(r => r.ToLower().Trim().Equals(role.ToLower().Trim()))).ToList();
         }
+
         var pagedResult = await PagedList<MemberDto>.ToPageListAsync(user.AsQueryable().BuildMock(),
             pagingRequestParameters.PageIndex, pagingRequestParameters.PageSize, pagingRequestParameters.OrderBy,
             pagingRequestParameters.IsAscending);
         return new ApiSuccessResult<PagedList<MemberDto>>(pagedResult);
     }
 
-    public async Task<ApiResult<PagedList<MemberDto>>> SearchMemberByRolePagination(string? role, SearchRequestValue searchRequestValue)
+    public async Task<ApiResult<PagedList<MemberDto>>> SearchMemberByRolePagination(string? role,
+        SearchRequestValue searchRequestValue)
     {
-        var user = await _elasticSearchService.SearchAllDocumentFieldAsync(ElasticConstant.ElasticUsers, searchRequestValue);
+        var user = await _elasticSearchService.SearchAllDocumentFieldAsync(ElasticConstant.ElasticUsers,
+            searchRequestValue);
         if (!user.Any())
         {
             return new ApiResult<PagedList<MemberDto>>(false, "user not found !!!");
         }
+
         if (!string.IsNullOrEmpty(role))
         {
             user = user.Where(u => u.Roles.Any(r => r.ToLower().Trim().Equals(role.ToLower().Trim()))).ToList();
         }
+
         var result = _mapper.Map<IEnumerable<MemberDto>>(user);
-        var pagedResult = await PagedList<MemberDto>.ToPageListAsync(result.AsQueryable().BuildMock(), searchRequestValue.PageIndex, searchRequestValue.PageSize, searchRequestValue.OrderBy, searchRequestValue.IsAscending);
+        var pagedResult = await PagedList<MemberDto>.ToPageListAsync(result.AsQueryable().BuildMock(),
+            searchRequestValue.PageIndex, searchRequestValue.PageSize, searchRequestValue.OrderBy,
+            searchRequestValue.IsAscending);
         return new ApiSuccessResult<PagedList<MemberDto>>(pagedResult);
     }
 
@@ -188,7 +199,9 @@ public class AdminAuthorService : IAdminAuthorService
             return new ApiResult<bool>(true,
                 $"Assign {roleName} to user with email {email} successfully !");
         }
-        _elasticSearchService.UpdateDocumentAsync(ElasticConstant.ElasticUsers, user.ToMemberDto(_userManager), user.Id);
+
+        _elasticSearchService.UpdateDocumentAsync(ElasticConstant.ElasticUsers, user.ToMemberDto(_userManager),
+            user.Id);
         return new ApiResult<bool>(false, "Don't find user with email " + email);
     }
 
@@ -224,8 +237,27 @@ public class AdminAuthorService : IAdminAuthorService
         }
 
         var roleOfUserAfterUpdate = (await _userManager.GetRolesAsync(user)).ToArray();
-        _elasticSearchService.UpdateDocumentAsync(ElasticConstant.ElasticUsers, user.ToMemberDto(_userManager), user.Id);
-        return new ApiResult<IEnumerable<string>>(true, roleOfUserAfterUpdate, $"Assign multi roles for user with id = {assignMultipleRoleDto.UserId} ");
+        _elasticSearchService.UpdateDocumentAsync(ElasticConstant.ElasticUsers, user.ToMemberDto(_userManager),
+            user.Id);
+        return new ApiResult<IEnumerable<string>>(true, roleOfUserAfterUpdate,
+            $"Assign multi roles for user with id = {assignMultipleRoleDto.UserId} ");
+    }
+
+    public async Task<ApiResult<IEnumerable<string>>> GetAllRoleOfUserAsync(string userId)
+    {
+        var user = await _userManager.FindByIdAsync(userId);
+        if (user == null)
+        {
+            return new ApiResult<IEnumerable<string>>(false,
+                $"User Not Found !");
+        }
+        var roles = (await _userManager.GetRolesAsync(user)).ToArray();
+        if (!roles.Any())
+        {
+            return new ApiResult<IEnumerable<string>>(false, "Not found roles");
+        }
+
+        return new ApiResult<IEnumerable<string>>(true, roles, "Get success");
     }
 
     public async Task<ApiResult<UpdateAdminDto>> UpdateAdminAsync(UpdateAdminDto updateAdminDto)
@@ -273,7 +305,8 @@ public class AdminAuthorService : IAdminAuthorService
         }
 
         await _userManager.UpdateAsync(user);
-        _elasticSearchService.UpdateDocumentAsync(ElasticConstant.ElasticUsers, user.ToMemberDto(_userManager), updateAdminDto.UserId);
+        _elasticSearchService.UpdateDocumentAsync(ElasticConstant.ElasticUsers, user.ToMemberDto(_userManager),
+            updateAdminDto.UserId);
         return new ApiResult<UpdateAdminDto>(true, updateAdminDto, $"Update Successfully !");
     }
 
@@ -299,7 +332,7 @@ public class AdminAuthorService : IAdminAuthorService
             return new ApiResult<bool>(true, true,
                 $"LockMember Successfully !");
         }
-        
+
         _elasticSearchService.UpdateDocumentAsync(ElasticConstant.ElasticUsers, user.ToMemberDto(_userManager), userId);
         return new ApiResult<bool>(false, $"User Not Found !");
     }
@@ -486,7 +519,7 @@ public class AdminAuthorService : IAdminAuthorService
         var roleDto = _mapper.Map<RoleDto>(role);
         return new ApiResult<RoleDto>(true, roleDto, "Role retrieved successfully");
     }
-    
+
     private async Task SendForgotPasswordEmail(ApplicationUser user, string token, CancellationToken cancellationToken)
     {
         var url = $"{_urlBase.ClientUrl}/{_verifyEmailSettings.ResetPasswordPath}?token={token}&email={user.Email}";

@@ -15,6 +15,7 @@ using LW.Shared.DTOs.Exam;
 using LW.Shared.DTOs.ExamAnswer;
 using LW.Shared.DTOs.ExamCode;
 using LW.Shared.DTOs.ExecuteCode;
+using LW.Shared.DTOs.FavoritePost;
 using LW.Shared.DTOs.Index;
 using LW.Shared.DTOs.Lesson;
 using LW.Shared.DTOs.Problem;
@@ -309,5 +310,8 @@ public class MappingProfile : Profile
         CreateMap<VoteComment, VoteCommentDto>().ReverseMap();
         CreateMap<VoteComment, VoteCommentCreateDto>().ReverseMap();
         CreateMap<VoteComment, VoteCommentUpdateDto>().ReverseMap();
+        //FavoritePost
+        CreateMap<FavoritePost, FavoritePostDto>().ReverseMap();
+
     }
 }
