@@ -61,29 +61,6 @@ namespace LW.API.Controllers.Public
             return Ok(result);
         }
         
-        [HttpGet("GetAllQuizQuestionByQuizIdTest/{quizId}")]
-        public async Task<ActionResult<ApiResult<PagedList<QuizQuestionTestDto>>>> GetAllQuizQuestionByQuizIdTest([Required] int quizId, int? size)
-        {
-            var result = await _quizQuestionService.GetAllQuizQuestionByQuizIdTest(quizId, size);
-            if (!result.IsSucceeded)
-            {
-                return NotFound(result);
-            }
-            return Ok(result);
-        }
-        
-        [HttpGet("SearchQuizQuestionPagination")]
-        public async Task<ActionResult<ApiResult<IEnumerable<QuizQuestionDto>>>> SearchQuizQuestionPagination([FromQuery] SearchQuizQuestionDto searchQuizQuestionDto)
-        {
-            var result = await _quizQuestionService.SearchQuizQuestion(searchQuizQuestionDto);
-            if (!result.IsSucceeded)
-            {
-                return NotFound(result);
-            }
-            Response.Headers.Add("X-Pagination", JsonConvert.SerializeObject(result.Data.GetMetaData()));
-            return Ok(result);
-        }
-
         [HttpGet("GetQuizQuestionById/{id}")]
         public async Task<ActionResult<ApiResult<IEnumerable<QuizQuestionDto>>>> GetQuizQuestionById([Required] int id)
         {
@@ -95,7 +72,7 @@ namespace LW.API.Controllers.Public
 
             return Ok(result);
         }
-
+        
         [HttpPost("CreateQuizQuestion")]
         public async Task<ActionResult<ApiResult<IEnumerable<QuizQuestionDto>>>> CreateQuizQuestion([FromForm] QuizQuestionCreateDto quizQuestionCreateDto)
         {
@@ -113,7 +90,7 @@ namespace LW.API.Controllers.Public
 
             return Ok(result);
         }
-
+        
         [HttpPut("UpdateQuizQuestion")]
         public async Task<ActionResult<ApiResult<IEnumerable<QuizQuestionDto>>>> UpdateQuizQuestion([FromForm] QuizQuestionUpdateDto quizQuestionUpdateDto)
         {
@@ -131,17 +108,16 @@ namespace LW.API.Controllers.Public
 
             return Ok(result);
         }
-
+        
         [HttpPost("CreateRangeQuizQuestion")]
         public async Task<ActionResult<ApiResult<IEnumerable<QuizQuestionDto>>>> CreateRangeQuizQuestion([FromForm] IEnumerable<QuizQuestionCreateDto> quizQuestionsCreateDto)
         {
-            var validator = new CreateQuizQuestionCommandValidator();
-            var validationResults = quizQuestionsCreateDto.Select(async model => await validator.ValidateAsync(model));
+            var validator =  new CreateQuizQuestionCommandValidator();
+            var validationResults =  quizQuestionsCreateDto.Select(async model => await validator.ValidateAsync(model));
             if (validationResults.Any(result => !result.IsCompleted))
             {
                 return BadRequest(validationResults);
             }
-
             var result = await _quizQuestionService.CreateRangeQuizQuestion(quizQuestionsCreateDto);
             if (!result.IsSucceeded)
             {
@@ -150,17 +126,16 @@ namespace LW.API.Controllers.Public
 
             return Ok(result);
         }
-
+        
         [HttpPut("UpdateRangeQuizQuestion")]
         public async Task<ActionResult<ApiResult<IEnumerable<QuizQuestionDto>>>> UpdateRangeQuizQuestion([FromForm] IEnumerable<QuizQuestionUpdateDto> quizQuestionsUpdateDto)
         {
-            var validator = new UpdateQuizQuestionCommandValidator();
-            var validationResults = quizQuestionsUpdateDto.Select(async model => await validator.ValidateAsync(model));
+            var validator =  new UpdateQuizQuestionCommandValidator();
+            var validationResults =  quizQuestionsUpdateDto.Select(async model => await validator.ValidateAsync(model));
             if (validationResults.Any(result => !result.IsCompleted))
             {
                 return BadRequest(validationResults);
             }
-
             var result = await _quizQuestionService.UpdateRangeQuizQuestion(quizQuestionsUpdateDto);
             if (!result.IsSucceeded)
             {
@@ -169,7 +144,7 @@ namespace LW.API.Controllers.Public
 
             return Ok(result);
         }
-
+        
         [HttpPut("UpdateStatusQuizQuestion")]
         public async Task<ActionResult<ApiResult<bool>>> UpdateStatusQuizQuestion([Required] int id)
         {
@@ -181,7 +156,7 @@ namespace LW.API.Controllers.Public
 
             return Ok(result);
         }
-
+        
         [HttpDelete("DeleteQuizQuestion/{id}")]
         public async Task<ActionResult<ApiResult<bool>>> DeleteQuiz([Required] int id)
         {
@@ -203,7 +178,6 @@ namespace LW.API.Controllers.Public
             return File(excelData, "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet", fileName);
         }
         
-        
         [HttpGet("ExportExcelFail/{id}")]
         public async Task<IActionResult> ExportExcelFail(string id)
         {
@@ -211,6 +185,7 @@ namespace LW.API.Controllers.Public
             string fileName = $"Quiz-Fail-{DateTime.Now.ToString("dd-MM-yy HH:mm:ss")}.xlsx";
             return File(excelData, "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet", fileName);
         }
+        
          [HttpGet("ExportExcelResult/{id}")]
         public async Task<IActionResult> ExportExcelResult(string id)
         {

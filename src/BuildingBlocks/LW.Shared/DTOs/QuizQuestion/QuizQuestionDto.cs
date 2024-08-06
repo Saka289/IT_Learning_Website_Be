@@ -10,7 +10,6 @@ public class QuizQuestionDto
     public ETypeQuestion Type { get; set; }
     public string KeyWord { get; set; }
     public string Content { get; set; }
-    public string KeyWord { get; set; }
     public string? Hint { get; set; }
     public string? Image { get; set; }
     public bool IsShuffle { get; set; }

@@ -4,12 +4,10 @@ namespace LW.Shared.Enums;
 
 public enum ETypeQuestion
 {
-    [Display(Name = "Loại true false")]
+    [Display(Name = "Loại true false")] 
     QuestionTrueFalse = 1,
     [Display(Name = "Loại bốn câu trả lời")]
     QuestionFourAnswer = 2,
-    [Display(Name = "Loại năm câu trả lời")]
-    QuestionFiveAnswer = 3,
-[Display(Name = "Loại nhiều câu trả lời")]
-    QuestionMultiChoice = 4,
+    [Display(Name = "Loại nhiều câu trả lời")]
+    QuestionMultiChoice = 3,
 }

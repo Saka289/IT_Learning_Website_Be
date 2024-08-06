@@ -177,6 +177,4 @@ public class QuizQuestionRelationService : IQuizQuestionRelationService
         }
         return new ApiSuccessResult<bool>(delete);
     }
-
-
 }

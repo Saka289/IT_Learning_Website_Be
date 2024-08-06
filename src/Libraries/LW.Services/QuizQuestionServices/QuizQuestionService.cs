@@ -33,7 +33,6 @@ using MockQueryable.Moq;
 using System.Xml.Linq;
 using System.Data;
 using Moq;
-using LW.Services.FacebookServices;
 
 namespace LW.Services.QuizQuestionServices;
 
@@ -47,9 +46,12 @@ public class QuizQuestionService : IQuizQuestionService
     private readonly ICloudinaryService _cloudinaryService;
     private readonly IMapper _mapper;
     private readonly IRedisCache<string> _redisCacheService;
+
     public QuizQuestionService(IQuizAnswerRepository quizAnswerRepository,
-        IQuizQuestionRepository quizQuestionRepository, IRedisCache<string> redisCacheService, IMapper mapper, IQuizRepository quizRepository,
-        IElasticSearchService<QuizQuestionDto, int> elasticSearchService, ICloudinaryService cloudinaryService, IQuizQuestionRelationRepository quizQuestionRelationRepository)
+        IQuizQuestionRepository quizQuestionRepository, IRedisCache<string> redisCacheService, IMapper mapper,
+        IQuizRepository quizRepository,
+        IElasticSearchService<QuizQuestionDto, int> elasticSearchService, ICloudinaryService cloudinaryService,
+        IQuizQuestionRelationRepository quizQuestionRelationRepository)
     {
         _quizAnswerRepository = quizAnswerRepository;
         _quizQuestionRepository = quizQuestionRepository;
@@ -73,7 +75,8 @@ public class QuizQuestionService : IQuizQuestionService
         return new ApiSuccessResult<IEnumerable<QuizQuestionDto>>(result);
     }
 
-    public async Task<ApiResult<PagedList<QuizQuestionDto>>> GetAllQuizQuestionPagination(SearchAllQuizQuestionDto searchAllQuizQuestionDto)
+    public async Task<ApiResult<PagedList<QuizQuestionDto>>> GetAllQuizQuestionPagination(
+        SearchAllQuizQuestionDto searchAllQuizQuestionDto)
     {
         var quizQuestionList = await _quizQuestionRepository.GetAllQuizQuestionPagination();
         if (!quizQuestionList.Any())
@@ -83,7 +86,8 @@ public class QuizQuestionService : IQuizQuestionService
 
         if (searchAllQuizQuestionDto.QuizId > 0)
         {
-            quizQuestionList = quizQuestionList.Where(q => q.QuizQuestionRelations.Any(q => q.QuizId == searchAllQuizQuestionDto.QuizId));
+            quizQuestionList = quizQuestionList.Where(q =>
+                q.QuizQuestionRelations.Any(q => q.QuizId == searchAllQuizQuestionDto.QuizId));
         }
 
         if (!string.IsNullOrEmpty(searchAllQuizQuestionDto.Value))
@@ -109,19 +113,22 @@ public class QuizQuestionService : IQuizQuestionService
 
         var result = _mapper.Map<IEnumerable<QuizQuestionDto>>(quizQuestionList);
         var pagedResult = await PagedList<QuizQuestionDto>.ToPageListAsync(result.AsQueryable().BuildMock(),
-            searchAllQuizQuestionDto.PageIndex, searchAllQuizQuestionDto.PageSize, searchAllQuizQuestionDto.OrderBy, searchAllQuizQuestionDto.IsAscending);
+            searchAllQuizQuestionDto.PageIndex, searchAllQuizQuestionDto.PageSize, searchAllQuizQuestionDto.OrderBy,
+            searchAllQuizQuestionDto.IsAscending);
         return new ApiSuccessResult<PagedList<QuizQuestionDto>>(pagedResult);
     }
-    
-    public async Task<ApiResult<IEnumerable<object>>> GetAllQuizQuestionByQuizId(SearchQuizQuestionDto searchQuizQuestionDto)
+
+    public async Task<ApiResult<IEnumerable<object>>> GetAllQuizQuestionByQuizId(
+        SearchQuizQuestionDto searchQuizQuestionDto)
     {
         var quiz = await _quizRepository.GetQuizById(Convert.ToInt32(searchQuizQuestionDto.QuizId));
-        if (quiz is null) 
+        if (quiz is null)
         {
             return new ApiResult<IEnumerable<object>>(false, "Quiz is null !!!");
         }
-        
-        var quizQuestionList = await _quizQuestionRepository.GetAllQuizQuestionByQuizId(Convert.ToInt32(searchQuizQuestionDto.QuizId));
+
+        var quizQuestionList =
+            await _quizQuestionRepository.GetAllQuizQuestionByQuizId(Convert.ToInt32(searchQuizQuestionDto.QuizId));
         if (!quizQuestionList.Any())
         {
             return new ApiResult<IEnumerable<object>>(false, "Quiz Question is null !!!");
@@ -491,6 +498,7 @@ public class QuizQuestionService : IQuizQuestionService
         _elasticSearchService.DeleteDocumentAsync(ElasticConstant.ElasticQuizQuestion, id);
         return new ApiSuccessResult<bool>(true);
     }
+
     public async Task<byte[]> ExportExcel(int checkData = 1, string? Ids = null)
     {
         IEnumerable<QuizQuestionExcelDto> data = new List<QuizQuestionExcelDto>();
@@ -502,30 +510,32 @@ public class QuizQuestionService : IQuizQuestionService
             var quizQuestions = JsonConvert.DeserializeObject<List<QuizQuestionImportDto>>(dataImport);
             data = quizQuestions.Select(e => _mapper.Map<QuizQuestionExcelDto>(e)).ToList();
         }
+
         if (data.Any())
         {
             return await GenerateExcelFile(data, Ids);
         }
+
         return await GenerateExcelFile(data, Ids);
     }
 
 
     private async Task<byte[]> GenerateExcelFile(IEnumerable<QuizQuestionExcelDto> data, string Ids)
     {
-
         ETypeQuestion[] typeQuestions = (ETypeQuestion[])Enum.GetValues(typeof(ETypeQuestion));
         EQuestionLevel[] levels = (EQuestionLevel[])Enum.GetValues(typeof(EQuestionLevel));
         var arrayShuffle = new[]
-{
-    new { label = "Có", value = true },
-    new { label = "Không", value = false }
-};
+        {
+            new { label = "Có", value = true },
+            new { label = "Không", value = false }
+        };
         using (var package = new ExcelPackage())
         {
             // Add a worksheet named "Data Validation"
             var worksheet = CreateWorkSheet(package, Ids);
             // Define column headers and widths
-            string[] columnHeaders = {
+            string[] columnHeaders =
+            {
                 "STT",
                 "Loại câu hỏi",
                 "Câu hỏi - max 200 ký tự ",
@@ -539,7 +549,7 @@ public class QuizQuestionService : IQuizQuestionService
                 "Mức độ câu hỏi",
                 "Trộn câu hỏi",
                 "Gợi ý câu trả lời",
-                };
+            };
             if (Ids != null)
             {
                 string[] extendedColumnHeaders = new string[columnHeaders.Length + 1];
@@ -547,13 +557,16 @@ public class QuizQuestionService : IQuizQuestionService
                 {
                     extendedColumnHeaders[i] = columnHeaders[i];
                 }
+
                 // Add the new column header
                 extendedColumnHeaders[columnHeaders.Length] = "Tình trạng";
                 // Replace the old array with the new one
                 columnHeaders = extendedColumnHeaders;
             }
+
             int dataStartRow = 3;
-            int endRow = 1000; ;  // Calculate end row dynamically
+            int endRow = 1000;
+            ; // Calculate end row dynamically
             StyleColumn(columnHeaders, worksheet, dataStartRow, endRow, Ids);
             int startRow = dataStartRow + 1; // Assuming data starts from row (dataStartRow + 1)
             AddDataValidation(worksheet, columnHeaders, startRow, endRow, typeQuestions, levels, arrayShuffle);
@@ -562,8 +575,8 @@ public class QuizQuestionService : IQuizQuestionService
             // Save the workbook to a memory stream and return the stream as a byte array
             return SavePackageToStream(package);
         }
-
     }
+
     public DataTable ToConvertDataTable<T>(IEnumerable<T> items, ExcelWorksheet worksheet)
     {
         DataTable dt = CreateDataTableStructure<T>();
@@ -629,7 +642,8 @@ public class QuizQuestionService : IQuizQuestionService
         }
     }
 
-    private void SetPropertyValueInWorksheet<T>(T item, string propertyName, ExcelWorksheet worksheet, int rowIndex, ref int excelColumnIndex)
+    private void SetPropertyValueInWorksheet<T>(T item, string propertyName, ExcelWorksheet worksheet, int rowIndex,
+        ref int excelColumnIndex)
     {
         var prop = item.GetType().GetProperty(propertyName);
         if (prop != null)
@@ -641,7 +655,8 @@ public class QuizQuestionService : IQuizQuestionService
         }
     }
 
-    private string SetQuizAnswersInWorksheet<T>(T item, ExcelWorksheet worksheet, int rowIndex, ref int excelColumnIndex)
+    private string SetQuizAnswersInWorksheet<T>(T item, ExcelWorksheet worksheet, int rowIndex,
+        ref int excelColumnIndex)
     {
         var quizAnswers = item.GetType().GetProperty("QuizAnswers").GetValue(item) as IEnumerable<QuizAnswerDto>;
         string correctAnswer = "";
@@ -655,16 +670,20 @@ public class QuizQuestionService : IQuizQuestionService
                 {
                     correctAnswer += $"{answerIndex};";
                 }
+
                 excelColumnIndex++;
                 answerIndex++;
             }
         }
+
         if (correctAnswer.EndsWith(";"))
         {
             correctAnswer = correctAnswer.TrimEnd(';');
         }
+
         return correctAnswer;
     }
+
     private void SetErrorQuizInWorksheet<T>(T item, ExcelWorksheet worksheet, int rowIndex, ref int excelColumnIndex)
     {
         var errors = item.GetType().GetProperty("Errors").GetValue(item) as List<string>;
@@ -681,9 +700,10 @@ public class QuizQuestionService : IQuizQuestionService
         }
     }
 
-    private void SetRemainingPropertiesInWorksheet<T>(T item, PropertyInfo[] propInfo, ExcelWorksheet worksheet, int rowIndex, ref int excelColumnIndex, string correctAnswer)
+    private void SetRemainingPropertiesInWorksheet<T>(T item, PropertyInfo[] propInfo, ExcelWorksheet worksheet,
+        int rowIndex, ref int excelColumnIndex, string correctAnswer)
     {
-        excelColumnIndex = 10; 
+        excelColumnIndex = 10;
         foreach (PropertyInfo prop in propInfo)
         {
             if (prop.Name != "QuizAnswers" && prop.Name != "TypeName" && prop.Name != "Content")
@@ -693,14 +713,17 @@ public class QuizQuestionService : IQuizQuestionService
                     string cellValue = !string.IsNullOrEmpty(correctAnswer) ? correctAnswer : "";
                     worksheet.Cells[rowIndex, excelColumnIndex].Value = cellValue;
                     excelColumnIndex++;
-                } else if (prop.Name == "Errors")
+                }
+                else if (prop.Name == "Errors")
                 {
                     SetErrorQuizInWorksheet(item, worksheet, rowIndex, ref excelColumnIndex);
                 }
                 else
                 {
                     var propValue = prop.GetValue(item, null);
-                    string cellValue = propValue is bool boolValue ? (boolValue ? "Có" : "Không") : propValue?.ToString() ?? "";
+                    string cellValue = propValue is bool boolValue
+                        ? (boolValue ? "Có" : "Không")
+                        : propValue?.ToString() ?? "";
                     worksheet.Cells[rowIndex, excelColumnIndex].Value = cellValue;
                     excelColumnIndex++;
                 }
@@ -709,33 +732,33 @@ public class QuizQuestionService : IQuizQuestionService
     }
 
 
-
     // create worksheet and merge cell 
     public ExcelWorksheet CreateWorkSheet(ExcelPackage package, string Ids)
     {
         // Add a worksheet named "Data Validation"
         var worksheet = package.Workbook.Worksheets.Add("Danh sách câu hỏi");
         // Merge cells for title and set title formatting
-        
+
         if (Ids != null)
         {
             worksheet.Cells["A1:N2"].Merge = true;
         }
         else
         {
-            worksheet.Cells["A1:M2"].Merge = true;  
+            worksheet.Cells["A1:M2"].Merge = true;
         }
-            worksheet.Cells["A1"].Value = "Danh Sách Câu Hỏi"; // Replace with your actual title
+
+        worksheet.Cells["A1"].Value = "Danh Sách Câu Hỏi"; // Replace with your actual title
         worksheet.Row(1).Height = 25;
         worksheet.Row(1).Style.Font.Bold = true;
         worksheet.Row(1).Style.HorizontalAlignment = ExcelHorizontalAlignment.Center;
         worksheet.Row(1).Style.Font.Size = 25;
         return worksheet;
     }
+
     // style for column 
     public void StyleColumn(string[] columnHeaders, ExcelWorksheet worksheet, int dataStartRow, int endrow, string? Ids)
     {
-
         int[] columnWidths = { 7, 20, 30, 30, 30, 30, 30, 30, 50, 30, 30, 30, 30 };
         if (Ids != null)
         {
@@ -744,15 +767,16 @@ public class QuizQuestionService : IQuizQuestionService
             {
                 extendedColumnWidths[i] = columnWidths[i];
             }
+
             // Add the new column header
             extendedColumnWidths[columnWidths.Length] = 50;
             // Replace the old array with the new one
             columnWidths = extendedColumnWidths;
         }
+
         // Add column headers and set column widths
         for (int i = 0; i < columnHeaders.Length; i++)
         {
-
             worksheet.Cells[dataStartRow, i + 1].Value = columnHeaders[i];
             worksheet.Cells[dataStartRow, i + 1].Style.WrapText = true;
             worksheet.Column(i + 1).Width = columnWidths[i];
@@ -768,8 +792,10 @@ public class QuizQuestionService : IQuizQuestionService
             }
         }
     }
+
     // create combobox 
-    private void AddDataValidation(ExcelWorksheet worksheet, string[] columnHeaders, int startRow, int endRow, IEnumerable<ETypeQuestion> comboBoxValues, IEnumerable<EQuestionLevel> levels, IEnumerable<Object> shuffles)
+    private void AddDataValidation(ExcelWorksheet worksheet, string[] columnHeaders, int startRow, int endRow,
+        IEnumerable<ETypeQuestion> comboBoxValues, IEnumerable<EQuestionLevel> levels, IEnumerable<Object> shuffles)
     {
         int departmentColumnIndex = Array.IndexOf(columnHeaders, "Loại câu hỏi");
         if (departmentColumnIndex == -1)
@@ -785,6 +811,7 @@ public class QuizQuestionService : IQuizQuestionService
         {
             validation.Formula.Values.Add(value.GetDisplayNameEnum());
         }
+
         int levelsColumnIndex = Array.IndexOf(columnHeaders, "Mức độ câu hỏi");
         var validationRangelevels = worksheet.Cells[startRow, levelsColumnIndex + 1, endRow, levelsColumnIndex + 1];
 
@@ -794,6 +821,7 @@ public class QuizQuestionService : IQuizQuestionService
         {
             validationLevels.Formula.Values.Add(value.GetDisplayNameEnum());
         }
+
         int shuffleColumnIndex = Array.IndexOf(columnHeaders, "Trộn câu hỏi");
         var validationRangeShuffle = worksheet.Cells[startRow, shuffleColumnIndex + 1, endRow, shuffleColumnIndex + 1];
 
@@ -815,19 +843,23 @@ public class QuizQuestionService : IQuizQuestionService
             return stream.ToArray();
         }
     }
+
     public ApiResult<QuizQuestionImportParentDto> CheckFileImport(IFormFile fileImport)
     {
         if (fileImport == null || fileImport.Length == 0)
         {
             return new ApiResult<QuizQuestionImportParentDto>(false, "File Import isn't empty");
         }
+
         if (!Path.GetExtension(fileImport.FileName).Equals(".xlsx", StringComparison.OrdinalIgnoreCase))
         {
             return new ApiResult<QuizQuestionImportParentDto>(false, "File upload must be format.xlxs");
         }
+
         // If the file is valid
         return new ApiResult<QuizQuestionImportParentDto>(true, "File valid");
     }
+
     public object? CheckCoincidence(IEnumerable<object> items, string name, string nameCompare)
     {
         if (items == null || name == null || nameCompare == null)
@@ -853,6 +885,7 @@ public class QuizQuestionService : IQuizQuestionService
 
         return find;
     }
+
     // support error in list
     private void AddImportError(QuizQuestionImportDto dto, string error)
     {
@@ -883,13 +916,15 @@ public class QuizQuestionService : IQuizQuestionService
 
                 if (workSheet != null)
                 {
-
-                    ProcessWorksheet(workSheet, quizQuestionImportDtos, quizQuestionImportSuccess, quizQuestionImportFail,out int countSuccess, out int countFail);
+                    ProcessWorksheet(workSheet, quizQuestionImportDtos, quizQuestionImportSuccess,
+                        quizQuestionImportFail, out int countSuccess, out int countFail);
 
                     quizQuestionImportParentDto.CountSuccess = countSuccess;
                     quizQuestionImportParentDto.CountFail = countFail;
                     quizQuestionImportParentDto.QuizQuestionImportDtos = quizQuestionImportDtos;
-                    var (cacheKeySuccess, cacheKeyFail, cacheKeyResult) = await CacheQuizQuestions(quizQuestionImportSuccess, quizQuestionImportFail, quizQuestionImportDtos);
+                    var (cacheKeySuccess, cacheKeyFail, cacheKeyResult) =
+                        await CacheQuizQuestions(quizQuestionImportSuccess, quizQuestionImportFail,
+                            quizQuestionImportDtos);
                     quizQuestionImportParentDto.IdImport = cacheKeySuccess;
                     quizQuestionImportParentDto.IdImportFail = cacheKeyFail;
                     quizQuestionImportParentDto.IdImportResult = cacheKeyResult;
@@ -899,6 +934,7 @@ public class QuizQuestionService : IQuizQuestionService
 
         return new ApiResult<QuizQuestionImportParentDto>(true, quizQuestionImportParentDto);
     }
+
     private static int FindLastRowWithData(ExcelWorksheet worksheet, int headerRow)
     {
         int lastRow = headerRow;
@@ -912,10 +948,13 @@ public class QuizQuestionService : IQuizQuestionService
                 }
             }
         }
+
         return lastRow;
     }
 
-    private void ProcessWorksheet(ExcelWorksheet workSheet, List<QuizQuestionImportDto> quizQuestionImportDtos, List<QuizQuestion> quizQuestionImportSuccess, List<QuizQuestionImportDto> quizQuestionImportFail, out int countSuccess, out int countFail)
+    private void ProcessWorksheet(ExcelWorksheet workSheet, List<QuizQuestionImportDto> quizQuestionImportDtos,
+        List<QuizQuestion> quizQuestionImportSuccess, List<QuizQuestionImportDto> quizQuestionImportFail,
+        out int countSuccess, out int countFail)
     {
         countSuccess = 0;
         countFail = 0;
@@ -927,7 +966,6 @@ public class QuizQuestionService : IQuizQuestionService
 
             if (ValidateQuizQuestionImportDto(quizQuestionImportDto))
             {
-
                 var quizQuestion = _mapper.Map<QuizQuestion>(quizQuestionImportDto);
                 quizQuestionImportDto.IsImported = true;
                 quizQuestionImportSuccess.Add(quizQuestion);
@@ -947,8 +985,8 @@ public class QuizQuestionService : IQuizQuestionService
     {
         var arrayShuffle = new[]
         {
-           new { label = "Có", value = true },
-           new { label = "Không", value = false }
+            new { label = "Có", value = true },
+            new { label = "Không", value = false }
         };
         var typeQuestionName = workSheet.Cells[row, 2].Value?.ToString()?.Trim();
         var answers = CreateArrayAnswer(workSheet, row);
@@ -956,8 +994,7 @@ public class QuizQuestionService : IQuizQuestionService
         var level = workSheet.Cells[row, 11].Value?.ToString()?.Trim();
         var isShuffle = workSheet.Cells[row, 12].Value?.ToString()?.Trim();
         var hint = workSheet.Cells[row, 13].Value?.ToString()?.Trim();
-        int result = EnumHelperExtensions
-            .GetEnumIntValueFromDisplayName<ETypeQuestion>(typeQuestionName);
+        int result = EnumHelperExtensions.GetEnumIntValueFromDisplayName<ETypeQuestion>(typeQuestionName);
         int resultLevel = EnumHelperExtensions.GetEnumIntValueFromDisplayName<EQuestionLevel>(level);
         string[] correctAnswersArray = answerCorrect?.Split(';', ',') ?? Array.Empty<string>();
         List<QuizAnswerDto> quizAnswers = CreateQuizAnswer(answers, correctAnswersArray);
@@ -968,7 +1005,7 @@ public class QuizQuestionService : IQuizQuestionService
             QuestionLevel = resultLevel.ToString(),
             QuestionLevelName = level,
             QuizAnswers = quizAnswers,
-            Type = result.ToString(),
+            Type = (ETypeQuestion)result,
             TypeName = typeQuestionName,
             IsActive = true,
             IsShuffle = shuffle,
@@ -976,6 +1013,7 @@ public class QuizQuestionService : IQuizQuestionService
             KeyWord = "Test",
         };
     }
+
     private List<QuizAnswerDto> CreateQuizAnswer(List<string> answers, string[] correctAnswersArray)
     {
         List<QuizAnswerDto> quizAnswers = new List<QuizAnswerDto> { };
@@ -986,8 +1024,10 @@ public class QuizQuestionService : IQuizQuestionService
                 quizAnswers.Add(new QuizAnswerDto(correctAnswersArray.Contains((i + 1).ToString()), answers[i]));
             }
         }
+
         return quizAnswers;
     }
+
     private List<string> CreateArrayAnswer(ExcelWorksheet workSheet, int row)
     {
         var answers = new List<string>();
@@ -996,8 +1036,10 @@ public class QuizQuestionService : IQuizQuestionService
         {
             answers.Add(workSheet.Cells[row, i].Value?.ToString()?.Trim());
         }
+
         return answers;
     }
+
     private bool GetShuffleValue(dynamic[] arrayShuffle, string isShuffle)
     {
         var shuffle = arrayShuffle.FirstOrDefault(e => e.label == isShuffle);
@@ -1008,7 +1050,7 @@ public class QuizQuestionService : IQuizQuestionService
     {
         bool isValid = true;
 
-        if (!int.TryParse(dto.Type, out int typeValue) || typeValue == 0)
+        if (dto.Type == 0)
         {
             AddImportError(dto, $"Không tìm thấy loại câu hỏi {dto.TypeName}");
             isValid = false;
@@ -1016,7 +1058,6 @@ public class QuizQuestionService : IQuizQuestionService
 
         if (!int.TryParse(dto.QuestionLevel, out int questionLevelValue) || questionLevelValue == 0)
         {
-
             AddImportError(dto, $"Không tìm thấy cấp độ câu hỏi {dto.QuestionLevelName}");
             isValid = false;
         }
@@ -1031,7 +1072,9 @@ public class QuizQuestionService : IQuizQuestionService
         return isValid;
     }
 
-    private async Task<(string cacheKeySuccess, string cacheKeyFail, string cacheKeyResult)> CacheQuizQuestions(List<QuizQuestion> quizQuestionImportSuccess, List<QuizQuestionImportDto> quizQuestionImportFail, List<QuizQuestionImportDto> quizQuestionImportResult)
+    private async Task<(string cacheKeySuccess, string cacheKeyFail, string cacheKeyResult)> CacheQuizQuestions(
+        List<QuizQuestion> quizQuestionImportSuccess, List<QuizQuestionImportDto> quizQuestionImportFail,
+        List<QuizQuestionImportDto> quizQuestionImportResult)
     {
         // Generate unique cache keys
         string cacheKeySuccess = $"excel-import-success-{Guid.NewGuid()}";
@@ -1044,13 +1087,16 @@ public class QuizQuestionService : IQuizQuestionService
             .SetSlidingExpiration(TimeSpan.FromMinutes(5));
 
         // Serialize and cache quizQuestionImportSuccess
-        await _redisCacheService.SetStringKey(cacheKeySuccess, JsonConvert.SerializeObject(quizQuestionImportSuccess), options);
+        await _redisCacheService.SetStringKey(cacheKeySuccess, JsonConvert.SerializeObject(quizQuestionImportSuccess),
+            options);
 
         // Serialize and cache quizQuestionImportFail
-        await _redisCacheService.SetStringKey(cacheKeyFail, JsonConvert.SerializeObject(quizQuestionImportFail), options);
+        await _redisCacheService.SetStringKey(cacheKeyFail, JsonConvert.SerializeObject(quizQuestionImportFail),
+            options);
 
         // Serialize and cache quizQuestionImportResult
-        await _redisCacheService.SetStringKey(cacheKeyResult, JsonConvert.SerializeObject(quizQuestionImportResult), options);
+        await _redisCacheService.SetStringKey(cacheKeyResult, JsonConvert.SerializeObject(quizQuestionImportResult),
+            options);
 
         // Return cache keys
         return (cacheKeySuccess, cacheKeyFail, cacheKeyResult);
@@ -1089,7 +1135,8 @@ public class QuizQuestionService : IQuizQuestionService
                 .ToArray();
             // map insert những thằng này vào db xong mình phải lấy ra được id của nó vừa insert rồi mới thực hiện được 
             //var quizQuestionRelations = 
-            var quizQuestionRelationCreate = await _quizQuestionRelationRepository.CreateRangeQuizQuestionRelation(resultArray);
+            var quizQuestionRelationCreate =
+                await _quizQuestionRelationRepository.CreateRangeQuizQuestionRelation(resultArray);
             return new ApiResult<bool>(true, $"Import Success: {quizQuestionCreate}");
         }
         catch (Exception ex)
@@ -1097,6 +1144,4 @@ public class QuizQuestionService : IQuizQuestionService
             return new ApiResult<bool>(false, $"Error importing data: {ex.Message}");
         }
     }
-
-
 }
