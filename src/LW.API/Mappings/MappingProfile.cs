@@ -226,6 +226,8 @@ public class MappingProfile : Profile
         CreateMap<QuizQuestion, QuizQuestionTestDto>().ReverseMap();
         CreateMap<QuizQuestion, QuizQuestionCreateDto>().ReverseMap();
         CreateMap<QuizQuestion, QuizQuestionUpdateDto>().ReverseMap();
+        CreateMap<QuizQuestion, QuizQuestionImportDto>().ReverseMap();
+        CreateMap<QuizQuestionExcelDto, QuizQuestionImportDto>().ReverseMap();
         //QuizAnswer
         CreateMap<QuizAnswer, QuizAnswerDto>().ReverseMap();
         CreateMap<QuizAnswer, QuizAnswerTestDto>().ReverseMap();
@@ -278,10 +280,10 @@ public class MappingProfile : Profile
             .ReverseMap();
         //Post
         CreateMap<Post, PostDto>()
-            .ForMember(x=>x.UserName, y=>y.MapFrom(src=>src.ApplicationUser.UserName))
-            .ForMember(x=>x.GradeTitle, y=>y.MapFrom(src=>src.Grade.Title))
-            .ForMember(x=>x.NumberOfComment, y=>y.MapFrom(src=>src.PostComments.Count()))
-            .ForMember(x=>x.Avatar, y=>y.MapFrom(src=>src.ApplicationUser.Image))
+            .ForMember(x => x.UserName, y => y.MapFrom(src => src.ApplicationUser.UserName))
+            .ForMember(x => x.GradeTitle, y => y.MapFrom(src => src.Grade.Title))
+            .ForMember(x => x.NumberOfComment, y => y.MapFrom(src => src.PostComments.Count()))
+            .ForMember(x => x.Avatar, y => y.MapFrom(src => src.ApplicationUser.Image))
             .ReverseMap();
         CreateMap<Post, PostCreateDto>().ReverseMap();
         CreateMap<Post, PostUpdateDto>().ReverseMap();
@@ -291,8 +293,7 @@ public class MappingProfile : Profile
                 y => y.MapFrom(src => src.ApplicationUser.FirstName + " " + src.ApplicationUser.LastName))
             .ForMember(x => x.Avatar,
                 y => y.MapFrom(src => src.ApplicationUser.Image))
-            .ForMember(x=>x.NumberOfReply, y=>y.MapFrom(src=>src.PostCommentChilds.Count()))
-
+            .ForMember(x => x.NumberOfReply, y => y.MapFrom(src => src.PostCommentChilds.Count()))
             .ReverseMap();
         CreateMap<PostComment, PostCommentReplyDto>()
             .ForMember(x => x.FullName,

@@ -3,6 +3,7 @@ using System;
 using LW.Data.Persistence;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
@@ -10,9 +11,10 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace LW.Data.Persistence.Migrations
 {
     [DbContext(typeof(AppDbContext))]
-    partial class AppDbContextModelSnapshot : ModelSnapshot
+    [Migration("20240806071337_Init_Update_QuizQuestion")]
+    partial class Init_Update_QuizQuestion
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -320,9 +322,6 @@ namespace LW.Data.Persistence.Migrations
                     b.Property<string>("ExamSolutionFile")
                         .HasColumnType("longtext");
 
-                    b.Property<int?>("GradeId")
-                        .HasColumnType("int");
-
                     b.Property<bool>("IsActive")
                         .HasColumnType("tinyint(1)");
 
@@ -365,8 +364,6 @@ namespace LW.Data.Persistence.Migrations
                     b.HasKey("Id");
 
                     b.HasIndex("CompetitionId");
-
-                    b.HasIndex("GradeId");
 
                     b.ToTable("Exams");
                 });
@@ -1598,13 +1595,7 @@ namespace LW.Data.Persistence.Migrations
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.HasOne("LW.Data.Entities.Grade", "Grade")
-                        .WithMany("Exams")
-                        .HasForeignKey("GradeId");
-
                     b.Navigation("Competition");
-
-                    b.Navigation("Grade");
                 });
 
             modelBuilder.Entity("LW.Data.Entities.ExamAnswer", b =>
@@ -2047,8 +2038,6 @@ namespace LW.Data.Persistence.Migrations
             modelBuilder.Entity("LW.Data.Entities.Grade", b =>
                 {
                     b.Navigation("Documents");
-
-                    b.Navigation("Exams");
 
                     b.Navigation("Posts");
 

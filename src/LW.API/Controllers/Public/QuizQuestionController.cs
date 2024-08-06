@@ -1,4 +1,4 @@
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.Linq;
@@ -10,6 +10,7 @@ using LW.Shared.DTOs.QuizQuestion;
 using LW.Shared.SeedWork;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
+using Nest;
 using Newtonsoft.Json;
 
 namespace LW.API.Controllers.Public
@@ -166,6 +167,54 @@ namespace LW.API.Controllers.Public
             }
 
             return Ok(result);
+        }
+
+
+        [HttpGet("ExportExcel")]
+        public async Task<IActionResult> ExportExcel([FromQuery] int checkData = 1)
+        {
+            byte[] excelData = await _quizQuestionService.ExportExcel(checkData, null);
+            string fileName = $"Quiz-{DateTime.Now.ToString("dd-MM-yy HH:mm:ss")}.xlsx";
+            return File(excelData, "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet", fileName);
+        }
+        
+        [HttpGet("ExportExcelFail/{id}")]
+        public async Task<IActionResult> ExportExcelFail(string id)
+        {
+            byte[] excelData = await _quizQuestionService.ExportExcel(1, id);
+            string fileName = $"Quiz-Fail-{DateTime.Now.ToString("dd-MM-yy HH:mm:ss")}.xlsx";
+            return File(excelData, "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet", fileName);
+        }
+        
+         [HttpGet("ExportExcelResult/{id}")]
+        public async Task<IActionResult> ExportExcelResult(string id)
+        {
+            byte[] excelData = await _quizQuestionService.ExportExcel(1, id);
+            string fileName = $"Quiz-Result-{DateTime.Now.ToString("dd-MM-yy HH:mm:ss")}.xlsx";
+            return File(excelData, "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet", fileName);
+        }
+
+        [HttpPost("ImportValidate")]
+        public async Task<ActionResult<ApiResult<QuizQuestionImportParentDto>>> ImportValidate([FromForm] IFormFile fileImport, [Required] int quizId)
+        {
+            var imports = await _quizQuestionService.ImportExcel(fileImport);
+            if (!imports.IsSucceeded)
+            {
+                return BadRequest(imports);
+            }
+
+            return StatusCode(200, imports);
+        }
+
+        [HttpGet("ImportDatabase/{id}/{quizId}")]
+        public async Task<ActionResult<ApiResult<bool>>> ImportDatabase(string id, int quizId)
+        {
+            var imports = await _quizQuestionService.ImportDatabase(id, quizId);
+            if (!imports.IsSucceeded)
+            {
+                return BadRequest(imports);
+            }
+            return Ok(imports);
         }
     }
 }
