@@ -24,12 +24,33 @@ public static class EncodeHelperExtensions
         var base64EncodedBytes = Convert.FromBase64String(base64EncodedData);
         return Encoding.UTF8.GetString(base64EncodedBytes);
     }
-    
+
     public static bool IsBase64String(this string base64)
     {
         Span<byte> buffer = new Span<byte>(new byte[base64.Length]);
-        return Convert.TryFromBase64String(base64, buffer , out int bytesParsed);
+        return Convert.TryFromBase64String(base64, buffer, out int bytesParsed);
     }
+
+    public static int HashArray(this string[] arr)
+    {
+        // Sort the array to ensure order does not affect the hash
+        Array.Sort(arr);
+
+        int hash = 0;
+        for (int i = 0; i < arr.Length; i++)
+        {
+            string element = arr[i].Trim();
+            for (int j = 0; j < element.Length; j++)
+            {
+                char charCode = element[j]; // Get character code for each character
+                hash = (hash << 5) - hash + charCode; // Efficient bitwise XOR
+                hash &= 0x7fffffff; // Ensure 32-bit hash value
+            }
+        }
+
+        return hash;
+    }
+
 
     private static string GenerateHash(string input)
     {

@@ -22,6 +22,7 @@ public class QuizQuestion : EntityAuditBase<int>
     public bool IsShuffle { get; set; }
     [Required]
     public bool IsActive { get; set; }
+    public int HashQuestion { get; set; }
     [Required]
     public EQuestionLevel QuestionLevel { get; set; }
     public virtual ICollection<QuizQuestionRelation> QuizQuestionRelations { get; set; }

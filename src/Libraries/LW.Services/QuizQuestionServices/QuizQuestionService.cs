@@ -221,6 +221,14 @@ public class QuizQuestionService : IQuizQuestionService
         }
 
         var quizQuestionEntity = _mapper.Map<QuizQuestion>(quizQuestionCreateDto);
+
+        var listQuizQuestion = await _quizQuestionRepository.GetAllQuizQuestion();
+        var numberHash = FindDuplicateQuestion(listQuizQuestion, quizQuestionEntity);
+        if (numberHash == 0)
+        {
+            return new ApiResult<QuizQuestionDto>(false, "Question is duplicate !!!");
+        }
+
         if (quizQuestionCreateDto.QuizId > 0)
         {
             quizQuestionEntity.QuizQuestionRelations = new List<QuizQuestionRelation>
@@ -230,6 +238,7 @@ public class QuizQuestionService : IQuizQuestionService
         }
 
         quizQuestionEntity.KeyWord = quizQuestionCreateDto.Content.RemoveDiacritics();
+        quizQuestionEntity.HashQuestion = numberHash;
         if (quizQuestionCreateDto.Image != null && quizQuestionCreateDto.Image.Length > 0)
         {
             var filePath = await _cloudinaryService.CreateImageAsync(quizQuestionCreateDto.Image,
@@ -281,6 +290,14 @@ public class QuizQuestionService : IQuizQuestionService
         }
 
         var modelQuestion = _mapper.Map(quizQuestionUpdateDto, quizQuestionEntity);
+        
+        var listQuizQuestion = await _quizQuestionRepository.GetAllQuizQuestion();
+        var numberHash = FindDuplicateQuestion(listQuizQuestion, quizQuestionEntity);
+        if (numberHash == 0)
+        {
+            return new ApiResult<QuizQuestionDto>(false, "Question is duplicate !!!");
+        }
+        
         var quizQuestion = await _quizQuestionRepository.GetQuizQuestionById(quizQuestionUpdateDto.Id);
         if (quizQuestionUpdateDto.Image != null && quizQuestionUpdateDto.Image.Length > 0)
         {
@@ -290,6 +307,7 @@ public class QuizQuestionService : IQuizQuestionService
             quizQuestionEntity.PublicId = filePath.PublicId;
         }
 
+        modelQuestion.HashQuestion = numberHash;
         modelQuestion.QuizQuestionRelations = quizQuestion.QuizQuestionRelations;
         modelQuestion.KeyWord = quizQuestionUpdateDto.Content.RemoveDiacritics();
         modelQuestion.Image = quizQuestion.Image;
@@ -327,8 +345,7 @@ public class QuizQuestionService : IQuizQuestionService
         return new ApiSuccessResult<QuizQuestionDto>(result);
     }
 
-    public async Task<ApiResult<bool>> CreateRangeQuizQuestion(
-        IEnumerable<QuizQuestionCreateDto> quizQuestionsCreateDto)
+    public async Task<ApiResult<bool>> CreateRangeQuizQuestion(IEnumerable<QuizQuestionCreateDto> quizQuestionsCreateDto)
     {
         foreach (var item in quizQuestionsCreateDto)
         {
@@ -360,10 +377,19 @@ public class QuizQuestionService : IQuizQuestionService
             }
 
             var quizQuestionEntity = _mapper.Map<QuizQuestion>(item);
+
+            var listQuizQuestion = await _quizQuestionRepository.GetAllQuizQuestion();
+            var numberHash = FindDuplicateQuestion(listQuizQuestion, quizQuestionEntity);
+            if (numberHash == 0)
+            {
+                return new ApiResult<bool>(false, $"Question: {item.Content} is duplicate !!!");
+            }
+
             quizQuestionEntity.QuizQuestionRelations = new List<QuizQuestionRelation>
             {
                 new() { QuizId = item.QuizId }
             };
+            quizQuestionEntity.HashQuestion = numberHash;
             quizQuestionEntity.KeyWord = item.Content.RemoveDiacritics();
             if (item.Image != null && item.Image.Length > 0)
             {
@@ -381,8 +407,7 @@ public class QuizQuestionService : IQuizQuestionService
         return new ApiSuccessResult<bool>(true);
     }
 
-    public async Task<ApiResult<bool>> UpdateRangeQuizQuestion(
-        IEnumerable<QuizQuestionUpdateDto> quizQuestionsUpdateDto)
+    public async Task<ApiResult<bool>> UpdateRangeQuizQuestion(IEnumerable<QuizQuestionUpdateDto> quizQuestionsUpdateDto)
     {
         foreach (var item in quizQuestionsUpdateDto)
         {
@@ -420,6 +445,14 @@ public class QuizQuestionService : IQuizQuestionService
             }
 
             var modelQuestion = _mapper.Map(item, quizQuestionEntity);
+            
+            var listQuizQuestion = await _quizQuestionRepository.GetAllQuizQuestion();
+            var numberHash = FindDuplicateQuestion(listQuizQuestion, quizQuestionEntity);
+            if (numberHash == 0)
+            {
+                return new ApiResult<bool>(false, $"Question: {item.Content} is duplicate !!!");
+            }
+            
             var quizQuestion = await _quizQuestionRepository.GetQuizQuestionById(item.Id);
             if (item.Image != null && item.Image.Length > 0)
             {
@@ -428,6 +461,7 @@ public class QuizQuestionService : IQuizQuestionService
                 quizQuestionEntity.PublicId = filePath.PublicId;
             }
 
+            modelQuestion.HashQuestion = numberHash;
             modelQuestion.QuizQuestionRelations = quizQuestion.QuizQuestionRelations;
             modelQuestion.KeyWord = item.Content.RemoveDiacritics();
             modelQuestion.Image = quizQuestion.Image;
@@ -498,6 +532,22 @@ public class QuizQuestionService : IQuizQuestionService
         _elasticSearchService.DeleteDocumentAsync(ElasticConstant.ElasticQuizQuestion, id);
         return new ApiSuccessResult<bool>(true);
     }
+
+
+    private static int FindDuplicateQuestion(IEnumerable<QuizQuestion> dataArray, QuizQuestion quizQuestion)
+    {
+        var answerHash = (quizQuestion.QuizAnswers.Select(x => x.Content).ToArray()).HashArray();
+        foreach (var item in dataArray)
+        {
+            if (item.Content.Trim().Equals(quizQuestion.Content.Trim()) && item.HashQuestion == answerHash)
+            {
+                return 0;
+            }
+        }
+
+        return answerHash;
+    }
+
 
     public async Task<byte[]> ExportExcel(int checkData = 1, string? Ids = null)
     {
@@ -860,32 +910,6 @@ public class QuizQuestionService : IQuizQuestionService
         return new ApiResult<QuizQuestionImportParentDto>(true, "File valid");
     }
 
-    public object? CheckCoincidence(IEnumerable<object> items, string name, string nameCompare)
-    {
-        if (items == null || name == null || nameCompare == null)
-        {
-            return null; // Handle null inputs gracefully
-        }
-
-        // Use case-insensitive comparison (optional)
-        var find = items.FirstOrDefault(item =>
-        {
-            // Kiểm tra xem đối tượng có thuộc tính của nameCompare không
-            var nameProperty = item.GetType().GetProperty(nameCompare);
-            if (nameProperty == null)
-            {
-                // Không tìm thấy thuộc tính "Name", trả về false
-                return false;
-            }
-
-            // Lấy giá trị của thuộc tính "Name" và so sánh với 'name'
-            var itemName = nameProperty.GetValue(item) as string;
-            return itemName != null && itemName.Equals(name, StringComparison.OrdinalIgnoreCase);
-        });
-
-        return find;
-    }
-
     // support error in list
     private void AddImportError(QuizQuestionImportDto dto, string error)
     {
@@ -906,6 +930,7 @@ public class QuizQuestionService : IQuizQuestionService
         var quizQuestionImportDtos = new List<QuizQuestionImportDto>();
         var quizQuestionImportSuccess = new List<QuizQuestion>();
         var quizQuestionImportFail = new List<QuizQuestionImportDto>();
+        var listQuizQuestion = await _quizQuestionRepository.GetAllQuizQuestion();
         using (var stream = new MemoryStream())
         {
             await fileImport.CopyToAsync(stream);
@@ -917,7 +942,7 @@ public class QuizQuestionService : IQuizQuestionService
                 if (workSheet != null)
                 {
                     ProcessWorksheet(workSheet, quizQuestionImportDtos, quizQuestionImportSuccess,
-                        quizQuestionImportFail, out int countSuccess, out int countFail);
+                        quizQuestionImportFail, out int countSuccess, out int countFail, listQuizQuestion);
 
                     quizQuestionImportParentDto.CountSuccess = countSuccess;
                     quizQuestionImportParentDto.CountFail = countFail;
@@ -954,19 +979,20 @@ public class QuizQuestionService : IQuizQuestionService
 
     private void ProcessWorksheet(ExcelWorksheet workSheet, List<QuizQuestionImportDto> quizQuestionImportDtos,
         List<QuizQuestion> quizQuestionImportSuccess, List<QuizQuestionImportDto> quizQuestionImportFail,
-        out int countSuccess, out int countFail)
+        out int countSuccess, out int countFail, IEnumerable<QuizQuestion> listQuizQuestion)
     {
         countSuccess = 0;
         countFail = 0;
         int headerRow = 3;
         int lastRowWithData = FindLastRowWithData(workSheet, headerRow);
+
         for (int row = 4; row <= lastRowWithData; row++)
         {
             var quizQuestionImportDto = CreateQuizQuestionImportDto(workSheet, row);
-
+            var quizQuestion = _mapper.Map<QuizQuestion>(quizQuestionImportDto);
+            quizQuestion.HashQuestion = FindDuplicateQuestion(listQuizQuestion, quizQuestion);
             if (ValidateQuizQuestionImportDto(quizQuestionImportDto))
             {
-                var quizQuestion = _mapper.Map<QuizQuestion>(quizQuestionImportDto);
                 quizQuestionImportDto.IsImported = true;
                 quizQuestionImportSuccess.Add(quizQuestion);
                 countSuccess++;
@@ -999,6 +1025,7 @@ public class QuizQuestionService : IQuizQuestionService
         string[] correctAnswersArray = answerCorrect?.Split(';', ',') ?? Array.Empty<string>();
         List<QuizAnswerDto> quizAnswers = CreateQuizAnswer(answers, correctAnswersArray);
         var shuffle = GetShuffleValue(arrayShuffle, isShuffle);
+
         return new QuizQuestionImportDto
         {
             Content = workSheet.Cells[row, 3].Value?.ToString()?.Trim(),
@@ -1010,7 +1037,7 @@ public class QuizQuestionService : IQuizQuestionService
             IsActive = true,
             IsShuffle = shuffle,
             Hint = hint,
-            KeyWord = "Test",
+            KeyWord = workSheet.Cells[row, 3].Value?.ToString()?.Trim().RemoveDiacritics(),
         };
     }
 
@@ -1053,6 +1080,12 @@ public class QuizQuestionService : IQuizQuestionService
         if (dto.Type == 0)
         {
             AddImportError(dto, $"Không tìm thấy loại câu hỏi {dto.TypeName}");
+            isValid = false;
+        }
+
+        if (dto.HashQuestion == 0)
+        {
+            AddImportError(dto, $"Câu hỏi '{dto.Content}' bị trùng với câu hỏi khác");
             isValid = false;
         }
 
