@@ -49,15 +49,14 @@ public class PostService : IPostService
         {
             return new ApiResult<PagedList<PostDto>>(false, "Not found list post");
         }
-
-        var result = _mapper.Map<IEnumerable<PostDto>>(posts);
         // assign role for each poster
-        foreach (var p in result)
+        foreach (var p in posts)
         {
-            var user = await _userManager.FindByIdAsync(p.UserId);
-            var roles = (await _userManager.GetRolesAsync(user)).ToArray();
+            var roles = (await _userManager.GetRolesAsync(p.ApplicationUser)).ToArray();
             p.Roles = roles;
         }
+        var result = _mapper.Map<IEnumerable<PostDto>>(posts);
+       
         var pagedResult = await PagedList<PostDto>.ToPageListAsync(result.AsQueryable().BuildMock(), pagingRequestParameters.PageIndex,
             pagingRequestParameters.PageSize, pagingRequestParameters.OrderBy, pagingRequestParameters.IsAscending);
 
@@ -72,15 +71,14 @@ public class PostService : IPostService
         {
             return new ApiResult<PagedList<PostDto>>(false, "List Posts is null !!!");
         }
-
-        var result = _mapper.Map<IEnumerable<PostDto>>(posts);
         // assign role for each poster
-        foreach (var p in result)
+        foreach (var p in posts)
         {
-            var user = await _userManager.FindByIdAsync(p.UserId);
-            var roles = (await _userManager.GetRolesAsync(user)).ToArray();
+            var roles = (await _userManager.GetRolesAsync(p.ApplicationUser)).ToArray();
             p.Roles = roles;
         }
+        var result = _mapper.Map<IEnumerable<PostDto>>(posts);
+        
         var pagedResult = await PagedList<PostDto>.ToPageListAsync(result.AsQueryable().BuildMock(), pagingRequestParameters.PageIndex,
             pagingRequestParameters.PageSize, pagingRequestParameters.OrderBy, pagingRequestParameters.IsAscending);
 
@@ -101,15 +99,14 @@ public class PostService : IPostService
         {
             return new ApiResult<PagedList<PostDto>>(false, "List Posts by grade is null !!!");
         }
-
-        var result = _mapper.Map<IEnumerable<PostDto>>(posts);
         // assign role for each poster
-        foreach (var p in result)
+        foreach (var p in posts)
         {
-            var user = await _userManager.FindByIdAsync(p.UserId);
-            var roles = (await _userManager.GetRolesAsync(user)).ToArray();
+            var roles = (await _userManager.GetRolesAsync(p.ApplicationUser)).ToArray();
             p.Roles = roles;
         }
+        var result = _mapper.Map<IEnumerable<PostDto>>(posts);
+        
         var pagedResult = await PagedList<PostDto>.ToPageListAsync(result.AsQueryable().BuildMock(), pagingRequestParameters.PageIndex,
             pagingRequestParameters.PageSize, pagingRequestParameters.OrderBy, pagingRequestParameters.IsAscending);
 
@@ -130,15 +127,14 @@ public class PostService : IPostService
         {
             return new ApiResult<PagedList<PostDto>>(false, "List Posts by userId is null !!!");
         }
-
-        var result = _mapper.Map<IEnumerable<PostDto>>(posts);
         // assign role for each poster
-        foreach (var p in result)
+        foreach (var p in posts)
         {
-            var user = await _userManager.FindByIdAsync(p.UserId);
-            var roles = (await _userManager.GetRolesAsync(user)).ToArray();
+            var roles = (await _userManager.GetRolesAsync(p.ApplicationUser)).ToArray();
             p.Roles = roles;
         }
+        var result = _mapper.Map<IEnumerable<PostDto>>(posts);
+        
         var pagedResult = await PagedList<PostDto>.ToPageListAsync(result.AsQueryable().BuildMock(), pagingRequestParameters.PageIndex,
             pagingRequestParameters.PageSize, pagingRequestParameters.OrderBy, pagingRequestParameters.IsAscending);
 
@@ -232,15 +228,15 @@ public class PostService : IPostService
         {
             return new ApiResult<PagedList<PostDto>>(false, "List Posts is null !!!");
         }
-
-        var result = _mapper.Map<IEnumerable<PostDto>>(posts);
         // assign role for each poster
-        foreach (var p in result)
+        foreach (var p in posts)
         {
-            var user = await _userManager.FindByIdAsync(p.UserId);
-            var roles = (await _userManager.GetRolesAsync(user)).ToArray();
+            var roles = (await _userManager.GetRolesAsync(p.ApplicationUser)).ToArray();
             p.Roles = roles;
         }
+        
+        var result = _mapper.Map<IEnumerable<PostDto>>(posts);
+       
         var pagedResult = await PagedList<PostDto>.ToPageListAsync(result.AsQueryable().BuildMock(), pagingRequestParameters.PageIndex,
             pagingRequestParameters.PageSize, pagingRequestParameters.OrderBy, pagingRequestParameters.IsAscending);
 
@@ -300,14 +296,14 @@ public class PostService : IPostService
         {
             return new ApiResult<PagedList<PostDto>>(false, "Not found list favorite post of this user");
         }
-        var result = _mapper.Map<IEnumerable<PostDto>>(posts);
         // assign role for each poster
-        foreach (var p in result)
+        foreach (var p in posts)
         {
-            var user = await _userManager.FindByIdAsync(p.UserId);
-            var roles = (await _userManager.GetRolesAsync(user)).ToArray();
+            var roles = (await _userManager.GetRolesAsync(p.ApplicationUser)).ToArray();
             p.Roles = roles;
         }
+        var result = _mapper.Map<IEnumerable<PostDto>>(posts);
+        
         var pagedResult = await PagedList<PostDto>.ToPageListAsync(result.AsQueryable().BuildMock(), pagingRequestParameters.PageIndex,
             pagingRequestParameters.PageSize, pagingRequestParameters.OrderBy, pagingRequestParameters.IsAscending);
         return new ApiSuccessResult<PagedList<PostDto>>(pagedResult);

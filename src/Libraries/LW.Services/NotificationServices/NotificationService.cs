@@ -78,7 +78,8 @@ public class NotificationService : INotificationService
         var listNotifications = await _notificationRepository.GetAllNotificationNotReadByUser(userId);
         if (!listNotifications.Any())
         {
-            var emptyResult = new PagedList<NotificationDto>(new List<NotificationDto>(), 0, pagingRequestParameters.PageIndex, pagingRequestParameters.PageSize);
+            var emptyResult = new PagedList<NotificationDto>(new List<NotificationDto>(), 0,
+                pagingRequestParameters.PageIndex, pagingRequestParameters.PageSize);
             return new ApiResult<PagedList<NotificationDto>>(true, emptyResult, "List null");
         }
 
@@ -201,7 +202,18 @@ public class NotificationService : INotificationService
             return new ApiResult<bool>(false, "Not found user");
         }
 
-        await _notificationRepository.MarkAllAsRead(userId);
+        var notifications = await _notificationRepository.GetAllNotificationByUser(userId);
+        if (!notifications.Any())
+        {
+            return new ApiResult<bool>(false, "List user not found");
+        }
+
+        foreach (var n in notifications)
+        {
+            n.IsRead = true;
+        }
+
+        await _notificationRepository.UpdateListAsync(notifications);
         return new ApiResult<bool>(true, "Mark all as read success");
     }
 
@@ -213,6 +225,7 @@ public class NotificationService : INotificationService
         {
             return new ApiResult<int>(true, 0);
         }
+
         return new ApiResult<int>(true, listNotificationNotRead.Count());
     }
 }

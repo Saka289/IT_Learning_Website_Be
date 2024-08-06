@@ -128,7 +128,8 @@ public class AppDbContextSeed
         // Seed Role
         string ADMIN_ID = Guid.NewGuid().ToString();
         string USER_ID = Guid.NewGuid().ToString();
-
+        string CONTENTMANAGER_ID = Guid.NewGuid().ToString();
+        
         context.Roles.AddRange(new List<IdentityRole>
         {
             new IdentityRole
@@ -142,6 +143,12 @@ public class AppDbContextSeed
                 Id = ADMIN_ID,
                 Name = "Admin",
                 NormalizedName = "ADMIN"
+            },
+            new IdentityRole
+            {
+                Id = CONTENTMANAGER_ID,
+                Name = "ContentManager",
+                NormalizedName = "CONTENTMANAGER"
             },
         });
 
@@ -175,49 +182,21 @@ public class AppDbContextSeed
         };
         user.PasswordHash = hasher.HashPassword(user, "User@123123");
 
-        var user1 = new ApplicationUser
+        var contentManager = new ApplicationUser()
         {
             Id = Guid.NewGuid().ToString(),
-            UserName = "KhanhCD",
-            NormalizedUserName = "KHANHCD",
-            Email = "khanh@gmail.com",
-            FirstName = "Can",
-            LastName = "Khanh",
-            NormalizedEmail = "KHANH@GMAIL.COM",
+            UserName = "contentmanager",
+            NormalizedUserName = "CONTENTMANAGER",
+            Email = "contentmanager@gmail.com",
+            FirstName = "Kavior",
+            LastName = "Salandez",
+            NormalizedEmail = "CONTENTMANAGER@GMAIL.COM",
             EmailConfirmed = true,
             PhoneNumber = "1234567890"
         };
-        user1.PasswordHash = hasher.HashPassword(user1, "User@123123");
-        
-        var user2 = new ApplicationUser
-        {
-            Id = Guid.NewGuid().ToString(),
-            UserName = "Duclv",
-            NormalizedUserName = "DUCLV",
-            Email = "duc@gmail.com",
-            FirstName = "LE",
-            LastName = "DUC",
-            NormalizedEmail = "DUC@GMAIL.COM",
-            EmailConfirmed = true,
-            PhoneNumber = "1234567890"
-        };
-        user2.PasswordHash = hasher.HashPassword(user2, "User@123123");
-        
-        var user3 = new ApplicationUser
-        {
-            Id = Guid.NewGuid().ToString(),
-            UserName = "TruongBq",
-            NormalizedUserName = "TRUONGBQ",
-            Email = "truong@gmail.com",
-            FirstName = "BUI",
-            LastName = "TRUONG",
-            NormalizedEmail = "TRUONG@GMAIL.COM",
-            EmailConfirmed = true,
-            PhoneNumber = "1234567890"
-        };
-        user3.PasswordHash = hasher.HashPassword(user3, "User@123123");
+        user.PasswordHash = hasher.HashPassword(contentManager, "Manager@123123");
 
-        context.Users.AddRange(admin, user, user1, user2, user3);
+        context.Users.AddRange(admin, user, contentManager);
 
         // Seed UserRole
         context.UserRoles.AddRange(
@@ -233,18 +212,8 @@ public class AppDbContextSeed
             },
             new IdentityUserRole<string>
             {
-                RoleId = USER_ID,
-                UserId = user1.Id
-            },
-            new IdentityUserRole<string>
-            {
-                RoleId = USER_ID,
-                UserId = user2.Id
-            },
-            new IdentityUserRole<string>
-            {
-                RoleId = USER_ID,
-                UserId = user3.Id
+                RoleId = CONTENTMANAGER_ID,
+                UserId = contentManager.Id
             }
         );
     }

@@ -13,5 +13,4 @@ public interface INotificationRepository: IRepositoryBase<Notification,int>
     Task<IEnumerable<Notification>> GetAllNotificationByUser(string userId);
     Task<IEnumerable<Notification>> GetAllNotificationNotReadByUser(string userId);
     Task<bool> UpdateStatusOfNotification(int id);
-    Task<bool> MarkAllAsRead(string userId);
 }
