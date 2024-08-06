@@ -112,6 +112,7 @@ services:
       - "ElasticsearchSettings:DefaultIndex=defaultindex"
       - "ElasticsearchSettings:Username=elastic"
       - "ElasticsearchSettings:Password=admin1234"
+      - "UrlBase:Judge0Url=http://lw_judge0Server:2358/"
     depends_on:
       - educationDB
       - lw_elasticsearch
