@@ -37,6 +37,8 @@ public class LoginUserTest
     private GoogleSettings _googleSettings;
     private IFacebookService _facebookService;
     private IElasticSearchService<MemberDto, string> _elasticSearchService;
+    private SignInManager<ApplicationUser> _signInManager;
+
 
     [SetUp]
     public void Setup()
@@ -47,6 +49,8 @@ public class LoginUserTest
             Substitute.For<IRoleStore<IdentityRole>>(),
             null, null, null, null);
         _mapper = Substitute.For<IMapper>();
+        _signInManager = Substitute.For<SignInManager<ApplicationUser>>();
+
         _jwtTokenService = Substitute.For<IJwtTokenService>();
         _urlBase = new UrlBase
         {
@@ -81,7 +85,8 @@ public class LoginUserTest
             Options.Create(_googleSettings),
             _facebookService,
             _cloudinaryService,
-            _elasticSearchService
+            _elasticSearchService,
+            _signInManager
         );
     }
 
