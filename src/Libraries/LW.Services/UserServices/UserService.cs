@@ -35,6 +35,7 @@ public class UserService : IUserService
 {
     private readonly UserManager<ApplicationUser> _userManager;
     private readonly RoleManager<IdentityRole> _roleManager;
+    private readonly SignInManager<ApplicationUser> _signInManager;
     private readonly ILogger _logger;
     private readonly IMapper _mapper;
     private readonly ISmtpEmailService _emailService;
@@ -52,7 +53,7 @@ public class UserService : IUserService
         ISmtpEmailService emailService, ILogger logger, IOptions<VerifyEmailSettings> verifyEmailSettings,
         IOptions<UrlBase> urlBase, IRedisCache<VerifyEmailTokenDto> redisCacheService,
         ISerializeService serializeService, IJwtTokenService jwtTokenService, IOptions<GoogleSettings> googleSettings,
-        IFacebookService facebookService, ICloudinaryService cloudinaryService, IElasticSearchService<MemberDto, string> elasticSearchService)
+        IFacebookService facebookService, ICloudinaryService cloudinaryService, IElasticSearchService<MemberDto, string> elasticSearchService, SignInManager<ApplicationUser> signInManager)
     {
         _roleManager = roleManager ?? throw new ArgumentNullException(nameof(roleManager));
         _mapper = mapper ?? throw new ArgumentNullException(nameof(mapper));
@@ -64,6 +65,7 @@ public class UserService : IUserService
         _facebookService = facebookService ?? throw new ArgumentNullException(nameof(facebookService));
         _cloudinaryService = cloudinaryService;
         _elasticSearchService = elasticSearchService;
+        _signInManager = signInManager;
         _googleSettings = googleSettings.Value;
         _urlBase = urlBase.Value;
         _verifyEmailSettings = verifyEmailSettings.Value;
@@ -132,13 +134,16 @@ public class UserService : IUserService
             return new ApiResult<LoginResponseUserDto>(false, "Invalid UserName or Email !!!");
         }
 
-        var checkPassword = await _userManager.CheckPasswordAsync(user, loginUserDto.Password);
-        if (!checkPassword)
+        var checkPassword = await _signInManager.CheckPasswordSignInAsync(user, loginUserDto.Password, true);
+        if (checkPassword.IsLockedOut)
         {
-            return new ApiResult<LoginResponseUserDto>(false,
-                "The password you entered is incorrect. Please try again.");
+            return new ApiResult<LoginResponseUserDto>(false, $"Your account has been locked. You should wait until {user.LockoutEnd} (UTC time) to be able to login");
         }
-
+        if (!checkPassword.Succeeded)
+        {
+            return new ApiResult<LoginResponseUserDto>(false, "The password you entered is incorrect. Please try again.");
+        }
+        
         var roles = await _userManager.GetRolesAsync(user);
 
         var accessToken = _jwtTokenService.GenerateAccessToken(user, roles);
@@ -196,8 +201,13 @@ public class UserService : IUserService
         };
 
         var user = await _userManager.CreateUserFromSocialLogin(userCreated, ELoginProvider.Google);
+        var isLockedOut  = await _userManager.IsLockedOutAsync(user);
+        if (isLockedOut)
+        {
+            return new ApiResult<LoginResponseUserDto>(false, $"Your account has been locked. You should wait until {user.LockoutEnd} (UTC time) to be able to login");
+        }
+        
         var roles = await _userManager.GetRolesAsync(user);
-
         var accessToken = _jwtTokenService.GenerateAccessToken(user, roles);
         var refreshToken = _jwtTokenService.GenerateRefreshToken();
 
@@ -248,6 +258,12 @@ public class UserService : IUserService
         };
 
         var user = await _userManager.CreateUserFromSocialLogin(userCreated, ELoginProvider.Facebook);
+        var isLockedOut  = await _userManager.IsLockedOutAsync(user);
+        if (isLockedOut)
+        {
+            return new ApiResult<LoginResponseUserDto>(false, $"Your account has been locked. You should wait until {user.LockoutEnd} (UTC time) to be able to login");
+        }
+        
         var roles = await _userManager.GetRolesAsync(user);
 
         var accessToken = _jwtTokenService.GenerateAccessToken(user, roles);

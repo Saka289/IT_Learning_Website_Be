@@ -26,6 +26,7 @@ public class AdminAuthorService : IAdminAuthorService
 {
     private readonly UserManager<ApplicationUser> _userManager;
     private readonly RoleManager<IdentityRole> _roleManager;
+    private readonly SignInManager<ApplicationUser> _signInManager;
     private readonly IMapper _mapper;
     private readonly IJwtTokenService _jwtTokenService;
     private readonly UrlBase _urlBase;
@@ -41,7 +42,7 @@ public class AdminAuthorService : IAdminAuthorService
         ILogger logger,
         ISmtpEmailService emailService,
         IMapper mapper, IJwtTokenService jwtTokenService, ICloudinaryService cloudinaryService,
-        IElasticSearchService<MemberDto, string> elasticSearchService)
+        IElasticSearchService<MemberDto, string> elasticSearchService, SignInManager<ApplicationUser> signInManager)
     {
         _userManager = userManager;
         _mapper = mapper;
@@ -52,6 +53,7 @@ public class AdminAuthorService : IAdminAuthorService
         _jwtTokenService = jwtTokenService ?? throw new ArgumentNullException(nameof(jwtTokenService));
         _cloudinaryService = cloudinaryService;
         _elasticSearchService = elasticSearchService;
+        _signInManager = signInManager;
         _emailService = emailService;
     }
 
@@ -110,15 +112,17 @@ public class AdminAuthorService : IAdminAuthorService
             return new ApiResult<LoginAdminResponseDto>(false, "User is not an Admin !!!");
         }
 
-        var checkPassword = await _userManager.CheckPasswordAsync(user, model.Password);
-        if (!checkPassword)
+        var checkPassword = await _signInManager.CheckPasswordSignInAsync(user, model.Password, true);
+        if (checkPassword.IsLockedOut)
         {
-            return new ApiResult<LoginAdminResponseDto>(false,
-                "The password you entered is incorrect. Please try again.");
+            return new ApiResult<LoginAdminResponseDto>(false, $"Your account has been locked. You should wait until {user.LockoutEnd} (UTC time) to be able to login");
+        }
+        if (!checkPassword.Succeeded)
+        {
+            return new ApiResult<LoginAdminResponseDto>(false, "The password you entered is incorrect. Please try again.");
         }
 
         var roles = await _userManager.GetRolesAsync(user);
-
         var accessToken = _jwtTokenService.GenerateAccessToken(user, roles);
         var refreshToken = _jwtTokenService.GenerateRefreshToken();
 
