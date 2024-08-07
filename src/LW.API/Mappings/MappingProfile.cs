@@ -59,6 +59,15 @@ public class MappingProfile : Profile
         CreateMap<Grade, GradeDto>().ReverseMap();
         CreateMap<Grade, GradeCreateDto>().ReverseMap();
         CreateMap<Grade, GradeUpdateDto>().ReverseMap();
+        CreateMap<Document, GradeDocumentDto>()
+            .ForMember(x => x.AverageRating, y => y.MapFrom(src => src.CommentDocuments.Any() ? Math.Round(src.CommentDocuments.Average(c => c.Rating), 2) : 0))
+            .ForMember(x => x.TotalReviewer, y => y.MapFrom(src => src.CommentDocuments.Count))
+            .ReverseMap();
+        CreateMap<Exam, GradeExamDto>().ReverseMap();
+        CreateMap<Topic, GradeTopicDto>().ReverseMap();
+        CreateMap<Lesson, GradeLessonDto>().ReverseMap();
+        CreateMap<Problem, GradeProblemDto>().ReverseMap();
+        CreateMap<Quiz, GradeQuizDto>().ReverseMap();
         //Document 
         CreateMap<Document, DocumentDto>()
             .ForMember(x => x.GradeId, y => y.MapFrom(src => src.GradeId))
@@ -252,7 +261,9 @@ public class MappingProfile : Profile
         CreateMap<Solution, SolutionCreateDto>().ReverseMap();
         CreateMap<Solution, SolutionUpdateDto>().ReverseMap();
         // Problem
-        CreateMap<Problem, ProblemDto>().ReverseMap();
+        CreateMap<Problem, ProblemDto>()
+            .ForMember(x => x.DifficultyName, y => y.MapFrom(src => src.Difficulty.ToString()))
+            .ReverseMap();
         CreateMap<Problem, ProblemCreateDto>().ReverseMap();
         CreateMap<Problem, ProblemUpdateDto>().ReverseMap();
         // Editorial 

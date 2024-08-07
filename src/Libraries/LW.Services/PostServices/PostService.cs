@@ -38,7 +38,7 @@ public class PostService : IPostService
             return new ApiResult<PagedList<PostDto>>(false, "User not found");
         }
 
-        var grade = await _gradeRepository.GetGradeById(gradeId);
+        var grade = await _gradeRepository.GetGradeById(gradeId, false);
         if (grade == null)
         {
             return new ApiResult<PagedList<PostDto>>(false, "Grade not found");
@@ -88,7 +88,7 @@ public class PostService : IPostService
     public async Task<ApiResult<PagedList<PostDto>>> GetAllPostByGradePagination(int gradeId,
         PagingRequestParameters pagingRequestParameters)
     {
-        var grade = await _gradeRepository.GetGradeById(gradeId);
+        var grade = await _gradeRepository.GetGradeById(gradeId, false);
         if (grade == null)
         {
             return new ApiResult<PagedList<PostDto>>(false, "Grade not found");
@@ -161,7 +161,7 @@ public class PostService : IPostService
             return new ApiResult<PostDto>(false, "Not found user");
         }
 
-        var gradeExist = await _gradeRepository.GetGradeById(postCreateDto.GradeId);
+        var gradeExist = await _gradeRepository.GetGradeById(postCreateDto.GradeId, false);
         if (gradeExist == null)
         {
             return new ApiResult<PostDto>(false, "Not found grade");
@@ -187,7 +187,7 @@ public class PostService : IPostService
             return new ApiResult<PostDto>(false, "Not found user");
         }
 
-        var gradeExist = await _gradeRepository.GetGradeById(postUpdateDto.GradeId);
+        var gradeExist = await _gradeRepository.GetGradeById(postUpdateDto.GradeId, false);
         if (gradeExist == null)
         {
             return new ApiResult<PostDto>(false, "Not found grade");

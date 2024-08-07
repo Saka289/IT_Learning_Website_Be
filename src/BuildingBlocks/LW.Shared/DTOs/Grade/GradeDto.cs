@@ -1,4 +1,6 @@
-﻿namespace LW.Shared.DTOs.Grade;
+﻿using LW.Shared.DTOs.Document;
+
+namespace LW.Shared.DTOs.Grade;
 
 public class GradeDto
 {
@@ -8,4 +10,6 @@ public class GradeDto
     public bool IsActive { get; set; }
     public DateTimeOffset CreatedDate { get; set; }
     public DateTimeOffset? LastModifiedDate { get; set; }
+    public IEnumerable<GradeDocumentDto> Documents { get; set; }
+    public IEnumerable<GradeExamDto> Exams { get; set; }
 }

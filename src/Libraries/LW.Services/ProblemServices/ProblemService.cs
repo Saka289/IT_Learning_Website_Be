@@ -19,18 +19,20 @@ public class ProblemService : IProblemService
     private readonly IProblemRepository _problemRepository;
     private readonly ITopicRepository _topicRepository;
     private readonly ILessonRepository _lessonRepository;
+    private readonly ISubmissionRepository _submissionRepository;
     private readonly IMapper _mapper;
     private readonly IElasticSearchService<ProblemDto, int> _elasticSearchService;
 
     public ProblemService(IProblemRepository problemRepository, IMapper mapper,
         IElasticSearchService<ProblemDto, int> elasticSearchService, ITopicRepository topicRepository,
-        ILessonRepository lessonRepository)
+        ILessonRepository lessonRepository, ISubmissionRepository submissionRepository)
     {
         _problemRepository = problemRepository;
         _mapper = mapper;
         _elasticSearchService = elasticSearchService;
         _topicRepository = topicRepository;
         _lessonRepository = lessonRepository;
+        _submissionRepository = submissionRepository;
     }
 
     public async Task<ApiResult<IEnumerable<ProblemDto>>> GetAllProblem()
@@ -47,26 +49,7 @@ public class ProblemService : IProblemService
 
     public async Task<ApiResult<PagedList<ProblemDto>>> GetAllProblemPagination(SearchProblemDto searchProblemDto)
     {
-        var problemList = await _problemRepository.GetAllProblem();
-
-        if (!string.IsNullOrEmpty(searchProblemDto.UserId))
-        {
-            foreach (var item in problemList)
-            {
-                if (item.Submissions.Any())
-                {
-                    item.Status = item.Submissions.Any(u => u.UserId.Equals(searchProblemDto.UserId))
-                        ? EStatusProblem.Solved
-                        : EStatusProblem.ToDo;
-                }
-            }
-        }
-
-        if (!problemList.Any())
-        {
-            return new ApiResult<PagedList<ProblemDto>>(false, "Problem not found !!!");
-        }
-
+        IEnumerable<ProblemDto> problemList;
         if (!string.IsNullOrEmpty(searchProblemDto.Value))
         {
             var problemListSearch = await _elasticSearchService.SearchDocumentFieldAsync(
@@ -80,12 +63,28 @@ public class ProblemService : IProblemService
                 return new ApiResult<PagedList<ProblemDto>>(false, "Problem not found !!!");
             }
 
-            problemList = _mapper.Map(problemListSearch, problemList);
+            problemList = problemListSearch.ToList();
+        }
+        else
+        {
+            var problemListAll = await _problemRepository.GetAllProblem();
+            if (!problemListAll.Any())
+            {
+                return new ApiResult<PagedList<ProblemDto>>(false, "Problem not found !!!");
+            }
+
+            problemList = _mapper.Map<IEnumerable<ProblemDto>>(problemListAll);
         }
 
+        foreach (var item in problemList)
+        {
+            var status = await _submissionRepository.GetAllSubmissionByStatus(searchProblemDto.UserId, item.Id);
+            item.Status = status ? EStatusProblem.Solved : EStatusProblem.ToDo;
+        }
+        
         if (searchProblemDto.Difficulty > 0)
         {
-            problemList = problemList.Where(p => p.Difficulty == searchProblemDto.Difficulty);
+            problemList = problemList.Where(p => p.Difficulty == (int)searchProblemDto.Difficulty);
         }
 
         if (searchProblemDto.TopicId > 0)
@@ -103,8 +102,7 @@ public class ProblemService : IProblemService
             problemList = problemList.Where(p => p.Status == searchProblemDto.Status);
         }
 
-        var result = _mapper.Map<IEnumerable<ProblemDto>>(problemList);
-        var pagedResult = await PagedList<ProblemDto>.ToPageListAsync(result.AsQueryable().BuildMock(),
+        var pagedResult = await PagedList<ProblemDto>.ToPageListAsync(problemList.AsQueryable().BuildMock(),
             searchProblemDto.PageIndex, searchProblemDto.PageSize, searchProblemDto.OrderBy,
             searchProblemDto.IsAscending);
         return new ApiSuccessResult<PagedList<ProblemDto>>(pagedResult);

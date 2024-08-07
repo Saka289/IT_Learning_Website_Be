@@ -37,24 +37,36 @@ namespace LW.Data.Repositories.DocumentRepositories
 
         public async Task<IEnumerable<Document>> GetAllDocument()
         {
-            var documents = await FindAll().Include(g => g.Grade).ToListAsync();
+            var documents = await FindAll()
+                .Include(g => g.Grade)
+                .Include(c => c.CommentDocuments)
+                .ToListAsync();
             return documents;
         }
 
         public async Task<IEnumerable<Document>> GetAllDocumentByGrade(int id)
         {
-            return await FindAll().Include(g => g.Grade).Where(x => x.GradeId == id).ToListAsync();
+            return await FindAll()
+                .Include(g => g.Grade)
+                .Include(c => c.CommentDocuments)
+                .Where(x => x.GradeId == id).ToListAsync();
         }
 
         public Task<IQueryable<Document>> GetAllDocumentPagination()
         {
-            var result = FindAll().Include(g => g.Grade).AsQueryable();
+            var result = FindAll()
+                .Include(g => g.Grade)
+                .Include(c => c.CommentDocuments)
+                .AsQueryable();
             return Task.FromResult(result);
         }
 
         public async Task<Document> GetDocumentById(int id)
         {
-            var document = await GetByIdAsync(id);
+            var document = await FindByCondition(x => x.Id == id)
+                .Include(g => g.Grade)
+                .Include(c => c.CommentDocuments)
+                .FirstOrDefaultAsync();
             return document;
         }
 

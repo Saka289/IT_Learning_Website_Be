@@ -137,7 +137,7 @@ public class ExamService : IExamService
 
         if (examCreateDto.GradeId > 0)
         {
-            var gradeExist = await _gradeRepository.GetGradeById(Convert.ToInt32(examCreateDto.GradeId));
+            var gradeExist = await _gradeRepository.GetGradeById(Convert.ToInt32(examCreateDto.GradeId), false);
             if (gradeExist == null)
             {
                 return new ApiResult<ExamDto>(false, "Grade not found");
@@ -181,7 +181,7 @@ public class ExamService : IExamService
 
         if (examUpdateDto.GradeId > 0)
         {
-            var gradeExist = await _gradeRepository.GetGradeById(Convert.ToInt32(examUpdateDto.GradeId));
+            var gradeExist = await _gradeRepository.GetGradeById(Convert.ToInt32(examUpdateDto.GradeId), false);
             if (gradeExist == null)
             {
                 return new ApiResult<ExamDto>(false, "Grade not found");
