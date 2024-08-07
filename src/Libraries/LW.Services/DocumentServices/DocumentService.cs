@@ -52,16 +52,15 @@ public class DocumentService : IDocumentService
         {
             return new ApiResult<IEnumerable<DocumentDto>>(false, "Document is null !!!");
         }
-
-        var result = _mapper.Map<IEnumerable<DocumentDto>>(documentList);
-        foreach (var item in result)
+        
+        foreach (var item in documentList)
         {
-            var comment = await _commentDocumentRepository.GetAllCommentByDocumentId(item.Id);
-            var averageRating = comment.Any() ? Math.Round(comment.Average(c => c.Rating), 2) : 0;
+            var averageRating = item.CommentDocuments.Any() ? Math.Round(item.CommentDocuments.Average(c => c.Rating), 2) : 0;
             item.AverageRating = averageRating;
-            item.TotalReviewer = comment.Count();
+            item.TotalReviewer = item.CommentDocuments.Count;
         }
 
+        var result = _mapper.Map<IEnumerable<DocumentDto>>(documentList);
         return new ApiSuccessResult<IEnumerable<DocumentDto>>(result);
     }
 
@@ -72,16 +71,15 @@ public class DocumentService : IDocumentService
         {
             return new ApiResult<IEnumerable<DocumentDto>>(false, "Document is null !!!");
         }
-
-        var result = _mapper.Map<IEnumerable<DocumentDto>>(documentList);
-        foreach (var item in result)
+        
+        foreach (var item in documentList)
         {
-            var comment = await _commentDocumentRepository.GetAllCommentByDocumentId(item.Id);
-            var averageRating = comment.Any() ? Math.Round(comment.Average(c => c.Rating), 2) : 0;
+            var averageRating = item.CommentDocuments.Any() ? Math.Round(item.CommentDocuments.Average(c => c.Rating), 2) : 0;
             item.AverageRating = averageRating;
-            item.TotalReviewer = comment.Count();
+            item.TotalReviewer = item.CommentDocuments.Count;
         }
 
+        var result = _mapper.Map<IEnumerable<DocumentDto>>(documentList);
         return new ApiSuccessResult<IEnumerable<DocumentDto>>(result);
     }
 
@@ -93,20 +91,18 @@ public class DocumentService : IDocumentService
         {
             return new ApiResult<PagedList<DocumentDto>>(false, "Document is null !!!");
         }
-
-        var result = _mapper.Map<IEnumerable<DocumentDto>>(documentList);
-        foreach (var item in result)
+        
+        foreach (var item in documentList)
         {
-            var comment = await _commentDocumentRepository.GetAllCommentByDocumentId(item.Id);
-            var averageRating = comment.Any() ? Math.Round(comment.Average(c => c.Rating), 2) : 0;
+            var averageRating = item.CommentDocuments.Any() ? Math.Round(item.CommentDocuments.Average(c => c.Rating), 2) : 0;
             item.AverageRating = averageRating;
-            item.TotalReviewer = comment.Count();
+            item.TotalReviewer = item.CommentDocuments.Count;
         }
 
+        var result = _mapper.Map<IEnumerable<DocumentDto>>(documentList);
         var pagedResult = await PagedList<DocumentDto>.ToPageListAsync(result.AsQueryable().BuildMock(),
             pagingRequestParameters.PageIndex,
             pagingRequestParameters.PageSize, pagingRequestParameters.OrderBy, pagingRequestParameters.IsAscending);
-
         return new ApiSuccessResult<PagedList<DocumentDto>>(pagedResult);
     }
 
@@ -118,24 +114,23 @@ public class DocumentService : IDocumentService
             return new ApiResult<DocumentDto>(false, "Document is null !!!");
         }
 
-        var gradeEntity = await _gradeRepository.GetGradeById(documentEntity.GradeId);
+        var gradeEntity = await _gradeRepository.GetGradeById(documentEntity.GradeId, false);
         if (gradeEntity != null)
         {
             documentEntity.Grade = gradeEntity;
         }
+        
+        var averageRating = documentEntity.CommentDocuments.Any() ? Math.Round(documentEntity.CommentDocuments.Average(c => c.Rating), 2) : 0;
+        documentEntity.AverageRating = averageRating;
+        documentEntity.TotalReviewer = documentEntity.CommentDocuments.Count;
 
         var result = _mapper.Map<DocumentDto>(documentEntity);
-        var comment = await _commentDocumentRepository.GetAllCommentByDocumentId(result.Id);
-        var averageRating = comment.Any() ? Math.Round(comment.Average(c => c.Rating), 2) : 0;
-        result.AverageRating = averageRating;
-        result.TotalReviewer = comment.Count();
         return new ApiSuccessResult<DocumentDto>(result);
     }
 
     public async Task<ApiResult<PagedList<DocumentDto>>> SearchByDocumentPagination(SearchDocumentDto searchDocumentDto)
     {
-        var documentEntity =
-            await _elasticSearchService.SearchDocumentAsync(ElasticConstant.ElasticDocuments, searchDocumentDto);
+        var documentEntity = await _elasticSearchService.SearchDocumentAsync(ElasticConstant.ElasticDocuments, searchDocumentDto);
         if (documentEntity is null)
         {
             return new ApiResult<PagedList<DocumentDto>>(false, $"Document not found by {searchDocumentDto.Key} !!!");
@@ -145,9 +140,8 @@ public class DocumentService : IDocumentService
         {
             documentEntity = documentEntity.Where(d => d.GradeId == searchDocumentDto.GradeId).ToList();
         }
-
-        var result = _mapper.Map<IEnumerable<DocumentDto>>(documentEntity);
-        foreach (var item in result)
+        
+        foreach (var item in documentEntity)
         {
             var comment = await _commentDocumentRepository.GetAllCommentByDocumentId(item.Id);
             var averageRating = comment.Any() ? Math.Round(comment.Average(c => c.Rating), 2) : 0;
@@ -155,6 +149,7 @@ public class DocumentService : IDocumentService
             item.TotalReviewer = comment.Count();
         }
 
+        var result = _mapper.Map<IEnumerable<DocumentDto>>(documentEntity);
         var pagedResult = await PagedList<DocumentDto>.ToPageListAsync(result.AsQueryable().BuildMock(),
             searchDocumentDto.PageIndex, searchDocumentDto.PageSize, searchDocumentDto.OrderBy,
             searchDocumentDto.IsAscending);
@@ -163,7 +158,7 @@ public class DocumentService : IDocumentService
 
     public async Task<ApiResult<DocumentDto>> CreateDocument(DocumentCreateDto documentCreateDto)
     {
-        var gradeEntity = await _gradeRepository.GetGradeById(documentCreateDto.GradeId);
+        var gradeEntity = await _gradeRepository.GetGradeById(documentCreateDto.GradeId, false);
         if (gradeEntity == null)
         {
             return new ApiResult<DocumentDto>(false, "GradeID not found !!!");
@@ -185,7 +180,7 @@ public class DocumentService : IDocumentService
 
     public async Task<ApiResult<DocumentDto>> UpdateDocument(DocumentUpdateDto documentUpdateDto)
     {
-        var gradeEntity = await _gradeRepository.GetGradeById(documentUpdateDto.GradeId);
+        var gradeEntity = await _gradeRepository.GetGradeById(documentUpdateDto.GradeId, false);
         if (gradeEntity == null)
         {
             return new ApiResult<DocumentDto>(false, "GradeID not found !!!");
@@ -217,7 +212,7 @@ public class DocumentService : IDocumentService
             return new ApiResult<bool>(false, "Document not found !!!");
         }
 
-        var gradeEntity = await _gradeRepository.GetGradeById(documentEntity.GradeId);
+        var gradeEntity = await _gradeRepository.GetGradeById(documentEntity.GradeId, false);
 
         documentEntity.IsActive = !documentEntity.IsActive;
         await _documentRepository.UpdateDocument(documentEntity);

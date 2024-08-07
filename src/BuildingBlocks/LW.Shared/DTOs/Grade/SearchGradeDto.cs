@@ -2,7 +2,6 @@
 
 namespace LW.Shared.DTOs.Grade;
 
-public class SearchGradeDto : SearchRequestParameters
+public class SearchGradeDto : SearchRequestValue
 {
-    public override string? Key { get; set; } = "keyWord";
 }

@@ -118,8 +118,7 @@ public class QuizQuestionService : IQuizQuestionService
         return new ApiSuccessResult<PagedList<QuizQuestionDto>>(pagedResult);
     }
 
-    public async Task<ApiResult<IEnumerable<object>>> GetAllQuizQuestionByQuizId(
-        SearchQuizQuestionDto searchQuizQuestionDto)
+    public async Task<ApiResult<IEnumerable<object>>> GetAllQuizQuestionByQuizId(SearchQuizQuestionDto searchQuizQuestionDto)
     {
         var quiz = await _quizRepository.GetQuizById(Convert.ToInt32(searchQuizQuestionDto.QuizId));
         if (quiz is null)
@@ -127,26 +126,7 @@ public class QuizQuestionService : IQuizQuestionService
             return new ApiResult<IEnumerable<object>>(false, "Quiz is null !!!");
         }
 
-        var quizQuestionList =
-            await _quizQuestionRepository.GetAllQuizQuestionByQuizId(Convert.ToInt32(searchQuizQuestionDto.QuizId));
-        if (!quizQuestionList.Any())
-        {
-            return new ApiResult<IEnumerable<object>>(false, "Quiz Question is null !!!");
-        }
-
-        if (quiz.IsShuffle)
-        {
-            quizQuestionList = quizQuestionList.OrderBy(x => Random.Shared.Next());
-        }
-
-        foreach (var item in quizQuestionList)
-        {
-            if (item.IsShuffle)
-            {
-                item.QuizAnswers = item.QuizAnswers.OrderBy(x => Random.Shared.Next()).ToList();
-            }
-        }
-
+        IEnumerable<QuizQuestionDto> quizQuestionList;
         if (!string.IsNullOrEmpty(searchQuizQuestionDto.Value))
         {
             var quizQuestionListSearch = await _elasticSearchService.SearchDocumentFieldAsync(
@@ -160,7 +140,30 @@ public class QuizQuestionService : IQuizQuestionService
                 return new ApiResult<IEnumerable<object>>(false, "Quiz Question not found !!!");
             }
 
-            quizQuestionList = _mapper.Map(quizQuestionListSearch, quizQuestionList);
+            quizQuestionList = quizQuestionListSearch.ToList();
+        }
+        else
+        {
+            var quizQuestionListAll = await _quizQuestionRepository.GetAllQuizQuestionByQuizId(Convert.ToInt32(searchQuizQuestionDto.QuizId));
+            if (!quizQuestionListAll.Any())
+            {
+                return new ApiResult<IEnumerable<object>>(false, "Quiz Question is null !!!");
+            }
+
+            quizQuestionList = _mapper.Map<IEnumerable<QuizQuestionDto>>(quizQuestionListAll);
+        }
+
+        if (quiz.IsShuffle)
+        {
+            quizQuestionList = quizQuestionList.OrderBy(x => Random.Shared.Next());
+        }
+
+        foreach (var item in quizQuestionList)
+        {
+            if (item.IsShuffle)
+            {
+                item.QuizAnswers = item.QuizAnswers.OrderBy(x => Random.Shared.Next()).ToList();
+            }
         }
 
         if (searchQuizQuestionDto.NumberOfQuestion > 0)

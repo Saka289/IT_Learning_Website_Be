@@ -250,7 +250,7 @@ public class LessonService : ILessonService
         }
 
         var result = _mapper.Map<IEnumerable<LessonDto>>(listId);
-        _elasticSearchService.UpdateDocumentRangeAsync(ElasticConstant.ElasticLessons, result, l => l.Id);
+        _elasticSearchService.DeleteDocumentRangeAsync(ElasticConstant.ElasticLessons, listId.Select(x =>x.Id));
 
         return new ApiSuccessResult<bool>(true, "Delete Lessons Successfully !!!");
     }

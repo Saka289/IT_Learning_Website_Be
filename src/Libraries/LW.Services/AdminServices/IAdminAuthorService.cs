@@ -13,8 +13,7 @@ public interface IAdminAuthorService
     public  Task<ApiResult<RegisterMemberResponseDto>> RegisterMemberAsync(RegisterMemberDto model);
     public Task<ApiResult<LoginAdminResponseDto>> LoginAdminAsync(LoginAdminDto model);
     // manage account
-    Task<ApiResult<PagedList<MemberDto>>> GetAllMemberByRolePagination(string? role,PagingRequestParameters pagingRequestParameters);
-    Task<ApiResult<PagedList<MemberDto>>> SearchMemberByRolePagination(string? role, SearchRequestValue searchRequestValue);
+    Task<ApiResult<PagedList<MemberDto>>> GetAllMemberByRolePagination(SearchAdminDto searchAdminDto);
     public Task<ApiResult<bool>> AssignRoleAsync(string email, string roleName);
     public Task<ApiResult<IEnumerable<string>>> AssignMultiRoleAsync(AssignMultipleRoleDto assignMultipleRoleDto);
     public Task<ApiResult<IEnumerable<string>>> GetAllRoleOfUserAsync(string userId);

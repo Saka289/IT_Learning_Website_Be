@@ -74,26 +74,13 @@ namespace LW.API.Controllers.Admin
         }
 
         [HttpGet("GetAllMemberByRolePagination")]
-        public async Task<ActionResult<ApiResult<PagedList<MemberDto>>>> GetAllMemberByRolePagination(string? role,[FromQuery] PagingRequestParameters pagingRequestParameters)
+        public async Task<ActionResult<ApiResult<PagedList<MemberDto>>>> GetAllMemberByRolePagination([FromQuery] SearchAdminDto searchAdminDto)
         {
-            var result = await _adminAuthorService.GetAllMemberByRolePagination(role, pagingRequestParameters);
+            var result = await _adminAuthorService.GetAllMemberByRolePagination(searchAdminDto);
             if (!result.IsSucceeded)
             {
                 return BadRequest(result);
             }
-            Response.Headers.Add("X-Pagination", JsonConvert.SerializeObject(result.Data.GetMetaData()));
-            return Ok(result);
-        }
-        
-        [HttpGet("SearchMemberByRolePagination")]
-        public async Task<ActionResult<ApiResult<PagedList<MemberDto>>>> SearchMemberByRolePagination(string? role,[FromQuery] SearchRequestValue searchRequestValue)
-        {
-            var result = await _adminAuthorService.SearchMemberByRolePagination(role, searchRequestValue);
-            if (!result.IsSucceeded)
-            {
-                return BadRequest(result);
-            }
-            
             Response.Headers.Add("X-Pagination", JsonConvert.SerializeObject(result.Data.GetMetaData()));
             return Ok(result);
         }

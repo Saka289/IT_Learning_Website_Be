@@ -37,10 +37,9 @@ namespace LW.API.Controllers.Public
         }
         
         [HttpGet("GetAllGradePagination")]
-        public async Task<ActionResult<ApiResult<PagedList<GradeDto>>>> GetAllGradePagination(
-            [FromQuery] PagingRequestParameters pagingRequestParameters)
+        public async Task<ActionResult<ApiResult<PagedList<GradeDto>>>> GetAllGradePagination([FromQuery] SearchGradeDto searchGradeDto)
         {
-            var result = await _gradeService.GetAllGradePagination(pagingRequestParameters);
+            var result = await _gradeService.GetAllGradePagination(searchGradeDto);
             if (!result.IsSucceeded)
             {
                 return NotFound(result);
@@ -59,19 +58,6 @@ namespace LW.API.Controllers.Public
                 return NotFound(result);
             }
 
-            return Ok(result);
-        }
-
-        [HttpGet("SearchByGradePagination")]
-        public async Task<ActionResult<ApiResult<PagedList<GradeDto>>>> SearchByGradePagination([FromQuery] SearchGradeDto searchGradeDto)
-        {
-            var result = await _gradeService.SearchByGradePagination(searchGradeDto);
-            if (!result.IsSucceeded)
-            {
-                return NotFound(result);
-            }
-            
-            Response.Headers.Add("X-Pagination", JsonConvert.SerializeObject(result.Data.GetMetaData()));
             return Ok(result);
         }
 
