@@ -3,6 +3,7 @@ using System;
 using LW.Data.Persistence;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
@@ -10,9 +11,10 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace LW.Data.Persistence.Migrations
 {
     [DbContext(typeof(AppDbContext))]
-    partial class AppDbContextModelSnapshot : ModelSnapshot
+    [Migration("20240806170842_Init_Update_CodeOnline")]
+    partial class Init_Update_CodeOnline
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -536,11 +538,16 @@ namespace LW.Data.Persistence.Migrations
                     b.Property<DateTimeOffset?>("LastModifiedDate")
                         .HasColumnType("datetime(6)");
 
+                    b.Property<int>("LevelId")
+                        .HasColumnType("int");
+
                     b.Property<string>("Title")
                         .IsRequired()
                         .HasColumnType("longtext");
 
                     b.HasKey("Id");
+
+                    b.HasIndex("LevelId");
 
                     b.ToTable("Grades");
                 });
@@ -595,6 +602,41 @@ namespace LW.Data.Persistence.Migrations
                     b.HasIndex("TopicId");
 
                     b.ToTable("Lessons");
+                });
+
+            modelBuilder.Entity("LW.Data.Entities.Level", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    b.Property<string>("CreatedBy")
+                        .IsRequired()
+                        .HasColumnType("longtext");
+
+                    b.Property<DateTimeOffset>("CreatedDate")
+                        .HasColumnType("datetime(6)");
+
+                    b.Property<bool>("IsActive")
+                        .HasColumnType("tinyint(1)");
+
+                    b.Property<string>("KeyWord")
+                        .IsRequired()
+                        .HasColumnType("longtext");
+
+                    b.Property<string>("LastModifiedBy")
+                        .HasColumnType("longtext");
+
+                    b.Property<DateTimeOffset?>("LastModifiedDate")
+                        .HasColumnType("datetime(6)");
+
+                    b.Property<string>("Title")
+                        .IsRequired()
+                        .HasColumnType("longtext");
+
+                    b.HasKey("Id");
+
+                    b.ToTable("Levels");
                 });
 
             modelBuilder.Entity("LW.Data.Entities.Notification", b =>
@@ -1625,6 +1667,17 @@ namespace LW.Data.Persistence.Migrations
                     b.Navigation("Post");
                 });
 
+            modelBuilder.Entity("LW.Data.Entities.Grade", b =>
+                {
+                    b.HasOne("LW.Data.Entities.Level", "Level")
+                        .WithMany("Grades")
+                        .HasForeignKey("LevelId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Level");
+                });
+
             modelBuilder.Entity("LW.Data.Entities.Lesson", b =>
                 {
                     b.HasOne("LW.Data.Entities.Topic", "Topic")
@@ -2007,6 +2060,11 @@ namespace LW.Data.Persistence.Migrations
                     b.Navigation("Problems");
 
                     b.Navigation("Quizzes");
+                });
+
+            modelBuilder.Entity("LW.Data.Entities.Level", b =>
+                {
+                    b.Navigation("Grades");
                 });
 
             modelBuilder.Entity("LW.Data.Entities.Post", b =>

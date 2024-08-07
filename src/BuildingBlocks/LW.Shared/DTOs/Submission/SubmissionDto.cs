@@ -5,6 +5,7 @@ namespace LW.Shared.DTOs.Submission;
 public class SubmissionDto
 {
     public int Id { get; set; }
+    public int TestCaseId { get; set; }
     public string SourceCode { get; set; }
     public int StatusId { get; set; }
     public string Status { get; set; }

@@ -101,7 +101,7 @@ public class SubmissionService : ISubmissionService
         {
             return new ApiResult<IEnumerable<SubmissionDto>>(false, "TestCases not found !!!");
         }
-        var sourceCode = (executeCode.MainCode.Base64Decode() + "\n" + submitProblemDto.SourceCode.Base64Decode()).Base64Encode();
+        var sourceCode = (executeCode.MainCode?.Base64Decode() + "\n" + submitProblemDto.SourceCode.Base64Decode()).Base64Encode();
         if (!sourceCode.IsBase64String())
         {
             return new ApiResult<IEnumerable<SubmissionDto>>(false, "This is not base64 string !!!");
@@ -122,17 +122,17 @@ public class SubmissionService : ISubmissionService
             {
                 language_id = programLanguage.BaseId,
                 source_code = sourceCode,
-                stdin = item.Input,
+                stdin = item.Input ?? null,
                 expected_output = item.Output
             });
             if (submission.status_id != (int)EStatusSubmission.Accepted || submission.status_id == (int)EStatusSubmission.WrongAnswer)
             {
                 var submissionCreateFail = await _submissionRepository.CreateSubmission(submission.ToSubmission(submitProblemDto));
-                submissionList.Add(submission.ToSubmissionDto(submissionCreateFail));
+                submissionList.Add(submission.ToSubmissionDto(submissionCreateFail, item.Id));
                 return new ApiResult<IEnumerable<SubmissionDto>>(false, submissionList, ((EStatusSubmission)submission.status_id).ToString());
             } 
             var submissionCreateSuccess =  await _submissionRepository.CreateSubmission(submission.ToSubmission(submitProblemDto));
-            submissionList.Add(submission.ToSubmissionDto(submissionCreateSuccess));
+            submissionList.Add(submission.ToSubmissionDto(submissionCreateSuccess, item.Id));
         }
         
         if (submitProblemDto.Submit)

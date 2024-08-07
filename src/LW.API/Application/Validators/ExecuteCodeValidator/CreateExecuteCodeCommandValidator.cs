@@ -7,7 +7,6 @@ public class CreateExecuteCodeCommandValidator : AbstractValidator<ExecuteCodeCr
 {
     public CreateExecuteCodeCommandValidator()
     {
-        RuleFor(x => x.MainCode).NotNull().NotEmpty();
         RuleFor(x => x.SampleCode).NotNull().NotEmpty();
         RuleFor(x => x.ProblemId).NotNull().NotEmpty();
         RuleFor(x => x.LanguageId).NotNull().NotEmpty();

@@ -4,7 +4,6 @@ using LW.Data.Entities;
 using LW.Data.Repositories.DocumentRepositories;
 using LW.Data.Repositories.GradeRepositories;
 using LW.Data.Repositories.LessonRepositories;
-using LW.Data.Repositories.LevelRepositories;
 using LW.Data.Repositories.TopicRepositories;
 using LW.Infrastructure.Extensions;
 using LW.Shared.Constant;
@@ -21,7 +20,6 @@ namespace LW.Services.GradeServices;
 public class GradeService : IGradeService
 {
     private readonly IGradeRepository _gradeRepository;
-    private readonly ILevelRepository _levelRepository;
     private readonly IElasticSearchService<GradeDto, int> _elasticSearchService;
     private readonly IElasticSearchService<DocumentDto, int> _elasticSearchDocumentService;
     private readonly IElasticSearchService<TopicDto, int> _elasticSearchTopicService;
@@ -32,7 +30,7 @@ public class GradeService : IGradeService
     private readonly ILessonRepository _lessonRepository;
 
 
-    public GradeService(IGradeRepository gradeRepository, IMapper mapper, ILevelRepository levelRepository,
+    public GradeService(IGradeRepository gradeRepository, IMapper mapper,
         IElasticSearchService<GradeDto, int> elasticSearchService,
         IElasticSearchService<DocumentDto, int> elasticSearchDocumentService,
         IElasticSearchService<TopicDto, int> elasticSearchTopicService,
@@ -41,7 +39,6 @@ public class GradeService : IGradeService
     {
         _gradeRepository = gradeRepository;
         _mapper = mapper;
-        _levelRepository = levelRepository;
         _elasticSearchService = elasticSearchService;
         _elasticSearchDocumentService = elasticSearchDocumentService;
         _elasticSearchTopicService = elasticSearchTopicService;
@@ -54,18 +51,6 @@ public class GradeService : IGradeService
     public async Task<ApiResult<IEnumerable<GradeDto>>> GetAllGrade()
     {
         var gradeList = await _gradeRepository.GetAllGrade();
-        if (gradeList == null)
-        {
-            return new ApiResult<IEnumerable<GradeDto>>(false, "Grade is null !!!");
-        }
-
-        var result = _mapper.Map<IEnumerable<GradeDto>>(gradeList);
-        return new ApiSuccessResult<IEnumerable<GradeDto>>(result);
-    }
-
-    public async Task<ApiResult<IEnumerable<GradeDto>>> GetAllGradeByLevel(int id)
-    {
-        var gradeList = await _gradeRepository.GetAllGradeByLevel(id);
         if (gradeList == null)
         {
             return new ApiResult<IEnumerable<GradeDto>>(false, "Grade is null !!!");
@@ -99,50 +84,29 @@ public class GradeService : IGradeService
             return new ApiResult<GradeDto>(false, "Grade is null !!!");
         }
 
-        var levelEntity = await _levelRepository.GetLevelById(gradeEntity.LevelId);
-        if (levelEntity != null)
-        {
-            gradeEntity.Level = levelEntity;
-        }
-
         var result = _mapper.Map<GradeDto>(gradeEntity);
         return new ApiSuccessResult<GradeDto>(result);
     }
 
     public async Task<ApiResult<PagedList<GradeDto>>> SearchByGradePagination(SearchGradeDto searchGradeDto)
     {
-        var gradeEntity =
-            await _elasticSearchService.SearchDocumentAsync(ElasticConstant.ElasticGrades, searchGradeDto);
+        var gradeEntity = await _elasticSearchService.SearchDocumentAsync(ElasticConstant.ElasticGrades, searchGradeDto);
         if (gradeEntity is null)
         {
             return new ApiResult<PagedList<GradeDto>>(false, $"Grade not found by {searchGradeDto.Key} !!!");
         }
-
-        if (searchGradeDto.LevelId > 0)
-        {
-            gradeEntity = gradeEntity.Where(d => d.LevelId == searchGradeDto.LevelId).ToList();
-        }
-
-
+        
         var result = _mapper.Map<IEnumerable<GradeDto>>(gradeEntity);
-        var pagedResult = await PagedList<GradeDto>.ToPageListAsync(result.AsQueryable().BuildMock(),
-            searchGradeDto.PageIndex, searchGradeDto.PageSize, searchGradeDto.OrderBy, searchGradeDto.IsAscending);
+        var pagedResult = await PagedList<GradeDto>.ToPageListAsync(result.AsQueryable().BuildMock(), searchGradeDto.PageIndex, searchGradeDto.PageSize, searchGradeDto.OrderBy, searchGradeDto.IsAscending);
         return new ApiSuccessResult<PagedList<GradeDto>>(pagedResult);
     }
 
     public async Task<ApiResult<GradeDto>> CreateGrade(GradeCreateDto gradeCreateDto)
     {
-        var levelEntity = await _levelRepository.GetLevelById(gradeCreateDto.LevelId);
-        if (levelEntity is null)
-        {
-            return new ApiResult<GradeDto>(false, "LevelId not found !!!");
-        }
-
         var gradeEntity = _mapper.Map<Grade>(gradeCreateDto);
         gradeEntity.KeyWord = gradeCreateDto.Title.RemoveDiacritics();
         await _gradeRepository.CreateGrade(gradeEntity);
         await _gradeRepository.SaveChangesAsync();
-        gradeEntity.Level = levelEntity;
         var result = _mapper.Map<GradeDto>(gradeEntity);
         _elasticSearchService.CreateDocumentAsync(ElasticConstant.ElasticGrades, result, g => g.Id);
         return new ApiSuccessResult<GradeDto>(result);
@@ -150,12 +114,6 @@ public class GradeService : IGradeService
 
     public async Task<ApiResult<GradeDto>> UpdateGrade(GradeUpdateDto gradeUpdateDto)
     {
-        var levelEntity = await _levelRepository.GetLevelById(gradeUpdateDto.LevelId);
-        if (levelEntity is null)
-        {
-            return new ApiResult<GradeDto>(false, "LevelId not found !!!");
-        }
-
         var gradeEntity = await _gradeRepository.GetGradeById(gradeUpdateDto.Id);
         if (gradeEntity is null)
         {
@@ -166,7 +124,6 @@ public class GradeService : IGradeService
         model.KeyWord = gradeUpdateDto.Title.RemoveDiacritics();
         var updateGrade = await _gradeRepository.UpdateGrade(model);
         await _gradeRepository.SaveChangesAsync();
-        gradeEntity.Level = levelEntity;
         var result = _mapper.Map<GradeDto>(updateGrade);
         _elasticSearchService.UpdateDocumentAsync(ElasticConstant.ElasticGrades, result, gradeUpdateDto.Id);
         return new ApiSuccessResult<GradeDto>(result);
@@ -180,12 +137,9 @@ public class GradeService : IGradeService
             return new ApiResult<bool>(false, "Grade not found !!!");
         }
 
-        var levelEntity = await _levelRepository.GetLevelById(gradeEntity.LevelId);
-
         gradeEntity.IsActive = !gradeEntity.IsActive;
         await _gradeRepository.UpdateGrade(gradeEntity);
         await _gradeRepository.SaveChangesAsync();
-        gradeEntity.Level = levelEntity;
         var result = _mapper.Map<GradeDto>(gradeEntity);
         _elasticSearchService.UpdateDocumentAsync(ElasticConstant.ElasticGrades, result, id);
         return new ApiSuccessResult<bool>(true, "Grade update successfully !!!");

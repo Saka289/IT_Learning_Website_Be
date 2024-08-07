@@ -1,5 +1,4 @@
-﻿using LW.Shared.DTOs.Level;
-using LW.Shared.DTOs.Topic;
+﻿using LW.Shared.DTOs.Topic;
 using LW.Shared.SeedWork;
 
 namespace LW.Services.TopicServices;

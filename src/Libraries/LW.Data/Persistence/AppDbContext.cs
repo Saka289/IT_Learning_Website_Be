@@ -24,7 +24,6 @@ public class AppDbContext : IdentityDbContext<ApplicationUser>
     }
 
     public DbSet<ApplicationUser> ApplicationUsers { get; set; }
-    public DbSet<Level> Levels { get; set; }
     public DbSet<Grade> Grades { get; set; }
     public DbSet<Document> Documents { get; set; }
     public DbSet<Topic> Topics { get; set; }
