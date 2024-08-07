@@ -14,12 +14,7 @@ public class GradeRepository : RepositoryBase<Grade, int>, IGradeRepository
 
     public async Task<IEnumerable<Grade>> GetAllGrade()
     {
-        return await FindAll().Include(l => l.Level).ToListAsync();
-    }
-
-    public async Task<IEnumerable<Grade>> GetAllGradeByLevel(int id)
-    {
-        return await FindAll().Include(l => l.Level).Where(g => g.LevelId == id).ToListAsync();
+        return await FindAll().ToListAsync();
     }
 
     public Task<IQueryable<Grade>> GetAllGradePagination()

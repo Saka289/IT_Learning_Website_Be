@@ -290,14 +290,14 @@ public class QuizQuestionService : IQuizQuestionService
         }
 
         var modelQuestion = _mapper.Map(quizQuestionUpdateDto, quizQuestionEntity);
-        
+
         var listQuizQuestion = await _quizQuestionRepository.GetAllQuizQuestion();
         var numberHash = FindDuplicateQuestion(listQuizQuestion, quizQuestionEntity);
         if (numberHash == 0)
         {
             return new ApiResult<QuizQuestionDto>(false, "Question is duplicate !!!");
         }
-        
+
         var quizQuestion = await _quizQuestionRepository.GetQuizQuestionById(quizQuestionUpdateDto.Id);
         if (quizQuestionUpdateDto.Image != null && quizQuestionUpdateDto.Image.Length > 0)
         {
@@ -335,13 +335,12 @@ public class QuizQuestionService : IQuizQuestionService
                 await _quizAnswerRepository.DeleteRangeAnswer(quizAnswers);
                 var quizAnswer = _mapper.Map<IEnumerable<QuizAnswer>>(quizQuestionUpdateDto.QuizAnswers);
                 await _quizAnswerRepository.CreateRangeQuizAnswer(quizAnswer);
-                quizQuestionUpdate.QuizAnswers = quizAnswer.ToList();
             }
         }
 
+        quizQuestionUpdate = await _quizQuestionRepository.GetQuizQuestionById(quizQuestionUpdateDto.Id);
         var result = _mapper.Map<QuizQuestionDto>(quizQuestionUpdate);
-        _elasticSearchService.UpdateDocumentAsync(ElasticConstant.ElasticQuizQuestion, result,
-            quizQuestionUpdateDto.Id);
+        _elasticSearchService.UpdateDocumentAsync(ElasticConstant.ElasticQuizQuestion, result, quizQuestionUpdateDto.Id);
         return new ApiSuccessResult<QuizQuestionDto>(result);
     }
 
@@ -445,14 +444,14 @@ public class QuizQuestionService : IQuizQuestionService
             }
 
             var modelQuestion = _mapper.Map(item, quizQuestionEntity);
-            
+
             var listQuizQuestion = await _quizQuestionRepository.GetAllQuizQuestion();
             var numberHash = FindDuplicateQuestion(listQuizQuestion, quizQuestionEntity);
             if (numberHash == 0)
             {
                 return new ApiResult<bool>(false, $"Question: {item.Content} is duplicate !!!");
             }
-            
+
             var quizQuestion = await _quizQuestionRepository.GetQuizQuestionById(item.Id);
             if (item.Image != null && item.Image.Length > 0)
             {
@@ -493,6 +492,7 @@ public class QuizQuestionService : IQuizQuestionService
                 }
             }
 
+            quizQuestionUpdate = await _quizQuestionRepository.GetQuizQuestionById(item.Id);
             var result = _mapper.Map<QuizQuestionDto>(quizQuestionUpdate);
             _elasticSearchService.UpdateDocumentAsync(ElasticConstant.ElasticQuizQuestion, result, item.Id);
         }

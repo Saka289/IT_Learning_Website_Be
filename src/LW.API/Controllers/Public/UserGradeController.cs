@@ -7,7 +7,6 @@ using LW.Data.Entities;
 using LW.Services.UserGradeServices;
 using LW.Shared.DTOs;
 using LW.Shared.DTOs.Grade;
-using LW.Shared.DTOs.Level;
 using LW.Shared.SeedWork;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;

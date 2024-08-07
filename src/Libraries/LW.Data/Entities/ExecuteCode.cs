@@ -5,7 +5,7 @@ namespace LW.Data.Entities;
 
 public class ExecuteCode : EntityAuditBase<int>
 {
-    public string MainCode { get; set; }
+    public string? MainCode { get; set; }
     public string SampleCode { get; set; }
     public int ProblemId { get; set; }
     public int LanguageId { get; set; }

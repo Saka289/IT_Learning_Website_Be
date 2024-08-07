@@ -41,11 +41,12 @@ public static class ModelMappingExtensions
         };
     }
 
-    public static SubmissionDto ToSubmissionDto(this CompileDto compileDto, Submission submission)
+    public static SubmissionDto ToSubmissionDto(this CompileDto compileDto, Submission submission, int testCaseId)
     {
         return new SubmissionDto
         {
             Id = submission.Id,
+            TestCaseId = testCaseId,
             Input = compileDto.stdin,
             Output = compileDto.stdout,
             StatusId = compileDto.status_id,

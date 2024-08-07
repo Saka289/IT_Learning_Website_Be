@@ -7,7 +7,6 @@ using LW.Shared.DTOs.CommentDocument;
 using LW.Shared.DTOs.Competition;
 using LW.Shared.DTOs.Compile;
 using LW.Shared.DTOs.Grade;
-using LW.Shared.DTOs.Level;
 using LW.Shared.DTOs.User;
 using LW.Shared.DTOs.Document;
 using LW.Shared.DTOs.Editorial;
@@ -47,6 +46,7 @@ public class MappingProfile : Profile
 {
     public MappingProfile()
     {
+        // User, Amdin
         CreateMap<RegisterMemberResponseDto, ApplicationUser>().ReverseMap();
         CreateMap<ApplicationUser, AdminDto>()
             .ForMember(x => x.FullName, y => y.MapFrom(src => src.FirstName + " " + src.LastName))
@@ -55,15 +55,8 @@ public class MappingProfile : Profile
         CreateMap<ApplicationUser, UserResponseDto>()
             .ForMember(x => x.Dob, y => y.MapFrom(src => src.Dob.ToString()))
             .ReverseMap();
-        // level
-        CreateMap<Level, LevelDtoForCreate>().ReverseMap();
-        CreateMap<Level, LevelDtoForUpdate>().ReverseMap();
-        CreateMap<Level, LevelDto>().ReverseMap();
         //Grade
-        CreateMap<Grade, GradeDto>()
-            .ForMember(x => x.LevelId, y => y.MapFrom(src => src.LevelId))
-            .ForMember(x => x.LevelTitle, y => y.MapFrom(src => src.Level.Title))
-            .ReverseMap();
+        CreateMap<Grade, GradeDto>().ReverseMap();
         CreateMap<Grade, GradeCreateDto>().ReverseMap();
         CreateMap<Grade, GradeUpdateDto>().ReverseMap();
         //Document 

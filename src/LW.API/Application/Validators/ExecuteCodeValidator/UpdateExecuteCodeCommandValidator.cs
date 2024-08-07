@@ -8,7 +8,6 @@ public class UpdateExecuteCodeCommandValidator : AbstractValidator<ExecuteCodeUp
     public UpdateExecuteCodeCommandValidator()
     {
         RuleFor(x => x.Id).NotNull().NotEmpty().GreaterThan(0);
-        RuleFor(x => x.MainCode).NotNull().NotEmpty();
         RuleFor(x => x.SampleCode).NotNull().NotEmpty();
         RuleFor(x => x.ProblemId).NotNull().NotEmpty();
         RuleFor(x => x.LanguageId).NotNull().NotEmpty();

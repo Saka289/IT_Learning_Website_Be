@@ -7,7 +7,6 @@ namespace LW.Services.GradeServices;
 public interface IGradeService
 {
     Task<ApiResult<IEnumerable<GradeDto>>> GetAllGrade();
-    Task<ApiResult<IEnumerable<GradeDto>>> GetAllGradeByLevel(int id);
     Task<ApiResult<PagedList<GradeDto>>> GetAllGradePagination(PagingRequestParameters pagingRequestParameters);
     Task<ApiResult<GradeDto>> GetGradeById(int id);
     Task<ApiResult<PagedList<GradeDto>>> SearchByGradePagination(SearchGradeDto searchGradeDto);

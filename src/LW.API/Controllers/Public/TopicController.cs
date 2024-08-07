@@ -5,7 +5,6 @@ using System.Linq;
 using System.Threading.Tasks;
 using LW.API.Application.Validators.TopicValidator;
 using LW.Services.TopicServices;
-using LW.Shared.DTOs.Level;
 using LW.Shared.DTOs.Topic;
 using LW.Shared.SeedWork;
 using Microsoft.AspNetCore.Http;
