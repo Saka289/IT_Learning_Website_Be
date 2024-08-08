@@ -54,13 +54,19 @@ public class UserExamService : IUserExamService
             return new ApiResult<int>(false, $"Not found list answer of examcode with id = {examFormSubmitDto.ExamCodeId}");
         }
 
+        if (examFormSubmitDto.UserAnswerDtos.Count() != listAnswerOfExam.Count())
+        {
+            return new ApiResult<int>(false, $"Number of answer dont match with number of exam");
+        }
+        
         decimal totalScore = 0;
         var historyAnswers = new List<HistoryAnswer>();
+        // duyệt qua các câu đã trả lời
         foreach (var userAnswer in examFormSubmitDto.UserAnswerDtos)
         {
             var historyAnswer = new HistoryAnswer();
             var correctAnswer = listAnswerOfExam.FirstOrDefault(a => a.NumberOfQuestion == userAnswer.NumberOfQuestion);
-            var isCorrect = correctAnswer != null && correctAnswer.Answer == userAnswer.Answer;
+            var isCorrect = correctAnswer != null && correctAnswer.Answer.ToString() == userAnswer.Answer;
             historyAnswer.NumberOfQuestion = userAnswer.NumberOfQuestion;
             historyAnswer.UserAnswer = userAnswer.Answer.ToString();
 
