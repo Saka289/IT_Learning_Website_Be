@@ -2,11 +2,16 @@
 #####################
 #PUPPETEER RECIPE
 #####################
-RUN apt-get update && apt-get -f install && apt-get -y install wget gnupg2 apt-utils
-RUN wget -q -O - https://dl.google.com/linux/linux_signing_key.pub | apt-key add -
-RUN echo 'deb [arch=amd64] http://dl.google.com/linux/chrome/deb/ stable main' >> /etc/apt/sources.list
 RUN apt-get update \
-&& apt-get install -y google-chrome-stable --no-install-recommends --allow-downgrades fonts-ipafont-gothic fonts-wqy-zenhei fonts-thai-tlwg fonts-kacst fonts-freefont-ttf
+    && apt-get install -y wget gnupg \
+    && wget -q -O - https://dl-ssl.google.com/linux/linux_signing_key.pub | gpg --dearmor -o /usr/share/keyrings/googlechrome-linux-keyring.gpg \
+    && echo "deb [arch=amd64 signed-by=/usr/share/keyrings/googlechrome-linux-keyring.gpg] https://dl-ssl.google.com/linux/chrome/deb/ stable main" > /etc/apt/sources.list.d/google.list \
+    && apt-get update \
+    && apt-get install -y google-chrome-stable fonts-ipafont-gothic fonts-wqy-zenhei fonts-thai-tlwg fonts-khmeros fonts-kacst fonts-freefont-ttf libxss1 dbus dbus-x11 --no-install-recommends \
+    && rm -rf /var/lib/apt/lists/* \
+    && groupadd -r apify && useradd -rm -g apify -G audio,video apify
+# Determine the path of the installed Google Chrome
+RUN which google-chrome-stable || true
 ######################
 #END PUPPETEER RECIPE
 ######################
@@ -19,7 +24,8 @@ RUN apt-get update; apt-get install -y ttf-mscorefonts-installer fontconfig
 ######################
 #END Aspose.PDF RECIPE
 ######################
-ENV PUPPETEER_EXECUTABLE_PATH "/usr/bin/google-chrome-stable"
+ENV PUPPETEER_SKIP_CHROMIUM_DOWNLOAD=true \
+    PUPPETEER_EXECUTABLE_PATH=/usr/bin/google-chrome-stable
 WORKDIR /app
 EXPOSE 80
 
