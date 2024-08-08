@@ -7,12 +7,11 @@ public interface ILessonRepository : IRepositoryBase<Lesson, int>
 {
     Task<IEnumerable<Lesson>> GetAllLesson();
     Task<IEnumerable<Lesson>> GetAllLessonByTopic(int id);
-    Task<IQueryable<Lesson>> GetAllLessonPagination();
-    Task<Lesson> GetLessonById(int id);
+    Task<Lesson?> GetLessonById(int id);
     Task<Lesson> CreateLesson(Lesson lesson);
     Task<Lesson> UpdateLesson(Lesson lesson);
     Task<bool> UpdateRangeLesson(IEnumerable<Lesson> lessons);
     Task<bool> DeleteLesson(int id);
-    Task<bool> DeleteRangeLesson(IEnumerable<Lesson> lessons);
+    Task<bool> DeleteRangeLesson(IEnumerable<int> ids);
     Task<Lesson> GetAllLessonIndex(int id);
 }

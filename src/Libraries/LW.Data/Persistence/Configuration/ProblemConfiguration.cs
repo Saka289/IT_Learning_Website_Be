@@ -10,5 +10,15 @@ public class ProblemConfiguration : IEntityTypeConfiguration<Problem>
     {
         builder.Property(x => x.LessonId).IsRequired(false);
         builder.Property(x => x.TopicId).IsRequired(false);
+        
+        builder.HasOne(p => p.Topic)
+            .WithMany(t => t.Problems)
+            .HasForeignKey(t => t.TopicId)
+            .OnDelete(DeleteBehavior.Cascade);
+        
+        builder.HasOne(p => p.Lesson)
+            .WithMany(t => t.Problems)
+            .HasForeignKey(t => t.LessonId)
+            .OnDelete(DeleteBehavior.Cascade);
     }
 }

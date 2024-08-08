@@ -20,7 +20,7 @@ namespace LW.Data.Repositories.DocumentRepositories
         public async Task<Document> CreateDocument(Document document)
         {
             await CreateAsync(document);
-            return await Task.FromResult(document);
+            return document;
         }
 
         public async Task<bool> DeleteDocument(int id)
@@ -52,13 +52,13 @@ namespace LW.Data.Repositories.DocumentRepositories
                 .Where(x => x.GradeId == id).ToListAsync();
         }
 
-        public Task<IQueryable<Document>> GetAllDocumentPagination()
+        public async Task<IEnumerable<Document>> GetAllDocumentPagination()
         {
-            var result = FindAll()
+            var result = await FindAll()
                 .Include(g => g.Grade)
                 .Include(c => c.CommentDocuments)
-                .AsQueryable();
-            return Task.FromResult(result);
+                .ToListAsync();
+            return result;
         }
 
         public async Task<Document> GetDocumentById(int id)
@@ -73,7 +73,7 @@ namespace LW.Data.Repositories.DocumentRepositories
         public async Task<Document> UpdateDocument(Document document)
         {
             await UpdateAsync(document);
-            return await Task.FromResult(document);
+            return document;
         }
 
         public async Task<Document> GetAllDocumentIndex(int id)

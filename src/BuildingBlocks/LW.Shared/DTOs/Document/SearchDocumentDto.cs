@@ -2,8 +2,7 @@
 
 namespace LW.Shared.DTOs.Document;
 
-public class SearchDocumentDto : SearchRequestParameters
+public class SearchDocumentDto : SearchRequestValue
 {
-    public override string? Key { get; set; } = "keyWord";
     public int? GradeId { get; set; }
 }

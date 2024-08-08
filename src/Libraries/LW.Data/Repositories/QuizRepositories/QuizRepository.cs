@@ -31,24 +31,32 @@ public class QuizRepository : RepositoryBase<Quiz, int>, IQuizRepository
         return result;
     }
 
-    public Task<IQueryable<Quiz>> GetAllQuizByTopicIdPagination(int topicId)
+    public async Task<IEnumerable<Quiz>> GetAllQuizByTopicId(int topicId, bool isInclude = false)
     {
-        var result = FindAll()
+        if (!isInclude)
+        {
+            return await FindAll().Where(q => q.TopicId == topicId).ToListAsync();
+        }
+
+        return await FindAll()
             .Include(l => l.Lesson)
             .Include(l => l.Topic)
             .Include(q => q.QuizQuestionRelations)
-            .Where(q => q.TopicId == topicId).AsQueryable();
-        return Task.FromResult(result);
+            .Where(q => q.TopicId == topicId).ToListAsync();
     }
 
-    public Task<IQueryable<Quiz>> GetAllQuizByLessonIdPagination(int lessonId)
+    public async Task<IEnumerable<Quiz>> GetAllQuizByLessonId(int lessonId, bool isInclude = false)
     {
-        var result = FindAll()
+        if (!isInclude)
+        {
+            return await FindAll().Where(q => q.LessonId == lessonId).ToListAsync();
+        }
+
+        return await FindAll()
             .Include(l => l.Lesson)
             .Include(l => l.Topic)
             .Include(q => q.QuizQuestionRelations)
-            .Where(q => q.LessonId == lessonId).AsQueryable();
-        return Task.FromResult(result);
+            .Where(q => q.LessonId == lessonId).ToListAsync();
     }
 
     public async Task<Quiz?> GetQuizById(int id)
