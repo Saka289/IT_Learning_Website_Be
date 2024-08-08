@@ -34,7 +34,7 @@ public class SolutionService : ISolutionService
 
     public async Task<ApiResult<IEnumerable<SolutionDto>>> GetAllSolutionByProblemId(int problemId)
     {
-        var solutionList = await _solutionRepository.GetAllSolutionByProblemId(problemId);
+        var solutionList = await _solutionRepository.GetAllSolutionByProblemId(problemId, true);
         if (!solutionList.Any())
         {
             return new ApiResult<IEnumerable<SolutionDto>>(false, "Solution not found !!!");

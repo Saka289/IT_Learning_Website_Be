@@ -3,15 +3,23 @@ using LW.Contracts.Common;
 using LW.Data.Entities;
 using LW.Data.Repositories.CommentDocumentRepositories;
 using LW.Data.Repositories.DocumentRepositories;
+using LW.Data.Repositories.ExamRepositories;
 using LW.Data.Repositories.GradeRepositories;
 using LW.Data.Repositories.LessonRepositories;
+using LW.Data.Repositories.ProblemRepositories;
+using LW.Data.Repositories.QuizRepositories;
+using LW.Data.Repositories.SolutionRepositories;
 using LW.Data.Repositories.TopicRepositories;
 using LW.Infrastructure.Extensions;
 using LW.Shared.Constant;
 using LW.Shared.DTOs.Document;
+using LW.Shared.DTOs.Exam;
 using LW.Shared.DTOs.Lesson;
+using LW.Shared.DTOs.Problem;
+using LW.Shared.DTOs.Quiz;
 using LW.Shared.DTOs.Topic;
 using LW.Shared.SeedWork;
+using LW.Shared.Solution;
 using Microsoft.OpenApi.Extensions;
 using MockQueryable.Moq;
 
@@ -25,14 +33,25 @@ public class DocumentService : IDocumentService
     private readonly IElasticSearchService<DocumentDto, int> _elasticSearchService;
     private readonly IElasticSearchService<TopicDto, int> _elasticSearchTopicService;
     private readonly IElasticSearchService<LessonDto, int> _elasticSearchLessonService;
-    
+    private readonly IElasticSearchService<ProblemDto, int> _elasticSearchProblemService;
+    private readonly IElasticSearchService<QuizDto, int> _elasticSearchQuizService;
+    private readonly IElasticSearchService<SolutionDto, int> _elasticSearchSolutionService;
     private readonly IMapper _mapper;
     private readonly ITopicRepository _topicRepository;
     private readonly ILessonRepository _lessonRepository;
+    private readonly IProblemRepository _problemRepository;
+    private readonly IQuizRepository _quizRepository;
+    private readonly ISolutionRepository _solutionRepository;
 
     public DocumentService(IDocumentRepository documentRepository, IMapper mapper, IGradeRepository gradeRepository,
         IElasticSearchService<DocumentDto, int> elasticSearchService,
-        ICommentDocumentRepository commentDocumentRepository, ITopicRepository topicRepository, IElasticSearchService<TopicDto, int> elasticSearchTopicService, IElasticSearchService<LessonDto, int> elasticSearchLessonService, ILessonRepository lessonRepository)
+        ICommentDocumentRepository commentDocumentRepository, ITopicRepository topicRepository,
+        IElasticSearchService<TopicDto, int> elasticSearchTopicService,
+        IElasticSearchService<LessonDto, int> elasticSearchLessonService, ILessonRepository lessonRepository,
+        IElasticSearchService<ProblemDto, int> elasticSearchProblemService,
+        IElasticSearchService<QuizDto, int> elasticSearchQuizService,
+        IElasticSearchService<SolutionDto, int> elasticSearchSolutionService, IProblemRepository problemRepository,
+        IQuizRepository quizRepository, ISolutionRepository solutionRepository)
     {
         _documentRepository = documentRepository;
         _mapper = mapper;
@@ -43,19 +62,27 @@ public class DocumentService : IDocumentService
         _elasticSearchTopicService = elasticSearchTopicService;
         _elasticSearchLessonService = elasticSearchLessonService;
         _lessonRepository = lessonRepository;
+        _elasticSearchProblemService = elasticSearchProblemService;
+        _elasticSearchQuizService = elasticSearchQuizService;
+        _elasticSearchSolutionService = elasticSearchSolutionService;
+        _problemRepository = problemRepository;
+        _quizRepository = quizRepository;
+        _solutionRepository = solutionRepository;
     }
 
     public async Task<ApiResult<IEnumerable<DocumentDto>>> GetAllDocument()
     {
         var documentList = await _documentRepository.GetAllDocument();
-        if (documentList == null)
+        if (!documentList.Any())
         {
             return new ApiResult<IEnumerable<DocumentDto>>(false, "Document is null !!!");
         }
-        
+
         foreach (var item in documentList)
         {
-            var averageRating = item.CommentDocuments.Any() ? Math.Round(item.CommentDocuments.Average(c => c.Rating), 2) : 0;
+            var averageRating = item.CommentDocuments.Any()
+                ? Math.Round(item.CommentDocuments.Average(c => c.Rating), 2)
+                : 0;
             item.AverageRating = averageRating;
             item.TotalReviewer = item.CommentDocuments.Count;
         }
@@ -67,14 +94,16 @@ public class DocumentService : IDocumentService
     public async Task<ApiResult<IEnumerable<DocumentDto>>> GetAllDocumentByGrade(int id)
     {
         var documentList = await _documentRepository.GetAllDocumentByGrade(id);
-        if (documentList == null)
+        if (!documentList.Any())
         {
             return new ApiResult<IEnumerable<DocumentDto>>(false, "Document is null !!!");
         }
-        
+
         foreach (var item in documentList)
         {
-            var averageRating = item.CommentDocuments.Any() ? Math.Round(item.CommentDocuments.Average(c => c.Rating), 2) : 0;
+            var averageRating = item.CommentDocuments.Any()
+                ? Math.Round(item.CommentDocuments.Average(c => c.Rating), 2)
+                : 0;
             item.AverageRating = averageRating;
             item.TotalReviewer = item.CommentDocuments.Count;
         }
@@ -83,26 +112,52 @@ public class DocumentService : IDocumentService
         return new ApiSuccessResult<IEnumerable<DocumentDto>>(result);
     }
 
-    public async Task<ApiResult<PagedList<DocumentDto>>> GetAllDocumentPagination(
-        PagingRequestParameters pagingRequestParameters)
+    public async Task<ApiResult<PagedList<DocumentDto>>> GetAllDocumentPagination(SearchDocumentDto searchDocumentDto)
     {
-        var documentList = await _documentRepository.GetAllDocumentPagination();
-        if (documentList == null)
+        IEnumerable<DocumentDto> documentList;
+        if (!string.IsNullOrEmpty(searchDocumentDto.Value))
         {
-            return new ApiResult<PagedList<DocumentDto>>(false, "Document is null !!!");
+            var documentListSearch = await _elasticSearchService.SearchDocumentFieldAsync(
+                ElasticConstant.ElasticDocuments,
+                new SearchRequestValue
+                {
+                    Value = searchDocumentDto.Value,
+                    Size = searchDocumentDto.Size,
+                });
+            if (documentListSearch is null)
+            {
+                return new ApiResult<PagedList<DocumentDto>>(false, "Document not found !!!");
+            }
+
+            documentList = documentListSearch.ToList();
         }
-        
-        foreach (var item in documentList)
+        else
         {
-            var averageRating = item.CommentDocuments.Any() ? Math.Round(item.CommentDocuments.Average(c => c.Rating), 2) : 0;
-            item.AverageRating = averageRating;
-            item.TotalReviewer = item.CommentDocuments.Count;
+            var documentListAll = await _documentRepository.GetAllDocumentPagination();
+            if (!documentListAll.Any())
+            {
+                return new ApiResult<PagedList<DocumentDto>>(false, "Document is null !!!");
+            }
+
+            documentList = _mapper.Map<IEnumerable<DocumentDto>>(documentListAll);
         }
 
-        var result = _mapper.Map<IEnumerable<DocumentDto>>(documentList);
-        var pagedResult = await PagedList<DocumentDto>.ToPageListAsync(result.AsQueryable().BuildMock(),
-            pagingRequestParameters.PageIndex,
-            pagingRequestParameters.PageSize, pagingRequestParameters.OrderBy, pagingRequestParameters.IsAscending);
+        if (searchDocumentDto.GradeId > 0)
+        {
+            documentList = documentList.Where(d => d.GradeId == searchDocumentDto.GradeId);
+        }
+
+        foreach (var item in documentList)
+        {
+            var comment = await _commentDocumentRepository.GetAllCommentByDocumentId(item.Id);
+            var averageRating = comment.Any() ? Math.Round(comment.Average(c => c.Rating), 2) : 0;
+            item.AverageRating = averageRating;
+            item.TotalReviewer = comment.Count();
+        }
+
+        var pagedResult = await PagedList<DocumentDto>.ToPageListAsync(documentList.AsQueryable().BuildMock(),
+            searchDocumentDto.PageIndex, searchDocumentDto.PageSize, searchDocumentDto.OrderBy,
+            searchDocumentDto.IsAscending);
         return new ApiSuccessResult<PagedList<DocumentDto>>(pagedResult);
     }
 
@@ -119,41 +174,15 @@ public class DocumentService : IDocumentService
         {
             documentEntity.Grade = gradeEntity;
         }
-        
-        var averageRating = documentEntity.CommentDocuments.Any() ? Math.Round(documentEntity.CommentDocuments.Average(c => c.Rating), 2) : 0;
+
+        var averageRating = documentEntity.CommentDocuments.Any()
+            ? Math.Round(documentEntity.CommentDocuments.Average(c => c.Rating), 2)
+            : 0;
         documentEntity.AverageRating = averageRating;
         documentEntity.TotalReviewer = documentEntity.CommentDocuments.Count;
 
         var result = _mapper.Map<DocumentDto>(documentEntity);
         return new ApiSuccessResult<DocumentDto>(result);
-    }
-
-    public async Task<ApiResult<PagedList<DocumentDto>>> SearchByDocumentPagination(SearchDocumentDto searchDocumentDto)
-    {
-        var documentEntity = await _elasticSearchService.SearchDocumentAsync(ElasticConstant.ElasticDocuments, searchDocumentDto);
-        if (documentEntity is null)
-        {
-            return new ApiResult<PagedList<DocumentDto>>(false, $"Document not found by {searchDocumentDto.Key} !!!");
-        }
-
-        if (searchDocumentDto.GradeId > 0)
-        {
-            documentEntity = documentEntity.Where(d => d.GradeId == searchDocumentDto.GradeId).ToList();
-        }
-        
-        foreach (var item in documentEntity)
-        {
-            var comment = await _commentDocumentRepository.GetAllCommentByDocumentId(item.Id);
-            var averageRating = comment.Any() ? Math.Round(comment.Average(c => c.Rating), 2) : 0;
-            item.AverageRating = averageRating;
-            item.TotalReviewer = comment.Count();
-        }
-
-        var result = _mapper.Map<IEnumerable<DocumentDto>>(documentEntity);
-        var pagedResult = await PagedList<DocumentDto>.ToPageListAsync(result.AsQueryable().BuildMock(),
-            searchDocumentDto.PageIndex, searchDocumentDto.PageSize, searchDocumentDto.OrderBy,
-            searchDocumentDto.IsAscending);
-        return new ApiSuccessResult<PagedList<DocumentDto>>(pagedResult);
     }
 
     public async Task<ApiResult<DocumentDto>> CreateDocument(DocumentCreateDto documentCreateDto)
@@ -172,9 +201,8 @@ public class DocumentService : IDocumentService
             documentEntity.Edition);
         documentEntity.KeyWord = documentEntity.Title.RemoveDiacritics();
         await _documentRepository.CreateDocument(documentEntity);
-        documentEntity.Grade = gradeEntity;
+        await CreateOrUpdateElasticDocument(documentEntity.Id, true);
         var result = _mapper.Map<DocumentDto>(documentEntity);
-        _elasticSearchService.CreateDocumentAsync(ElasticConstant.ElasticDocuments, result, g => g.Id);
         return new ApiSuccessResult<DocumentDto>(result);
     }
 
@@ -198,9 +226,8 @@ public class DocumentService : IDocumentService
             model.TypeOfBook.GetDisplayName().ToUpper(), model.PublicationYear, model.Edition);
         model.KeyWord = documentUpdateDto.Title.RemoveDiacritics();
         var updateDocument = await _documentRepository.UpdateDocument(model);
-        updateDocument.Grade = gradeEntity;
+        await CreateOrUpdateElasticDocument(documentUpdateDto.Id, false);
         var result = _mapper.Map<DocumentDto>(updateDocument);
-        _elasticSearchService.UpdateDocumentAsync(ElasticConstant.ElasticDocuments, result, documentUpdateDto.Id);
         return new ApiSuccessResult<DocumentDto>(result);
     }
 
@@ -219,7 +246,7 @@ public class DocumentService : IDocumentService
         await _documentRepository.SaveChangesAsync();
         documentEntity.Grade = gradeEntity;
         var result = _mapper.Map<DocumentDto>(documentEntity);
-        _elasticSearchService.UpdateDocumentAsync(ElasticConstant.ElasticDocuments, result, id);
+        await _elasticSearchService.UpdateDocumentAsync(ElasticConstant.ElasticDocuments, result, id);
         return new ApiSuccessResult<bool>(true, "Grade update successfully !!!");
     }
 
@@ -231,42 +258,80 @@ public class DocumentService : IDocumentService
             return new ApiResult<bool>(false, "Document not found !!!");
         }
 
-        var listTopic = await _topicRepository.GetAllTopicByDocument(id);
+        // xóa  topic - lesson
+        var listTopic = await _topicRepository.GetAllTopicByDocumentAll(id);
         if (listTopic.Any())
         {
-            var listTopicDto = _mapper.Map<IEnumerable<TopicDto>>(listTopic);
-            var listTopicDtoId = listTopicDto.Select(x => x.Id).ToList();
-            await _elasticSearchTopicService.DeleteDocumentRangeAsync(ElasticConstant.ElasticTopics,listTopicDtoId);
+            var listTopicDtoId = listTopic.Select(x => x.Id).ToList();
+            await _elasticSearchTopicService.DeleteDocumentRangeAsync(ElasticConstant.ElasticTopics, listTopicDtoId);
             foreach (var topic in listTopic)
             {
-                var topicChilds = await _topicRepository.GetAllTopicChildByParentId(topic.Id);
-                if (topicChilds.Any())
+                var listLesson = await _lessonRepository.GetAllLessonByTopic(topic.Id);
+                if (listLesson.Any())
                 {
-                    foreach (var topicChild in topicChilds)
+                    var listLessonId = listLesson.Select(l => l.Id);
+                    await _elasticSearchLessonService.DeleteDocumentRangeAsync(ElasticConstant.ElasticLessons,
+                        listLessonId);
+                    foreach (var lesson in listLesson)
                     {
-                        var listLesson = await _lessonRepository.GetAllLessonByTopic(topicChild.Id);
-                        if (listLesson.Any())
+                        var listProblemInLesson = await _problemRepository.GetAllProblemByLesson(lesson.Id);
+                        foreach (var problem in listProblemInLesson)
                         {
-                            var listLessonDto = _mapper.Map<IEnumerable<LessonDto>>(listLesson);
-                            var listId = listLessonDto.Select(x => x.Id).ToList();
-                            await _elasticSearchLessonService.DeleteDocumentRangeAsync(ElasticConstant.ElasticLessons, listId);
+                            var listSolutionInLesson = await _solutionRepository.GetAllSolutionByProblemId(problem.Id);
+                            if (listSolutionInLesson.Any())
+                            {
+                                var listSolutionInLessonId = listSolutionInLesson.Select(s => s.Id);
+                                await _elasticSearchSolutionService.DeleteDocumentRangeAsync(
+                                    ElasticConstant.ElasticSolutions, listSolutionInLessonId);
+                            }
+                        }
+
+                        var listQuizInLesson = await _quizRepository.GetAllQuizByLessonId(lesson.Id);
+                        if (listProblemInLesson.Any())
+                        {
+                            var listProblemInLessonId = listProblemInLesson.Select(p => p.Id);
+                            await _elasticSearchProblemService.DeleteDocumentRangeAsync(ElasticConstant.ElasticProblems,
+                                listProblemInLessonId);
+                        }
+
+                        if (listQuizInLesson.Any())
+                        {
+                            var listQuizInLessonId = listQuizInLesson.Select(q => q.Id);
+                            await _elasticSearchQuizService.DeleteDocumentRangeAsync(ElasticConstant.ElasticQuizzes,
+                                listQuizInLessonId);
                         }
                     }
                 }
-                else
+
+                var listProblem = await _problemRepository.GetAllProblemByTopic(topic.Id);
+                foreach (var problem in listProblem)
                 {
-                    var listLesson = await _lessonRepository.GetAllLessonByTopic(topic.Id);
-                    if (listLesson.Any())
+                    var listSolution = await _solutionRepository.GetAllSolutionByProblemId(problem.Id);
+                    if (listSolution.Any())
                     {
-                        var listLessonDto = _mapper.Map<IEnumerable<LessonDto>>(listLesson);
-                        var listId = listLessonDto.Select(x => x.Id).ToList();
-                        await _elasticSearchLessonService.DeleteDocumentRangeAsync(ElasticConstant.ElasticLessons, listId);
+                        var listSolutionInLessonId = listSolution.Select(s => s.Id);
+                        await _elasticSearchSolutionService.DeleteDocumentRangeAsync(ElasticConstant.ElasticSolutions,
+                            listSolutionInLessonId);
                     }
                 }
+
+                var listQuiz = await _quizRepository.GetAllQuizByTopicId(topic.Id);
+                if (listQuiz.Any())
+                {
+                    var listQuizId = listQuiz.Select(q => q.Id);
+                    await _elasticSearchQuizService.DeleteDocumentRangeAsync(ElasticConstant.ElasticQuizzes,
+                        listQuizId);
+                }
+
+                if (listProblem.Any())
+                {
+                    var listProblemId = listProblem.Select(p => p.Id);
+                    await _elasticSearchProblemService.DeleteDocumentRangeAsync(ElasticConstant.ElasticProblems,
+                        listProblemId);
+                }
             }
-
-
         }
+
 
         var document = await _documentRepository.DeleteDocument(id);
         if (!document)
@@ -274,8 +339,25 @@ public class DocumentService : IDocumentService
             return new ApiResult<bool>(false, "Failed Delete Document not found !!!");
         }
 
-        _elasticSearchService.DeleteDocumentAsync(ElasticConstant.ElasticDocuments, id);
-
+        await _elasticSearchService.DeleteDocumentAsync(ElasticConstant.ElasticDocuments, id);
         return new ApiSuccessResult<bool>(true, "Delete Document Successfully !!!");
+    }
+
+    private async Task CreateOrUpdateElasticDocument(int id, bool isCreateOrUpdate)
+    {
+        var document = await _documentRepository.GetDocumentById(id);
+        var result = _mapper.Map<DocumentDto>(document);
+        if (isCreateOrUpdate)
+        {
+            await _elasticSearchService.CreateDocumentAsync(ElasticConstant.ElasticDocuments, result, d => d.Id);
+        }
+        else
+        {
+            await _elasticSearchService.UpdateDocumentAsync(ElasticConstant.ElasticDocuments, result, result.Id);
+            var topics = await _topicRepository.GetAllTopicByDocument(id);
+            var resultTopic = _mapper.Map<IEnumerable<TopicDto>>(topics);
+            await _elasticSearchTopicService.UpdateDocumentRangeAsync(ElasticConstant.ElasticTopics, resultTopic,
+                d => d.Id);
+        }
     }
 }

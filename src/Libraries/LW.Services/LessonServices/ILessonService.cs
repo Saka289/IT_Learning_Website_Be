@@ -7,9 +7,8 @@ public interface ILessonService
 {
     Task<ApiResult<IEnumerable<LessonDto>>> GetAllLesson();
     Task<ApiResult<IEnumerable<LessonDto>>> GetAllLessonByTopic(int id);
-    Task<ApiResult<PagedList<LessonDto>>> GetAllLessonPagination(PagingRequestParameters pagingRequestParameters);
+    Task<ApiResult<PagedList<LessonDto>>> GetAllLessonPagination(SearchLessonDto searchLessonDto);
     Task<ApiResult<LessonDto>> GetLessonById(int id);
-    Task<ApiResult<PagedList<LessonDto>>> SearchByLessonPagination(SearchLessonDto searchLessonDto);
     Task<ApiResult<LessonDto>> CreateLesson(LessonCreateDto lessonCreateDto);
     Task<ApiResult<LessonDto>> UpdateLesson(LessonUpdateDto lessonUpdateDto);
     Task<ApiResult<bool>> UpdateLessonStatus(int id);

@@ -17,8 +17,12 @@ public class SolutionRepository : RepositoryBase<Solution, int>, ISolutionReposi
         return await FindAll().ToListAsync();
     }
 
-    public async Task<IEnumerable<Solution>> GetAllSolutionByProblemId(int problemId)
+    public async Task<IEnumerable<Solution>> GetAllSolutionByProblemId(int problemId, bool isInclude = false)
     {
+        if (!isInclude)
+        {
+            return await FindAll().Where(p => p.ProblemId == problemId).ToListAsync();
+        }
         return await FindAll()
             .Include(p => p.Problem)
             .Include(u => u.ApplicationUser)
