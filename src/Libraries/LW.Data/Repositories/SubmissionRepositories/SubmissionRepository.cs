@@ -33,8 +33,7 @@ public class SubmissionRepository : RepositoryBase<Submission, int>, ISubmission
     public async Task<Submission?> GetSubmissionByProblemIdUserId(int problemId, string userId, int languageId)
     {
         return await FindAll()
-            .Where(s => s.ProblemId == problemId && s.UserId.Equals(userId) && s.LanguageId == languageId &&
-                        s.Status == EStatusSubmission.Accepted && s.Submit)
+            .Where(s => s.ProblemId == problemId && s.UserId.Equals(userId) && s.LanguageId == languageId && s.Status == EStatusSubmission.Accepted && s.Submit)
             .OrderByDescending(s => s.CreatedDate)
             .FirstOrDefaultAsync();
     }

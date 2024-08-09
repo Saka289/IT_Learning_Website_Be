@@ -10,6 +10,5 @@ public class SearchProblemDto : SearchRequestValue
     public int? TopicId { get; set; }
     public int? LessonId { get; set; }
     public EStatusProblem? Status { get; set; }
-    [Required]
-    public string UserId { get; set; }
+    public string? UserId { get; set; }
 }

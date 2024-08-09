@@ -77,8 +77,11 @@ public class AdminAuthorService : IAdminAuthorService
             NormalizedEmail = model.Email.ToLower(),
             FirstName = model.FistName,
             LastName = model.LastName,
-            EmailConfirmed = true
+            EmailConfirmed = true,
+            Image = CloudinaryConstant.Avatar,
+            PublicId = CloudinaryConstant.AvatarPublicKey
         };
+        
         var addUser = await _userManager.CreateAsync(user, model.Password);
         if (addUser.Succeeded)
         {

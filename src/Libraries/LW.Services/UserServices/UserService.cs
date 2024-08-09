@@ -94,8 +94,7 @@ public class UserService : IUserService
                 $"An existing account is using {registerUserDto.Email}");
         }
 
-        var userNameExist =
-            await _userManager.Users.AnyAsync(x => x.UserName.ToLower() == registerUserDto.UserName.ToLower());
+        var userNameExist = await _userManager.Users.AnyAsync(x => x.UserName.ToLower() == registerUserDto.UserName.ToLower());
         if (userNameExist)
         {
             return new ApiResult<RegisterResponseUserDto>(false,
@@ -104,7 +103,8 @@ public class UserService : IUserService
 
         var user = _mapper.Map<ApplicationUser>(registerUserDto);
         user.EmailConfirmed = true;
-
+        user.Image = CloudinaryConstant.Avatar;
+        user.PublicId = CloudinaryConstant.AvatarPublicKey;
         var result = await _userManager.CreateAsync(user, registerUserDto.Password);
         if (!result.Succeeded)
         {
