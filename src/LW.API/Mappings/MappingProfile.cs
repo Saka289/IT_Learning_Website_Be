@@ -275,7 +275,9 @@ public class MappingProfile : Profile
         CreateMap<TestCase, TestCaseCreateDto>().ReverseMap();
         CreateMap<TestCase, TestCaseUpdateDto>().ReverseMap();
         // ExecuteCode
-        CreateMap<ExecuteCode, ExecuteCodeDto>().ReverseMap();
+        CreateMap<ExecuteCode, ExecuteCodeDto>()
+            .ForMember(x => x.LanguageName, y => y.MapFrom(src => src.ProgramLanguage.Name))
+            .ReverseMap();
         CreateMap<ExecuteCode, ExecuteCodeCreateDto>().ReverseMap();
         CreateMap<ExecuteCode, ExecuteCodeUpdateDto>().ReverseMap();
         // Submission
