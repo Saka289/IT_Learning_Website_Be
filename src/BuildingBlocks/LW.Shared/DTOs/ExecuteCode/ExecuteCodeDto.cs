@@ -7,4 +7,5 @@ public class ExecuteCodeDto
     public string SampleCode { get; set; }
     public int ProblemId { get; set; }
     public int LanguageId { get; set; }
+    public string LanguageName { get; set; }
 }
