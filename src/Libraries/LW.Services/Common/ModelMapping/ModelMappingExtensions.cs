@@ -53,6 +53,8 @@ public static class ModelMappingExtensions
             Status = ((EStatusSubmission)compileDto.status_id).ToString(),
             CompileOutput = compileDto.compile_output,
             ExpectedOutput = compileDto.expected_output,
+            StandardError = compileDto.stderr,
+            Message = compileDto.message,
             ExecutionTime = compileDto.time,
             LanguageId = submission.LanguageId,
             MemoryUsage = compileDto.memory,

@@ -59,8 +59,13 @@ public class QuizRepository : RepositoryBase<Quiz, int>, IQuizRepository
             .Where(q => q.LessonId == lessonId).ToListAsync();
     }
 
-    public async Task<Quiz?> GetQuizById(int id)
+    public async Task<Quiz?> GetQuizById(int id, bool isInclude = false)
     {
+        if (!isInclude)
+        {
+            return await FindByCondition(q => q.Id == id).FirstOrDefaultAsync();
+        }
+
         return await FindByCondition(q => q.Id == id)
             .Include(l => l.Lesson)
             .Include(l => l.Topic)
