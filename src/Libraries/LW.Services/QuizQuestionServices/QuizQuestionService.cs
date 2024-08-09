@@ -994,6 +994,7 @@ public class QuizQuestionService : IQuizQuestionService
             var quizQuestionImportDto = CreateQuizQuestionImportDto(workSheet, row);
             var quizQuestion = _mapper.Map<QuizQuestion>(quizQuestionImportDto);
             quizQuestion.HashQuestion = FindDuplicateQuestion(listQuizQuestion, quizQuestion);
+            quizQuestionImportDto.HashQuestion = quizQuestion.HashQuestion;
             if (ValidateQuizQuestionImportDto(quizQuestionImportDto))
             {
                 quizQuestionImportDto.IsImported = true;
@@ -1032,7 +1033,7 @@ public class QuizQuestionService : IQuizQuestionService
         return new QuizQuestionImportDto
         {
             Content = workSheet.Cells[row, 3].Value?.ToString()?.Trim(),
-            QuestionLevel = resultLevel.ToString(),
+            QuestionLevel = (EQuestionLevel) resultLevel,
             QuestionLevelName = level,
             QuizAnswers = quizAnswers,
             Type = (ETypeQuestion)result,
@@ -1092,7 +1093,7 @@ public class QuizQuestionService : IQuizQuestionService
             isValid = false;
         }
 
-        if (!int.TryParse(dto.QuestionLevel, out int questionLevelValue) || questionLevelValue == 0)
+        if (dto.QuestionLevel == 0)
         {
             AddImportError(dto, $"Không tìm thấy cấp độ câu hỏi {dto.QuestionLevelName}");
             isValid = false;

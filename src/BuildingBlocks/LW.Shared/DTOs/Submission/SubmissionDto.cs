@@ -15,6 +15,8 @@ public class SubmissionDto
     public string? Input { get; set; }
     public string? Output { get; set; }
     public string? ExpectedOutput { get; set; }
+    public string? StandardError { get; set; }
+    public string? Message { get; set; }
     public int LanguageId { get; set; }
     public int ProblemId { get; set; }
     public string UserId { get; set; }

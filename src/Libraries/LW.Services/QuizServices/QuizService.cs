@@ -102,7 +102,7 @@ public class QuizService : IQuizService
 
     public async Task<ApiResult<QuizDto>> GetQuizById(int id)
     {
-        var quizEntity = await _quizRepository.GetQuizById(id);
+        var quizEntity = await _quizRepository.GetQuizById(id, true);
         if (quizEntity == null)
         {
             return new ApiResult<QuizDto>(false, "Quiz is null !!!");
