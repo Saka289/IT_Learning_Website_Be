@@ -76,10 +76,13 @@ public class ProblemService : IProblemService
             problemList = _mapper.Map<IEnumerable<ProblemDto>>(problemListAll);
         }
 
-        foreach (var item in problemList)
+        if (!string.IsNullOrEmpty(searchProblemDto.UserId))
         {
-            var status = await _submissionRepository.GetAllSubmissionByStatus(searchProblemDto.UserId, item.Id);
-            item.Status = status ? EStatusProblem.Solved : EStatusProblem.ToDo;
+            foreach (var item in problemList)
+            {
+                var status = await _submissionRepository.GetAllSubmissionByStatus(searchProblemDto.UserId, item.Id);
+                item.Status = status ? EStatusProblem.Solved : EStatusProblem.ToDo;
+            }
         }
         
         if (searchProblemDto.Difficulty > 0)

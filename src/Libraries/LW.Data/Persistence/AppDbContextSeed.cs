@@ -150,7 +150,10 @@ public class AppDbContextSeed
             LastName = "Lotus",
             NormalizedEmail = "ADMIN@GMAIL.COM",
             EmailConfirmed = true,
-            PhoneNumber = "1234567890"
+            PhoneNumber = "1234567890",
+            Image = CloudinaryConstant.Avatar,
+            PublicId = CloudinaryConstant.AvatarPublicKey,
+            Dob = DateOnly.FromDateTime(DateTime.Now)
         };
         admin.PasswordHash = hasher.HashPassword(admin, "Admin@1234");
 
@@ -164,7 +167,10 @@ public class AppDbContextSeed
             LastName = "Cadi",
             NormalizedEmail = "USER@GMAIL.COM",
             EmailConfirmed = true,
-            PhoneNumber = "1234567890"
+            PhoneNumber = "1234567890",
+            Image = CloudinaryConstant.Avatar,
+            PublicId = CloudinaryConstant.AvatarPublicKey,
+            Dob = DateOnly.FromDateTime(DateTime.Now)
         };
         user.PasswordHash = hasher.HashPassword(user, "User@1234");
 
@@ -174,11 +180,14 @@ public class AppDbContextSeed
             UserName = "contentmanager",
             NormalizedUserName = "CONTENTMANAGER",
             Email = "contentmanager@gmail.com",
-            FirstName = "Kavior",
-            LastName = "Salandez",
+            FirstName = "Michael",
+            LastName = "Paul",
             NormalizedEmail = "CONTENTMANAGER@GMAIL.COM",
             EmailConfirmed = true,
-            PhoneNumber = "1234567890"
+            PhoneNumber = "1234567890",
+            Image = CloudinaryConstant.Avatar,
+            PublicId = CloudinaryConstant.AvatarPublicKey,
+            Dob = DateOnly.FromDateTime(DateTime.Now)
         };
         contentManager.PasswordHash = hasher.HashPassword(contentManager, "Manager@1234");
 

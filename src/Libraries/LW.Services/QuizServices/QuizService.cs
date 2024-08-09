@@ -75,6 +75,15 @@ public class QuizService : IQuizService
 
             quizList = _mapper.Map<IEnumerable<QuizDto>>(quizListAll);
         }
+        
+        if (searchQuizDto.Custom)
+        {
+            quizList = quizList.Where(t => t.LessonId == null && t.TopicId == null);
+        }
+        else
+        {
+            quizList = quizList.Where(t => t.LessonId != null || t.TopicId != null);
+        }
 
         if (searchQuizDto.TopicId > 0)
         {
@@ -84,11 +93,6 @@ public class QuizService : IQuizService
         if (searchQuizDto.LessonId > 0)
         {
             quizList = quizList.Where(t => t.LessonId == searchQuizDto.LessonId);
-        }
-
-        if (searchQuizDto.Custom)
-        {
-            quizList = quizList.Where(t => t.LessonId == null && t.TopicId == null);
         }
 
         if (searchQuizDto.Type > 0)
@@ -102,7 +106,7 @@ public class QuizService : IQuizService
 
     public async Task<ApiResult<QuizDto>> GetQuizById(int id)
     {
-        var quizEntity = await _quizRepository.GetQuizById(id, true);
+        var quizEntity = await _quizRepository.GetQuizById(id);
         if (quizEntity == null)
         {
             return new ApiResult<QuizDto>(false, "Quiz is null !!!");
