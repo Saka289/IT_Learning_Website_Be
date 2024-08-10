@@ -12,8 +12,12 @@ public class GradeRepository : RepositoryBase<Grade, int>, IGradeRepository
     {
     }
 
-    public async Task<IEnumerable<Grade>> GetAllGrade()
+    public async Task<IEnumerable<Grade>> GetAllGrade(bool isInclude = false)
     {
+        if (!isInclude)
+        {
+            return await FindAll().ToListAsync();
+        }
         return await FindAll()
             .Include(g => g.Exams)
             .Include(g => g.Documents)
@@ -53,8 +57,12 @@ public class GradeRepository : RepositoryBase<Grade, int>, IGradeRepository
             .ToListAsync();
     }
 
-    public async Task<IEnumerable<Grade>> GetAllGradePagination()
+    public async Task<IEnumerable<Grade>> GetAllGradePagination(bool isInclude = false)
     {
+        if (!isInclude)
+        {
+            return await FindAll().ToListAsync();
+        }
         return await FindAll()
             .Include(g => g.Exams)
             .Include(g => g.Documents)
