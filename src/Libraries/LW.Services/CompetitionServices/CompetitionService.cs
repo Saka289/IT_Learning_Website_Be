@@ -47,12 +47,10 @@ public class CompetitionService : ICompetitionService
 
     public async Task<ApiResult<PagedList<CompetitionDto>>> GetAllCompetitionPagination(SearchCompetitionDto searchCompetitionDto)
     {
-        
         IEnumerable<CompetitionDto> competitionList;
         if (!string.IsNullOrEmpty(searchCompetitionDto.Value))
         {
-            var competitionListSearch = await _elasticSearchService.SearchDocumentFieldAsync(
-                ElasticConstant.ElasticProblems, new SearchRequestValue
+            var competitionListSearch = await _elasticSearchService.SearchDocumentFieldAsync(ElasticConstant.ElasticCompetitions, new SearchRequestValue
                 {
                     Value = searchCompetitionDto.Value,
                     Size = searchCompetitionDto.Size,

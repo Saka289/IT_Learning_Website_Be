@@ -73,9 +73,9 @@ public class GradeService : IGradeService
         _elasticSearchExamService = elasticSearchExamService;
     }
 
-    public async Task<ApiResult<IEnumerable<GradeDto>>> GetAllGrade()
+    public async Task<ApiResult<IEnumerable<GradeDto>>> GetAllGrade(bool isInclude = false)
     {
-        var gradeList = await _gradeRepository.GetAllGrade();
+        var gradeList = await _gradeRepository.GetAllGrade(isInclude);
         if (!gradeList.Any())
         {
             return new ApiResult<IEnumerable<GradeDto>>(false, "Grade is null !!!");

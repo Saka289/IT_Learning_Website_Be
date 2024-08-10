@@ -25,9 +25,9 @@ namespace LW.API.Controllers.Public
         }
 
         [HttpGet("GetAllGrade")]
-        public async Task<ActionResult<ApiResult<IEnumerable<GradeDto>>>> GetAllGrade()
+        public async Task<ActionResult<ApiResult<IEnumerable<GradeDto>>>> GetAllGrade([Required] bool isInclude)
         {
-            var result = await _gradeService.GetAllGrade();
+            var result = await _gradeService.GetAllGrade(isInclude);
             if (!result.IsSucceeded)
             {
                 return NotFound(result);
@@ -35,7 +35,7 @@ namespace LW.API.Controllers.Public
 
             return Ok(result);
         }
-        
+
         [HttpGet("GetAllGradePagination")]
         public async Task<ActionResult<ApiResult<PagedList<GradeDto>>>> GetAllGradePagination([FromQuery] SearchGradeDto searchGradeDto)
         {
