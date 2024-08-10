@@ -34,36 +34,38 @@ public class TagService : ITagService
         }
 
         var tagDtos = _mapper.Map<IEnumerable<TagDto>>(tags);
-        return new ApiResult<IEnumerable<TagDto>>(true, tagDtos, "Get all tag sucessfully");
+        return new ApiResult<IEnumerable<TagDto>>(true, tagDtos, "Get all tag successfully");
     }
 
-    public async Task<ApiResult<PagedList<TagDto>>> GetAllTagPagination(PagingRequestParameters pagingRequestParameters)
+    public async Task<ApiResult<PagedList<TagDto>>> GetAllTagPagination(SearchTagDto searchTagDto)
     {
-        var tags = await _tagRepository.GetAllTagPagination();
-        if (!tags.Any())
+        IEnumerable<TagDto> tagList;
+        if (!string.IsNullOrEmpty(searchTagDto.Value))
         {
-            return new ApiResult<PagedList<TagDto>>(false, "List Tags is null !!!");
+            var tagListSearch = await _elasticSearchService.SearchDocumentFieldAsync(ElasticConstant.ElasticTags, new SearchRequestValue
+                {
+                    Value = searchTagDto.Value,
+                    Size = searchTagDto.Size,
+                });
+            if (tagListSearch is null)
+            {
+                return new ApiResult<PagedList<TagDto>>(false, "Tag not found !!!");
+            }
+
+            tagList = tagListSearch.ToList();
         }
-
-        var result = _mapper.ProjectTo<TagDto>(tags);
-        var pagedResult = await PagedList<TagDto>.ToPageListAsync(result, pagingRequestParameters.PageIndex,
-            pagingRequestParameters.PageSize, pagingRequestParameters.OrderBy, pagingRequestParameters.IsAscending);
-
-        return new ApiSuccessResult<PagedList<TagDto>>(pagedResult);
-    }
-
-    public async Task<ApiResult<PagedList<TagDto>>> SearchTagPagination(SearchTagDto searchTagDto)
-    {
-        var listTag =
-            await _elasticSearchService.SearchDocumentAsync(ElasticConstant.ElasticTags, searchTagDto);
-        if (listTag is null)
+        else
         {
-            return new ApiResult<PagedList<TagDto>>(false, $"List tag not found by {searchTagDto.Key} !!!");
-        }
+            var tagListAll = await _tagRepository.GetAllTag();
+            if (!tagListAll.Any())
+            {
+                return new ApiResult<PagedList<TagDto>>(false, "List Tags is null !!!");
+            }
 
-        var result = _mapper.Map<IEnumerable<TagDto>>(listTag);
-        var pagedResult = await PagedList<TagDto>.ToPageListAsync(result.AsQueryable().BuildMock(),
-            searchTagDto.PageIndex, searchTagDto.PageSize, searchTagDto.OrderBy, searchTagDto.IsAscending);
+            tagList = _mapper.Map<IEnumerable<TagDto>>(tagListAll);
+        }
+        
+        var pagedResult = await PagedList<TagDto>.ToPageListAsync(tagList.AsQueryable().BuildMock(), searchTagDto.PageIndex, searchTagDto.PageSize, searchTagDto.OrderBy, searchTagDto.IsAscending);
         return new ApiSuccessResult<PagedList<TagDto>>(pagedResult);
     }
 
@@ -135,6 +137,6 @@ public class TagService : ITagService
 
         await _tagRepository.DeleteTag(id);
         _elasticSearchService.DeleteDocumentAsync(ElasticConstant.ElasticTags, id);
-        return new ApiResult<bool>(true, "Delete Tag Successully");
+        return new ApiResult<bool>(true, "Delete Tag successfully");
     }
 }

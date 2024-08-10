@@ -32,9 +32,9 @@ namespace LW.API.Controllers.Public
             return Ok(result);
         }
         [HttpGet("GetAllCompetitionPagination")]
-        public async Task<ActionResult<ApiResult<PagedList<CompetitionDto>>>> GetAllCompetitionPagination([FromQuery]PagingRequestParameters pagingRequestParameters)
+        public async Task<ActionResult<ApiResult<PagedList<CompetitionDto>>>> GetAllCompetitionPagination([FromQuery]SearchCompetitionDto searchCompetitionDto)
         {
-            var result = await _competitionService.GetAllCompetitionPagination(pagingRequestParameters);
+            var result = await _competitionService.GetAllCompetitionPagination(searchCompetitionDto);
             if (!result.IsSucceeded)
             {
                 return NotFound(result);
@@ -106,19 +106,6 @@ namespace LW.API.Controllers.Public
             {
                 return BadRequest(result);
             }
-            return Ok(result);
-        }
-
-        [HttpGet("SearchCompetitionPagination")]
-        public async Task<ActionResult<ApiResult<IEnumerable<CompetitionDto>>>> SearchCompetitionPagination(
-            [FromQuery] SearchCompetitionDto searchCompetitionDto)
-        {
-            var result = await _competitionService.SearchByCompetitionPagination(searchCompetitionDto);
-            if (!result.IsSucceeded)
-            {
-                return NotFound(result);
-            }
-            Response.Headers.Add("X-Pagination", JsonConvert.SerializeObject(result.Data.GetMetaData()));
             return Ok(result);
         }
     }

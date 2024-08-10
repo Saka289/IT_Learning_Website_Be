@@ -2,7 +2,6 @@
 
 namespace LW.Shared.DTOs.Competition;
 
-public class SearchCompetitionDto : SearchRequestParameters
+public class SearchCompetitionDto : SearchRequestValue
 {
-    public override string? Key { get; set; } = "keyWord";
 }

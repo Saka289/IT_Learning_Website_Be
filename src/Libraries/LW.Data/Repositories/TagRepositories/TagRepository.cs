@@ -34,7 +34,7 @@ public class TagRepository : RepositoryBase<Tag, int>, ITagRepository
         return true;
     }
 
-    public async Task<Tag> GetTagById(int id)
+    public async Task<Tag?> GetTagById(int id)
     {
         return await FindByCondition(x => x.Id == id).FirstOrDefaultAsync();
     }
@@ -44,14 +44,8 @@ public class TagRepository : RepositoryBase<Tag, int>, ITagRepository
         return await FindAll().ToListAsync();
     }
 
-    public Task<IQueryable<Tag>> GetAllTagPagination()
+    public async Task<Tag?> GetTagByKeyword(string key)
     {
-        var result = FindAll();
-        return Task.FromResult(result);
-    }
-
-    public async Task<Tag> GetTagByKeyword(string key)
-    {
-        return await FindByCondition(x => x.KeyWord.Equals(key)).FirstOrDefaultAsync();
+        return await FindByCondition(x => x.KeyWord!.ToLower().Trim().Equals(key.ToLower().Trim())).FirstOrDefaultAsync();
     }
 }

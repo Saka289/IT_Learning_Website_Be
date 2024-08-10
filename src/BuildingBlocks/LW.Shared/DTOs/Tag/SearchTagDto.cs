@@ -2,8 +2,7 @@
 
 namespace LW.Shared.DTOs.Tag;
 
-public class SearchTagDto : SearchRequestParameters
+public class SearchTagDto : SearchRequestValue
 {
-    public override string? Key { get; set; } = "keyWord";
 }
     

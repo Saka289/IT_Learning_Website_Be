@@ -19,9 +19,9 @@ using LW.Shared.DTOs.Grade;
 using LW.Shared.DTOs.Lesson;
 using LW.Shared.DTOs.Problem;
 using LW.Shared.DTOs.Quiz;
+using LW.Shared.DTOs.Solution;
 using LW.Shared.DTOs.Topic;
 using LW.Shared.SeedWork;
-using LW.Shared.Solution;
 using MockQueryable.Moq;
 
 namespace LW.Services.GradeServices;

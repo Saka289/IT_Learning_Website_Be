@@ -1,5 +1,5 @@
 ﻿using FluentValidation;
-using LW.Shared.Solution;
+using LW.Shared.DTOs.Solution;
 
 namespace LW.API.Application.Validators.SolutionValidator;
 

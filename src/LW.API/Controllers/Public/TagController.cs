@@ -36,10 +36,9 @@ namespace LW.API.Controllers.Public
         
         
         [HttpGet("GetAllTagPagination")]
-        public async Task<ActionResult<ApiResult<PagedList<TagDto>>>> GetAllTagPagination(
-            [FromQuery] PagingRequestParameters pagingRequestParameters)
+        public async Task<ActionResult<ApiResult<PagedList<TagDto>>>> GetAllTagPagination([FromQuery] SearchTagDto searchTagDto)
         {
-            var result = await _tagService.GetAllTagPagination(pagingRequestParameters);
+            var result = await _tagService.GetAllTagPagination(searchTagDto);
             if (!result.IsSucceeded)
             {
                 return NotFound(result);
@@ -48,19 +47,6 @@ namespace LW.API.Controllers.Public
             return Ok(result);
         }
         
-        [HttpGet("SearchByTagPagination")]
-        public async Task<ActionResult<ApiResult<PagedList<TagDto>>>> SearchByTagPagination(
-            [FromQuery] SearchTagDto searchTagDto)
-        {
-            var result = await _tagService.SearchTagPagination(searchTagDto);
-            if (!result.IsSucceeded)
-            {
-                return NotFound(result);
-            }
-
-            Response.Headers.Add("X-Pagination", JsonConvert.SerializeObject(result.Data.GetMetaData()));
-            return Ok(result);
-        }
 
         [HttpGet("GetTagById")]
         public async Task<ActionResult<ApiResult<TagDto>>> GetTagById(int id)
@@ -133,7 +119,5 @@ namespace LW.API.Controllers.Public
 
             return Ok(result);
         }
-
-       
     }
 }

@@ -23,13 +23,7 @@ public class ExamRepository : RepositoryBase<Exam, int>, IExamRepository
         return await FindAll().Where(x=>x.GradeId == gradeId).ToListAsync();
     }
 
-    public Task<IQueryable<Exam>> GetAllExamByPagination()
-    {
-        var result = FindAll();
-        return Task.FromResult(result);
-    }
-
-    public async Task<Exam> GetExamById(int id)
+    public async Task<Exam?> GetExamById(int id)
     {
         return await FindByCondition(x => x.Id == id).Include(x=>x.Competition).Include(x=>x.ExamCodes).FirstOrDefaultAsync();
     }

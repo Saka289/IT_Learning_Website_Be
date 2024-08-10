@@ -96,8 +96,7 @@ public class AdminAuthorService : IAdminAuthorService
         }
 
         var adminDto = _mapper.Map<RegisterMemberResponseDto>(user);
-        _elasticSearchService.CreateDocumentAsync(ElasticConstant.ElasticUsers, user.ToMemberDto(_userManager),
-            a => a.Id);
+        await _elasticSearchService.CreateDocumentAsync(ElasticConstant.ElasticUsers, user.ToMemberDto(_userManager), a => a.Id);
         return new ApiResult<RegisterMemberResponseDto>(true, adminDto, "Register successfully");
     }
 
@@ -204,8 +203,7 @@ public class AdminAuthorService : IAdminAuthorService
                 $"Assign {roleName} to user with email {email} successfully !");
         }
 
-        _elasticSearchService.UpdateDocumentAsync(ElasticConstant.ElasticUsers, user.ToMemberDto(_userManager),
-            user.Id);
+        await _elasticSearchService.UpdateDocumentAsync(ElasticConstant.ElasticUsers, user.ToMemberDto(_userManager), user.Id);
         return new ApiResult<bool>(false, "Don't find user with email " + email);
     }
 
@@ -241,8 +239,7 @@ public class AdminAuthorService : IAdminAuthorService
         }
 
         var roleOfUserAfterUpdate = (await _userManager.GetRolesAsync(user)).ToArray();
-        _elasticSearchService.UpdateDocumentAsync(ElasticConstant.ElasticUsers, user.ToMemberDto(_userManager),
-            user.Id);
+        await _elasticSearchService.UpdateDocumentAsync(ElasticConstant.ElasticUsers, user.ToMemberDto(_userManager), user.Id);
         return new ApiResult<IEnumerable<string>>(true, roleOfUserAfterUpdate,
             $"Assign multi roles for user with id = {assignMultipleRoleDto.UserId} ");
     }
@@ -310,8 +307,7 @@ public class AdminAuthorService : IAdminAuthorService
         }
 
         await _userManager.UpdateAsync(user);
-        _elasticSearchService.UpdateDocumentAsync(ElasticConstant.ElasticUsers, user.ToMemberDto(_userManager),
-            updateAdminDto.UserId);
+        await _elasticSearchService.UpdateDocumentAsync(ElasticConstant.ElasticUsers, user.ToMemberDto(_userManager), updateAdminDto.UserId);
         return new ApiResult<UpdateAdminDto>(true, updateAdminDto, $"Update Successfully !");
     }
 
@@ -324,7 +320,7 @@ public class AdminAuthorService : IAdminAuthorService
             return new ApiResult<bool>(true, $"Delete Successfully !");
         }
 
-        _elasticSearchService.DeleteDocumentAsync(ElasticConstant.ElasticUsers, userId);
+        await _elasticSearchService.DeleteDocumentAsync(ElasticConstant.ElasticUsers, userId);
         return new ApiResult<bool>(false, $"User Not Found !");
     }
 
@@ -338,7 +334,7 @@ public class AdminAuthorService : IAdminAuthorService
                 $"LockMember Successfully !");
         }
 
-        _elasticSearchService.UpdateDocumentAsync(ElasticConstant.ElasticUsers, user.ToMemberDto(_userManager), userId);
+        await _elasticSearchService.UpdateDocumentAsync(ElasticConstant.ElasticUsers, user.ToMemberDto(_userManager), userId);
         return new ApiResult<bool>(false, $"User Not Found !");
     }
 
@@ -352,7 +348,7 @@ public class AdminAuthorService : IAdminAuthorService
                 $"UnLockMember Successfully !");
         }
 
-        _elasticSearchService.UpdateDocumentAsync(ElasticConstant.ElasticUsers, user.ToMemberDto(_userManager), userId);
+        await _elasticSearchService.UpdateDocumentAsync(ElasticConstant.ElasticUsers, user.ToMemberDto(_userManager), userId);
         return new ApiResult<bool>(false, $"User Not Found !");
     }
 
