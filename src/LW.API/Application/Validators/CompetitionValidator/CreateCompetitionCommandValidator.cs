@@ -8,7 +8,8 @@ public class CreateCompetitionCommandValidator : AbstractValidator<CompetitionCr
 {
     public CreateCompetitionCommandValidator()
     {
-        RuleFor(x => x.Title).NotNull().NotEmpty();
+        RuleFor(x => x.Title).NotNull().NotEmpty().Length(5, 100)
+            .WithMessage("Title must be between 5 and 100 characters.");
         RuleFor(x => x.Description).NotNull().NotEmpty();
         RuleFor(x => x.IsActive).NotNull();
     }
