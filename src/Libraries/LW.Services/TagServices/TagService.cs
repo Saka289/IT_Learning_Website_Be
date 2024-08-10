@@ -92,7 +92,7 @@ public class TagService : ITagService
         tag.IsActive = !tag.IsActive;
         await _tagRepository.UpdateTag(tag);
         var result = _mapper.Map<TagDto>(tag);
-        _elasticSearchService.UpdateDocumentAsync(ElasticConstant.ElasticTags, result, id);
+        await _elasticSearchService.UpdateDocumentAsync(ElasticConstant.ElasticTags, result, id);
         return new ApiResult<bool>(true, "Update status of tag successfully");
     }
 
@@ -108,7 +108,7 @@ public class TagService : ITagService
         var tag = _mapper.Map<Tag>(tagCreateDto);
         await _tagRepository.CreateTag(tag);
         var result = _mapper.Map<TagDto>(tag);
-        _elasticSearchService.CreateDocumentAsync(ElasticConstant.ElasticTags, result, g => g.Id);
+        await _elasticSearchService.CreateDocumentAsync(ElasticConstant.ElasticTags, result, g => g.Id);
         return new ApiResult<TagDto>(true, result, "Create Tag Successfully");
     }
 
@@ -123,7 +123,7 @@ public class TagService : ITagService
         var tag = _mapper.Map(tagUpdateDto, check);
         await _tagRepository.UpdateTag(tag);
         var result = _mapper.Map<TagDto>(tag);
-        _elasticSearchService.UpdateDocumentAsync(ElasticConstant.ElasticTags, result, tagUpdateDto.Id);
+        await _elasticSearchService.UpdateDocumentAsync(ElasticConstant.ElasticTags, result, tagUpdateDto.Id);
         return new ApiResult<TagDto>(true, result, "Update tag successfully");
     }
 
@@ -136,7 +136,7 @@ public class TagService : ITagService
         }
 
         await _tagRepository.DeleteTag(id);
-        _elasticSearchService.DeleteDocumentAsync(ElasticConstant.ElasticTags, id);
+        await _elasticSearchService.DeleteDocumentAsync(ElasticConstant.ElasticTags, id);
         return new ApiResult<bool>(true, "Delete Tag successfully");
     }
 }
