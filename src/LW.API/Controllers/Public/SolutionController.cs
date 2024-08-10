@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 using LW.API.Application.Validators.SolutionValidator;
 using LW.Services.SolutionServices;
 using LW.Shared.SeedWork;
-using LW.Shared.Solution;
+using LW.Shared.DTOs.Solution;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 
@@ -23,22 +23,10 @@ namespace LW.API.Controllers.Public
             _solutionService = solutionService;
         }
 
-        [HttpGet("GetAllSolutionByProblemId/{problemId}")]
-        public async Task<ActionResult<ApiResult<IEnumerable<SolutionDto>>>> GetAllSolutionByProblemId([Required] int problemId)
+        [HttpGet("GetAllSolutionByProblemId")]
+        public async Task<ActionResult<ApiResult<IEnumerable<SolutionDto>>>> GetAllSolutionByProblemId([FromQuery] SearchSolutionDto searchSolutionDto)
         {
-            var result = await _solutionService.GetAllSolutionByProblemId(problemId);
-            if (!result.IsSucceeded)
-            {
-                return NotFound(result);
-            }
-
-            return Ok(result);
-        }
-        
-        [HttpGet("SearchSolutionByProblemId/{problemId}")]
-        public async Task<ActionResult<ApiResult<IEnumerable<SolutionDto>>>> SearchSolutionByProblemId([Required] int problemId, [FromQuery] SearchRequestValue searchRequestValue)
-        {
-            var result = await _solutionService.SearchSolutionByProblemId(problemId, searchRequestValue);
+            var result = await _solutionService.GetAllSolutionByProblemId(searchSolutionDto);
             if (!result.IsSucceeded)
             {
                 return NotFound(result);

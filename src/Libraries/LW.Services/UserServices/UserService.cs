@@ -120,7 +120,7 @@ public class UserService : IUserService
             FullName = user.FirstName + " " + user.LastName,
             PhoneNumber = user.PhoneNumber,
         };
-        _elasticSearchService.CreateDocumentAsync(ElasticConstant.ElasticUsers, user.ToMemberDto(_userManager), a => a.Id);
+        await _elasticSearchService.CreateDocumentAsync(ElasticConstant.ElasticUsers, user.ToMemberDto(_userManager), a => a.Id);
         return new ApiResult<RegisterResponseUserDto>(true, userDto, "Create User Successfully");
     }
 
@@ -468,8 +468,7 @@ public class UserService : IUserService
 
     public async Task<ApiResult<UpdateResponseUserDto>> UpdateUser(UpdateUserDto updateUserDto)
     {
-        var user = await _userManager.Users.FirstOrDefaultAsync(u =>
-            u.Id.ToLower().Equals(updateUserDto.UserId) || u.Email.ToLower().Equals(updateUserDto.Email));
+        var user = await _userManager.Users.FirstOrDefaultAsync(u => u.Id.ToLower().Equals(updateUserDto.UserId) || u.Email.ToLower().Equals(updateUserDto.Email));
         if (user == null)
         {
             return new ApiResult<UpdateResponseUserDto>(false, $"User Not Found !");
@@ -497,7 +496,7 @@ public class UserService : IUserService
                 PhoneNumber = user.PhoneNumber,
                 Image = user.Image
             };
-            _elasticSearchService.UpdateDocumentAsync(ElasticConstant.ElasticUsers, user.ToMemberDto(_userManager), updateUserDto.UserId);
+            await _elasticSearchService.UpdateDocumentAsync(ElasticConstant.ElasticUsers, user.ToMemberDto(_userManager), updateUserDto.UserId);
             return new ApiResult<UpdateResponseUserDto>(true, userResponseCreate, $"Update User Successfully !");
         }
 

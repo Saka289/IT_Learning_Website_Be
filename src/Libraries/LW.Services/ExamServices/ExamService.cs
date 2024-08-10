@@ -30,7 +30,8 @@ public class ExamService : IExamService
 
     public ExamService(IMapper mapper, IExamRepository examRepository,
         IElasticSearchService<ExamDto, int> elasticSearchService, ICloudinaryService cloudinaryService,
-        IExamCodeRepository examCodeRepository, ICompetitionRepository competitionRepository, IGradeRepository gradeRepository)
+        IExamCodeRepository examCodeRepository, ICompetitionRepository competitionRepository,
+        IGradeRepository gradeRepository)
     {
         _mapper = mapper;
         _examRepository = examRepository;
@@ -53,18 +54,62 @@ public class ExamService : IExamService
         return new ApiResult<IEnumerable<ExamDto>>(true, result, "Get list exam successfully");
     }
 
-    public async Task<ApiResult<PagedList<ExamDto>>> GetAllExamPagination(
-        PagingRequestParameters pagingRequestParameters)
+    public async Task<ApiResult<PagedList<ExamDto>>> GetAllExamPagination(SearchExamDto searchExamDto)
     {
-        var examList = await _examRepository.GetAllExamByPagination();
-        if (examList == null)
+        IEnumerable<ExamDto> examList;
+        if (!string.IsNullOrEmpty(searchExamDto.Value))
         {
-            return new ApiResult<PagedList<ExamDto>>(false, "Exam is null !!!");
+            var examListSearch = await _elasticSearchService.SearchDocumentFieldAsync(ElasticConstant.ElasticExams,
+                new SearchRequestValue
+                {
+                    Value = searchExamDto.Value,
+                    Size = searchExamDto.Size,
+                });
+            if (examListSearch is null)
+            {
+                return new ApiResult<PagedList<ExamDto>>(false, "Exam not found !!!");
+            }
+
+            examList = examListSearch.ToList();
+        }
+        else
+        {
+            var examListAll = await _examRepository.GetAllExam();
+            if (!examListAll.Any())
+            {
+                return new ApiResult<PagedList<ExamDto>>(false, "Exam is null !!!");
+            }
+
+            examList = _mapper.Map<IEnumerable<ExamDto>>(examListAll);
         }
 
-        var result = _mapper.ProjectTo<ExamDto>(examList);
-        var pagedResult = await PagedList<ExamDto>.ToPageListAsync(result, pagingRequestParameters.PageIndex,
-            pagingRequestParameters.PageSize, pagingRequestParameters.OrderBy, pagingRequestParameters.IsAscending);
+        if (searchExamDto.CompetitionId > 0)
+        {
+            examList = examList.Where(t => t.CompetitionId == searchExamDto.CompetitionId);
+        }
+
+        if (searchExamDto.GradeId > 0)
+        {
+            examList = examList.Where(t => t.GradeId == searchExamDto.GradeId);
+        }
+
+        if (!string.IsNullOrEmpty(searchExamDto.Province))
+        {
+            examList = examList.Where(t => t.Province.ToLower().Contains(searchExamDto.Province.ToLower()));
+        }
+
+        if (searchExamDto.Year > 0)
+        {
+            examList = examList.Where(t => t.Year == searchExamDto.Year);
+        }
+
+        if (searchExamDto.Type > 0)
+        {
+            examList = examList.Where(t => t.Type == searchExamDto.Type);
+        }
+
+        var pagedResult = await PagedList<ExamDto>.ToPageListAsync(examList.AsQueryable().BuildMock(),
+            searchExamDto.PageIndex, searchExamDto.PageSize, searchExamDto.OrderBy, searchExamDto.IsAscending);
         return new ApiSuccessResult<PagedList<ExamDto>>(pagedResult);
     }
 
@@ -92,41 +137,6 @@ public class ExamService : IExamService
         return new ApiResult<IEnumerable<ExamDto>>(true, result, "Get All Exam By Type Successfully");
     }
 
-    public async Task<ApiResult<PagedList<ExamDto>>> SearchByExamPagination(SearchExamDto searchExamDto)
-    {
-        var listExam =
-            await _elasticSearchService.SearchDocumentAsync(ElasticConstant.ElasticExams, searchExamDto);
-        if (listExam is null)
-        {
-            return new ApiResult<PagedList<ExamDto>>(false, $"Exam not found by {searchExamDto.Key} !!!");
-        }
-        if (searchExamDto.CompetitionId > 0)
-        {
-            listExam = listExam.Where(t => t.CompetitionId == searchExamDto.CompetitionId).ToList();
-        }
-        if (searchExamDto.GradeId > 0)
-        {
-            listExam = listExam.Where(t => t.GradeId == searchExamDto.GradeId).ToList();
-        }
-        if (!string.IsNullOrEmpty(searchExamDto.Province))
-        {
-            listExam = listExam.Where(t => t.Province.ToLower().Contains(searchExamDto.Province.ToLower())).ToList();
-        }
-        if (searchExamDto.Year > 0)
-        {
-            listExam = listExam.Where(t => t.Year == searchExamDto.Year).ToList();
-        }
-        if (searchExamDto.Type > 0)
-        {
-            listExam = listExam.Where(t => t.Type == searchExamDto.Type).ToList();
-        }
-        
-        var result = _mapper.Map<IEnumerable<ExamDto>>(listExam);
-        var pagedResult = await PagedList<ExamDto>.ToPageListAsync(result.AsQueryable().BuildMock(),
-            searchExamDto.PageIndex, searchExamDto.PageSize, searchExamDto.OrderBy, searchExamDto.IsAscending);
-        return new ApiSuccessResult<PagedList<ExamDto>>(pagedResult);
-    }
-
     public async Task<ApiResult<ExamDto>> CreateExam(ExamCreateDto examCreateDto)
     {
         var competition = await _competitionRepository.GetCompetitionById(examCreateDto.CompetitionId);
@@ -143,7 +153,7 @@ public class ExamService : IExamService
                 return new ApiResult<ExamDto>(false, "Grade not found");
             }
         }
-            
+
         var obj = _mapper.Map<Exam>(examCreateDto);
         if (examCreateDto.ExamEssayFileUpload != null && examCreateDto.ExamEssayFileUpload.Length > 0)
         {
@@ -187,7 +197,7 @@ public class ExamService : IExamService
                 return new ApiResult<ExamDto>(false, "Grade not found");
             }
         }
-        
+
         var exam = await _examRepository.GetExamById(examUpdateDto.Id);
         if (exam == null)
         {
@@ -276,6 +286,4 @@ public class ExamService : IExamService
         await _elasticSearchService.DeleteDocumentAsync(ElasticConstant.ElasticExams, exam.Id);
         return new ApiResult<bool>(true, "Delete Exam Successfully");
     }
-
-    
 }

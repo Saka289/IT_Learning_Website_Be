@@ -1,11 +1,13 @@
 ﻿using AutoMapper;
 using LW.Contracts.Common;
+using LW.Data.Common.ModelMapping;
 using LW.Data.Entities;
 using LW.Shared.Constant;
 using LW.Shared.DTOs.Competition;
 using LW.Shared.DTOs.Document;
 using LW.Shared.DTOs.Grade;
 using LW.Shared.DTOs.Lesson;
+using LW.Shared.DTOs.Member;
 using LW.Shared.DTOs.Tag;
 using LW.Shared.DTOs.Topic;
 using LW.Shared.Enums;
@@ -18,15 +20,16 @@ namespace LW.Data.Persistence;
 
 public class AppDbContextSeed
 {
-    public static async Task SeedDataAsync(AppDbContext context, ILogger logger, IElasticClient elasticClient,
-        IMapper mapper)
+    public static async Task SeedDataAsync(AppDbContext context, ILogger logger, IElasticClient elasticClient, IMapper mapper)
     {
         if (!context.Users.Any() && !context.Roles.Any())
         {
             SeedDataUserRoles(context);
             await context.SaveChangesAsync();
-            logger.Information("Seeded data User and Roles for Education DB associated with context {DbContextName}",
-                nameof(AppDbContext));
+            logger.Information("Seeded data User and Roles for Education DB associated with context {DbContextName}", nameof(AppDbContext));
+            var result = await context.Users.Select(u => u.ToUserDto(context)).ToListAsync();
+            await elasticClient.BulkAsync(b => b.Index(ElasticConstant.ElasticUsers).IndexMany(result));
+            logger.Information("Seeded data User and Roles for ElasticSearch associated with {IElasticClient}", nameof(IElasticClient));
         }
 
         if (!context.Grades.Any())

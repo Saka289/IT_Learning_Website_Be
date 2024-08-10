@@ -17,12 +17,6 @@ public class CompetitionRepository : RepositoryBase<Competition, int>, ICompetit
         return await FindAll().ToListAsync();
     }
 
-    public Task<IQueryable<Competition>> GetAllCompetitionPagination()
-    {
-        var result = FindAll().AsQueryable();
-        return Task.FromResult(result);
-    }
-
     public async Task<Competition> GetCompetitionById(int id)
     {
         return await FindByCondition(x => x.Id == id).FirstOrDefaultAsync();

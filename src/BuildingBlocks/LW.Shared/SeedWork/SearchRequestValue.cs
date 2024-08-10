@@ -4,5 +4,5 @@ public class SearchRequestValue : PagingRequestParameters
 {
     public string? Value { get; set; }
     
-    public int Size { get; set; } = 2000;
+    public int Size { get; set; } = 5000;
 }

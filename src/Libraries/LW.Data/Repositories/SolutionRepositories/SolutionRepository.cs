@@ -39,8 +39,8 @@ public class SolutionRepository : RepositoryBase<Solution, int>, ISolutionReposi
     public async Task<Solution?> GetSolutionById(int id)
     {
         return await FindByCondition(x => x.Id == id)
-            .Include(p => p.Problem)
-            .Include(u => u.ApplicationUser)
+            .Include(p => p.Problem).DefaultIfEmpty()
+            .Include(u => u.ApplicationUser).DefaultIfEmpty()
             .FirstOrDefaultAsync();
     }
 
