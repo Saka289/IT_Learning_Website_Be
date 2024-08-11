@@ -23,6 +23,18 @@ public class ExamRepository : RepositoryBase<Exam, int>, IExamRepository
         return await FindAll().Where(x=>x.GradeId == gradeId).ToListAsync();
     }
 
+    public async Task<IEnumerable<Exam>> SearchExamByTag(string tag, bool order)
+    {
+        var result = order
+            ? await FindAll()
+                .Include(e=>e.Competition)
+                .Where(e => e.KeyWord.Contains(tag)).OrderByDescending(e => e.CreatedDate).ToListAsync()
+            : await FindAll()
+                .Include(e=>e.Competition)
+                .Where(e => e.KeyWord.Contains(tag)).ToListAsync();
+        return result;
+    }
+
     public async Task<Exam?> GetExamById(int id)
     {
         return await FindByCondition(x => x.Id == id).Include(x=>x.Competition).Include(x=>x.ExamCodes).FirstOrDefaultAsync();

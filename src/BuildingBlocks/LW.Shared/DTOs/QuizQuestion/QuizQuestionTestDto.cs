@@ -14,6 +14,7 @@ public class QuizQuestionTestDto
     public string? Image { get; set; }
     public bool IsShuffle { get; set; }
     public bool IsActive { get; set; }
+    public int HashQuestion { get; set; }
     public EQuestionLevel QuestionLevel { get; set; }
     public IEnumerable<QuizQuestionRelationDto> QuizQuestionRelations { get; set; }
     public IEnumerable<QuizAnswerTestDto> QuizAnswers { get; set; }

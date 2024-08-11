@@ -87,4 +87,14 @@ public class LessonRepository : RepositoryBase<Lesson, int>, ILessonRepository
             .Where(t => t.Topic.Document.IsActive)
             .FirstOrDefaultAsync(l => l.Id == id && l.IsActive);
     }
+
+    public async Task<IEnumerable<Lesson>> SearchLessonByTag(string tag, bool order)
+    {
+        var result = order
+            ? await FindAll()
+                .Where(l => l.KeyWord.Contains(tag)).OrderByDescending(l => l.CreatedDate).ToListAsync()
+            : await FindAll()
+                .Where(l => l.KeyWord.Contains(tag)).ToListAsync();
+        return result;
+    }
 }

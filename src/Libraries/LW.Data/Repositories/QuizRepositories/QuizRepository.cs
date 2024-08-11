@@ -59,6 +59,18 @@ public class QuizRepository : RepositoryBase<Quiz, int>, IQuizRepository
             .Where(q => q.LessonId == lessonId).ToListAsync();
     }
 
+    public async Task<IEnumerable<Quiz>> SearchQuizByTag(string tag, bool order)
+    {
+        var result = order
+            ? await FindAll()
+                .Include(q => q.QuizQuestionRelations).DefaultIfEmpty()
+                .Where(q => q.KeyWord.Contains(tag)).OrderByDescending(q => q.CreatedDate).ToListAsync()
+            : await FindAll()
+                .Include(q => q.QuizQuestionRelations).DefaultIfEmpty()
+                .Where(q => q.KeyWord.Contains(tag)).ToListAsync();
+        return result;
+    }
+
     public async Task<Quiz?> GetQuizById(int id)
     {
         return await FindByCondition(q => q.Id == id)

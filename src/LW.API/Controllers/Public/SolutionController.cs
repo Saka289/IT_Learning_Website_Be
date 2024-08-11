@@ -9,6 +9,7 @@ using LW.Shared.SeedWork;
 using LW.Shared.DTOs.Solution;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
+using Newtonsoft.Json;
 
 namespace LW.API.Controllers.Public
 {
@@ -23,15 +24,16 @@ namespace LW.API.Controllers.Public
             _solutionService = solutionService;
         }
 
-        [HttpGet("GetAllSolutionByProblemId")]
-        public async Task<ActionResult<ApiResult<IEnumerable<SolutionDto>>>> GetAllSolutionByProblemId([FromQuery] SearchSolutionDto searchSolutionDto)
+        [HttpGet("GetAllSolutionByProblemIdPagination")]
+        public async Task<ActionResult<ApiResult<IEnumerable<SolutionDto>>>> GetAllSolutionByProblemIdPagination([FromQuery] SearchSolutionDto searchSolutionDto)
         {
-            var result = await _solutionService.GetAllSolutionByProblemId(searchSolutionDto);
+            var result = await _solutionService.GetAllSolutionByProblemIdPagination(searchSolutionDto);
             if (!result.IsSucceeded)
             {
                 return NotFound(result);
             }
-
+            
+            Response.Headers.Add("X-Pagination", JsonConvert.SerializeObject(result.Data.GetMetaData()));
             return Ok(result);
         }
 

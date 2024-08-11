@@ -47,6 +47,16 @@ namespace LW.API.Controllers.Public
             return Ok(result);
         }
         
+        [HttpGet("SearchTagPagination")]
+        public async Task<ActionResult<ApiResult<TagAllDto>>> SearchTagPagination([FromQuery] SearchAllTagDto searchAllTagDto)
+        {
+            var result = await _tagService.SearchTagPagination(searchAllTagDto);
+            if (!result.IsSucceeded)
+            {
+                return NotFound(result);
+            }
+            return Ok(result);
+        }
 
         [HttpGet("GetTagById")]
         public async Task<ActionResult<ApiResult<TagDto>>> GetTagById(int id)

@@ -50,9 +50,9 @@ namespace LW.API.Controllers.Public
         }
 
         [HttpGet("GetGradeById/{id}")]
-        public async Task<ActionResult<ApiResult<GradeDto>>> GetGradeById([Required] int id)
+        public async Task<ActionResult<ApiResult<GradeDto>>> GetGradeById([Required] int id, bool isInclude)
         {
-            var result = await _gradeService.GetGradeById(id);
+            var result = await _gradeService.GetGradeById(id, isInclude);
             if (!result.IsSucceeded)
             {
                 return NotFound(result);

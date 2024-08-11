@@ -46,9 +46,7 @@ public class SubmissionService : ISubmissionService
 
     public async Task<ApiResult<IEnumerable<SubmissionDto>>> GetAllSubmission(SubmissionRequestDto submissionRequestDto)
     {
-        var submissionList =
-            await _submissionRepository.GetAllSubmissionByProblemIdUserId(submissionRequestDto.ProblemId,
-                submissionRequestDto.UserId);
+        var submissionList = await _submissionRepository.GetAllSubmissionByProblemIdUserId(submissionRequestDto.ProblemId, submissionRequestDto.UserId);
         if (!submissionList.Any())
         {
             return new ApiResult<IEnumerable<SubmissionDto>>(false, "Submission not found !!!");
@@ -60,8 +58,7 @@ public class SubmissionService : ISubmissionService
 
     public async Task<ApiResult<SubmissionDto>> GetSubmission(SubmissionRequestDto submissionRequestDto)
     {
-        var submission = await _submissionRepository.GetSubmissionByProblemIdUserId(submissionRequestDto.ProblemId,
-            submissionRequestDto.UserId, submissionRequestDto.LanguageId);
+        var submission = await _submissionRepository.GetSubmissionByProblemIdUserId(submissionRequestDto.ProblemId, submissionRequestDto.UserId, submissionRequestDto.LanguageId);
         if (submission is null)
         {
             return new ApiResult<SubmissionDto>(false, "Submission not found !!!");

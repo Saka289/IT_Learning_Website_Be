@@ -21,5 +21,6 @@ namespace LW.Shared.DTOs.Document
         public string Description { get; set; }
         public bool IsActive { get; set; }
         public int GradeId { get; set; }
+        public IEnumerable<string> tagValues { get; set; }
     }
 }

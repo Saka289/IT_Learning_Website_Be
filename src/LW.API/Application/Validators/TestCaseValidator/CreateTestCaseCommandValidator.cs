@@ -8,6 +8,7 @@ public class CreateTestCaseCommandValidator : AbstractValidator<TestCaseCreateDt
     public CreateTestCaseCommandValidator()
     {
         RuleFor(x => x.Output).NotNull().NotEmpty();
+        RuleFor(x => x.OutputView).NotNull().NotEmpty();
         RuleFor(x => x.IsHidden).NotNull();
         RuleFor(x => x.IsActive).NotNull();
         RuleFor(x => x.ProblemId).NotNull().NotEmpty();

@@ -32,7 +32,7 @@ public class SolutionService : ISolutionService
         _problemRepository = problemRepository;
     }
 
-    public async Task<ApiResult<IEnumerable<SolutionDto>>> GetAllSolutionByProblemId(SearchSolutionDto searchSolutionDto)
+    public async Task<ApiResult<PagedList<SolutionDto>>> GetAllSolutionByProblemIdPagination(SearchSolutionDto searchSolutionDto)
     {
         IEnumerable<SolutionDto> solutionList;
         if (!string.IsNullOrEmpty(searchSolutionDto.Value))
@@ -44,7 +44,7 @@ public class SolutionService : ISolutionService
                 });
             if (solutionListSearch is null)
             {
-                return new ApiResult<IEnumerable<SolutionDto>>(false, "Solution not found !!!");
+                return new ApiResult<PagedList<SolutionDto>>(false, "Solution not found !!!");
             }
 
             solutionList = solutionListSearch.Where(p => p.ProblemId == searchSolutionDto.ProblemId).ToList();
@@ -54,31 +54,14 @@ public class SolutionService : ISolutionService
             var solutionListAll = await _solutionRepository.GetAllSolutionByProblemId(searchSolutionDto.ProblemId, true);
             if (!solutionListAll.Any())
             {
-                return new ApiResult<IEnumerable<SolutionDto>>(false, "Solution not found !!!");
+                return new ApiResult<PagedList<SolutionDto>>(false, "Solution not found !!!");
             }
 
             solutionList = _mapper.Map<IEnumerable<SolutionDto>>(solutionListAll);
         }
         
-        return new ApiSuccessResult<IEnumerable<SolutionDto>>(solutionList);
-    }
-
-    public async Task<ApiResult<IEnumerable<SolutionDto>>> SearchSolutionByProblemId(int problemId,
-        SearchRequestValue searchRequestValue)
-    {
-        var solutionList = await _elasticSearchService.SearchAllDocumentFieldAsync(ElasticConstant.ElasticSolutions, searchRequestValue);
-        if (!solutionList.Any())
-        {
-            return new ApiResult<IEnumerable<SolutionDto>>(false, "Solution not found !!!");
-        }
-
-        if (problemId > 0)
-        {
-            solutionList = solutionList.Where(p => p.ProblemId == problemId).ToList();
-        }
-
-        var result = _mapper.Map<IEnumerable<SolutionDto>>(solutionList);
-        return new ApiSuccessResult<IEnumerable<SolutionDto>>(result);
+        var pagedResult = await PagedList<SolutionDto>.ToPageListAsync(solutionList.AsQueryable().BuildMock(), searchSolutionDto.PageIndex, searchSolutionDto.PageSize, searchSolutionDto.OrderBy, searchSolutionDto.IsAscending);
+        return new ApiSuccessResult<PagedList<SolutionDto>>(pagedResult);
     }
 
     public async Task<ApiResult<SolutionDto>> GetSolutionById(int id)

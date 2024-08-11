@@ -145,7 +145,7 @@ public class TopicService : ITopicService
         }
 
         var topic = _mapper.Map<Topic>(model);
-        topic.KeyWord = model.Title.RemoveDiacritics();
+        topic.KeyWord = model.tagValues.Any() ? model.tagValues.ConvertToTagString() : model.Title.RemoveDiacritics();
         await _topicRepository.CreateTopic(topic);
         if (model.ParentId != null)
         {
@@ -174,7 +174,7 @@ public class TopicService : ITopicService
         }
 
         var topicUpdate = _mapper.Map(model, topicEntity);
-        topicUpdate.KeyWord = model.Title.RemoveDiacritics();
+        topicUpdate.KeyWord = model.tagValues.Any() ? model.tagValues.ConvertToTagString() : model.Title.RemoveDiacritics();
         await _topicRepository.UpdateTopic(topicUpdate);
         if (model.ParentId is not null)
         {

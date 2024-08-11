@@ -10,6 +10,7 @@ public interface IQuizRepository : IRepositoryBase<Quiz, int>
     Task<IEnumerable<Quiz>> GetAllQuizPagination();
     Task<IEnumerable<Quiz>> GetAllQuizByTopicId(int topicId, bool isInclude = false);
     Task<IEnumerable<Quiz>> GetAllQuizByLessonId(int lessonId, bool isInclude = false);
+    Task<IEnumerable<Quiz>> SearchQuizByTag(string tag, bool order);
     Task<Quiz?> GetQuizById(int id);
     Task<Quiz> CreateQuiz(Quiz quiz);
     Task<Quiz> UpdateQuiz(Quiz quiz);

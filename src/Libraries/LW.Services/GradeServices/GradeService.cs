@@ -120,9 +120,9 @@ public class GradeService : IGradeService
         return new ApiSuccessResult<PagedList<GradeDto>>(pagedResult);
     }
 
-    public async Task<ApiResult<GradeDto>> GetGradeById(int id)
+    public async Task<ApiResult<GradeDto>> GetGradeById(int id, bool isInclude = false)
     {
-        var gradeEntity = await _gradeRepository.GetGradeById(id, true);
+        var gradeEntity = await _gradeRepository.GetGradeById(id, isInclude);
         if (gradeEntity == null)
         {
             return new ApiResult<GradeDto>(false, "Grade is null !!!");

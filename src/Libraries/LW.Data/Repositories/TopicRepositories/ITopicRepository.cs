@@ -16,4 +16,5 @@ public interface ITopicRepository : IRepositoryBase<Topic, int>
     Task<IEnumerable<Topic>> GetAllTopicByDocument(int id);
     Task<IEnumerable<Topic>> GetAllTopicByDocumentAll(int id);
     Task<Topic> GetAllTopicIndex(int id);
+    Task<IEnumerable<Topic>> SearchTopicByTag(string tag, bool order);
 }

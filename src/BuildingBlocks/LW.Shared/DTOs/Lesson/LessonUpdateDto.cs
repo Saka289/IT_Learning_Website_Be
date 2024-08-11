@@ -12,4 +12,5 @@ public class LessonUpdateDto
     public string? Content { get; set; }
     public IFormFile? FilePath { get; set; }
     public int TopicId { get; set; }
+    public IEnumerable<string> tagValues { get; set; }
 }

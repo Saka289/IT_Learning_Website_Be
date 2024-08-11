@@ -17,6 +17,5 @@ public class CreateDocumentCommandValidator : AbstractValidator<DocumentCreateDt
         RuleFor(x => x.BookCollection).NotNull().NotEmpty().IsInEnum();
         RuleFor(x => x.TypeOfBook).NotNull().NotEmpty().IsInEnum();
         RuleFor(x => x.Edition).NotNull().NotEmpty().GreaterThan(0);
-
     }
 }

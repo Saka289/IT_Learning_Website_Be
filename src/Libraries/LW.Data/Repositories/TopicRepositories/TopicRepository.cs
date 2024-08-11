@@ -102,4 +102,17 @@ public class TopicRepository : RepositoryBase<Topic, int>, ITopicRepository
             .Include(l => l.Lessons.Where(l => l.IsActive))
             .FirstOrDefaultAsync(t => t.Id == id && t.IsActive);
     }
+
+    public async Task<IEnumerable<Topic>> SearchTopicByTag(string tag, bool order)
+    {
+        var result = order
+            ? await FindAll()
+                .Include(t => t.ChildTopics)
+                .Where(t => t.KeyWord.Contains(tag) && t.ParentId == null).OrderByDescending(t => t.CreatedDate)
+                .ToListAsync()
+            : await FindAll()
+                .Include(t => t.ChildTopics)
+                .Where(t => t.KeyWord.Contains(tag) && t.ParentId == null).ToListAsync();
+        return result;
+    }
 }

@@ -252,7 +252,7 @@ public class QuizQuestionService : IQuizQuestionService
 
         var quizQuestionCreate = await _quizQuestionRepository.CreateQuizQuestion(quizQuestionEntity);
         var result = _mapper.Map<QuizQuestionDto>(quizQuestionCreate);
-        _elasticSearchService.CreateDocumentAsync(ElasticConstant.ElasticQuizQuestion, result, q => q.Id);
+        await _elasticSearchService.CreateDocumentAsync(ElasticConstant.ElasticQuizQuestion, result, q => q.Id);
         return new ApiSuccessResult<QuizQuestionDto>(result);
     }
 
@@ -295,7 +295,7 @@ public class QuizQuestionService : IQuizQuestionService
         var modelQuestion = _mapper.Map(quizQuestionUpdateDto, quizQuestionEntity);
 
         var listQuizQuestion = await _quizQuestionRepository.GetAllQuizQuestion();
-        var numberHash = FindDuplicateQuestion(listQuizQuestion, quizQuestionEntity);
+        var numberHash = FindDuplicateQuestion(listQuizQuestion.Where(q => q.Id != quizQuestionUpdateDto.Id), quizQuestionEntity);
         if (numberHash == 0)
         {
             return new ApiResult<QuizQuestionDto>(false, "Question is duplicate !!!");
@@ -343,7 +343,7 @@ public class QuizQuestionService : IQuizQuestionService
 
         quizQuestionUpdate = await _quizQuestionRepository.GetQuizQuestionById(quizQuestionUpdateDto.Id);
         var result = _mapper.Map<QuizQuestionDto>(quizQuestionUpdate);
-        _elasticSearchService.UpdateDocumentAsync(ElasticConstant.ElasticQuizQuestion, result, quizQuestionUpdateDto.Id);
+        await _elasticSearchService.UpdateDocumentAsync(ElasticConstant.ElasticQuizQuestion, result, quizQuestionUpdateDto.Id);
         return new ApiSuccessResult<QuizQuestionDto>(result);
     }
 
@@ -403,7 +403,7 @@ public class QuizQuestionService : IQuizQuestionService
 
             var quizQuestionCreate = await _quizQuestionRepository.CreateQuizQuestion(quizQuestionEntity);
             var result = _mapper.Map<QuizQuestionDto>(quizQuestionCreate);
-            _elasticSearchService.CreateDocumentAsync(ElasticConstant.ElasticQuizQuestion, result, q => q.Id);
+            await _elasticSearchService.CreateDocumentAsync(ElasticConstant.ElasticQuizQuestion, result, q => q.Id);
         }
 
         return new ApiSuccessResult<bool>(true);
@@ -449,7 +449,7 @@ public class QuizQuestionService : IQuizQuestionService
             var modelQuestion = _mapper.Map(item, quizQuestionEntity);
 
             var listQuizQuestion = await _quizQuestionRepository.GetAllQuizQuestion();
-            var numberHash = FindDuplicateQuestion(listQuizQuestion, quizQuestionEntity);
+            var numberHash = FindDuplicateQuestion(listQuizQuestion.Where(q => q.Id != item.Id), quizQuestionEntity);
             if (numberHash == 0)
             {
                 return new ApiResult<bool>(false, $"Question: {item.Content} is duplicate !!!");
@@ -497,7 +497,7 @@ public class QuizQuestionService : IQuizQuestionService
 
             quizQuestionUpdate = await _quizQuestionRepository.GetQuizQuestionById(item.Id);
             var result = _mapper.Map<QuizQuestionDto>(quizQuestionUpdate);
-            _elasticSearchService.UpdateDocumentAsync(ElasticConstant.ElasticQuizQuestion, result, item.Id);
+            await _elasticSearchService.UpdateDocumentAsync(ElasticConstant.ElasticQuizQuestion, result, item.Id);
         }
 
         return new ApiSuccessResult<bool>(true);
@@ -514,7 +514,7 @@ public class QuizQuestionService : IQuizQuestionService
         quizQuestionEntity.IsActive = !quizQuestionEntity.IsActive;
         await _quizQuestionRepository.UpdateQuizQuestion(quizQuestionEntity);
         var result = _mapper.Map<QuizQuestionDto>(quizQuestionEntity);
-        _elasticSearchService.UpdateDocumentAsync(ElasticConstant.ElasticQuizQuestion, result, id);
+        await _elasticSearchService.UpdateDocumentAsync(ElasticConstant.ElasticQuizQuestion, result, id);
         return new ApiSuccessResult<bool>(true, "Quiz Question update successfully !!!");
     }
 
@@ -532,7 +532,7 @@ public class QuizQuestionService : IQuizQuestionService
             return new ApiResult<bool>(false, "Delete Quiz Question Failed !!!");
         }
 
-        _elasticSearchService.DeleteDocumentAsync(ElasticConstant.ElasticQuizQuestion, id);
+        await _elasticSearchService.DeleteDocumentAsync(ElasticConstant.ElasticQuizQuestion, id);
         return new ApiSuccessResult<bool>(true);
     }
 
