@@ -5,7 +5,7 @@ namespace LW.Services.SolutionServices;
 
 public interface ISolutionService
 {
-    Task<ApiResult<IEnumerable<SolutionDto>>> GetAllSolutionByProblemId(SearchSolutionDto searchSolutionDto);
+    Task<ApiResult<PagedList<SolutionDto>>> GetAllSolutionByProblemIdPagination(SearchSolutionDto searchSolutionDto);
     Task<ApiResult<SolutionDto>> GetSolutionById(int id);
     Task<ApiResult<SolutionDto>> CreateSolution(SolutionCreateDto solutionCreateDto);
     Task<ApiResult<SolutionDto>> UpdateSolution(SolutionUpdateDto solutionUpdateDto);

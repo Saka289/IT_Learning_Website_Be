@@ -20,4 +20,6 @@ public class SubmissionDto
     public int LanguageId { get; set; }
     public int ProblemId { get; set; }
     public string UserId { get; set; }
+    public DateTimeOffset CreatedDate { get; set; }
+    public DateTimeOffset? LastModifiedDate { get; set; }
 }

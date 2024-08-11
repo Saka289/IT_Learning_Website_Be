@@ -151,7 +151,7 @@ public class ProblemService : IProblemService
         }
 
         var problemEntity = _mapper.Map<Problem>(problemCreateDto);
-        problemEntity.KeyWord = problemCreateDto.Title.RemoveDiacritics();
+        problemEntity.KeyWord = problemCreateDto.tagValues.ConvertToTagString();
         var problemCreate = await _problemRepository.CreateProblem(problemEntity);
         await CreateOrUpdateElasticProblem(problemCreate.Id, true);
         var result = _mapper.Map<ProblemDto>(problemCreate);
@@ -185,7 +185,7 @@ public class ProblemService : IProblemService
         }
 
         var problemMapper = _mapper.Map(problemUpdateDto, problem);
-        problemMapper.KeyWord = problemUpdateDto.Title.RemoveDiacritics();
+        problemMapper.KeyWord = problemUpdateDto.tagValues.ConvertToTagString();
         var problemUpdate = await _problemRepository.UpdateProblem(problemMapper);
         await CreateOrUpdateElasticProblem(problemUpdateDto.Id, false);
         var result = _mapper.Map<ProblemDto>(problemUpdate);

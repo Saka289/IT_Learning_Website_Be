@@ -61,6 +61,18 @@ namespace LW.Data.Repositories.DocumentRepositories
             return result;
         }
 
+        public async Task<IEnumerable<Document>> SearchDocumentByTag(string tag, bool order)
+        {
+            var result = order
+                ? await FindAll()
+                    .Include(d => d.CommentDocuments)
+                    .Where(d => d.KeyWord.Contains(tag)).OrderByDescending(d => d.CreatedDate).ToListAsync()
+                : await FindAll()
+                    .Include(d => d.CommentDocuments)
+                    .Where(d => d.KeyWord.Contains(tag)).ToListAsync();
+            return result;
+        }
+
         public async Task<Document> GetDocumentById(int id)
         {
             var document = await FindByCondition(x => x.Id == id)

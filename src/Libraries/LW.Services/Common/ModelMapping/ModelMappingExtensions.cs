@@ -60,7 +60,9 @@ public static class ModelMappingExtensions
             MemoryUsage = compileDto.memory,
             ProblemId = submission.ProblemId,
             SourceCode = compileDto.source_code,
-            UserId = submission.UserId
+            UserId = submission.UserId,
+            CreatedDate = submission.CreatedDate,
+            LastModifiedDate = submission.LastModifiedDate
         };
     }
 }

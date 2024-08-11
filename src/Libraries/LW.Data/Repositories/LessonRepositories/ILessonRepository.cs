@@ -14,4 +14,5 @@ public interface ILessonRepository : IRepositoryBase<Lesson, int>
     Task<bool> DeleteLesson(int id);
     Task<bool> DeleteRangeLesson(IEnumerable<int> ids);
     Task<Lesson> GetAllLessonIndex(int id);
+    Task<IEnumerable<Lesson>> SearchLessonByTag(string tag, bool order);
 }

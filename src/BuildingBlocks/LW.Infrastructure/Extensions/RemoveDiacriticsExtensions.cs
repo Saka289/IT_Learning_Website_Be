@@ -14,7 +14,7 @@ public static class RemoveDiacriticsExtensions
         {
             char c = normalizedString[i];
             var unicodeCategory = CharUnicodeInfo.GetUnicodeCategory(c);
-            if (unicodeCategory != UnicodeCategory.NonSpacingMark)
+            if (unicodeCategory != UnicodeCategory.NonSpacingMark && !char.IsWhiteSpace(c))
             {
                 stringBuilder.Append(c);
             }

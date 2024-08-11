@@ -226,6 +226,7 @@ public class MappingProfile : Profile
         //QuizQuestion
         CreateMap<QuizQuestion, QuizQuestionDto>().ReverseMap();
         CreateMap<QuizQuestion, QuizQuestionTestDto>().ReverseMap();
+        CreateMap<QuizQuestionDto, QuizQuestionTestDto>().ReverseMap();
         CreateMap<QuizQuestion, QuizQuestionCreateDto>().ReverseMap();
         CreateMap<QuizQuestion, QuizQuestionUpdateDto>().ReverseMap();
         CreateMap<QuizQuestion, QuizQuestionImportDto>().ReverseMap();
@@ -233,6 +234,7 @@ public class MappingProfile : Profile
         //QuizAnswer
         CreateMap<QuizAnswer, QuizAnswerDto>().ReverseMap();
         CreateMap<QuizAnswer, QuizAnswerTestDto>().ReverseMap();
+        CreateMap<QuizAnswerDto, QuizAnswerTestDto>().ReverseMap();
         CreateMap<QuizAnswer, QuizAnswerCreateDto>().ReverseMap();
         CreateMap<QuizAnswer, QuizAnswerUpdateDto>().ReverseMap();
         //UserQuiz
@@ -242,6 +244,19 @@ public class MappingProfile : Profile
         CreateMap<Tag, TagDto>().ReverseMap();
         CreateMap<Tag, TagCreateDto>().ReverseMap();
         CreateMap<Tag, TagUpdateDto>().ReverseMap();
+        CreateMap<Exam, TagExamDto>()
+            .ForMember(x => x.CompetitionTitle, y => y.MapFrom(src => src.Competition.Title))
+            .ReverseMap();
+        CreateMap<Document, TagDocumentDto>()
+            .ForMember(x => x.AverageRating, y => y.MapFrom(src => src.CommentDocuments.Any() ? Math.Round(src.CommentDocuments.Average(c => c.Rating), 2) : 0))
+            .ForMember(x => x.TotalReviewer, y => y.MapFrom(src => src.CommentDocuments.Count))
+            .ReverseMap();
+        CreateMap<Topic, TagTopicDto>().ReverseMap();
+        CreateMap<Lesson, TagLessonDto>().ReverseMap();
+        CreateMap<Quiz, TagQuizDto>()
+            .ForMember(x => x.TotalQuestion, y => y.MapFrom(src => src.QuizQuestionRelations.Count))
+            .ReverseMap();
+        CreateMap<Problem, TagProblemDto>().ReverseMap();
         //QuizQuestionRelation
         CreateMap<QuizQuestionRelation, QuizQuestionRelationDto>().ReverseMap();
         // Competition

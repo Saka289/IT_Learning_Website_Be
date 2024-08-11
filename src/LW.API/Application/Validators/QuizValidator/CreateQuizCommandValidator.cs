@@ -12,5 +12,12 @@ public class CreateQuizCommandValidator : AbstractValidator<QuizCreateDto>
         RuleFor(x => x.Score).NotNull().NotEmpty().GreaterThan(0);
         RuleFor(x => x.Type).NotNull().NotEmpty().IsInEnum();
         RuleFor(x => x.IsActive).NotNull().NotEmpty();
+        RuleFor(x => x.tagValues).NotNull().NotEmpty();
+        RuleFor(x => x).Must(HaveValidTopicOrLesson).WithMessage("If TopicId is set, LessonId must be null, and vice versa.");
+    }
+    
+    private bool HaveValidTopicOrLesson(QuizCreateDto quiz)
+    {
+        return !(quiz.TopicId.HasValue && quiz.LessonId.HasValue);
     }
 }

@@ -29,6 +29,16 @@ public class ProblemRepository : RepositoryBase<Problem, int>, IProblemRepositor
         return await FindAll().Where(x => x.LessonId == lessonId).ToListAsync();
     }
 
+    public async Task<IEnumerable<Problem>> SearchProblemByTag(string tag, bool order)
+    {
+        var result = order
+            ? await FindAll()
+                .Where(p => p.KeyWord.Contains(tag)).OrderByDescending(p => p.CreatedDate).ToListAsync()
+            : await FindAll()
+                .Where(p => p.KeyWord.Contains(tag)).ToListAsync();
+        return result;
+    }
+
     public async Task<Problem?> GetProblemById(int id)
     {
         return await FindByCondition(x => x.Id == id).FirstOrDefaultAsync();
