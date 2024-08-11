@@ -222,7 +222,7 @@ public class QuizQuestionService : IQuizQuestionService
 
         var quizQuestionEntity = _mapper.Map<QuizQuestion>(quizQuestionCreateDto);
 
-        var listQuizQuestion = await _quizQuestionRepository.GetAllQuizQuestion();
+        var listQuizQuestion = await _quizQuestionRepository.GetAllQuizQuestionByQuizId(quizQuestionCreateDto.QuizId);
         var numberHash = FindDuplicateQuestion(listQuizQuestion, quizQuestionEntity);
         if (numberHash == 0)
         {
@@ -918,7 +918,7 @@ public class QuizQuestionService : IQuizQuestionService
     }
 
 
-    public async Task<ApiResult<QuizQuestionImportParentDto>> ImportExcel(IFormFile fileImport)
+    public async Task<ApiResult<QuizQuestionImportParentDto>> ImportExcel(IFormFile fileImport, int quizId)
     {
         var quizQuestionImportParentDto = new QuizQuestionImportParentDto();
         var isExcel = CheckFileImport(fileImport);
@@ -930,7 +930,8 @@ public class QuizQuestionService : IQuizQuestionService
         var quizQuestionImportDtos = new List<QuizQuestionImportDto>();
         var quizQuestionImportSuccess = new List<QuizQuestion>();
         var quizQuestionImportFail = new List<QuizQuestionImportDto>();
-        var listQuizQuestion = await _quizQuestionRepository.GetAllQuizQuestion();
+        var listQuizQuestion = await _quizQuestionRepository.GetAllQuizQuestionByQuizId(quizId);
+        var processHashNum = new HashSet<(int hashNum, string title)>();
         using (var stream = new MemoryStream())
         {
             await fileImport.CopyToAsync(stream);
@@ -942,7 +943,7 @@ public class QuizQuestionService : IQuizQuestionService
                 if (workSheet != null)
                 {
                     ProcessWorksheet(workSheet, quizQuestionImportDtos, quizQuestionImportSuccess,
-                        quizQuestionImportFail, out int countSuccess, out int countFail, listQuizQuestion);
+                        quizQuestionImportFail, out int countSuccess, out int countFail, listQuizQuestion, processHashNum);
 
                     quizQuestionImportParentDto.CountSuccess = countSuccess;
                     quizQuestionImportParentDto.CountFail = countFail;
@@ -979,7 +980,7 @@ public class QuizQuestionService : IQuizQuestionService
 
     private void ProcessWorksheet(ExcelWorksheet workSheet, List<QuizQuestionImportDto> quizQuestionImportDtos,
         List<QuizQuestion> quizQuestionImportSuccess, List<QuizQuestionImportDto> quizQuestionImportFail,
-        out int countSuccess, out int countFail, IEnumerable<QuizQuestion> listQuizQuestion)
+        out int countSuccess, out int countFail, IEnumerable<QuizQuestion> listQuizQuestion, HashSet<(int hashNum, string title)> processHashNum)
     {
         countSuccess = 0;
         countFail = 0;
@@ -989,9 +990,12 @@ public class QuizQuestionService : IQuizQuestionService
         for (int row = 4; row <= lastRowWithData; row++)
         {
             var quizQuestionImportDto = CreateQuizQuestionImportDto(workSheet, row);
+
             var quizQuestion = _mapper.Map<QuizQuestion>(quizQuestionImportDto);
             quizQuestion.HashQuestion = FindDuplicateQuestion(listQuizQuestion, quizQuestion);
-            if (ValidateQuizQuestionImportDto(quizQuestionImportDto))
+            quizQuestionImportDto.HashQuestion = quizQuestion.HashQuestion;
+
+            if (ValidateQuizQuestionImportDto(quizQuestionImportDto, processHashNum))
             {
                 quizQuestionImportDto.IsImported = true;
                 quizQuestionImportSuccess.Add(quizQuestion);
@@ -1002,7 +1006,7 @@ public class QuizQuestionService : IQuizQuestionService
                 countFail++;
                 quizQuestionImportFail.Add(quizQuestionImportDto);
             }
-
+            processHashNum.Add((quizQuestion.HashQuestion, quizQuestion.Content));
             quizQuestionImportDtos.Add(quizQuestionImportDto);
         }
     }
@@ -1073,7 +1077,7 @@ public class QuizQuestionService : IQuizQuestionService
         return shuffle?.value ?? false;
     }
 
-    private bool ValidateQuizQuestionImportDto(QuizQuestionImportDto dto)
+    private bool ValidateQuizQuestionImportDto(QuizQuestionImportDto dto, HashSet<(int hashNum, string title)> processHashNum)
     {
         bool isValid = true;
 
@@ -1083,9 +1087,9 @@ public class QuizQuestionService : IQuizQuestionService
             isValid = false;
         }
 
-        if (dto.HashQuestion == 0)
+        if (dto.HashQuestion == 0 || processHashNum.Contains((dto.HashQuestion, dto.Content)) ) // you has just compare the old answers 
         {
-            AddImportError(dto, $"Câu hỏi '{dto.Content}' bị trùng với câu hỏi khác");
+            AddImportError(dto, $"Câu hỏi '{dto.Content}' bị trùng với câu hỏi đã có ");
             isValid = false;
         }
 

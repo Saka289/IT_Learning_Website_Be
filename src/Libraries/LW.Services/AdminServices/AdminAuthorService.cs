@@ -55,7 +55,7 @@ public class AdminAuthorService : IAdminAuthorService
         _emailService = emailService;
     }
 
-    private async Task<bool> CheckEmailExistsAsync(string email)
+    public async Task<bool> CheckEmailExistsAsync(string email)
     {
         return await _userManager.Users.AnyAsync(x => x.Email == email.ToLower());
     }

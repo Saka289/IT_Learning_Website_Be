@@ -101,7 +101,10 @@ public class UserService : IUserService
         }
 
         var user = _mapper.Map<ApplicationUser>(registerUserDto);
-        user.EmailConfirmed = true;
+       if(user != null)
+        {
+            user.EmailConfirmed = true;
+        }
 
         var result = await _userManager.CreateAsync(user, registerUserDto.Password);
         if (!result.Succeeded)

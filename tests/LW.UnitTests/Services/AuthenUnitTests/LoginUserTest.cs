@@ -8,6 +8,7 @@ using LW.Services.Common.CommonServices.FacebookServices;
 using LW.Services.Common.CommonServices.JwtTokenServices;
 using LW.Services.UserServices;
 using LW.Shared.Configurations;
+using LW.Shared.Constant;
 using LW.Shared.DTOs.Email;
 using LW.Shared.DTOs.Member;
 using LW.Shared.DTOs.User;
@@ -174,6 +175,121 @@ public class LoginUserTest
         Assert.AreEqual(user.UserName, result.Data.UserDto.UserName);
         Assert.AreEqual(user.FirstName + " " + user.LastName, result.Data.UserDto.FullName);
         Assert.AreEqual(user.PhoneNumber, result.Data.UserDto.PhoneNumber);
+    }
+    [Test]
+    public async Task Register_ShouldReturnExpiredLinkMessage_WhenEmailVerificationExpired()
+    {
+        // Arrange
+        var registerUserDto = new RegisterUserDto { Email = "test@example.com" };
+        _redisCacheService.GetStringKey(Arg.Any<string>()).Returns((VerifyEmailTokenDto)null);
+
+        // Act
+        var result = await _userService.Register(registerUserDto);
+
+        // Assert
+        Assert.IsFalse(result.IsSucceeded);
+        Assert.AreEqual("Your email verification link has expired. Please request a new one.", result.Message);
+    }
+
+    [Test]
+    public async Task Register_ShouldReturnEmailNotVerifiedMessage_WhenEmailNotVerified()
+    {
+        // Arrange
+        var registerUserDto = new RegisterUserDto { Email = "test@example.com" };
+        _redisCacheService.GetStringKey(Arg.Any<string>()).Returns(new VerifyEmailTokenDto { IsVerifyEmail = false });
+
+        // Act
+        var result = await _userService.Register(registerUserDto);
+
+        // Assert
+        Assert.IsFalse(result.IsSucceeded);
+        Assert.AreEqual("An error occurred while verifying your email. Please try again later.", result.Message);
+    }
+
+    [Test]
+    public async Task Register_ShouldReturnEmailExistsMessage_WhenEmailAlreadyExists()
+    {
+        // Arrange
+        var registerUserDto = new RegisterUserDto { Email = "test@example.com" };
+        _redisCacheService.GetStringKey(Arg.Any<string>()).Returns(new VerifyEmailTokenDto { IsVerifyEmail = true });
+        _userManager.Users.Returns(new List<ApplicationUser> { new ApplicationUser { Email = "test@example.com" } }.AsQueryable());
+
+        // Act
+        var result = await _userService.Register(registerUserDto);
+
+        // Assert
+        Assert.IsFalse(result.IsSucceeded);
+        Assert.AreEqual($"An existing account is using {registerUserDto.Email}", result.Message);
+    }
+
+    [Test]
+    public async Task Register_ShouldReturnUsernameExistsMessage_WhenUsernameAlreadyExists()
+    {
+        // Arrange
+        // Arrange
+        var registerUserDto = new RegisterUserDto { Email = "new@example.com", UserName = "existinguser" };
+        _redisCacheService.GetStringKey(Arg.Any<string>()).Returns(new VerifyEmailTokenDto { IsVerifyEmail = true });
+
+        var existingUsers = new List<ApplicationUser>
+        {
+            new ApplicationUser { UserName = "existinguser" }
+        }.AsQueryable().BuildMock();
+
+        _userManager.Users.Returns(existingUsers);
+
+        // Act
+        var result = await _userService.Register(registerUserDto);
+
+        // Assert
+        Assert.IsFalse(result.IsSucceeded);
+        Assert.AreEqual($"An existing username is using {registerUserDto.UserName}", result.Message);
+
+    }
+
+    [Test]
+    public async Task Register_ShouldReturnFailureMessage_WhenUserCreationFails()
+    {
+        // Arrange
+        var registerUserDto = new RegisterUserDto { Email = "new@example.com", UserName = "newuser", Password = "password" };
+        
+        _redisCacheService.GetStringKey(Arg.Any<string>()).Returns(new VerifyEmailTokenDto { IsVerifyEmail = true });
+        _userManager.Users.Returns(new List<ApplicationUser>().AsQueryable().BuildMock());
+        _userManager.CreateAsync(Arg.Any<ApplicationUser>(), Arg.Any<string>()).Returns(IdentityResult.Failed(new IdentityError { Description = "User creation failed" }));
+
+        // Act
+        var result = await _userService.Register(registerUserDto);
+
+        // Assert
+        Assert.IsFalse(result.IsSucceeded);
+        Assert.AreEqual("User creation failed", result.Message);
+    }
+
+    [Test]
+    public async Task Register_ShouldReturnSuccessMessage_WhenUserCreationSucceeds()
+    {
+        // Arrange
+        var registerUserDto = new RegisterUserDto
+        {
+            Email = "new@example.com",
+            UserName = "newuser",
+            Password = "password",
+            FirstName = "First",
+            LastName = "Last",
+            PhoneNumber = "1234567890"
+        };
+        _redisCacheService.GetStringKey(Arg.Any<string>()).Returns(new VerifyEmailTokenDto { IsVerifyEmail = true });
+        _userManager.Users.Returns(new List<ApplicationUser>().AsQueryable().BuildMock());
+        _userManager.CreateAsync(Arg.Any<ApplicationUser>(), Arg.Any<string>()).Returns(IdentityResult.Success);
+        _userManager.AddToRoleAsync(Arg.Any<ApplicationUser>(), RoleConstant.RoleUser).Returns(IdentityResult.Success);
+        _mapper.Map<ApplicationUser>(registerUserDto).Returns(new ApplicationUser { Email = registerUserDto.Email, UserName = registerUserDto.UserName });
+        _mapper.Map<RegisterResponseUserDto>(Arg.Any<ApplicationUser>()).Returns(new RegisterResponseUserDto());
+
+        // Act
+        var result = await _userService.Register(registerUserDto);
+
+        // Assert
+        Assert.IsTrue(result.IsSucceeded);
+        Assert.AreEqual("Create User Successfully", result.Message);
     }
 
 

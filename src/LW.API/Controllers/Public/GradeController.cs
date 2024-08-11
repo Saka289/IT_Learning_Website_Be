@@ -82,7 +82,6 @@ namespace LW.API.Controllers.Public
             {
                 return NotFound(result);
             }
-            
             Response.Headers.Add("X-Pagination", JsonConvert.SerializeObject(result.Data.GetMetaData()));
             return Ok(result);
         }
