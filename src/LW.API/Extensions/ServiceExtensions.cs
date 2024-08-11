@@ -259,6 +259,8 @@ public static class ServiceExtensions
         
         var configurationOptions = ConfigurationOptions.Parse(settings.ConnectionString);
         configurationOptions.Password = settings.Password;
+        configurationOptions.Ssl = settings.Ssl;
+        configurationOptions.AbortOnConnectFail = settings.AbortOnConnectFail;
         
         var lazyConnection = new Lazy<IConnectionMultiplexer>(() => ConnectionMultiplexer.Connect(configurationOptions));
 
