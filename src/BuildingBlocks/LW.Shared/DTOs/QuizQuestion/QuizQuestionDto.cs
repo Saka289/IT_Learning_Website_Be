@@ -15,7 +15,7 @@ public class QuizQuestionDto
     public bool IsShuffle { get; set; }
     public bool IsActive { get; set; }
     public int HashQuestion { get; set; }
-    public string QuestionLevel { get; set; }
+    public EQuestionLevel QuestionLevel { get; set; }
     public IEnumerable<QuizQuestionRelationDto> QuizQuestionRelations { get; set; }
     public IEnumerable<QuizAnswerDto> QuizAnswers { get; set; }
 }

@@ -26,6 +26,7 @@ public class AdminAuthorService : IAdminAuthorService
 {
     private readonly UserManager<ApplicationUser> _userManager;
     private readonly RoleManager<IdentityRole> _roleManager;
+    private readonly SignInManager<ApplicationUser> _signInManager;
     private readonly IMapper _mapper;
     private readonly IJwtTokenService _jwtTokenService;
     private readonly UrlBase _urlBase;
@@ -41,7 +42,7 @@ public class AdminAuthorService : IAdminAuthorService
         ILogger logger,
         ISmtpEmailService emailService,
         IMapper mapper, IJwtTokenService jwtTokenService, ICloudinaryService cloudinaryService,
-        IElasticSearchService<MemberDto, string> elasticSearchService)
+        IElasticSearchService<MemberDto, string> elasticSearchService, SignInManager<ApplicationUser> signInManager)
     {
         _userManager = userManager;
         _mapper = mapper;
@@ -52,6 +53,7 @@ public class AdminAuthorService : IAdminAuthorService
         _jwtTokenService = jwtTokenService ?? throw new ArgumentNullException(nameof(jwtTokenService));
         _cloudinaryService = cloudinaryService;
         _elasticSearchService = elasticSearchService;
+        _signInManager = signInManager;
         _emailService = emailService;
     }
 
@@ -75,8 +77,11 @@ public class AdminAuthorService : IAdminAuthorService
             NormalizedEmail = model.Email.ToLower(),
             FirstName = model.FistName,
             LastName = model.LastName,
-            EmailConfirmed = true
+            EmailConfirmed = true,
+            Image = CloudinaryConstant.Avatar,
+            PublicId = CloudinaryConstant.AvatarPublicKey
         };
+        
         var addUser = await _userManager.CreateAsync(user, model.Password);
         if (addUser.Succeeded)
         {
@@ -91,8 +96,7 @@ public class AdminAuthorService : IAdminAuthorService
         }
 
         var adminDto = _mapper.Map<RegisterMemberResponseDto>(user);
-        _elasticSearchService.CreateDocumentAsync(ElasticConstant.ElasticUsers, user.ToMemberDto(_userManager),
-            a => a.Id);
+        await _elasticSearchService.CreateDocumentAsync(ElasticConstant.ElasticUsers, user.ToMemberDto(_userManager), a => a.Id);
         return new ApiResult<RegisterMemberResponseDto>(true, adminDto, "Register successfully");
     }
 
@@ -110,15 +114,20 @@ public class AdminAuthorService : IAdminAuthorService
             return new ApiResult<LoginAdminResponseDto>(false, "User is not an Admin !!!");
         }
 
-        var checkPassword = await _userManager.CheckPasswordAsync(user, model.Password);
-        if (!checkPassword)
+        var checkPassword = await _signInManager.CheckPasswordSignInAsync(user, model.Password, true);
+        if (checkPassword.IsLockedOut)
+        {
+            return new ApiResult<LoginAdminResponseDto>(false,
+                $"Your account has been locked. You should wait until {user.LockoutEnd} (UTC time) to be able to login");
+        }
+
+        if (!checkPassword.Succeeded)
         {
             return new ApiResult<LoginAdminResponseDto>(false,
                 "The password you entered is incorrect. Please try again.");
         }
 
         var roles = await _userManager.GetRolesAsync(user);
-
         var accessToken = _jwtTokenService.GenerateAccessToken(user, roles);
         var refreshToken = _jwtTokenService.GenerateRefreshToken();
 
@@ -143,45 +152,39 @@ public class AdminAuthorService : IAdminAuthorService
         return new ApiResult<LoginAdminResponseDto>(true, loginAdminResponseDto, "Login Admin successfully !!!");
     }
 
-    public async Task<ApiResult<PagedList<MemberDto>>> GetAllMemberByRolePagination(string? role,
-        PagingRequestParameters pagingRequestParameters)
+    public async Task<ApiResult<PagedList<MemberDto>>> GetAllMemberByRolePagination(SearchAdminDto searchAdminDto)
     {
-        var user = await _userManager.Users.Select(u => u.ToMemberDto(_userManager)).ToListAsync();
-        if (!user.Any())
+        var user = new List<MemberDto>();
+        if (!string.IsNullOrEmpty(searchAdminDto.Value))
         {
-            return new ApiResult<PagedList<MemberDto>>(false, "user not found !!!");
+            var userSearch = await _elasticSearchService.SearchDocumentFieldAsync(ElasticConstant.ElasticUsers,
+                new SearchRequestValue
+                {
+                    Value = searchAdminDto.Value,
+                    Size = searchAdminDto.Size,
+                });
+            if (userSearch is null)
+            {
+                return new ApiResult<PagedList<MemberDto>>(false, "User not found !!!");
+            }
+
+            user = userSearch.ToList();
+        }
+        else
+        {
+            user = await _userManager.Users.Select(u => u.ToMemberDto(_userManager)).ToListAsync();
+            if (!user.Any())
+            {
+                return new ApiResult<PagedList<MemberDto>>(false, "User not found !!!");
+            }
         }
 
-        if (!string.IsNullOrEmpty(role))
+        if (!string.IsNullOrEmpty(searchAdminDto.Role))
         {
-            user = user.Where(u => u.Roles.Any(r => r.ToLower().Trim().Equals(role.ToLower().Trim()))).ToList();
+            user = user.Where(u => u.Roles.Any(r => r.ToLower().Trim().Equals(searchAdminDto.Role.ToLower().Trim()))).ToList();
         }
 
-        var pagedResult = await PagedList<MemberDto>.ToPageListAsync(user.AsQueryable().BuildMock(),
-            pagingRequestParameters.PageIndex, pagingRequestParameters.PageSize, pagingRequestParameters.OrderBy,
-            pagingRequestParameters.IsAscending);
-        return new ApiSuccessResult<PagedList<MemberDto>>(pagedResult);
-    }
-
-    public async Task<ApiResult<PagedList<MemberDto>>> SearchMemberByRolePagination(string? role,
-        SearchRequestValue searchRequestValue)
-    {
-        var user = await _elasticSearchService.SearchAllDocumentFieldAsync(ElasticConstant.ElasticUsers,
-            searchRequestValue);
-        if (!user.Any())
-        {
-            return new ApiResult<PagedList<MemberDto>>(false, "user not found !!!");
-        }
-
-        if (!string.IsNullOrEmpty(role))
-        {
-            user = user.Where(u => u.Roles.Any(r => r.ToLower().Trim().Equals(role.ToLower().Trim()))).ToList();
-        }
-
-        var result = _mapper.Map<IEnumerable<MemberDto>>(user);
-        var pagedResult = await PagedList<MemberDto>.ToPageListAsync(result.AsQueryable().BuildMock(),
-            searchRequestValue.PageIndex, searchRequestValue.PageSize, searchRequestValue.OrderBy,
-            searchRequestValue.IsAscending);
+        var pagedResult = await PagedList<MemberDto>.ToPageListAsync(user.AsQueryable().BuildMock(), searchAdminDto.PageIndex, searchAdminDto.PageSize, searchAdminDto.OrderBy, searchAdminDto.IsAscending);
         return new ApiSuccessResult<PagedList<MemberDto>>(pagedResult);
     }
 
@@ -200,8 +203,7 @@ public class AdminAuthorService : IAdminAuthorService
                 $"Assign {roleName} to user with email {email} successfully !");
         }
 
-        _elasticSearchService.UpdateDocumentAsync(ElasticConstant.ElasticUsers, user.ToMemberDto(_userManager),
-            user.Id);
+        await _elasticSearchService.UpdateDocumentAsync(ElasticConstant.ElasticUsers, user.ToMemberDto(_userManager), user.Id);
         return new ApiResult<bool>(false, "Don't find user with email " + email);
     }
 
@@ -237,8 +239,7 @@ public class AdminAuthorService : IAdminAuthorService
         }
 
         var roleOfUserAfterUpdate = (await _userManager.GetRolesAsync(user)).ToArray();
-        _elasticSearchService.UpdateDocumentAsync(ElasticConstant.ElasticUsers, user.ToMemberDto(_userManager),
-            user.Id);
+        await _elasticSearchService.UpdateDocumentAsync(ElasticConstant.ElasticUsers, user.ToMemberDto(_userManager), user.Id);
         return new ApiResult<IEnumerable<string>>(true, roleOfUserAfterUpdate,
             $"Assign multi roles for user with id = {assignMultipleRoleDto.UserId} ");
     }
@@ -251,6 +252,7 @@ public class AdminAuthorService : IAdminAuthorService
             return new ApiResult<IEnumerable<string>>(false,
                 $"User Not Found !");
         }
+
         var roles = (await _userManager.GetRolesAsync(user)).ToArray();
         if (!roles.Any())
         {
@@ -305,8 +307,7 @@ public class AdminAuthorService : IAdminAuthorService
         }
 
         await _userManager.UpdateAsync(user);
-        _elasticSearchService.UpdateDocumentAsync(ElasticConstant.ElasticUsers, user.ToMemberDto(_userManager),
-            updateAdminDto.UserId);
+        await _elasticSearchService.UpdateDocumentAsync(ElasticConstant.ElasticUsers, user.ToMemberDto(_userManager), updateAdminDto.UserId);
         return new ApiResult<UpdateAdminDto>(true, updateAdminDto, $"Update Successfully !");
     }
 
@@ -319,7 +320,7 @@ public class AdminAuthorService : IAdminAuthorService
             return new ApiResult<bool>(true, $"Delete Successfully !");
         }
 
-        _elasticSearchService.DeleteDocumentAsync(ElasticConstant.ElasticUsers, userId);
+        await _elasticSearchService.DeleteDocumentAsync(ElasticConstant.ElasticUsers, userId);
         return new ApiResult<bool>(false, $"User Not Found !");
     }
 
@@ -333,7 +334,7 @@ public class AdminAuthorService : IAdminAuthorService
                 $"LockMember Successfully !");
         }
 
-        _elasticSearchService.UpdateDocumentAsync(ElasticConstant.ElasticUsers, user.ToMemberDto(_userManager), userId);
+        await _elasticSearchService.UpdateDocumentAsync(ElasticConstant.ElasticUsers, user.ToMemberDto(_userManager), userId);
         return new ApiResult<bool>(false, $"User Not Found !");
     }
 
@@ -347,7 +348,7 @@ public class AdminAuthorService : IAdminAuthorService
                 $"UnLockMember Successfully !");
         }
 
-        _elasticSearchService.UpdateDocumentAsync(ElasticConstant.ElasticUsers, user.ToMemberDto(_userManager), userId);
+        await _elasticSearchService.UpdateDocumentAsync(ElasticConstant.ElasticUsers, user.ToMemberDto(_userManager), userId);
         return new ApiResult<bool>(false, $"User Not Found !");
     }
 

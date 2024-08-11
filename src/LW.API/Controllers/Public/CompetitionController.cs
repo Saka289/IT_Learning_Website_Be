@@ -3,10 +3,8 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using LW.API.Application.Validators.CompetitionValidator;
-using LW.API.Application.Validators.LevelValidator;
 using LW.Services.CompetitionServices;
 using LW.Shared.DTOs.Competition;
-using LW.Shared.DTOs.Level;
 using LW.Shared.SeedWork;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
@@ -34,9 +32,9 @@ namespace LW.API.Controllers.Public
             return Ok(result);
         }
         [HttpGet("GetAllCompetitionPagination")]
-        public async Task<ActionResult<ApiResult<PagedList<CompetitionDto>>>> GetAllCompetitionPagination([FromQuery]PagingRequestParameters pagingRequestParameters)
+        public async Task<ActionResult<ApiResult<PagedList<CompetitionDto>>>> GetAllCompetitionPagination([FromQuery]SearchCompetitionDto searchCompetitionDto)
         {
-            var result = await _competitionService.GetAllCompetitionPagination(pagingRequestParameters);
+            var result = await _competitionService.GetAllCompetitionPagination(searchCompetitionDto);
             if (!result.IsSucceeded)
             {
                 return NotFound(result);
@@ -108,19 +106,6 @@ namespace LW.API.Controllers.Public
             {
                 return BadRequest(result);
             }
-            return Ok(result);
-        }
-
-        [HttpGet("SearchCompetitionPagination")]
-        public async Task<ActionResult<ApiResult<IEnumerable<CompetitionDto>>>> SearchCompetitionPagination(
-            [FromQuery] SearchCompetitionDto searchCompetitionDto)
-        {
-            var result = await _competitionService.SearchByCompetitionPagination(searchCompetitionDto);
-            if (!result.IsSucceeded)
-            {
-                return NotFound(result);
-            }
-            Response.Headers.Add("X-Pagination", JsonConvert.SerializeObject(result.Data.GetMetaData()));
             return Ok(result);
         }
     }

@@ -2,8 +2,7 @@
 
 namespace LW.Shared.DTOs.Topic;
 
-public class SearchTopicDto : SearchRequestParameters
+public class SearchTopicDto : SearchRequestValue
 {
-    public override string? Key { get; set; } = "keyWord";
     public int? DocumentId { get; set; }
 }

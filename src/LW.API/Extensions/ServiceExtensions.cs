@@ -11,14 +11,12 @@ using LW.Data.Persistence;
 using LW.Data.Repositories.CommentDocumentRepositories;
 using LW.Data.Repositories.CompetitionRepositories;
 using LW.Data.Repositories.GradeRepositories;
-using LW.Data.Repositories.LevelRepositories;
 using LW.Infrastructure.Common;
 using LW.Infrastructure.Configurations;
 using LW.Infrastructure.Extensions;
 using LW.Services.AdminServices;
 using LW.Infrastructure.Services;
 using LW.Services.GradeServices;
-using LW.Services.LevelServices;
 using LW.Services.UserServices;
 using LW.Shared.Configurations;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
@@ -310,7 +308,6 @@ public static class ServiceExtensions
         services.AddTransient(typeof(IRedisCache<>), typeof(RedisCache<>));
         services.AddTransient<ISerializeService, SerializeService>();
         // IRepository 
-        services.AddScoped<ILevelRepository, LevelRepository>();
         services.AddScoped<IGradeRepository, GradeRepository>();
         services.AddScoped<IDocumentRepository, DocumentRepository>();
         services.AddScoped<ITopicRepository, TopicRepository>();
@@ -343,7 +340,6 @@ public static class ServiceExtensions
         // IService 
         services.AddScoped<IAdminAuthorService, AdminAuthorService>();
         services.AddScoped<IUserService, UserService>();
-        services.AddScoped<ILevelService, LevelService>();
         services.AddScoped<IGradeService, GradeService>();
         services.AddScoped<IDocumentService, DocumentService>();
         services.AddScoped<ITopicService, TopicService>();

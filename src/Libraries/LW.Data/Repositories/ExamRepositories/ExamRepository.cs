@@ -18,13 +18,12 @@ public class ExamRepository : RepositoryBase<Exam, int>, IExamRepository
         return await FindAll().Include(x=>x.Competition).ToListAsync();
     }
 
-    public Task<IQueryable<Exam>> GetAllExamByPagination()
+    public async Task<IEnumerable<Exam>> GetAllExamByGrade(int gradeId)
     {
-        var result = FindAll();
-        return Task.FromResult(result);
+        return await FindAll().Where(x=>x.GradeId == gradeId).ToListAsync();
     }
 
-    public async Task<Exam> GetExamById(int id)
+    public async Task<Exam?> GetExamById(int id)
     {
         return await FindByCondition(x => x.Id == id).Include(x=>x.Competition).Include(x=>x.ExamCodes).FirstOrDefaultAsync();
     }

@@ -31,7 +31,7 @@ namespace LW.API.Controllers.Public
 
             return Ok(result);
         }
-        
+
         [HttpGet("GetAllDocumentByGrade/{gradeId}")]
         public async Task<ActionResult<ApiResult<IEnumerable<DocumentDto>>>> GetAllDocumentByGrade(int gradeId)
         {
@@ -43,15 +43,16 @@ namespace LW.API.Controllers.Public
 
             return Ok(result);
         }
-        
+
         [HttpGet("GetAllDocumentPagination")]
-        public async Task<ActionResult<ApiResult<PagedList<DocumentDto>>>> GetAllDocumentPagination([FromQuery]PagingRequestParameters pagingRequestParameters)
+        public async Task<ActionResult<ApiResult<PagedList<DocumentDto>>>> GetAllDocumentPagination([FromQuery] SearchDocumentDto searchDocumentDto)
         {
-            var result = await _documentService.GetAllDocumentPagination(pagingRequestParameters);
+            var result = await _documentService.GetAllDocumentPagination(searchDocumentDto);
             if (!result.IsSucceeded)
             {
                 return NotFound(result);
             }
+
             Response.Headers.Add("X-Pagination", JsonConvert.SerializeObject(result.Data.GetMetaData()));
             return Ok(result);
         }
@@ -67,55 +68,46 @@ namespace LW.API.Controllers.Public
 
             return Ok(result);
         }
-        
-        [HttpGet("SearchByDocumentPagination")]
-        public async Task<ActionResult<ApiResult<PagedList<DocumentDto>>>> SearchByDocumentPagination([FromQuery] SearchDocumentDto searchDocumentDto)
-        {
-            var result = await _documentService.SearchByDocumentPagination(searchDocumentDto);
-            if (!result.IsSucceeded)
-            {
-                return NotFound(result);
-            }
-            
-            Response.Headers.Add("X-Pagination", JsonConvert.SerializeObject(result.Data.GetMetaData()));
-            return Ok(result);
-        }
 
         [HttpPost("CreateDocument")]
-        public async Task<ActionResult<ApiResult<DocumentDto>>> CreateDocument([FromBody] DocumentCreateDto documentCreateDto)
+        public async Task<ActionResult<ApiResult<DocumentDto>>> CreateDocument(
+            [FromBody] DocumentCreateDto documentCreateDto)
         {
             var validationResult = await new CreateDocumentCommandValidator().ValidateAsync(documentCreateDto);
             if (!validationResult.IsValid)
             {
                 return BadRequest(validationResult);
             }
+
             var result = await _documentService.CreateDocument(documentCreateDto);
             if (!result.IsSucceeded)
             {
                 return BadRequest(result);
             }
-            
+
             return Ok(result);
         }
 
         [HttpPut("UpdateDocument")]
-        public async Task<ActionResult<ApiResult<DocumentDto>>> UpdateDocument([FromBody] DocumentUpdateDto documentUpdateDto)
+        public async Task<ActionResult<ApiResult<DocumentDto>>> UpdateDocument(
+            [FromBody] DocumentUpdateDto documentUpdateDto)
         {
             var validationResult = await new UpdateDocumentCommandValidator().ValidateAsync(documentUpdateDto);
             if (!validationResult.IsValid)
             {
                 return BadRequest(validationResult);
             }
+
             var result = await _documentService.UpdateDocument(documentUpdateDto);
             if (!result.IsSucceeded)
             {
                 return BadRequest(result);
             }
-            
+
             return Ok(result);
         }
-        
-        
+
+
         [HttpPut("UpdateStatusDocument")]
         public async Task<ActionResult<ApiResult<bool>>> UpdateStatusDocument(int id)
         {
@@ -124,7 +116,7 @@ namespace LW.API.Controllers.Public
             {
                 return NotFound(result);
             }
-            
+
             return Ok(result);
         }
 
@@ -136,9 +128,8 @@ namespace LW.API.Controllers.Public
             {
                 return NotFound(result);
             }
-            
+
             return Ok(result);
         }
     }
-
 }

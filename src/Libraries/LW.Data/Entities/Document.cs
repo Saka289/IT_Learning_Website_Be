@@ -28,6 +28,10 @@ public class Document : EntityAuditBase<int>
     public EBookType TypeOfBook { get; set; }
     [Required]
     public bool IsActive { get; set; }
+    [NotMapped]
+    public double? AverageRating { get; set; }
+    [NotMapped]
+    public int TotalReviewer { get; set; }
     [Required] 
     public int GradeId { get; set; }
     [ForeignKey(nameof(GradeId))] 

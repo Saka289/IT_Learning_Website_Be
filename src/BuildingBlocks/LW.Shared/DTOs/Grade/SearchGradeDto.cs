@@ -1,9 +1,10 @@
-﻿using LW.Shared.SeedWork;
+﻿using System.ComponentModel.DataAnnotations;
+using LW.Shared.SeedWork;
 
 namespace LW.Shared.DTOs.Grade;
 
-public class SearchGradeDto : SearchRequestParameters
+public class SearchGradeDto : SearchRequestValue
 {
-    public override string? Key { get; set; } = "keyWord";
-    public int? LevelId { get; set; }
+    [Required]
+    public bool IsInclude { get; set; } = false;
 }

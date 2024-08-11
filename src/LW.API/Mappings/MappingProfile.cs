@@ -7,7 +7,6 @@ using LW.Shared.DTOs.CommentDocument;
 using LW.Shared.DTOs.Competition;
 using LW.Shared.DTOs.Compile;
 using LW.Shared.DTOs.Grade;
-using LW.Shared.DTOs.Level;
 using LW.Shared.DTOs.User;
 using LW.Shared.DTOs.Document;
 using LW.Shared.DTOs.Editorial;
@@ -27,6 +26,7 @@ using LW.Shared.DTOs.Quiz;
 using LW.Shared.DTOs.QuizAnswer;
 using LW.Shared.DTOs.QuizQuestion;
 using LW.Shared.DTOs.QuizQuestionRelation;
+using LW.Shared.DTOs.Solution;
 using LW.Shared.DTOs.Submission;
 using LW.Shared.DTOs.Tag;
 using LW.Shared.DTOs.TestCase;
@@ -35,7 +35,6 @@ using LW.Shared.DTOs.UserExam;
 using LW.Shared.DTOs.UserQuiz;
 using LW.Shared.DTOs.VoteComment;
 using LW.Shared.Enums;
-using LW.Shared.Solution;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.OpenApi.Extensions;
 using Newtonsoft.Json;
@@ -47,6 +46,7 @@ public class MappingProfile : Profile
 {
     public MappingProfile()
     {
+        // User, Amdin
         CreateMap<RegisterMemberResponseDto, ApplicationUser>().ReverseMap();
         CreateMap<ApplicationUser, AdminDto>()
             .ForMember(x => x.FullName, y => y.MapFrom(src => src.FirstName + " " + src.LastName))
@@ -55,17 +55,19 @@ public class MappingProfile : Profile
         CreateMap<ApplicationUser, UserResponseDto>()
             .ForMember(x => x.Dob, y => y.MapFrom(src => src.Dob.ToString()))
             .ReverseMap();
-        // level
-        CreateMap<Level, LevelDtoForCreate>().ReverseMap();
-        CreateMap<Level, LevelDtoForUpdate>().ReverseMap();
-        CreateMap<Level, LevelDto>().ReverseMap();
         //Grade
-        CreateMap<Grade, GradeDto>()
-            .ForMember(x => x.LevelId, y => y.MapFrom(src => src.LevelId))
-            .ForMember(x => x.LevelTitle, y => y.MapFrom(src => src.Level.Title))
-            .ReverseMap();
+        CreateMap<Grade, GradeDto>().ReverseMap();
         CreateMap<Grade, GradeCreateDto>().ReverseMap();
         CreateMap<Grade, GradeUpdateDto>().ReverseMap();
+        CreateMap<Document, GradeDocumentDto>()
+            .ForMember(x => x.AverageRating, y => y.MapFrom(src => src.CommentDocuments.Any() ? Math.Round(src.CommentDocuments.Average(c => c.Rating), 2) : 0))
+            .ForMember(x => x.TotalReviewer, y => y.MapFrom(src => src.CommentDocuments.Count))
+            .ReverseMap();
+        CreateMap<Exam, GradeExamDto>().ReverseMap();
+        CreateMap<Topic, GradeTopicDto>().ReverseMap();
+        CreateMap<Lesson, GradeLessonDto>().ReverseMap();
+        CreateMap<Problem, GradeProblemDto>().ReverseMap();
+        CreateMap<Quiz, GradeQuizDto>().ReverseMap();
         //Document 
         CreateMap<Document, DocumentDto>()
             .ForMember(x => x.GradeId, y => y.MapFrom(src => src.GradeId))
@@ -259,7 +261,9 @@ public class MappingProfile : Profile
         CreateMap<Solution, SolutionCreateDto>().ReverseMap();
         CreateMap<Solution, SolutionUpdateDto>().ReverseMap();
         // Problem
-        CreateMap<Problem, ProblemDto>().ReverseMap();
+        CreateMap<Problem, ProblemDto>()
+            .ForMember(x => x.DifficultyName, y => y.MapFrom(src => src.Difficulty.ToString()))
+            .ReverseMap();
         CreateMap<Problem, ProblemCreateDto>().ReverseMap();
         CreateMap<Problem, ProblemUpdateDto>().ReverseMap();
         // Editorial 
@@ -271,7 +275,9 @@ public class MappingProfile : Profile
         CreateMap<TestCase, TestCaseCreateDto>().ReverseMap();
         CreateMap<TestCase, TestCaseUpdateDto>().ReverseMap();
         // ExecuteCode
-        CreateMap<ExecuteCode, ExecuteCodeDto>().ReverseMap();
+        CreateMap<ExecuteCode, ExecuteCodeDto>()
+            .ForMember(x => x.LanguageName, y => y.MapFrom(src => src.ProgramLanguage.Name))
+            .ReverseMap();
         CreateMap<ExecuteCode, ExecuteCodeCreateDto>().ReverseMap();
         CreateMap<ExecuteCode, ExecuteCodeUpdateDto>().ReverseMap();
         // Submission

@@ -6,8 +6,8 @@ using LW.Data.Repositories.SolutionRepositories;
 using LW.Infrastructure.Extensions;
 using LW.Services.UserServices;
 using LW.Shared.Constant;
+using LW.Shared.DTOs.Solution;
 using LW.Shared.SeedWork;
-using LW.Shared.Solution;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using MockQueryable.Moq;
@@ -32,16 +32,35 @@ public class SolutionService : ISolutionService
         _problemRepository = problemRepository;
     }
 
-    public async Task<ApiResult<IEnumerable<SolutionDto>>> GetAllSolutionByProblemId(int problemId)
+    public async Task<ApiResult<IEnumerable<SolutionDto>>> GetAllSolutionByProblemId(SearchSolutionDto searchSolutionDto)
     {
-        var solutionList = await _solutionRepository.GetAllSolutionByProblemId(problemId);
-        if (!solutionList.Any())
+        IEnumerable<SolutionDto> solutionList;
+        if (!string.IsNullOrEmpty(searchSolutionDto.Value))
         {
-            return new ApiResult<IEnumerable<SolutionDto>>(false, "Solution not found !!!");
-        }
+            var solutionListSearch = await _elasticSearchService.SearchDocumentFieldAsync(ElasticConstant.ElasticSolutions, new SearchRequestValue
+                {
+                    Value = searchSolutionDto.Value,
+                    Size = searchSolutionDto.Size,
+                });
+            if (solutionListSearch is null)
+            {
+                return new ApiResult<IEnumerable<SolutionDto>>(false, "Solution not found !!!");
+            }
 
-        var result = _mapper.Map<IEnumerable<SolutionDto>>(solutionList);
-        return new ApiSuccessResult<IEnumerable<SolutionDto>>(result);
+            solutionList = solutionListSearch.Where(p => p.ProblemId == searchSolutionDto.ProblemId).ToList();
+        }
+        else
+        {
+            var solutionListAll = await _solutionRepository.GetAllSolutionByProblemId(searchSolutionDto.ProblemId, true);
+            if (!solutionListAll.Any())
+            {
+                return new ApiResult<IEnumerable<SolutionDto>>(false, "Solution not found !!!");
+            }
+
+            solutionList = _mapper.Map<IEnumerable<SolutionDto>>(solutionListAll);
+        }
+        
+        return new ApiSuccessResult<IEnumerable<SolutionDto>>(solutionList);
     }
 
     public async Task<ApiResult<IEnumerable<SolutionDto>>> SearchSolutionByProblemId(int problemId,
@@ -92,9 +111,9 @@ public class SolutionService : ISolutionService
         solutionMapper.Coding = solutionCreateDto.Coding.Base64Encode();
         var solutionCreate = await _solutionRepository.CreateSolution(solutionMapper);
         solutionCreate.ApplicationUser = user;
-        // solutionCreate.Problem = problem;
+        solutionCreate.Problem = problem;
         var result = _mapper.Map<SolutionDto>(solutionCreate);
-        _elasticSearchService.CreateDocumentAsync(ElasticConstant.ElasticSolutions, result, s => s.Id);
+        await _elasticSearchService.CreateDocumentAsync(ElasticConstant.ElasticSolutions, result, s => s.Id);
         return new ApiSuccessResult<SolutionDto>(result);
     }
 
@@ -122,8 +141,9 @@ public class SolutionService : ISolutionService
         solutionMapper.Coding = solutionMapper.Coding.Base64Encode();
         var solutionUpdate = await _solutionRepository.UpdateSolution(solutionMapper);
         solutionUpdate.ApplicationUser = user;
+        solutionUpdate.Problem = problem;
         var result = _mapper.Map<SolutionDto>(solutionUpdate);
-        _elasticSearchService.UpdateDocumentAsync(ElasticConstant.ElasticSolutions, result, solutionUpdate.Id);
+        await _elasticSearchService.UpdateDocumentAsync(ElasticConstant.ElasticSolutions, result, solutionUpdate.Id);
         return new ApiSuccessResult<SolutionDto>(result);
     }
 
@@ -138,7 +158,7 @@ public class SolutionService : ISolutionService
         solutionEntity.IsActive = !solutionEntity.IsActive;
         await _solutionRepository.UpdateSolution(solutionEntity);
         var result = _mapper.Map<SolutionDto>(solutionEntity);
-        _elasticSearchService.UpdateDocumentAsync(ElasticConstant.ElasticSolutions, result, id);
+        await _elasticSearchService.UpdateDocumentAsync(ElasticConstant.ElasticSolutions, result, id);
         return new ApiSuccessResult<bool>(true);
     }
 
@@ -156,7 +176,7 @@ public class SolutionService : ISolutionService
             return new ApiResult<bool>(false, "Failed to delete solution !!!");
         }
 
-        _elasticSearchService.DeleteDocumentAsync(ElasticConstant.ElasticSolutions, id);
+        await _elasticSearchService.DeleteDocumentAsync(ElasticConstant.ElasticSolutions, id);
         return new ApiSuccessResult<bool>(true);
     }
 }

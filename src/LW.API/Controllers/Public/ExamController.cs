@@ -51,10 +51,9 @@ namespace LW.API.Controllers.Public
         }
 
         [HttpGet("GetAllExamPagination")]
-        public async Task<ActionResult<ApiResult<PagedList<ExamDto>>>> GetAllExamPagination(
-            [FromQuery] PagingRequestParameters pagingRequestParameters)
+        public async Task<ActionResult<ApiResult<PagedList<ExamDto>>>> GetAllExamPagination([FromQuery] SearchExamDto searchExamDto)
         {
-            var result = await _examService.GetAllExamPagination(pagingRequestParameters);
+            var result = await _examService.GetAllExamPagination(searchExamDto);
             if (!result.IsSucceeded)
             {
                 return NotFound(result);
@@ -75,21 +74,6 @@ namespace LW.API.Controllers.Public
 
             return Ok(result);
         }
-
-        [HttpGet("SearchByExamPagination")]
-        public async Task<ActionResult<ApiResult<PagedList<ExamDto>>>> SearchByExamPagination(
-            [FromQuery] SearchExamDto searchExamDto)
-        {
-            var result = await _examService.SearchByExamPagination(searchExamDto);
-            if (!result.IsSucceeded)
-            {
-                return NotFound(result);
-            }
-
-            Response.Headers.Add("X-Pagination", JsonConvert.SerializeObject(result.Data.GetMetaData()));
-            return Ok(result);
-        }
-
         
         [HttpPost("CreateExam")]
         public async Task<ActionResult<ApiResult<GradeDto>>> CreateExam([FromForm] ExamCreateDto examCreateDto)

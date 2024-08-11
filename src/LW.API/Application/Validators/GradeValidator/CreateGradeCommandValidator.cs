@@ -10,6 +10,5 @@ public class CreateGradeCommandValidator : AbstractValidator<GradeCreateDto>
     {
         RuleFor(x => x.Title).NotNull().NotEmpty();
         RuleFor(x => x.IsActive).NotEmpty();
-        RuleFor(x => x.LevelId).NotNull().NotEmpty().GreaterThan(0);
     }
 }

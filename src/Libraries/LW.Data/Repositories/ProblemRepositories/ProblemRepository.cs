@@ -18,7 +18,17 @@ public class ProblemRepository : RepositoryBase<Problem, int>, IProblemRepositor
             .Include(s => s.Submissions)
             .ToListAsync();
     }
-    
+
+    public async Task<IEnumerable<Problem>> GetAllProblemByTopic(int topicId)
+    {
+        return await FindAll().Where(x => x.TopicId == topicId).ToListAsync();
+    }
+
+    public async Task<IEnumerable<Problem>> GetAllProblemByLesson(int lessonId)
+    {
+        return await FindAll().Where(x => x.LessonId == lessonId).ToListAsync();
+    }
+
     public async Task<Problem?> GetProblemById(int id)
     {
         return await FindByCondition(x => x.Id == id).FirstOrDefaultAsync();

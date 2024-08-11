@@ -14,28 +14,38 @@ public class ExecuteCodeRepository : RepositoryBase<ExecuteCode, int>, IExecuteC
 
     public async Task<IEnumerable<ExecuteCode>> GetAllExecuteCode()
     {
-        return await FindAll().ToListAsync();
+        return await FindAll()
+            .Include(l => l.ProgramLanguage)
+            .ToListAsync();
     }
 
     public async Task<IEnumerable<ExecuteCode>> GetAllExecuteCodeByProblemId(int problemId)
     {
-        return await FindAll().Where(e => e.ProblemId == problemId).ToListAsync();
+        return await FindAll()
+            .Include(l => l.ProgramLanguage)
+            .Where(e => e.ProblemId == problemId).ToListAsync();
     }
 
     public Task<IQueryable<ExecuteCode>> GetAllExecuteCodePagination()
     {
-        var result = FindAll().AsQueryable();
+        var result = FindAll()
+            .Include(l => l.ProgramLanguage)
+            .AsQueryable();
         return Task.FromResult(result);
     }
 
     public async Task<ExecuteCode?> GetExecuteCodeById(int id)
     {
-        return await FindByCondition(x => x.Id == id).FirstOrDefaultAsync();
+        return await FindByCondition(x => x.Id == id)
+            .Include(l => l.ProgramLanguage)
+            .FirstOrDefaultAsync();
     }
 
     public async Task<ExecuteCode?> GetExecuteCodeByProblemIdLanguageId(int problemId, int languageId)
     {
-        return await FindAll().FirstOrDefaultAsync(e => e.ProblemId == problemId && e.LanguageId == languageId);
+        return await FindAll()
+            .Include(l => l.ProgramLanguage)
+            .FirstOrDefaultAsync(e => e.ProblemId == problemId && e.LanguageId == languageId);
     }
 
     public async Task<ExecuteCode> CreateExecuteCode(ExecuteCode executeCode)

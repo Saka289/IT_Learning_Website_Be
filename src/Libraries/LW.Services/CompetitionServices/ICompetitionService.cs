@@ -7,9 +7,8 @@ namespace LW.Services.CompetitionServices;
 public interface ICompetitionService
 {
     Task<ApiResult<IEnumerable<CompetitionDto>>> GetAllCompetition();
-    Task<ApiResult<PagedList<CompetitionDto>>> GetAllCompetitionPagination(PagingRequestParameters pagingRequestParameters);
+    Task<ApiResult<PagedList<CompetitionDto>>> GetAllCompetitionPagination(SearchCompetitionDto searchCompetitionDto);
     Task<ApiResult<CompetitionDto>> GetCompetitionById(int id);
-    Task<ApiResult<PagedList<CompetitionDto>>> SearchByCompetitionPagination(SearchCompetitionDto searchCompetitionDto);
     Task<ApiResult<CompetitionDto>> CreateCompetition(CompetitionCreateDto competitionCreateDto);
     Task<ApiResult<CompetitionDto>> UpdateCompetition(CompetitionUpdateDto competitionUpdateDto);
     Task<ApiResult<bool>> UpdateStatusCompetition(int id);

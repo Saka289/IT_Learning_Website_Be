@@ -41,17 +41,20 @@ public static class ModelMappingExtensions
         };
     }
 
-    public static SubmissionDto ToSubmissionDto(this CompileDto compileDto, Submission submission)
+    public static SubmissionDto ToSubmissionDto(this CompileDto compileDto, Submission submission, int testCaseId)
     {
         return new SubmissionDto
         {
             Id = submission.Id,
+            TestCaseId = testCaseId,
             Input = compileDto.stdin,
             Output = compileDto.stdout,
             StatusId = compileDto.status_id,
             Status = ((EStatusSubmission)compileDto.status_id).ToString(),
             CompileOutput = compileDto.compile_output,
             ExpectedOutput = compileDto.expected_output,
+            StandardError = compileDto.stderr,
+            Message = compileDto.message,
             ExecutionTime = compileDto.time,
             LanguageId = submission.LanguageId,
             MemoryUsage = compileDto.memory,

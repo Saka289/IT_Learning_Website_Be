@@ -8,6 +8,6 @@ public class TagCreateDto
     public string? Title { get; set; }
     [Required]
     public string? KeyWord { get; set; }
-    
-    [Required] public bool IsActive { get; set; } = false;
+    [Required]
+    public bool IsActive { get; set; } = false;
 }
