@@ -118,7 +118,8 @@ public class QuizQuestionService : IQuizQuestionService
         return new ApiSuccessResult<PagedList<QuizQuestionDto>>(pagedResult);
     }
 
-    public async Task<ApiResult<IEnumerable<object>>> GetAllQuizQuestionByQuizId(SearchQuizQuestionDto searchQuizQuestionDto)
+    public async Task<ApiResult<IEnumerable<object>>> GetAllQuizQuestionByQuizId(
+        SearchQuizQuestionDto searchQuizQuestionDto)
     {
         var quiz = await _quizRepository.GetQuizById(Convert.ToInt32(searchQuizQuestionDto.QuizId));
         if (quiz is null)
@@ -144,7 +145,8 @@ public class QuizQuestionService : IQuizQuestionService
         }
         else
         {
-            var quizQuestionListAll = await _quizQuestionRepository.GetAllQuizQuestionByQuizId(Convert.ToInt32(searchQuizQuestionDto.QuizId));
+            var quizQuestionListAll =
+                await _quizQuestionRepository.GetAllQuizQuestionByQuizId(Convert.ToInt32(searchQuizQuestionDto.QuizId));
             if (!quizQuestionListAll.Any())
             {
                 return new ApiResult<IEnumerable<object>>(false, "Quiz Question is null !!!");
@@ -225,7 +227,9 @@ public class QuizQuestionService : IQuizQuestionService
 
         var quizQuestionEntity = _mapper.Map<QuizQuestion>(quizQuestionCreateDto);
 
-        var listQuizQuestion = await _quizQuestionRepository.GetAllQuizQuestion();
+        var listQuizQuestion = (quizQuestionCreateDto.QuizId > 0)
+            ? await _quizQuestionRepository.GetAllQuizQuestionByQuizId(quizQuestionCreateDto.QuizId)
+            : await _quizQuestionRepository.GetAllQuizQuestion();
         var numberHash = FindDuplicateQuestion(listQuizQuestion, quizQuestionEntity);
         if (numberHash == 0)
         {
@@ -343,7 +347,8 @@ public class QuizQuestionService : IQuizQuestionService
 
         quizQuestionUpdate = await _quizQuestionRepository.GetQuizQuestionById(quizQuestionUpdateDto.Id);
         var result = _mapper.Map<QuizQuestionDto>(quizQuestionUpdate);
-        await _elasticSearchService.UpdateDocumentAsync(ElasticConstant.ElasticQuizQuestion, result, quizQuestionUpdateDto.Id);
+        await _elasticSearchService.UpdateDocumentAsync(ElasticConstant.ElasticQuizQuestion, result,
+            quizQuestionUpdateDto.Id);
         return new ApiSuccessResult<QuizQuestionDto>(result);
     }
 
@@ -380,7 +385,9 @@ public class QuizQuestionService : IQuizQuestionService
 
             var quizQuestionEntity = _mapper.Map<QuizQuestion>(item);
 
-            var listQuizQuestion = await _quizQuestionRepository.GetAllQuizQuestion();
+            var listQuizQuestion = (item.QuizId > 0)
+                ? await _quizQuestionRepository.GetAllQuizQuestionByQuizId(item.QuizId)
+                : await _quizQuestionRepository.GetAllQuizQuestion();
             var numberHash = FindDuplicateQuestion(listQuizQuestion, quizQuestionEntity);
             if (numberHash == 0)
             {
@@ -1033,7 +1040,7 @@ public class QuizQuestionService : IQuizQuestionService
         return new QuizQuestionImportDto
         {
             Content = workSheet.Cells[row, 3].Value?.ToString()?.Trim(),
-            QuestionLevel = (EQuestionLevel) resultLevel,
+            QuestionLevel = (EQuestionLevel)resultLevel,
             QuestionLevelName = level,
             QuizAnswers = quizAnswers,
             Type = (ETypeQuestion)result,
