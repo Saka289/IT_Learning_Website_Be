@@ -197,7 +197,7 @@ namespace LW.API.Controllers.Public
         [HttpPost("ImportValidate")]
         public async Task<ActionResult<ApiResult<QuizQuestionImportParentDto>>> ImportValidate([FromForm] IFormFile fileImport, [Required] int quizId)
         {
-            var imports = await _quizQuestionService.ImportExcel(fileImport);
+            var imports = await _quizQuestionService.ImportExcel(fileImport, quizId);
             if (!imports.IsSucceeded)
             {
                 return BadRequest(imports);
