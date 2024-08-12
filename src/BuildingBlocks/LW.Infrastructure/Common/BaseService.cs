@@ -1,8 +1,10 @@
 ﻿using System.Net;
 using System.Text;
 using LW.Contracts.Common;
+using LW.Shared.Configurations;
 using LW.Shared.DTOs.Request;
 using LW.Shared.Enums;
+using Microsoft.Extensions.Options;
 using Newtonsoft.Json;
 using Serilog;
 
@@ -11,12 +13,14 @@ namespace LW.Infrastructure.Common;
 public class BaseService<T> : IBaseService<T> where T : class
 {
     private readonly IHttpClientFactory _httpClientFactory;
+    private readonly UrlBase _urlBase;
     private readonly ILogger _logger;
 
-    public BaseService(IHttpClientFactory httpClientFactory, ILogger logger)
+    public BaseService(IHttpClientFactory httpClientFactory, ILogger logger, IOptions<UrlBase> urlBase)
     {
         _httpClientFactory = httpClientFactory;
         _logger = logger;
+        _urlBase = urlBase.Value;
     }
 
     public async Task<T?> SendAsync<T>(RequestDto requestDto)
@@ -32,6 +36,12 @@ public class BaseService<T> : IBaseService<T> where T : class
             else
             {
                 message.Headers.Add("Accept", "application/json");
+            }
+
+            if (_urlBase.Judge0IsActive)
+            {
+                message.Headers.Add(_urlBase.Judge0Host!, _urlBase.Judge0HostValue);
+                message.Headers.Add(_urlBase.Judge0Key!, _urlBase.Judge0KeyValue);
             }
 
             message.RequestUri = new Uri(requestDto.Url);
