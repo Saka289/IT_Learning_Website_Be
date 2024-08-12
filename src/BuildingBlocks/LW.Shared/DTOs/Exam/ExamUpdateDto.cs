@@ -17,7 +17,7 @@ public class ExamUpdateDto
     public string? Description { get; set; }
     public int Year { set; get; }
     public int NumberQuestion { set; get; }
-    public IEnumerable<string>? tagValues { get; set; }
+    public IEnumerable<string>? TagValues { get; set; }
     public bool IsActive { get; set; } = false;
     
     public int? GradeId { get; set; }

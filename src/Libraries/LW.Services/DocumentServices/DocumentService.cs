@@ -199,7 +199,7 @@ public class DocumentService : IDocumentService
             documentEntity.BookCollection.GetDisplayName().ToUpper(),
             documentEntity.TypeOfBook.GetDisplayName().ToUpper(), documentEntity.PublicationYear,
             documentEntity.Edition);
-        documentEntity.KeyWord = documentCreateDto.tagValues.Any() ? documentCreateDto.tagValues.ConvertToTagString() : documentCreateDto.Title.RemoveDiacritics();
+        documentEntity.KeyWord = (documentCreateDto.TagValues is not null) ? documentCreateDto.TagValues.ConvertToTagString() : documentCreateDto.Title.RemoveDiacritics();
         await _documentRepository.CreateDocument(documentEntity);
         await CreateOrUpdateElasticDocument(documentEntity.Id, true);
         var result = _mapper.Map<DocumentDto>(documentEntity);
@@ -224,7 +224,7 @@ public class DocumentService : IDocumentService
         // encode code field
         model.Code = EncodeHelperExtensions.EncodeDocument(model.BookCollection.GetDisplayName().ToUpper(),
             model.TypeOfBook.GetDisplayName().ToUpper(), model.PublicationYear, model.Edition);
-        model.KeyWord = documentUpdateDto.tagValues.Any() ? documentUpdateDto.tagValues.ConvertToTagString() : documentUpdateDto.Title.RemoveDiacritics();
+        model.KeyWord = (documentUpdateDto.TagValues is not null) ? documentUpdateDto.TagValues.ConvertToTagString() : documentUpdateDto.Title.RemoveDiacritics();
         var updateDocument = await _documentRepository.UpdateDocument(model);
         await CreateOrUpdateElasticDocument(documentUpdateDto.Id, false);
         var result = _mapper.Map<DocumentDto>(updateDocument);

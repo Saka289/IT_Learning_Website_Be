@@ -11,7 +11,6 @@ public class CreateProblemCommandValidator : AbstractValidator<ProblemCreateDto>
         RuleFor(x => x.Description).NotNull().NotEmpty();
         RuleFor(x => x.Difficulty).NotNull().NotEmpty().IsInEnum();
         RuleFor(x => x.IsActive).NotNull().NotEmpty();        
-        RuleFor(x => x.tagValues).NotNull().NotEmpty();        
         RuleFor(x => x).Must(HaveValidTopicOrLesson).WithMessage("If TopicId is set, LessonId must be null, and vice versa.");
     }
     
