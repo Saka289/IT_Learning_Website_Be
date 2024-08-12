@@ -39,7 +39,7 @@ public class QuizService : IQuizService
     public async Task<ApiResult<IEnumerable<QuizDto>>> GetAllQuiz()
     {
         var quizList = await _quizRepository.GetAllQuiz();
-        if (!quizList.Any())
+        if (quizList.All(q => q == null))
         {
             return new ApiResult<IEnumerable<QuizDto>>(false, "Quiz is null !!!");
         }
@@ -67,8 +67,8 @@ public class QuizService : IQuizService
         }
         else
         {
-            var quizListAll = await _quizRepository.GetAllQuizPagination();
-            if (!quizListAll.Any())
+            var quizListAll = await _quizRepository.GetAllQuiz();
+            if (quizList.All(q => q == null))
             {
                 return new ApiResult<PagedList<QuizDto>>(false, "Quiz is null !!!");
             }
