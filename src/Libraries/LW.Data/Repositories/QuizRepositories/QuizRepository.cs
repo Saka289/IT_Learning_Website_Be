@@ -21,16 +21,6 @@ public class QuizRepository : RepositoryBase<Quiz, int>, IQuizRepository
             .ToListAsync();
     }
 
-    public async Task<IEnumerable<Quiz>> GetAllQuizPagination()
-    {
-        var result = await FindAll()
-            .Include(l => l.Lesson).DefaultIfEmpty()
-            .Include(l => l.Topic).DefaultIfEmpty()
-            .Include(q => q.QuizQuestionRelations).DefaultIfEmpty()
-            .ToListAsync();
-        return result;
-    }
-
     public async Task<IEnumerable<Quiz>> GetAllQuizByTopicId(int topicId, bool isInclude = false)
     {
         if (!isInclude)

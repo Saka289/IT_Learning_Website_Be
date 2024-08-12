@@ -7,7 +7,6 @@ namespace LW.Data.Repositories.QuizRepositories;
 public interface IQuizRepository : IRepositoryBase<Quiz, int>
 {
     Task<IEnumerable<Quiz>> GetAllQuiz();
-    Task<IEnumerable<Quiz>> GetAllQuizPagination();
     Task<IEnumerable<Quiz>> GetAllQuizByTopicId(int topicId, bool isInclude = false);
     Task<IEnumerable<Quiz>> GetAllQuizByLessonId(int lessonId, bool isInclude = false);
     Task<IEnumerable<Quiz>> SearchQuizByTag(string tag, bool order);
