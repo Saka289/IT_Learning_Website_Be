@@ -172,7 +172,7 @@ public class ExamService : IExamService
             obj.UrlDownloadSolutionFile = filePath.UrlDownload;
         }
 
-        var keyWordValue = examCreateDto.tagValues.ConvertToTagString();
+        var keyWordValue = (examCreateDto.TagValues is not null) ? examCreateDto.TagValues.ConvertToTagString() : examCreateDto.Title!.RemoveDiacritics();
         obj.KeyWord = keyWordValue;
         await _examRepository.CreateExam(obj);
         obj.Competition = competition;
@@ -221,13 +221,8 @@ public class ExamService : IExamService
             objUpdate.ExamSolutionFile = filePath.Url;
             objUpdate.UrlDownloadSolutionFile = filePath.UrlDownload;
         }
-
-        if (examUpdateDto.tagValues != null && examUpdateDto.tagValues.Any())
-        {
-            var keyWordValue = examUpdateDto.tagValues.ConvertToTagString();
-            objUpdate.KeyWord = keyWordValue;
-        }
-
+        
+        objUpdate.KeyWord = (examUpdateDto.TagValues is not null) ? examUpdateDto.TagValues.ConvertToTagString() : examUpdateDto.Title!.RemoveDiacritics();
         await _examRepository.UpdateExam(objUpdate);
         var examDto = _mapper.Map<ExamDto>(objUpdate);
         await _elasticSearchService.UpdateDocumentAsync(ElasticConstant.ElasticExams, examDto, examUpdateDto.Id);

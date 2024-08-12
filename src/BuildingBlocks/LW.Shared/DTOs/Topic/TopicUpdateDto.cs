@@ -17,5 +17,5 @@ public class TopicUpdateDto
     public int DocumentId { get; set; }
     [Required] 
     public bool IsActive { get; set; }
-    public IEnumerable<string> tagValues { get; set; }
+    public IEnumerable<string>? TagValues { get; set; }
 }

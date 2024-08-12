@@ -150,7 +150,7 @@ public class QuizService : IQuizService
         }
 
         var quizEntity = _mapper.Map<Quiz>(quizCreateDto);
-        quizEntity.KeyWord = quizCreateDto.tagValues.ConvertToTagString();
+        quizEntity.KeyWord = (quizCreateDto.TagValues is not null) ? quizCreateDto.TagValues.ConvertToTagString() : quizCreateDto.Title.RemoveDiacritics();
         var quizCreate = await _quizRepository.CreateQuiz(quizEntity);
         quizCreate.Lesson = lessonEntity;
         quizCreate.Topic = topicEntity;
@@ -186,7 +186,7 @@ public class QuizService : IQuizService
         }
 
         var quizMapper = _mapper.Map(quizUpdateDto, quizEntity);
-        quizMapper.KeyWord = quizUpdateDto.tagValues.ConvertToTagString();
+        quizMapper.KeyWord = (quizUpdateDto.TagValues is not null) ? quizUpdateDto.TagValues.ConvertToTagString() : quizUpdateDto.Title.RemoveDiacritics();
         var quizUpdate = await _quizRepository.UpdateQuiz(quizMapper);
         var result = _mapper.Map<QuizDto>(quizUpdate);
         await _elasticSearchService.UpdateDocumentAsync(ElasticConstant.ElasticQuizzes, result, quizUpdateDto.Id);
