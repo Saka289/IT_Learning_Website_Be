@@ -15,19 +15,14 @@ public class ExamCreateDto
     public string? Title { get; set; }
     [Required]
     public string? Province { get; set; }
-    
     public IFormFile? ExamEssayFileUpload { get; set; } //pdf
     public IFormFile? ExamSolutionFileUpload { get; set; } //pdf
-    
     [Required]
     public string? Description { get; set; }
     [Required]
     public int Year { set; get; }
     public int NumberQuestion { set; get; }
-    
-    [Required]
     public IEnumerable<string>? TagValues { get; set; }
-    
     [Required] public bool IsActive { get; set; } = false;
     public int? GradeId { get; set; }
 }
