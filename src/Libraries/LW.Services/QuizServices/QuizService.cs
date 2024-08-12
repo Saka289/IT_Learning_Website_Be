@@ -53,7 +53,8 @@ public class QuizService : IQuizService
         IEnumerable<QuizDto> quizList = new List<QuizDto>();
         if (!string.IsNullOrEmpty(searchQuizDto.Value))
         {
-            var quizListSearch = await _elasticSearchService.SearchDocumentFieldAsync(ElasticConstant.ElasticQuizzes, new SearchRequestValue
+            var quizListSearch = await _elasticSearchService.SearchDocumentFieldAsync(ElasticConstant.ElasticQuizzes,
+                new SearchRequestValue
                 {
                     Value = searchQuizDto.Value,
                     Size = searchQuizDto.Size,
@@ -62,7 +63,7 @@ public class QuizService : IQuizService
             {
                 return new ApiResult<PagedList<QuizDto>>(false, "Quiz not found !!!");
             }
-            
+
             quizList = quizListSearch.ToList();
         }
         else
@@ -75,10 +76,14 @@ public class QuizService : IQuizService
 
             quizList = _mapper.Map<IEnumerable<QuizDto>>(quizListAll);
         }
-        
-        if (searchQuizDto.Custom)
+
+        if (searchQuizDto.Custom == ECustomQuiz.Custom)
         {
             quizList = quizList.Where(t => t.LessonId == null && t.TopicId == null);
+        }
+        else if (searchQuizDto.Custom == ECustomQuiz.TopicAndLesson)
+        {
+            quizList = quizList.Where(t => t.LessonId != null || t.TopicId != null);
         }
 
         if (searchQuizDto.TopicId > 0)
@@ -93,10 +98,11 @@ public class QuizService : IQuizService
 
         if (searchQuizDto.Type > 0)
         {
-            quizList = quizList.Where(q => q.Type.Equals(searchQuizDto.Type));
+            quizList = quizList.Where(q => q.TypeId.Equals((int)searchQuizDto.Type));
         }
-        
-        var pagedResult = await PagedList<QuizDto>.ToPageListAsync(quizList.AsQueryable().BuildMock(), searchQuizDto.PageIndex, searchQuizDto.PageSize, searchQuizDto.OrderBy, searchQuizDto.IsAscending);
+
+        var pagedResult = await PagedList<QuizDto>.ToPageListAsync(quizList.AsQueryable().BuildMock(),
+            searchQuizDto.PageIndex, searchQuizDto.PageSize, searchQuizDto.OrderBy, searchQuizDto.IsAscending);
         return new ApiSuccessResult<PagedList<QuizDto>>(pagedResult);
     }
 
@@ -150,7 +156,9 @@ public class QuizService : IQuizService
         }
 
         var quizEntity = _mapper.Map<Quiz>(quizCreateDto);
-        quizEntity.KeyWord = (quizCreateDto.TagValues is not null) ? quizCreateDto.TagValues.ConvertToTagString() : quizCreateDto.Title.RemoveDiacritics();
+        quizEntity.KeyWord = (quizCreateDto.TagValues is not null)
+            ? quizCreateDto.TagValues.ConvertToTagString()
+            : quizCreateDto.Title.RemoveDiacritics();
         var quizCreate = await _quizRepository.CreateQuiz(quizEntity);
         quizCreate.Lesson = lessonEntity;
         quizCreate.Topic = topicEntity;
@@ -186,7 +194,9 @@ public class QuizService : IQuizService
         }
 
         var quizMapper = _mapper.Map(quizUpdateDto, quizEntity);
-        quizMapper.KeyWord = (quizUpdateDto.TagValues is not null) ? quizUpdateDto.TagValues.ConvertToTagString() : quizUpdateDto.Title.RemoveDiacritics();
+        quizMapper.KeyWord = (quizUpdateDto.TagValues is not null)
+            ? quizUpdateDto.TagValues.ConvertToTagString()
+            : quizUpdateDto.Title.RemoveDiacritics();
         var quizUpdate = await _quizRepository.UpdateQuiz(quizMapper);
         var result = _mapper.Map<QuizDto>(quizUpdate);
         await _elasticSearchService.UpdateDocumentAsync(ElasticConstant.ElasticQuizzes, result, quizUpdateDto.Id);

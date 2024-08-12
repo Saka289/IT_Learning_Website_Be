@@ -5,6 +5,4 @@ namespace LW.Shared.DTOs.Grade;
 
 public class SearchGradeDto : SearchRequestValue
 {
-    [Required]
-    public bool IsInclude { get; set; } = false;
 }

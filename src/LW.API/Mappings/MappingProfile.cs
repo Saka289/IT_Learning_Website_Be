@@ -61,14 +61,19 @@ public class MappingProfile : Profile
         CreateMap<Grade, GradeCreateDto>().ReverseMap();
         CreateMap<Grade, GradeUpdateDto>().ReverseMap();
         CreateMap<Document, GradeDocumentDto>()
-            .ForMember(x => x.AverageRating, y => y.MapFrom(src => src.CommentDocuments.Any() ? Math.Round(src.CommentDocuments.Average(c => c.Rating), 2) : 0))
+            .ForMember(x => x.AverageRating,
+                y => y.MapFrom(src =>
+                    src.CommentDocuments.Any() ? Math.Round(src.CommentDocuments.Average(c => c.Rating), 2) : 0))
             .ForMember(x => x.TotalReviewer, y => y.MapFrom(src => src.CommentDocuments.Count))
             .ReverseMap();
         CreateMap<Exam, GradeExamDto>().ReverseMap();
         CreateMap<Topic, GradeTopicDto>().ReverseMap();
         CreateMap<Lesson, GradeLessonDto>().ReverseMap();
         CreateMap<Problem, GradeProblemDto>().ReverseMap();
-        CreateMap<Quiz, GradeQuizDto>().ReverseMap();
+        CreateMap<Quiz, GradeQuizDto>()
+            .ForMember(x => x.TypeId, y => y.MapFrom(src => src.Type))
+            .ForMember(x => x.TypeName, y => y.MapFrom(src => src.Type.GetDisplayNameEnum()))
+            .ReverseMap();
         //Document 
         CreateMap<Document, DocumentDto>()
             .ForMember(x => x.GradeId, y => y.MapFrom(src => src.GradeId))
@@ -221,7 +226,8 @@ public class MappingProfile : Profile
             .ForMember(x => x.TopicTitle, y => y.MapFrom(src => src.Topic.Title))
             .ForMember(x => x.LessonTitle, y => y.MapFrom(src => src.Lesson.Title))
             .ForMember(x => x.TotalQuestion, y => y.MapFrom(src => src.QuizQuestionRelations.Count))
-            .ForMember(x => x.Type, y => y.MapFrom(src => src.Type.GetDisplayNameEnum()))
+            .ForMember(x => x.TypeName, y => y.MapFrom(src => src.Type.GetDisplayNameEnum()))
+            .ForMember(x => x.TypeId, y => y.MapFrom(src => src.Type))
             .ReverseMap();
         CreateMap<Quiz, QuizCreateDto>().ReverseMap();
         CreateMap<Quiz, QuizUpdateDto>().ReverseMap();
@@ -250,7 +256,9 @@ public class MappingProfile : Profile
             .ForMember(x => x.CompetitionTitle, y => y.MapFrom(src => src.Competition.Title))
             .ReverseMap();
         CreateMap<Document, TagDocumentDto>()
-            .ForMember(x => x.AverageRating, y => y.MapFrom(src => src.CommentDocuments.Any() ? Math.Round(src.CommentDocuments.Average(c => c.Rating), 2) : 0))
+            .ForMember(x => x.AverageRating,
+                y => y.MapFrom(src =>
+                    src.CommentDocuments.Any() ? Math.Round(src.CommentDocuments.Average(c => c.Rating), 2) : 0))
             .ForMember(x => x.TotalReviewer, y => y.MapFrom(src => src.CommentDocuments.Count))
             .ReverseMap();
         CreateMap<Topic, TagTopicDto>().ReverseMap();
@@ -335,6 +343,5 @@ public class MappingProfile : Profile
         CreateMap<VoteComment, VoteCommentUpdateDto>().ReverseMap();
         //FavoritePost
         CreateMap<FavoritePost, FavoritePostDto>().ReverseMap();
-
     }
 }

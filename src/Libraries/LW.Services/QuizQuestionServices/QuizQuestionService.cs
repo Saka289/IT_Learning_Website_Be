@@ -75,21 +75,9 @@ public class QuizQuestionService : IQuizQuestionService
         return new ApiSuccessResult<IEnumerable<QuizQuestionDto>>(result);
     }
 
-    public async Task<ApiResult<PagedList<QuizQuestionDto>>> GetAllQuizQuestionPagination(
-        SearchAllQuizQuestionDto searchAllQuizQuestionDto)
+    public async Task<ApiResult<PagedList<QuizQuestionDto>>> GetAllQuizQuestionPagination(SearchAllQuizQuestionDto searchAllQuizQuestionDto)
     {
-        var quizQuestionList = await _quizQuestionRepository.GetAllQuizQuestionPagination();
-        if (!quizQuestionList.Any())
-        {
-            return new ApiResult<PagedList<QuizQuestionDto>>(false, "Quiz Question is null !!!");
-        }
-
-        if (searchAllQuizQuestionDto.QuizId > 0)
-        {
-            quizQuestionList = quizQuestionList.Where(q =>
-                q.QuizQuestionRelations.Any(q => q.QuizId == searchAllQuizQuestionDto.QuizId));
-        }
-
+        IEnumerable<QuizQuestionDto> quizQuestionList;
         if (!string.IsNullOrEmpty(searchAllQuizQuestionDto.Value))
         {
             var quizQuestionListSearch = await _elasticSearchService.SearchDocumentFieldAsync(
@@ -103,7 +91,22 @@ public class QuizQuestionService : IQuizQuestionService
                 return new ApiResult<PagedList<QuizQuestionDto>>(false, "Quiz Question not found !!!");
             }
 
-            quizQuestionList = _mapper.Map(quizQuestionListSearch, quizQuestionList);
+            quizQuestionList = quizQuestionListSearch.ToList();
+        }
+        else
+        {
+            var quizQuestionListAll = await _quizQuestionRepository.GetAllQuizQuestionPagination();
+            if (!quizQuestionListAll.Any())
+            {
+                return new ApiResult<PagedList<QuizQuestionDto>>(false, "Quiz Question is null !!!");
+            }
+
+            quizQuestionList = _mapper.Map<IEnumerable<QuizQuestionDto>>(quizQuestionListAll);
+        }
+
+        if (searchAllQuizQuestionDto.QuizId > 0)
+        {
+            quizQuestionList = quizQuestionList.Where(q => q.QuizQuestionRelations.Any(q => q.QuizId == searchAllQuizQuestionDto.QuizId));
         }
 
         if (searchAllQuizQuestionDto.Level > 0)
@@ -118,8 +121,7 @@ public class QuizQuestionService : IQuizQuestionService
         return new ApiSuccessResult<PagedList<QuizQuestionDto>>(pagedResult);
     }
 
-    public async Task<ApiResult<IEnumerable<object>>> GetAllQuizQuestionByQuizId(
-        SearchQuizQuestionDto searchQuizQuestionDto)
+    public async Task<ApiResult<IEnumerable<object>>> GetAllQuizQuestionByQuizId(SearchQuizQuestionDto searchQuizQuestionDto)
     {
         var quiz = await _quizRepository.GetQuizById(Convert.ToInt32(searchQuizQuestionDto.QuizId));
         if (quiz is null)
