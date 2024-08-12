@@ -1,5 +1,6 @@
 ﻿using LW.Data.Entities;
 using LW.Data.Persistence;
+using LW.Infrastructure.Extensions;
 using LW.Shared.DTOs.Member;
 
 namespace LW.Data.Common.ModelMapping;
@@ -26,6 +27,7 @@ public static class ModelMappingExtensions
                     ur => ur.RoleId,
                     r => r.Id,
                     (ur, r) => r.Name)
+                .Select(r => r.ConvertRoleName())
                 .ToList()
         };
     }

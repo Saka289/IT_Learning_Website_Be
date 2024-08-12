@@ -1,6 +1,7 @@
 ﻿using AutoMapper;
 using LW.Data.Entities;
 using LW.Infrastructure.Extensions;
+using LW.Services.Common.ModelMapping;
 using LW.Shared.DTOs;
 using LW.Shared.DTOs.Admin;
 using LW.Shared.DTOs.CommentDocument;
@@ -100,7 +101,10 @@ public class MappingProfile : Profile
             .ForMember(x => x.FilePath, y => y.Ignore())
             .ReverseMap();
         //Role
-        CreateMap<IdentityRole, RoleDto>().ReverseMap();
+        CreateMap<IdentityRole, RoleDto>()
+            .ForMember(x => x.Name, y => y.MapFrom(src => src.Name.ConvertRoleName()))
+            .ForMember(x => x.BaseName, y => y.MapFrom(src => src.Name))
+            .ReverseMap();
         //CommentDocument
         CreateMap<CommentDocument, CommentDocumentDto>()
             .ForMember(x => x.FullName,
@@ -187,8 +191,6 @@ public class MappingProfile : Profile
             .ReverseMap();
         //Exam
         CreateMap<Exam, ExamDto>()
-            // .ForMember(x => x.Type,
-            //         y => y.MapFrom(src => EnumHelperExtensions.GetDisplayName(src.Type).ToString()))
             .ForMember(x => x.CompetitionId, y => y.MapFrom(src => src.Competition.Id))
             .ForMember(x => x.CompetitionTitle, y => y.MapFrom(src => src.Competition.Title))
             .ReverseMap();
@@ -207,7 +209,6 @@ public class MappingProfile : Profile
         CreateMap<ExamAnswer, ExamAnswerUpdateDto>().ReverseMap();
         //UserExam
         CreateMap<UserExam, UserExamDto>()
-            // .ForMember(x => x.HistoryExam, y => y.MapFrom(src => JsonConvert.DeserializeObject<List<HistoryAnswer>>(src.HistoryExam)))
             .ForMember(x => x.UserName, y => y.MapFrom(src => src.ApplicationUser.UserName))
             .ForMember(x => x.ExamName, y => y.MapFrom(src => src.ExamCode.Exam.Title))
             .ForMember(x => x.ExamId, y => y.MapFrom(src => src.ExamCode.Exam.Id))
@@ -220,6 +221,7 @@ public class MappingProfile : Profile
             .ForMember(x => x.TopicTitle, y => y.MapFrom(src => src.Topic.Title))
             .ForMember(x => x.LessonTitle, y => y.MapFrom(src => src.Lesson.Title))
             .ForMember(x => x.TotalQuestion, y => y.MapFrom(src => src.QuizQuestionRelations.Count))
+            .ForMember(x => x.Type, y => y.MapFrom(src => src.Type.GetDisplayNameEnum()))
             .ReverseMap();
         CreateMap<Quiz, QuizCreateDto>().ReverseMap();
         CreateMap<Quiz, QuizUpdateDto>().ReverseMap();

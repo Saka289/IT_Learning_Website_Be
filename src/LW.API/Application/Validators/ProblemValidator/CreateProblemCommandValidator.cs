@@ -16,6 +16,6 @@ public class CreateProblemCommandValidator : AbstractValidator<ProblemCreateDto>
     
     private bool HaveValidTopicOrLesson(ProblemCreateDto problem)
     {
-        return !(problem.TopicId.HasValue && problem.LessonId.HasValue) && (problem.TopicId.HasValue || problem.LessonId.HasValue);
+        return !(problem.TopicId.HasValue && problem.LessonId.HasValue);
     }
 }
