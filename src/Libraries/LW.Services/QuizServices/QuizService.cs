@@ -68,7 +68,7 @@ public class QuizService : IQuizService
         else
         {
             var quizListAll = await _quizRepository.GetAllQuiz();
-            if (quizList.All(q => q == null))
+            if (quizListAll.All(q => q == null))
             {
                 return new ApiResult<PagedList<QuizDto>>(false, "Quiz is null !!!");
             }
