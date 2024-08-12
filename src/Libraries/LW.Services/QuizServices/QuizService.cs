@@ -76,9 +76,13 @@ public class QuizService : IQuizService
             quizList = _mapper.Map<IEnumerable<QuizDto>>(quizListAll);
         }
         
-        if (searchQuizDto.Custom)
+        if (searchQuizDto.Custom == ECustomQuiz.Custom)
         {
             quizList = quizList.Where(t => t.LessonId == null && t.TopicId == null);
+        }
+        else if(searchQuizDto.Custom == ECustomQuiz.TopicAndLesson)
+        {
+            quizList = quizList.Where(t => t.LessonId != null || t.TopicId != null);
         }
 
         if (searchQuizDto.TopicId > 0)
