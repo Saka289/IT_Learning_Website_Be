@@ -20,7 +20,7 @@ public interface IAdminAuthorService
     public Task<ApiResult<bool>> DeleteAsync(string userId);
     public Task<ApiResult<bool>> LockMemberAsync(string userId);
     public Task<ApiResult<bool>> UnLockMemberAsync(string userId);
-    public Task<ApiResult<IEnumerable<string>>> GetApplicationRolesAsync();
+    public Task<ApiResult<IEnumerable<RoleDto>>> GetApplicationRolesAsync();
     public Task<ApiResult<AdminDto>> GetByUserIdAsync(string userId);
     public Task<ApiResult<AdminDto>> GetByEmailAsync(string email);
     // manage profile

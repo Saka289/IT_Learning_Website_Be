@@ -1,4 +1,5 @@
 ﻿using LW.Data.Entities;
+using LW.Infrastructure.Extensions;
 using LW.Shared.DTOs.Compile;
 using LW.Shared.DTOs.Member;
 using LW.Shared.DTOs.Submission;
@@ -23,10 +24,10 @@ public static class ModelMappingExtensions
             Image = applicationUser.Image,
             EmailConfirmed = applicationUser.EmailConfirmed,
             LockOutEnd = applicationUser.LockoutEnd,
-            Roles = userManager.GetRolesAsync(applicationUser).Result.ToList()
+            Roles = userManager.GetRolesAsync(applicationUser).Result.Select(r => r.ConvertRoleName()).ToList()
         };
     }
-    
+
     public static Submission ToSubmission(this CompileDto compileDto, SubmitProblemDto submitProblemDto)
     {
         return new Submission

@@ -3,6 +3,7 @@ using AutoMapper;
 using LW.Contracts.Common;
 using LW.Contracts.Services;
 using LW.Data.Entities;
+using LW.Infrastructure.Extensions;
 using LW.Services.Common.CommonServices.JwtTokenServices;
 using LW.Services.Common.ModelMapping;
 using LW.Shared.Configurations;
@@ -352,10 +353,10 @@ public class AdminAuthorService : IAdminAuthorService
         return new ApiResult<bool>(false, $"User Not Found !");
     }
 
-    public async Task<ApiResult<IEnumerable<string>>> GetApplicationRolesAsync()
+    public async Task<ApiResult<IEnumerable<RoleDto>>> GetApplicationRolesAsync()
     {
-        var roles = await _roleManager.Roles.Select(x => x.Name).ToListAsync();
-        return new ApiResult<IEnumerable<string>>(true, _mapper.Map<IEnumerable<string>>(roles),
+        var roles = await _roleManager.Roles.ToListAsync();
+        return new ApiResult<IEnumerable<RoleDto>>(true, _mapper.Map<IEnumerable<RoleDto>>(roles),
             $"Get Roles Successfully !");
     }
 

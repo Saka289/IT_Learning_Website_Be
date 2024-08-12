@@ -140,7 +140,7 @@ namespace LW.API.Controllers.Admin
         }
 
         [HttpGet("getAllRoles")]
-        public async Task<ActionResult<ApiResult<List<string>>>> GetAllRoles()
+        public async Task<ActionResult<ApiResult<List<RoleDto>>>> GetAllRoles()
         {
             var result = await _adminAuthorService.GetApplicationRolesAsync();
             if (!result.IsSucceeded)
