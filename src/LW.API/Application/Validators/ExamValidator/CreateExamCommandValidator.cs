@@ -25,8 +25,6 @@ public class CreateExamCommandValidator:AbstractValidator<ExamCreateDto>
             .WithMessage($"Year must be between 0 and {DateTime.Now.Year + 1}.");;
         RuleFor(x => x.NumberQuestion).NotNull().GreaterThan(-1);
         RuleFor(x => x.IsActive).NotNull();
-        RuleFor(x => x.tagValues).NotNull().NotEmpty();
-        
     }
     private bool BeAValidPdfFormat(IFormFile image)
     {

@@ -9,7 +9,7 @@ public class QuizCreateDto
     public ETypeQuiz Type { get; set; }
     public decimal Score { get; set; }
     public bool IsActive { get; set; } = true;
-    public IEnumerable<string> tagValues { get; set; }
+    public IEnumerable<string>? TagValues { get; set; }
     public int? TopicId { get; set; }
     public int? LessonId { get; set; }
 }

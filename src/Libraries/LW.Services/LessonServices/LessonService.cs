@@ -162,7 +162,7 @@ public class LessonService : ILessonService
             lessonEntity.Content = lessonCreateDto.Content.Base64Encode();
         }
 
-        lessonEntity.KeyWord = lessonCreateDto.tagValues.Any() ? lessonCreateDto.tagValues.ConvertToTagString() : lessonCreateDto.Title.RemoveDiacritics();
+        lessonEntity.KeyWord = (lessonCreateDto.TagValues is not null) ? lessonCreateDto.TagValues.ConvertToTagString() : lessonCreateDto.Title.RemoveDiacritics();
         lessonEntity.FilePath = filePath.Url;
         lessonEntity.PublicId = filePath.PublicId;
         lessonEntity.UrlDownload = filePath.UrlDownload;
@@ -207,7 +207,7 @@ public class LessonService : ILessonService
         model.FilePath = filePath.Url;
         model.PublicId = filePath.PublicId;
         model.UrlDownload = filePath.UrlDownload;
-        model.KeyWord = lessonUpdateDto.tagValues.Any() ? lessonUpdateDto.tagValues.ConvertToTagString() : lessonUpdateDto.Title.RemoveDiacritics();
+        model.KeyWord = (lessonUpdateDto.TagValues is not null) ? lessonUpdateDto.TagValues.ConvertToTagString() : lessonUpdateDto.Title.RemoveDiacritics();
         var updateLesson = await _lessonRepository.UpdateLesson(model);
         await _lessonRepository.SaveChangesAsync();
         await CreateOrUpdateElasticLesson(lessonUpdateDto.Id, true);

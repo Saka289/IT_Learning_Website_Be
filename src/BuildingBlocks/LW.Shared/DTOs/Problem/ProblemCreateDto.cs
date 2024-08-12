@@ -8,7 +8,7 @@ public class ProblemCreateDto
     public string Description { get; set; }
     public EDifficulty Difficulty { get; set; }
     public bool IsActive { get; set; }
-    public IEnumerable<string> tagValues { get; set; }
+    public IEnumerable<string>? TagValues { get; set; }
     public int? TopicId { get; set; }
     public int? LessonId { get; set; }
 }
