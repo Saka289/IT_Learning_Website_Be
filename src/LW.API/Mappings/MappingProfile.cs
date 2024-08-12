@@ -221,7 +221,8 @@ public class MappingProfile : Profile
             .ForMember(x => x.TopicTitle, y => y.MapFrom(src => src.Topic.Title))
             .ForMember(x => x.LessonTitle, y => y.MapFrom(src => src.Lesson.Title))
             .ForMember(x => x.TotalQuestion, y => y.MapFrom(src => src.QuizQuestionRelations.Count))
-            .ForMember(x => x.Type, y => y.MapFrom(src => src.Type.GetDisplayNameEnum()))
+            .ForMember(x => x.TypeName, y => y.MapFrom(src => src.Type.GetDisplayNameEnum()))
+            .ForMember(x => x.TypeId, y => y.MapFrom(src => src.Type))
             .ReverseMap();
         CreateMap<Quiz, QuizCreateDto>().ReverseMap();
         CreateMap<Quiz, QuizUpdateDto>().ReverseMap();
