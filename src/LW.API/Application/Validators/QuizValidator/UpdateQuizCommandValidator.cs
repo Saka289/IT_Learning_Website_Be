@@ -18,6 +18,6 @@ public class UpdateQuizCommandValidator : AbstractValidator<QuizUpdateDto>
     
     private bool HaveValidTopicOrLesson(QuizUpdateDto quiz)
     {
-        return !(quiz.TopicId.HasValue && quiz.LessonId.HasValue) && (quiz.TopicId.HasValue || quiz.LessonId.HasValue);
+        return !(quiz.TopicId.HasValue && quiz.LessonId.HasValue);
     }
 }

@@ -17,6 +17,6 @@ public class UpdateProblemCommandValidator : AbstractValidator<ProblemUpdateDto>
     
     private bool HaveValidTopicOrLesson(ProblemUpdateDto problem)
     {
-        return !(problem.TopicId.HasValue && problem.LessonId.HasValue) && (problem.TopicId.HasValue || problem.LessonId.HasValue);
+        return !(problem.TopicId.HasValue && problem.LessonId.HasValue);
     }
 }
