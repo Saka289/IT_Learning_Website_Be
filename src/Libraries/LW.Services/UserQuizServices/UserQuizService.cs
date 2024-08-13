@@ -83,7 +83,7 @@ public class UserQuizService : IUserQuizService
             else
             {
                 var listAnswer = quizAnswer.Where(qa => qa.QuizQuestionId == itemSubmit.QuestionId).Select(x => x.Id);
-                var listAnswerUser = itemSubmit.AnswerId;
+                var listAnswerUser = itemSubmit.AnswerId ?? new List<int>();
                 var listBoth = listAnswer.Intersect(listAnswerUser).ToList();
                 if (listBoth.Any())
                 {
@@ -101,7 +101,8 @@ public class UserQuizService : IUserQuizService
                     }
                     else
                     {
-                        var totalAnswer = await _quizAnswerRepository.GetAllQuizAnswerByQuizQuestionId(itemSubmit.QuestionId);
+                        var totalAnswer =
+                            await _quizAnswerRepository.GetAllQuizAnswerByQuizQuestionId(itemSubmit.QuestionId);
                         var scoreQuestion = numberScore / totalAnswer.Count();
                         var scoreResult = scoreQuestion * listBoth.Count();
                         var history = new HistoryQuizDto()
