@@ -311,6 +311,7 @@ public class MappingProfile : Profile
         // Submission
         CreateMap<Submission, SubmissionDto>()
             .ForMember(x => x.StatusId, y => y.MapFrom(src => (int)src.Status))
+            .ForMember(x => x.LanguageName, y => y.MapFrom(src => src.ProgramLanguage.Name))
             .ReverseMap();
         //Post
         CreateMap<Post, PostDto>()

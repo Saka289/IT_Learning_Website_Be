@@ -21,6 +21,7 @@ public class SubmissionRepository : RepositoryBase<Submission, int>, ISubmission
     public async Task<IEnumerable<Submission>> GetAllSubmissionByProblemIdUserId(int problemId, string userId)
     {
         return await FindAll()
+            .Include(p => p.ProgramLanguage).DefaultIfEmpty()
             .Where(s => s.ProblemId == problemId && s.UserId.Equals(userId) && s.Submit)
             .ToListAsync();
     }
@@ -33,6 +34,7 @@ public class SubmissionRepository : RepositoryBase<Submission, int>, ISubmission
     public async Task<Submission?> GetSubmissionByProblemIdUserId(int problemId, string userId, int languageId)
     {
         return await FindAll()
+            .Include(p => p.ProgramLanguage).DefaultIfEmpty()
             .Where(s => s.ProblemId == problemId && s.UserId.Equals(userId) && s.LanguageId == languageId && s.Status == EStatusSubmission.Accepted && s.Submit)
             .OrderByDescending(s => s.CreatedDate)
             .FirstOrDefaultAsync();
