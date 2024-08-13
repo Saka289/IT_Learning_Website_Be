@@ -102,9 +102,11 @@ public class UserService : IUserService
         }
 
         var user = _mapper.Map<ApplicationUser>(registerUserDto);
+
         user.EmailConfirmed = true;
         user.Image = CloudinaryConstant.Avatar;
         user.PublicId = CloudinaryConstant.AvatarPublicKey;
+
         var result = await _userManager.CreateAsync(user, registerUserDto.Password);
         if (!result.Succeeded)
         {
