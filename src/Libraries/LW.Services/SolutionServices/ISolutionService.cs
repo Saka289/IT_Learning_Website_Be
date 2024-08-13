@@ -1,12 +1,11 @@
-﻿using LW.Shared.SeedWork;
-using LW.Shared.Solution;
+﻿using LW.Shared.DTOs.Solution;
+using LW.Shared.SeedWork;
 
 namespace LW.Services.SolutionServices;
 
 public interface ISolutionService
 {
-    Task<ApiResult<IEnumerable<SolutionDto>>> GetAllSolutionByProblemId(int problemId);
-    Task<ApiResult<IEnumerable<SolutionDto>>> SearchSolutionByProblemId(int problemId, SearchRequestValue searchRequestValue);
+    Task<ApiResult<PagedList<SolutionDto>>> GetAllSolutionByProblemIdPagination(SearchSolutionDto searchSolutionDto);
     Task<ApiResult<SolutionDto>> GetSolutionById(int id);
     Task<ApiResult<SolutionDto>> CreateSolution(SolutionCreateDto solutionCreateDto);
     Task<ApiResult<SolutionDto>> UpdateSolution(SolutionUpdateDto solutionUpdateDto);

@@ -7,7 +7,7 @@ public static class TagValueHelperExtensions
         var result = string.Empty;
         if (tagValues != null && tagValues.Any())
         {
-            result = string.Join(",", tagValues);
+            result = string.Join(",", tagValues) + ",";
         }
         return result;
     }

@@ -8,7 +8,8 @@ public class ProblemDto
     public string Title { get; set; }
     public string KeyWord { get; set; }
     public string Description { get; set; }
-    public string Difficulty { get; set; }
+    public int Difficulty { get; set; }
+    public string DifficultyName { get; set; }
     public bool IsActive { get; set; }
     public int? TopicId { get; set; }
     public int? LessonId { get; set; }

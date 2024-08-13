@@ -27,7 +27,7 @@ public class UserGradeService : IUserGradeService
 
     public async Task<ApiResult<bool>> CreatUserGrade(UserGradeCreateDto model)
     {
-        var gradeCheck = await _gradeRepository.GetGradeById(model.GradeId);
+        var gradeCheck = await _gradeRepository.GetGradeById(model.GradeId, false);
         if (gradeCheck == null)
         {
             return new ApiResult<bool>(false, "Grade not found");
@@ -59,7 +59,7 @@ public class UserGradeService : IUserGradeService
             return new ApiResult<bool>(false, "Not Found");
         }
 
-        var gradeCheck = await _gradeRepository.GetGradeById(model.GradeId);
+        var gradeCheck = await _gradeRepository.GetGradeById(model.GradeId, false);
         if (gradeCheck == null)
         {
             return new ApiResult<bool>(false, "Grade not found");

@@ -7,6 +7,6 @@ public class SearchQuizDto : SearchRequestValue
 {
     public int? TopicId { get; set; }
     public int? LessonId { get; set; }
-    public bool Custom { get; set; } = false;
+    public ECustomQuiz Custom { get; set; } = ECustomQuiz.All;
     public ETypeQuiz? Type { get; set; }
 }

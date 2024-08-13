@@ -20,7 +20,7 @@ namespace LW.Data.Repositories.DocumentRepositories
         public async Task<Document> CreateDocument(Document document)
         {
             await CreateAsync(document);
-            return await Task.FromResult(document);
+            return document;
         }
 
         public async Task<bool> DeleteDocument(int id)
@@ -37,31 +37,55 @@ namespace LW.Data.Repositories.DocumentRepositories
 
         public async Task<IEnumerable<Document>> GetAllDocument()
         {
-            var documents = await FindAll().Include(g => g.Grade).ToListAsync();
+            var documents = await FindAll()
+                .Include(g => g.Grade)
+                .Include(c => c.CommentDocuments)
+                .ToListAsync();
             return documents;
         }
 
         public async Task<IEnumerable<Document>> GetAllDocumentByGrade(int id)
         {
-            return await FindAll().Include(g => g.Grade).Where(x => x.GradeId == id).ToListAsync();
+            return await FindAll()
+                .Include(g => g.Grade)
+                .Include(c => c.CommentDocuments)
+                .Where(x => x.GradeId == id).ToListAsync();
         }
 
-        public Task<IQueryable<Document>> GetAllDocumentPagination()
+        public async Task<IEnumerable<Document>> GetAllDocumentPagination()
         {
-            var result = FindAll().Include(g => g.Grade).AsQueryable();
-            return Task.FromResult(result);
+            var result = await FindAll()
+                .Include(g => g.Grade)
+                .Include(c => c.CommentDocuments)
+                .ToListAsync();
+            return result;
+        }
+
+        public async Task<IEnumerable<Document>> SearchDocumentByTag(string tag, bool order)
+        {
+            var result = order
+                ? await FindAll()
+                    .Include(d => d.CommentDocuments)
+                    .Where(d => d.KeyWord.Contains(tag)).OrderByDescending(d => d.CreatedDate).ToListAsync()
+                : await FindAll()
+                    .Include(d => d.CommentDocuments)
+                    .Where(d => d.KeyWord.Contains(tag)).ToListAsync();
+            return result;
         }
 
         public async Task<Document> GetDocumentById(int id)
         {
-            var document = await GetByIdAsync(id);
+            var document = await FindByCondition(x => x.Id == id)
+                .Include(g => g.Grade)
+                .Include(c => c.CommentDocuments)
+                .FirstOrDefaultAsync();
             return document;
         }
 
         public async Task<Document> UpdateDocument(Document document)
         {
             await UpdateAsync(document);
-            return await Task.FromResult(document);
+            return document;
         }
 
         public async Task<Document> GetAllDocumentIndex(int id)

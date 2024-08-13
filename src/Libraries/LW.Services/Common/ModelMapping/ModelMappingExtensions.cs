@@ -1,4 +1,5 @@
 ﻿using LW.Data.Entities;
+using LW.Infrastructure.Extensions;
 using LW.Shared.DTOs.Compile;
 using LW.Shared.DTOs.Member;
 using LW.Shared.DTOs.Submission;
@@ -23,10 +24,10 @@ public static class ModelMappingExtensions
             Image = applicationUser.Image,
             EmailConfirmed = applicationUser.EmailConfirmed,
             LockOutEnd = applicationUser.LockoutEnd,
-            Roles = userManager.GetRolesAsync(applicationUser).Result.ToList()
+            Roles = userManager.GetRolesAsync(applicationUser).Result.Select(r => r.ConvertRoleName()).ToList()
         };
     }
-    
+
     public static Submission ToSubmission(this CompileDto compileDto, SubmitProblemDto submitProblemDto)
     {
         return new Submission
@@ -41,23 +42,28 @@ public static class ModelMappingExtensions
         };
     }
 
-    public static SubmissionDto ToSubmissionDto(this CompileDto compileDto, Submission submission)
+    public static SubmissionDto ToSubmissionDto(this CompileDto compileDto, Submission submission, int testCaseId)
     {
         return new SubmissionDto
         {
             Id = submission.Id,
+            TestCaseId = testCaseId,
             Input = compileDto.stdin,
             Output = compileDto.stdout,
             StatusId = compileDto.status_id,
             Status = ((EStatusSubmission)compileDto.status_id).ToString(),
             CompileOutput = compileDto.compile_output,
             ExpectedOutput = compileDto.expected_output,
+            StandardError = compileDto.stderr,
+            Message = compileDto.message,
             ExecutionTime = compileDto.time,
             LanguageId = submission.LanguageId,
             MemoryUsage = compileDto.memory,
             ProblemId = submission.ProblemId,
             SourceCode = compileDto.source_code,
-            UserId = submission.UserId
+            UserId = submission.UserId,
+            CreatedDate = submission.CreatedDate,
+            LastModifiedDate = submission.LastModifiedDate
         };
     }
 }

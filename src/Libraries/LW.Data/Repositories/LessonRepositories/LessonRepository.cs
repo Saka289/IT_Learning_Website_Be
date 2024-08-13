@@ -22,15 +22,9 @@ public class LessonRepository : RepositoryBase<Lesson, int>, ILessonRepository
         return await FindAll().Include(t => t.Topic).Where(x => x.TopicId == id).ToListAsync();
     }
 
-    public Task<IQueryable<Lesson>> GetAllLessonPagination()
+    public async Task<Lesson?> GetLessonById(int id)
     {
-        var result = FindAll();
-        return Task.FromResult(result);
-    }
-
-    public async Task<Lesson> GetLessonById(int id)
-    {
-        return await FindByCondition(x => x.Id == id).Include(t => t.Topic).FirstOrDefaultAsync();
+        return await FindByCondition(x => x.Id == id).FirstOrDefaultAsync();
     }
 
     public Task<Lesson> CreateLesson(Lesson lesson)
@@ -69,15 +63,15 @@ public class LessonRepository : RepositoryBase<Lesson, int>, ILessonRepository
         return true;
     }
 
-    public async Task<bool> DeleteRangeLesson(IEnumerable<Lesson> lessons)
+    public async Task<bool> DeleteRangeLesson(IEnumerable<int> ids)
     {
-        lessons = lessons.Where(l => l != null);
-        if (!lessons.Any())
+        var listLesson = await FindAll().Where(lesson => ids.Contains(lesson.Id)).ToListAsync();
+        if (!listLesson.Any())
         {
             return false;
         }
 
-        await DeleteListAsync(lessons);
+        await DeleteListAsync(listLesson);
         return true;
     }
 
@@ -92,5 +86,15 @@ public class LessonRepository : RepositoryBase<Lesson, int>, ILessonRepository
             .ThenInclude(d => d.Document)
             .Where(t => t.Topic.Document.IsActive)
             .FirstOrDefaultAsync(l => l.Id == id && l.IsActive);
+    }
+
+    public async Task<IEnumerable<Lesson>> SearchLessonByTag(string tag, bool order)
+    {
+        var result = order
+            ? await FindAll()
+                .Where(l => l.KeyWord.Contains(tag)).OrderByDescending(l => l.CreatedDate).ToListAsync()
+            : await FindAll()
+                .Where(l => l.KeyWord.Contains(tag)).ToListAsync();
+        return result;
     }
 }

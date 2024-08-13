@@ -75,21 +75,9 @@ public class QuizQuestionService : IQuizQuestionService
         return new ApiSuccessResult<IEnumerable<QuizQuestionDto>>(result);
     }
 
-    public async Task<ApiResult<PagedList<QuizQuestionDto>>> GetAllQuizQuestionPagination(
-        SearchAllQuizQuestionDto searchAllQuizQuestionDto)
+    public async Task<ApiResult<PagedList<QuizQuestionDto>>> GetAllQuizQuestionPagination(SearchAllQuizQuestionDto searchAllQuizQuestionDto)
     {
-        var quizQuestionList = await _quizQuestionRepository.GetAllQuizQuestionPagination();
-        if (!quizQuestionList.Any())
-        {
-            return new ApiResult<PagedList<QuizQuestionDto>>(false, "Quiz Question is null !!!");
-        }
-
-        if (searchAllQuizQuestionDto.QuizId > 0)
-        {
-            quizQuestionList = quizQuestionList.Where(q =>
-                q.QuizQuestionRelations.Any(q => q.QuizId == searchAllQuizQuestionDto.QuizId));
-        }
-
+        IEnumerable<QuizQuestionDto> quizQuestionList;
         if (!string.IsNullOrEmpty(searchAllQuizQuestionDto.Value))
         {
             var quizQuestionListSearch = await _elasticSearchService.SearchDocumentFieldAsync(
@@ -103,7 +91,22 @@ public class QuizQuestionService : IQuizQuestionService
                 return new ApiResult<PagedList<QuizQuestionDto>>(false, "Quiz Question not found !!!");
             }
 
-            quizQuestionList = _mapper.Map(quizQuestionListSearch, quizQuestionList);
+            quizQuestionList = quizQuestionListSearch.ToList();
+        }
+        else
+        {
+            var quizQuestionListAll = await _quizQuestionRepository.GetAllQuizQuestionPagination();
+            if (!quizQuestionListAll.Any())
+            {
+                return new ApiResult<PagedList<QuizQuestionDto>>(false, "Quiz Question is null !!!");
+            }
+
+            quizQuestionList = _mapper.Map<IEnumerable<QuizQuestionDto>>(quizQuestionListAll);
+        }
+
+        if (searchAllQuizQuestionDto.QuizId > 0)
+        {
+            quizQuestionList = quizQuestionList.Where(q => q.QuizQuestionRelations.Any(q => q.QuizId == searchAllQuizQuestionDto.QuizId));
         }
 
         if (searchAllQuizQuestionDto.Level > 0)
@@ -118,8 +121,7 @@ public class QuizQuestionService : IQuizQuestionService
         return new ApiSuccessResult<PagedList<QuizQuestionDto>>(pagedResult);
     }
 
-    public async Task<ApiResult<IEnumerable<object>>> GetAllQuizQuestionByQuizId(
-        SearchQuizQuestionDto searchQuizQuestionDto)
+    public async Task<ApiResult<IEnumerable<object>>> GetAllQuizQuestionByQuizId(SearchQuizQuestionDto searchQuizQuestionDto)
     {
         var quiz = await _quizRepository.GetQuizById(Convert.ToInt32(searchQuizQuestionDto.QuizId));
         if (quiz is null)
@@ -127,26 +129,7 @@ public class QuizQuestionService : IQuizQuestionService
             return new ApiResult<IEnumerable<object>>(false, "Quiz is null !!!");
         }
 
-        var quizQuestionList =
-            await _quizQuestionRepository.GetAllQuizQuestionByQuizId(Convert.ToInt32(searchQuizQuestionDto.QuizId));
-        if (!quizQuestionList.Any())
-        {
-            return new ApiResult<IEnumerable<object>>(false, "Quiz Question is null !!!");
-        }
-
-        if (quiz.IsShuffle)
-        {
-            quizQuestionList = quizQuestionList.OrderBy(x => Random.Shared.Next());
-        }
-
-        foreach (var item in quizQuestionList)
-        {
-            if (item.IsShuffle)
-            {
-                item.QuizAnswers = item.QuizAnswers.OrderBy(x => Random.Shared.Next()).ToList();
-            }
-        }
-
+        IEnumerable<QuizQuestionDto> quizQuestionList;
         if (!string.IsNullOrEmpty(searchQuizQuestionDto.Value))
         {
             var quizQuestionListSearch = await _elasticSearchService.SearchDocumentFieldAsync(
@@ -160,7 +143,31 @@ public class QuizQuestionService : IQuizQuestionService
                 return new ApiResult<IEnumerable<object>>(false, "Quiz Question not found !!!");
             }
 
-            quizQuestionList = _mapper.Map(quizQuestionListSearch, quizQuestionList);
+            quizQuestionList = quizQuestionListSearch.ToList();
+        }
+        else
+        {
+            var quizQuestionListAll =
+                await _quizQuestionRepository.GetAllQuizQuestionByQuizId(Convert.ToInt32(searchQuizQuestionDto.QuizId));
+            if (!quizQuestionListAll.Any())
+            {
+                return new ApiResult<IEnumerable<object>>(false, "Quiz Question is null !!!");
+            }
+
+            quizQuestionList = _mapper.Map<IEnumerable<QuizQuestionDto>>(quizQuestionListAll);
+        }
+
+        if (quiz.IsShuffle)
+        {
+            quizQuestionList = quizQuestionList.OrderBy(x => Random.Shared.Next());
+        }
+
+        foreach (var item in quizQuestionList)
+        {
+            if (item.IsShuffle)
+            {
+                item.QuizAnswers = item.QuizAnswers.OrderBy(x => Random.Shared.Next()).ToList();
+            }
         }
 
         if (searchQuizQuestionDto.NumberOfQuestion > 0)
@@ -222,7 +229,9 @@ public class QuizQuestionService : IQuizQuestionService
 
         var quizQuestionEntity = _mapper.Map<QuizQuestion>(quizQuestionCreateDto);
 
-        var listQuizQuestion = await _quizQuestionRepository.GetAllQuizQuestionByQuizId(quizQuestionCreateDto.QuizId);
+        var listQuizQuestion = (quizQuestionCreateDto.QuizId > 0)
+            ? await _quizQuestionRepository.GetAllQuizQuestionByQuizId(quizQuestionCreateDto.QuizId)
+            : await _quizQuestionRepository.GetAllQuizQuestion();
         var numberHash = FindDuplicateQuestion(listQuizQuestion, quizQuestionEntity);
         if (numberHash == 0)
         {
@@ -249,7 +258,7 @@ public class QuizQuestionService : IQuizQuestionService
 
         var quizQuestionCreate = await _quizQuestionRepository.CreateQuizQuestion(quizQuestionEntity);
         var result = _mapper.Map<QuizQuestionDto>(quizQuestionCreate);
-        _elasticSearchService.CreateDocumentAsync(ElasticConstant.ElasticQuizQuestion, result, q => q.Id);
+        await _elasticSearchService.CreateDocumentAsync(ElasticConstant.ElasticQuizQuestion, result, q => q.Id);
         return new ApiSuccessResult<QuizQuestionDto>(result);
     }
 
@@ -290,14 +299,15 @@ public class QuizQuestionService : IQuizQuestionService
         }
 
         var modelQuestion = _mapper.Map(quizQuestionUpdateDto, quizQuestionEntity);
-        
+
         var listQuizQuestion = await _quizQuestionRepository.GetAllQuizQuestion();
-        var numberHash = FindDuplicateQuestion(listQuizQuestion, quizQuestionEntity);
+        var numberHash = FindDuplicateQuestion(listQuizQuestion.Where(q => q.Id != quizQuestionUpdateDto.Id),
+            quizQuestionEntity);
         if (numberHash == 0)
         {
             return new ApiResult<QuizQuestionDto>(false, "Question is duplicate !!!");
         }
-        
+
         var quizQuestion = await _quizQuestionRepository.GetQuizQuestionById(quizQuestionUpdateDto.Id);
         if (quizQuestionUpdateDto.Image != null && quizQuestionUpdateDto.Image.Length > 0)
         {
@@ -335,17 +345,18 @@ public class QuizQuestionService : IQuizQuestionService
                 await _quizAnswerRepository.DeleteRangeAnswer(quizAnswers);
                 var quizAnswer = _mapper.Map<IEnumerable<QuizAnswer>>(quizQuestionUpdateDto.QuizAnswers);
                 await _quizAnswerRepository.CreateRangeQuizAnswer(quizAnswer);
-                quizQuestionUpdate.QuizAnswers = quizAnswer.ToList();
             }
         }
 
+        quizQuestionUpdate = await _quizQuestionRepository.GetQuizQuestionById(quizQuestionUpdateDto.Id);
         var result = _mapper.Map<QuizQuestionDto>(quizQuestionUpdate);
-        _elasticSearchService.UpdateDocumentAsync(ElasticConstant.ElasticQuizQuestion, result,
+        await _elasticSearchService.UpdateDocumentAsync(ElasticConstant.ElasticQuizQuestion, result,
             quizQuestionUpdateDto.Id);
         return new ApiSuccessResult<QuizQuestionDto>(result);
     }
 
-    public async Task<ApiResult<bool>> CreateRangeQuizQuestion(IEnumerable<QuizQuestionCreateDto> quizQuestionsCreateDto)
+    public async Task<ApiResult<bool>> CreateRangeQuizQuestion(
+        IEnumerable<QuizQuestionCreateDto> quizQuestionsCreateDto)
     {
         foreach (var item in quizQuestionsCreateDto)
         {
@@ -378,7 +389,9 @@ public class QuizQuestionService : IQuizQuestionService
 
             var quizQuestionEntity = _mapper.Map<QuizQuestion>(item);
 
-            var listQuizQuestion = await _quizQuestionRepository.GetAllQuizQuestion();
+            var listQuizQuestion = (item.QuizId > 0)
+                ? await _quizQuestionRepository.GetAllQuizQuestionByQuizId(item.QuizId)
+                : await _quizQuestionRepository.GetAllQuizQuestion();
             var numberHash = FindDuplicateQuestion(listQuizQuestion, quizQuestionEntity);
             if (numberHash == 0)
             {
@@ -401,13 +414,14 @@ public class QuizQuestionService : IQuizQuestionService
 
             var quizQuestionCreate = await _quizQuestionRepository.CreateQuizQuestion(quizQuestionEntity);
             var result = _mapper.Map<QuizQuestionDto>(quizQuestionCreate);
-            _elasticSearchService.CreateDocumentAsync(ElasticConstant.ElasticQuizQuestion, result, q => q.Id);
+            await _elasticSearchService.CreateDocumentAsync(ElasticConstant.ElasticQuizQuestion, result, q => q.Id);
         }
 
         return new ApiSuccessResult<bool>(true);
     }
 
-    public async Task<ApiResult<bool>> UpdateRangeQuizQuestion(IEnumerable<QuizQuestionUpdateDto> quizQuestionsUpdateDto)
+    public async Task<ApiResult<bool>> UpdateRangeQuizQuestion(
+        IEnumerable<QuizQuestionUpdateDto> quizQuestionsUpdateDto)
     {
         foreach (var item in quizQuestionsUpdateDto)
         {
@@ -445,14 +459,14 @@ public class QuizQuestionService : IQuizQuestionService
             }
 
             var modelQuestion = _mapper.Map(item, quizQuestionEntity);
-            
+
             var listQuizQuestion = await _quizQuestionRepository.GetAllQuizQuestion();
-            var numberHash = FindDuplicateQuestion(listQuizQuestion, quizQuestionEntity);
+            var numberHash = FindDuplicateQuestion(listQuizQuestion.Where(q => q.Id != item.Id), quizQuestionEntity);
             if (numberHash == 0)
             {
                 return new ApiResult<bool>(false, $"Question: {item.Content} is duplicate !!!");
             }
-            
+
             var quizQuestion = await _quizQuestionRepository.GetQuizQuestionById(item.Id);
             if (item.Image != null && item.Image.Length > 0)
             {
@@ -493,8 +507,9 @@ public class QuizQuestionService : IQuizQuestionService
                 }
             }
 
+            quizQuestionUpdate = await _quizQuestionRepository.GetQuizQuestionById(item.Id);
             var result = _mapper.Map<QuizQuestionDto>(quizQuestionUpdate);
-            _elasticSearchService.UpdateDocumentAsync(ElasticConstant.ElasticQuizQuestion, result, item.Id);
+            await _elasticSearchService.UpdateDocumentAsync(ElasticConstant.ElasticQuizQuestion, result, item.Id);
         }
 
         return new ApiSuccessResult<bool>(true);
@@ -511,7 +526,7 @@ public class QuizQuestionService : IQuizQuestionService
         quizQuestionEntity.IsActive = !quizQuestionEntity.IsActive;
         await _quizQuestionRepository.UpdateQuizQuestion(quizQuestionEntity);
         var result = _mapper.Map<QuizQuestionDto>(quizQuestionEntity);
-        _elasticSearchService.UpdateDocumentAsync(ElasticConstant.ElasticQuizQuestion, result, id);
+        await _elasticSearchService.UpdateDocumentAsync(ElasticConstant.ElasticQuizQuestion, result, id);
         return new ApiSuccessResult<bool>(true, "Quiz Question update successfully !!!");
     }
 
@@ -529,7 +544,7 @@ public class QuizQuestionService : IQuizQuestionService
             return new ApiResult<bool>(false, "Delete Quiz Question Failed !!!");
         }
 
-        _elasticSearchService.DeleteDocumentAsync(ElasticConstant.ElasticQuizQuestion, id);
+        await _elasticSearchService.DeleteDocumentAsync(ElasticConstant.ElasticQuizQuestion, id);
         return new ApiSuccessResult<bool>(true);
     }
 
@@ -943,7 +958,12 @@ public class QuizQuestionService : IQuizQuestionService
                 if (workSheet != null)
                 {
                     ProcessWorksheet(workSheet, quizQuestionImportDtos, quizQuestionImportSuccess,
+<<<<<<< HEAD
                         quizQuestionImportFail, out int countSuccess, out int countFail, listQuizQuestion, processHashNum);
+=======
+                        quizQuestionImportFail, out int countSuccess, out int countFail, listQuizQuestion,
+                        processHashNum);
+>>>>>>> 56fa4ca4776bc70ffef11795ed28eaf1ecad76bd
 
                     quizQuestionImportParentDto.CountSuccess = countSuccess;
                     quizQuestionImportParentDto.CountFail = countFail;
@@ -980,7 +1000,12 @@ public class QuizQuestionService : IQuizQuestionService
 
     private void ProcessWorksheet(ExcelWorksheet workSheet, List<QuizQuestionImportDto> quizQuestionImportDtos,
         List<QuizQuestion> quizQuestionImportSuccess, List<QuizQuestionImportDto> quizQuestionImportFail,
+<<<<<<< HEAD
         out int countSuccess, out int countFail, IEnumerable<QuizQuestion> listQuizQuestion, HashSet<(int hashNum, string title)> processHashNum)
+=======
+        out int countSuccess, out int countFail, IEnumerable<QuizQuestion> listQuizQuestion,
+        HashSet<(int hashNum, string title)> processHashNum)
+>>>>>>> 56fa4ca4776bc70ffef11795ed28eaf1ecad76bd
     {
         countSuccess = 0;
         countFail = 0;
@@ -996,6 +1021,10 @@ public class QuizQuestionService : IQuizQuestionService
             quizQuestionImportDto.HashQuestion = quizQuestion.HashQuestion;
 
             if (ValidateQuizQuestionImportDto(quizQuestionImportDto, processHashNum))
+<<<<<<< HEAD
+=======
+
+>>>>>>> 56fa4ca4776bc70ffef11795ed28eaf1ecad76bd
             {
                 quizQuestionImportDto.IsImported = true;
                 quizQuestionImportSuccess.Add(quizQuestion);
@@ -1006,6 +1035,10 @@ public class QuizQuestionService : IQuizQuestionService
                 countFail++;
                 quizQuestionImportFail.Add(quizQuestionImportDto);
             }
+<<<<<<< HEAD
+=======
+
+>>>>>>> 56fa4ca4776bc70ffef11795ed28eaf1ecad76bd
             processHashNum.Add((quizQuestion.HashQuestion, quizQuestion.Content));
             quizQuestionImportDtos.Add(quizQuestionImportDto);
         }
@@ -1033,7 +1066,7 @@ public class QuizQuestionService : IQuizQuestionService
         return new QuizQuestionImportDto
         {
             Content = workSheet.Cells[row, 3].Value?.ToString()?.Trim(),
-            QuestionLevel = resultLevel.ToString(),
+            QuestionLevel = (EQuestionLevel)resultLevel,
             QuestionLevelName = level,
             QuizAnswers = quizAnswers,
             Type = (ETypeQuestion)result,
@@ -1077,7 +1110,12 @@ public class QuizQuestionService : IQuizQuestionService
         return shuffle?.value ?? false;
     }
 
+<<<<<<< HEAD
     private bool ValidateQuizQuestionImportDto(QuizQuestionImportDto dto, HashSet<(int hashNum, string title)> processHashNum)
+=======
+    private bool ValidateQuizQuestionImportDto(QuizQuestionImportDto dto,
+        HashSet<(int hashNum, string title)> processHashNum)
+>>>>>>> 56fa4ca4776bc70ffef11795ed28eaf1ecad76bd
     {
         bool isValid = true;
 
@@ -1087,13 +1125,18 @@ public class QuizQuestionService : IQuizQuestionService
             isValid = false;
         }
 
+<<<<<<< HEAD
         if (dto.HashQuestion == 0 || processHashNum.Contains((dto.HashQuestion, dto.Content)) ) // you has just compare the old answers 
+=======
+        if (dto.HashQuestion == 0 ||
+            processHashNum.Contains((dto.HashQuestion, dto.Content))) // you has just compare the old answers 
+>>>>>>> 56fa4ca4776bc70ffef11795ed28eaf1ecad76bd
         {
             AddImportError(dto, $"Câu hỏi '{dto.Content}' bị trùng với câu hỏi đã có ");
             isValid = false;
         }
 
-        if (!int.TryParse(dto.QuestionLevel, out int questionLevelValue) || questionLevelValue == 0)
+        if (dto.QuestionLevel == 0)
         {
             AddImportError(dto, $"Không tìm thấy cấp độ câu hỏi {dto.QuestionLevelName}");
             isValid = false;
@@ -1161,6 +1204,8 @@ public class QuizQuestionService : IQuizQuestionService
             // Assuming CreateRangeQuizQuestion accepts dataImport in the expected format
             var quizQuestions = JsonConvert.DeserializeObject<List<QuizQuestion>>(dataImport);
             var quizQuestionCreate = await _quizQuestionRepository.CreateRangeQuizQuestion(quizQuestions);
+            var createElastic = _mapper.Map<IEnumerable<QuizQuestionDto>>(quizQuestionCreate);
+            await _elasticSearchService.CreateDocumentRangeAsync(ElasticConstant.ElasticQuizQuestion, createElastic);
             List<QuizQuestion> quizQuestionList = quizQuestionCreate.ToList();
             // Map to an array of tuples
             var resultArray = quizQuestionList
@@ -1172,8 +1217,7 @@ public class QuizQuestionService : IQuizQuestionService
                 .ToArray();
             // map insert những thằng này vào db xong mình phải lấy ra được id của nó vừa insert rồi mới thực hiện được 
             //var quizQuestionRelations = 
-            var quizQuestionRelationCreate =
-                await _quizQuestionRelationRepository.CreateRangeQuizQuestionRelation(resultArray);
+            var quizQuestionRelationCreate = await _quizQuestionRelationRepository.CreateRangeQuizQuestionRelation(resultArray);
             return new ApiResult<bool>(true, $"Import Success: {quizQuestionCreate}");
         }
         catch (Exception ex)

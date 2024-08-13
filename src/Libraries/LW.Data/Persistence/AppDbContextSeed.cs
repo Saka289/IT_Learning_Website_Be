@@ -1,12 +1,13 @@
 ﻿using AutoMapper;
 using LW.Contracts.Common;
+using LW.Data.Common.ModelMapping;
 using LW.Data.Entities;
 using LW.Shared.Constant;
 using LW.Shared.DTOs.Competition;
 using LW.Shared.DTOs.Document;
 using LW.Shared.DTOs.Grade;
 using LW.Shared.DTOs.Lesson;
-using LW.Shared.DTOs.Level;
+using LW.Shared.DTOs.Member;
 using LW.Shared.DTOs.Tag;
 using LW.Shared.DTOs.Topic;
 using LW.Shared.Enums;
@@ -19,28 +20,16 @@ namespace LW.Data.Persistence;
 
 public class AppDbContextSeed
 {
-    public static async Task SeedDataAsync(AppDbContext context, ILogger logger, IElasticClient elasticClient,
-        IMapper mapper)
+    public static async Task SeedDataAsync(AppDbContext context, ILogger logger, IElasticClient elasticClient, IMapper mapper)
     {
         if (!context.Users.Any() && !context.Roles.Any())
         {
             SeedDataUserRoles(context);
             await context.SaveChangesAsync();
-            logger.Information("Seeded data User and Roles for Education DB associated with context {DbContextName}",
-                nameof(AppDbContext));
-        }
-
-        if (!context.Levels.Any())
-        {
-            var dataLevel = SeedLevel();
-            await context.Levels.AddRangeAsync(dataLevel);
-            await context.SaveChangesAsync();
-            var result = mapper.Map<IEnumerable<LevelDto>>(dataLevel);
-            logger.Information("Seeded data Levels for Education DB associated with context {DbContextName}",
-                nameof(AppDbContext));
-            await elasticClient.BulkAsync(b => b.Index(ElasticConstant.ElasticLevels).IndexMany(result));
-            logger.Information("Seeded data Levels for ElasticSearch associated with {IElasticClient}",
-                nameof(IElasticClient));
+            logger.Information("Seeded data User and Roles for Education DB associated with context {DbContextName}", nameof(AppDbContext));
+            var result = await context.Users.Select(u => u.ToUserDto(context)).ToListAsync();
+            await elasticClient.BulkAsync(b => b.Index(ElasticConstant.ElasticUsers).IndexMany(result));
+            logger.Information("Seeded data User and Roles for ElasticSearch associated with {IElasticClient}", nameof(IElasticClient));
         }
 
         if (!context.Grades.Any())
@@ -164,7 +153,10 @@ public class AppDbContextSeed
             LastName = "Lotus",
             NormalizedEmail = "ADMIN@GMAIL.COM",
             EmailConfirmed = true,
-            PhoneNumber = "1234567890"
+            PhoneNumber = "1234567890",
+            Image = CloudinaryConstant.Avatar,
+            PublicId = CloudinaryConstant.AvatarPublicKey,
+            Dob = DateOnly.FromDateTime(DateTime.Now)
         };
         admin.PasswordHash = hasher.HashPassword(admin, "Admin@1234");
 
@@ -178,7 +170,10 @@ public class AppDbContextSeed
             LastName = "Cadi",
             NormalizedEmail = "USER@GMAIL.COM",
             EmailConfirmed = true,
-            PhoneNumber = "1234567890"
+            PhoneNumber = "1234567890",
+            Image = CloudinaryConstant.Avatar,
+            PublicId = CloudinaryConstant.AvatarPublicKey,
+            Dob = DateOnly.FromDateTime(DateTime.Now)
         };
         user.PasswordHash = hasher.HashPassword(user, "User@1234");
 
@@ -188,13 +183,16 @@ public class AppDbContextSeed
             UserName = "contentmanager",
             NormalizedUserName = "CONTENTMANAGER",
             Email = "contentmanager@gmail.com",
-            FirstName = "Kavior",
-            LastName = "Salandez",
+            FirstName = "Michael",
+            LastName = "Paul",
             NormalizedEmail = "CONTENTMANAGER@GMAIL.COM",
             EmailConfirmed = true,
-            PhoneNumber = "1234567890"
+            PhoneNumber = "1234567890",
+            Image = CloudinaryConstant.Avatar,
+            PublicId = CloudinaryConstant.AvatarPublicKey,
+            Dob = DateOnly.FromDateTime(DateTime.Now)
         };
-        user.PasswordHash = hasher.HashPassword(contentManager, "Manager@1234");
+        contentManager.PasswordHash = hasher.HashPassword(contentManager, "Manager@1234");
 
         context.Users.AddRange(admin, user, contentManager);
 
@@ -218,31 +216,6 @@ public class AppDbContextSeed
         );
     }
 
-    private static IEnumerable<Level> SeedLevel()
-    {
-        return new List<Level>()
-        {
-            new()
-            {
-                Title = "Tiểu học",
-                KeyWord = "tieu hoc",
-                IsActive = true
-            },
-            new()
-            {
-                Title = "Trung học cơ sở",
-                KeyWord = "trung hoc co so",
-                IsActive = true
-            },
-            new()
-            {
-                Title = "Trung học phổ thông",
-                KeyWord = "trung hoc pho thong",
-                IsActive = true
-            },
-        };
-    }
-
     private static IEnumerable<Grade> SeedGrade()
     {
         return new List<Grade>()
@@ -252,70 +225,60 @@ public class AppDbContextSeed
                 Title = "Lớp 3",
                 KeyWord = "lop 3",
                 IsActive = true,
-                LevelId = 1,
             },
             new()
             {
                 Title = "Lớp 4",
                 KeyWord = "lop 4",
                 IsActive = true,
-                LevelId = 1,
             },
             new()
             {
                 Title = "Lớp 5",
                 KeyWord = "lop 5",
                 IsActive = true,
-                LevelId = 1,
             },
             new()
             {
                 Title = "Lớp 6",
                 KeyWord = "lop 6",
                 IsActive = true,
-                LevelId = 2,
             },
             new()
             {
                 Title = "Lớp 7",
                 KeyWord = "lop 7",
                 IsActive = true,
-                LevelId = 2,
             },
             new()
             {
                 Title = "Lớp 8",
                 KeyWord = "lop 8",
                 IsActive = true,
-                LevelId = 2,
             },
             new()
             {
                 Title = "Lớp 9",
                 KeyWord = "lop 9",
                 IsActive = true,
-                LevelId = 2,
             },
             new()
             {
                 Title = "Lớp 10",
                 KeyWord = "lop 10",
                 IsActive = true,
-                LevelId = 3,
             },
             new()
             {
                 Title = "Lớp 11",
                 KeyWord = "lop 11",
                 IsActive = true,
-                LevelId = 3,
             },
             new()
             {
                 Title = "Lớp 12",
                 KeyWord = "lop 12",
                 IsActive = true,
-                LevelId = 3,
             },
         };
     }

@@ -12,14 +12,16 @@ public class TopicRepository : RepositoryBase<Topic, int>, ITopicRepository
     {
     }
 
-    public Task CreateTopic(Topic topic)
+    public async Task<Topic> CreateTopic(Topic topic)
     {
-        return CreateAsync(topic);
+        await CreateAsync(topic);
+        return topic;
     }
 
-    public Task UpdateTopic(Topic topic)
+    public async Task<Topic> UpdateTopic(Topic topic)
     {
-        return UpdateAsync(topic);
+        await UpdateAsync(topic);
+        return topic;
     }
 
     public async Task<bool> UpdateRangeTopic(IEnumerable<Topic> topics)
@@ -46,7 +48,7 @@ public class TopicRepository : RepositoryBase<Topic, int>, ITopicRepository
         return false;
     }
 
-    public async Task<Topic> GetTopicById(int id)
+    public async Task<Topic?> GetTopicById(int id)
     {
         return await FindByCondition(x => x.Id == id)
             .Include(c => c.ChildTopics)
@@ -55,7 +57,7 @@ public class TopicRepository : RepositoryBase<Topic, int>, ITopicRepository
             .FirstOrDefaultAsync();
     }
 
-    public async Task<Topic> GetTopicByAllId(int id)
+    public async Task<Topic?> GetTopicByAllId(int id)
     {
         return await GetByIdAsync(id);
     }
@@ -65,8 +67,14 @@ public class TopicRepository : RepositoryBase<Topic, int>, ITopicRepository
         return await FindAll()
             .Include(d => d.Document)
             .Include(c => c.ChildTopics)
+            .ThenInclude(d => d.Document)
             .Where(t => t.ParentId == null)
             .ToListAsync();
+    }
+
+    public async Task<IEnumerable<Topic>> GetAllTopicChild(int id)
+    {
+        return await FindAll().Where(t => t.ParentId == id).ToListAsync();
     }
 
     public async Task<IEnumerable<Topic>> GetAllTopicByDocument(int id)
@@ -74,19 +82,13 @@ public class TopicRepository : RepositoryBase<Topic, int>, ITopicRepository
         return await FindAll()
             .Include(d => d.Document)
             .Include(c => c.ChildTopics)
+            .ThenInclude(d => d.Document)
             .Where(x => x.DocumentId == id && x.ParentId == null).ToListAsync();
     }
 
-    public async Task<IEnumerable<Topic>> GetAllTopicChildByParentId(int parentId)
+    public async Task<IEnumerable<Topic>> GetAllTopicByDocumentAll(int id)
     {
-        return await FindAll().Where(x => x.ParentId == parentId).ToListAsync();
-    }
-
-    public Task<IQueryable<Topic>> GetAllTopicPagination()
-    {
-        var result = FindAll()
-            .Where(t => t.ParentId == null);
-        return Task.FromResult(result);
+        return await FindAll().Where(x => x.DocumentId == id).ToListAsync();
     }
 
     public async Task<Topic> GetAllTopicIndex(int id)
@@ -99,5 +101,18 @@ public class TopicRepository : RepositoryBase<Topic, int>, ITopicRepository
             .ThenInclude(l => l.Lessons.Where(l => l.IsActive))
             .Include(l => l.Lessons.Where(l => l.IsActive))
             .FirstOrDefaultAsync(t => t.Id == id && t.IsActive);
+    }
+
+    public async Task<IEnumerable<Topic>> SearchTopicByTag(string tag, bool order)
+    {
+        var result = order
+            ? await FindAll()
+                .Include(t => t.ChildTopics)
+                .Where(t => t.KeyWord.Contains(tag) && t.ParentId == null).OrderByDescending(t => t.CreatedDate)
+                .ToListAsync()
+            : await FindAll()
+                .Include(t => t.ChildTopics)
+                .Where(t => t.KeyWord.Contains(tag) && t.ParentId == null).ToListAsync();
+        return result;
     }
 }

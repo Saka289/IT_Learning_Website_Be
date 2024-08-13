@@ -6,9 +6,10 @@ using System.Threading.Tasks;
 using LW.API.Application.Validators.SolutionValidator;
 using LW.Services.SolutionServices;
 using LW.Shared.SeedWork;
-using LW.Shared.Solution;
+using LW.Shared.DTOs.Solution;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
+using Newtonsoft.Json;
 
 namespace LW.API.Controllers.Public
 {
@@ -23,27 +24,16 @@ namespace LW.API.Controllers.Public
             _solutionService = solutionService;
         }
 
-        [HttpGet("GetAllSolutionByProblemId/{problemId}")]
-        public async Task<ActionResult<ApiResult<IEnumerable<SolutionDto>>>> GetAllSolutionByProblemId([Required] int problemId)
+        [HttpGet("GetAllSolutionByProblemIdPagination")]
+        public async Task<ActionResult<ApiResult<IEnumerable<SolutionDto>>>> GetAllSolutionByProblemIdPagination([FromQuery] SearchSolutionDto searchSolutionDto)
         {
-            var result = await _solutionService.GetAllSolutionByProblemId(problemId);
+            var result = await _solutionService.GetAllSolutionByProblemIdPagination(searchSolutionDto);
             if (!result.IsSucceeded)
             {
                 return NotFound(result);
             }
-
-            return Ok(result);
-        }
-        
-        [HttpGet("SearchSolutionByProblemId/{problemId}")]
-        public async Task<ActionResult<ApiResult<IEnumerable<SolutionDto>>>> SearchSolutionByProblemId([Required] int problemId, [FromQuery] SearchRequestValue searchRequestValue)
-        {
-            var result = await _solutionService.SearchSolutionByProblemId(problemId, searchRequestValue);
-            if (!result.IsSucceeded)
-            {
-                return NotFound(result);
-            }
-
+            
+            Response.Headers.Add("X-Pagination", JsonConvert.SerializeObject(result.Data.GetMetaData()));
             return Ok(result);
         }
 

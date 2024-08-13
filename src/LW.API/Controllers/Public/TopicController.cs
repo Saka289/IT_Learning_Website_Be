@@ -5,7 +5,6 @@ using System.Linq;
 using System.Threading.Tasks;
 using LW.API.Application.Validators.TopicValidator;
 using LW.Services.TopicServices;
-using LW.Shared.DTOs.Level;
 using LW.Shared.DTOs.Topic;
 using LW.Shared.SeedWork;
 using Microsoft.AspNetCore.Http;
@@ -49,15 +48,14 @@ namespace LW.API.Controllers.Public
         }
         
         [HttpGet("GetAllTopicPagination")]
-        public async Task<ActionResult<ApiResult<PagedList<TopicDto>>>> GetAllTopicPagination(
-            [FromQuery] PagingRequestParameters pagingRequestParameters)
+        public async Task<ActionResult<ApiResult<PagedList<TopicDto>>>> GetAllTopicPagination([FromQuery] SearchTopicDto searchTopicDto)
         {
-            var result = await _topicService.GetAllTopicPagination(pagingRequestParameters);
+            var result = await _topicService.GetAllTopicPagination(searchTopicDto);
             if (!result.IsSucceeded)
             {
                 return NotFound(result);
             }
-
+        
             Response.Headers.Add("X-Pagination", JsonConvert.SerializeObject(result.Data.GetMetaData()));
             return Ok(result);
         }
@@ -71,20 +69,6 @@ namespace LW.API.Controllers.Public
                 return NotFound(result);
             }
 
-            return Ok(result);
-        }
-
-        [HttpGet("SearchByTopicPagination")]
-        public async Task<ActionResult<ApiResult<PagedList<TopicDto>>>> SearchByTopicPagination(
-            [FromQuery] SearchTopicDto searchTopicDto)
-        {
-            var result = await _topicService.SearchTopicPagination(searchTopicDto);
-            if (!result.IsSucceeded)
-            {
-                return NotFound(result);
-            }
-
-            Response.Headers.Add("X-Pagination", JsonConvert.SerializeObject(result.Data.GetMetaData()));
             return Ok(result);
         }
 
@@ -145,17 +129,6 @@ namespace LW.API.Controllers.Public
                 return NotFound(result);
             }
 
-            return Ok(result);
-        }
-
-        [HttpPut("DeleteRangeTopic")]
-        public async Task<ActionResult<ApiResult<bool>>> DeleteRangeTopic([Required] IEnumerable<int> ids)
-        {
-            var result = await _topicService.DeleteRange(ids);
-            if (!result.IsSucceeded)
-            {
-                return BadRequest();
-            }
             return Ok(result);
         }
     }

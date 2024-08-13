@@ -1,4 +1,4 @@
-﻿namespace LW.Shared.Solution;
+﻿namespace LW.Shared.DTOs.Solution;
 
 public class SolutionDto
 {

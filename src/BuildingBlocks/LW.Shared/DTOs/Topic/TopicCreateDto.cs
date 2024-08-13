@@ -16,4 +16,5 @@ public class TopicCreateDto
     public int DocumentId { get; set; }
     [Required] 
     public bool IsActive { get; set; } = false;
+    public IEnumerable<string>? TagValues { get; set; }
 }

@@ -5,9 +5,7 @@ namespace LW.Shared.DTOs.Tag;
 public class TagCreateDto
 {
     [Required]
-    public string? Title { get; set; }
+    public string Title { get; set; }
     [Required]
-    public string? KeyWord { get; set; }
-    
-    [Required] public bool IsActive { get; set; } = false;
+    public bool IsActive { get; set; } = false;
 }

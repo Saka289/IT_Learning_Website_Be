@@ -1,4 +1,5 @@
-﻿using LW.Shared.Enums;
+﻿using System.ComponentModel.DataAnnotations;
+using LW.Shared.Enums;
 using LW.Shared.SeedWork;
 
 namespace LW.Shared.DTOs.Problem;

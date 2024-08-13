@@ -15,47 +15,57 @@ public class QuizRepository : RepositoryBase<Quiz, int>, IQuizRepository
     public async Task<IEnumerable<Quiz>> GetAllQuiz()
     {
         return await FindAll()
-            .Include(l => l.Lesson)
-            .Include(l => l.Topic)
-            .Include(q => q.QuizQuestionRelations)
+            .Include(l => l.Lesson).DefaultIfEmpty()
+            .Include(l => l.Topic).DefaultIfEmpty()
+            .Include(q => q.QuizQuestionRelations).DefaultIfEmpty()
             .ToListAsync();
     }
 
-    public async Task<IEnumerable<Quiz>> GetAllQuizPagination()
+    public async Task<IEnumerable<Quiz>> GetAllQuizByTopicId(int topicId, bool isInclude = false)
     {
-        var result = await FindAll()
+        if (!isInclude)
+        {
+            return await FindAll().Where(q => q.TopicId == topicId).ToListAsync();
+        }
+
+        return await FindAll()
             .Include(l => l.Lesson)
             .Include(l => l.Topic)
             .Include(q => q.QuizQuestionRelations)
-            .ToListAsync();
+            .Where(q => q.TopicId == topicId).ToListAsync();
+    }
+
+    public async Task<IEnumerable<Quiz>> GetAllQuizByLessonId(int lessonId, bool isInclude = false)
+    {
+        if (!isInclude)
+        {
+            return await FindAll().Where(q => q.LessonId == lessonId).ToListAsync();
+        }
+
+        return await FindAll()
+            .Include(l => l.Lesson)
+            .Include(l => l.Topic)
+            .Include(q => q.QuizQuestionRelations)
+            .Where(q => q.LessonId == lessonId).ToListAsync();
+    }
+
+    public async Task<IEnumerable<Quiz>> SearchQuizByTag(string tag, bool order)
+    {
+        var result = order
+            ? await FindAll()
+                .Include(q => q.QuizQuestionRelations).DefaultIfEmpty()
+                .Where(q => q.KeyWord.Contains(tag)).OrderByDescending(q => q.CreatedDate).ToListAsync()
+            : await FindAll()
+                .Include(q => q.QuizQuestionRelations).DefaultIfEmpty()
+                .Where(q => q.KeyWord.Contains(tag)).ToListAsync();
         return result;
-    }
-
-    public Task<IQueryable<Quiz>> GetAllQuizByTopicIdPagination(int topicId)
-    {
-        var result = FindAll()
-            .Include(l => l.Lesson)
-            .Include(l => l.Topic)
-            .Include(q => q.QuizQuestionRelations)
-            .Where(q => q.TopicId == topicId).AsQueryable();
-        return Task.FromResult(result);
-    }
-
-    public Task<IQueryable<Quiz>> GetAllQuizByLessonIdPagination(int lessonId)
-    {
-        var result = FindAll()
-            .Include(l => l.Lesson)
-            .Include(l => l.Topic)
-            .Include(q => q.QuizQuestionRelations)
-            .Where(q => q.LessonId == lessonId).AsQueryable();
-        return Task.FromResult(result);
     }
 
     public async Task<Quiz?> GetQuizById(int id)
     {
         return await FindByCondition(q => q.Id == id)
-            .Include(l => l.Lesson)
-            .Include(l => l.Topic)
+            .Include(l => l.Lesson).DefaultIfEmpty()
+            .Include(l => l.Topic).DefaultIfEmpty()
             .FirstOrDefaultAsync();
     }
 

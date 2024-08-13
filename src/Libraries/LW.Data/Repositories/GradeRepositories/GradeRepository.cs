@@ -12,25 +12,139 @@ public class GradeRepository : RepositoryBase<Grade, int>, IGradeRepository
     {
     }
 
-    public async Task<IEnumerable<Grade>> GetAllGrade()
+    public async Task<IEnumerable<Grade>> GetAllGrade(bool isInclude = false)
     {
-        return await FindAll().Include(l => l.Level).ToListAsync();
+        if (!isInclude)
+        {
+            return await FindAll().ToListAsync();
+        }
+        return await FindAll()
+            .Include(g => g.Exams)
+            .Include(g => g.Documents)
+            .ThenInclude(c => c.CommentDocuments)
+            .Include(g => g.Documents)
+            .ThenInclude(d => d.Topics.Where(t => t.ParentId == null))
+            .ThenInclude(t => t.Problems)
+            .Include(g => g.Documents)
+            .ThenInclude(d => d.Topics.Where(t => t.ParentId == null))
+            .ThenInclude(t => t.Quizzes)
+            .Include(g => g.Documents)
+            .ThenInclude(d => d.Topics.Where(t => t.ParentId == null))
+            .ThenInclude(t => t.Lessons)
+            .ThenInclude(l => l.Problems)
+            .Include(g => g.Documents)
+            .ThenInclude(d => d.Topics.Where(t => t.ParentId == null))
+            .ThenInclude(t => t.Lessons)
+            .ThenInclude(l => l.Quizzes)
+            .Include(g => g.Documents)
+            .ThenInclude(d => d.Topics.Where(t => t.ParentId == null))
+            .ThenInclude(t => t.ChildTopics)
+            .ThenInclude(ct => ct.Problems)
+            .Include(g => g.Documents)
+            .ThenInclude(d => d.Topics.Where(t => t.ParentId == null))
+            .ThenInclude(t => t.ChildTopics)
+            .ThenInclude(ct => ct.Quizzes)
+            .Include(g => g.Documents)
+            .ThenInclude(d => d.Topics.Where(t => t.ParentId == null))
+            .ThenInclude(t => t.ChildTopics)
+            .ThenInclude(ct => ct.Lessons)
+            .ThenInclude(l => l.Problems)
+            .Include(g => g.Documents)
+            .ThenInclude(d => d.Topics.Where(t => t.ParentId == null))
+            .ThenInclude(t => t.ChildTopics)
+            .ThenInclude(ct => ct.Lessons)
+            .ThenInclude(l => l.Quizzes)
+            .ToListAsync();
     }
 
-    public async Task<IEnumerable<Grade>> GetAllGradeByLevel(int id)
+    public async Task<IEnumerable<Grade>> GetAllGradePagination(bool isInclude = false)
     {
-        return await FindAll().Include(l => l.Level).Where(g => g.LevelId == id).ToListAsync();
+        if (!isInclude)
+        {
+            return await FindAll().ToListAsync();
+        }
+        return await FindAll()
+            .Include(g => g.Exams)
+            .Include(g => g.Documents)
+            .ThenInclude(c => c.CommentDocuments)
+            .Include(g => g.Documents)
+            .ThenInclude(d => d.Topics.Where(t => t.ParentId == null))
+            .ThenInclude(t => t.Problems)
+            .Include(g => g.Documents)
+            .ThenInclude(d => d.Topics.Where(t => t.ParentId == null))
+            .ThenInclude(t => t.Quizzes)
+            .Include(g => g.Documents)
+            .ThenInclude(d => d.Topics.Where(t => t.ParentId == null))
+            .ThenInclude(t => t.Lessons)
+            .ThenInclude(l => l.Problems)
+            .Include(g => g.Documents)
+            .ThenInclude(d => d.Topics.Where(t => t.ParentId == null))
+            .ThenInclude(t => t.Lessons)
+            .ThenInclude(l => l.Quizzes)
+            .Include(g => g.Documents)
+            .ThenInclude(d => d.Topics.Where(t => t.ParentId == null))
+            .ThenInclude(t => t.ChildTopics)
+            .ThenInclude(ct => ct.Problems)
+            .Include(g => g.Documents)
+            .ThenInclude(d => d.Topics.Where(t => t.ParentId == null))
+            .ThenInclude(t => t.ChildTopics)
+            .ThenInclude(ct => ct.Quizzes)
+            .Include(g => g.Documents)
+            .ThenInclude(d => d.Topics.Where(t => t.ParentId == null))
+            .ThenInclude(t => t.ChildTopics)
+            .ThenInclude(ct => ct.Lessons)
+            .ThenInclude(l => l.Problems)
+            .Include(g => g.Documents)
+            .ThenInclude(d => d.Topics.Where(t => t.ParentId == null))
+            .ThenInclude(t => t.ChildTopics)
+            .ThenInclude(ct => ct.Lessons)
+            .ThenInclude(l => l.Quizzes)
+            .ToListAsync();
     }
 
-    public Task<IQueryable<Grade>> GetAllGradePagination()
+    public async Task<Grade?> GetGradeById(int id, bool isInclude)
     {
-        var result = FindAll();
-        return Task.FromResult(result);
-    }
-
-    public async Task<Grade> GetGradeById(int id)
-    {
-        return await GetByIdAsync(id);
+        if (!isInclude)
+        {
+            return await GetByIdAsync(id);
+        }
+        return await FindAll()
+            .Include(g => g.Exams)
+            .Include(g => g.Documents)
+            .ThenInclude(c => c.CommentDocuments)
+            .Include(g => g.Documents)
+            .ThenInclude(d => d.Topics.Where(t => t.ParentId == null))
+            .ThenInclude(t => t.Problems)
+            .Include(g => g.Documents)
+            .ThenInclude(d => d.Topics.Where(t => t.ParentId == null))
+            .ThenInclude(t => t.Quizzes)
+            .Include(g => g.Documents)
+            .ThenInclude(d => d.Topics.Where(t => t.ParentId == null))
+            .ThenInclude(t => t.Lessons)
+            .ThenInclude(l => l.Problems)
+            .Include(g => g.Documents)
+            .ThenInclude(d => d.Topics.Where(t => t.ParentId == null))
+            .ThenInclude(t => t.Lessons)
+            .ThenInclude(l => l.Quizzes)
+            .Include(g => g.Documents)
+            .ThenInclude(d => d.Topics.Where(t => t.ParentId == null))
+            .ThenInclude(t => t.ChildTopics)
+            .ThenInclude(ct => ct.Problems)
+            .Include(g => g.Documents)
+            .ThenInclude(d => d.Topics.Where(t => t.ParentId == null))
+            .ThenInclude(t => t.ChildTopics)
+            .ThenInclude(ct => ct.Quizzes)
+            .Include(g => g.Documents)
+            .ThenInclude(d => d.Topics.Where(t => t.ParentId == null))
+            .ThenInclude(t => t.ChildTopics)
+            .ThenInclude(ct => ct.Lessons)
+            .ThenInclude(l => l.Problems)
+            .Include(g => g.Documents)
+            .ThenInclude(d => d.Topics.Where(t => t.ParentId == null))
+            .ThenInclude(t => t.ChildTopics)
+            .ThenInclude(ct => ct.Lessons)
+            .ThenInclude(l => l.Quizzes)
+            .FirstOrDefaultAsync(x => x.Id == id);
     }
 
     public Task<Grade> CreateGrade(Grade grade)
