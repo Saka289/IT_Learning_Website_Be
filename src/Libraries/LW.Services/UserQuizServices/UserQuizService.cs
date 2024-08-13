@@ -55,7 +55,7 @@ public class UserQuizService : IUserQuizService
             var quizQuestion = await _quizQuestionRepository.GetQuizQuestionById(itemSubmit.QuestionId);
             if (itemSubmit.Type != ETypeQuestion.QuestionMultiChoice)
             {
-                if (quizAnswer.Any(qa => qa.Id == itemSubmit.AnswerId.FirstOrDefault()))
+                if (quizAnswer.Any(qa => qa.Id == itemSubmit.AnswerId?.FirstOrDefault()))
                 {
                     var history = new HistoryQuizDto()
                     {
@@ -108,7 +108,7 @@ public class UserQuizService : IUserQuizService
                         {
                             QuestionId = itemSubmit.QuestionId,
                             AnswerId = itemSubmit.AnswerId ?? null,
-                            IsCorrect = true,
+                            IsCorrect = false,
                             Score = scoreResult,
                             QuizQuestionDto = _mapper.Map<QuizQuestionDto>(quizQuestion)
                         };
