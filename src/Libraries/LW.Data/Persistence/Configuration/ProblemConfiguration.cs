@@ -14,11 +14,11 @@ public class ProblemConfiguration : IEntityTypeConfiguration<Problem>
         builder.HasOne(p => p.Topic)
             .WithMany(t => t.Problems)
             .HasForeignKey(t => t.TopicId)
-            .OnDelete(DeleteBehavior.Cascade);
+            .OnDelete(DeleteBehavior.SetNull);
         
         builder.HasOne(p => p.Lesson)
             .WithMany(t => t.Problems)
             .HasForeignKey(t => t.LessonId)
-            .OnDelete(DeleteBehavior.Cascade);
+            .OnDelete(DeleteBehavior.SetNull);
     }
 }
