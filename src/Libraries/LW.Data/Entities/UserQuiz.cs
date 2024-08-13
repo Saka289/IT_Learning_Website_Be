@@ -10,6 +10,8 @@ public class UserQuiz :  EntityAuditBase<int>
     [Required]
     [Column(TypeName = "decimal(12,2)")] 
     public decimal Score { get; set; }
+    [NotMapped]
+    public decimal TotalScoreQuiz { get; set; }
     [Required]
     public int  NumberCorrect { get; set; }
     [Required]

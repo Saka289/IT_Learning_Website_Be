@@ -141,6 +141,7 @@ public class UserQuizService : IUserQuizService
             HistoryQuizzes = _mapper.Map<List<HistoryQuiz>>(listHistory),
             QuizId = userQuizSubmitDto.QuizId,
             UserId = userQuizSubmitDto.UserId,
+            TotalScoreQuiz = quiz.Score
         };
         var userQuizCreate = await _userQuizRepository.CreateUserQuiz(userQuiz);
         var result = _mapper.Map<UserQuizDto>(userQuizCreate);
