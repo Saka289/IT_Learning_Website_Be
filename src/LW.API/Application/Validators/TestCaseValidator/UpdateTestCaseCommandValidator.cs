@@ -10,8 +10,8 @@ public class UpdateTestCaseCommandValidator : AbstractValidator<TestCaseUpdateDt
         RuleFor(x => x.Id).NotNull().NotEmpty().GreaterThan(0);
         RuleFor(x => x.OutputView).NotNull().NotEmpty();
         RuleFor(x => x.Output).NotNull().NotEmpty();
-        RuleFor(x => x.IsHidden).NotNull().NotEmpty();
-        RuleFor(x => x.IsActive).NotNull().NotEmpty();
+        RuleFor(x => x.IsHidden).NotNull();
+        RuleFor(x => x.IsActive).NotNull();
         RuleFor(x => x.ProblemId).NotNull().NotEmpty();
     }
 }

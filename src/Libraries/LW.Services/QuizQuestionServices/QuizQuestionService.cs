@@ -1181,6 +1181,8 @@ public class QuizQuestionService : IQuizQuestionService
             // Assuming CreateRangeQuizQuestion accepts dataImport in the expected format
             var quizQuestions = JsonConvert.DeserializeObject<List<QuizQuestion>>(dataImport);
             var quizQuestionCreate = await _quizQuestionRepository.CreateRangeQuizQuestion(quizQuestions);
+            var createElastic = _mapper.Map<IEnumerable<QuizQuestionDto>>(quizQuestionCreate);
+            await _elasticSearchService.CreateDocumentRangeAsync(ElasticConstant.ElasticQuizQuestion, createElastic);
             List<QuizQuestion> quizQuestionList = quizQuestionCreate.ToList();
             // Map to an array of tuples
             var resultArray = quizQuestionList
@@ -1192,8 +1194,7 @@ public class QuizQuestionService : IQuizQuestionService
                 .ToArray();
             // map insert những thằng này vào db xong mình phải lấy ra được id của nó vừa insert rồi mới thực hiện được 
             //var quizQuestionRelations = 
-            var quizQuestionRelationCreate =
-                await _quizQuestionRelationRepository.CreateRangeQuizQuestionRelation(resultArray);
+            var quizQuestionRelationCreate = await _quizQuestionRelationRepository.CreateRangeQuizQuestionRelation(resultArray);
             return new ApiResult<bool>(true, $"Import Success: {quizQuestionCreate}");
         }
         catch (Exception ex)

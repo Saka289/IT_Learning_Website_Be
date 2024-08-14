@@ -14,11 +14,11 @@ public class QuizConfiguration: IEntityTypeConfiguration<Quiz>
         builder.HasOne(p => p.Topic)
             .WithMany(t => t.Quizzes)
             .HasForeignKey(t => t.TopicId)
-            .OnDelete(DeleteBehavior.Cascade);
+            .OnDelete(DeleteBehavior.SetNull);
         
         builder.HasOne(p => p.Lesson)
             .WithMany(t => t.Quizzes)
             .HasForeignKey(t => t.LessonId)
-            .OnDelete(DeleteBehavior.Cascade);
+            .OnDelete(DeleteBehavior.SetNull);
     }
 }

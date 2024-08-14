@@ -55,7 +55,7 @@ public class UserQuizService : IUserQuizService
             var quizQuestion = await _quizQuestionRepository.GetQuizQuestionById(itemSubmit.QuestionId);
             if (itemSubmit.Type != ETypeQuestion.QuestionMultiChoice)
             {
-                if (quizAnswer.Any(qa => qa.Id == itemSubmit.AnswerId.FirstOrDefault()))
+                if (quizAnswer.Any(qa => qa.Id == itemSubmit.AnswerId?.FirstOrDefault()))
                 {
                     var history = new HistoryQuizDto()
                     {
@@ -83,7 +83,7 @@ public class UserQuizService : IUserQuizService
             else
             {
                 var listAnswer = quizAnswer.Where(qa => qa.QuizQuestionId == itemSubmit.QuestionId).Select(x => x.Id);
-                var listAnswerUser = itemSubmit.AnswerId;
+                var listAnswerUser = itemSubmit.AnswerId ?? new List<int>();
                 var listBoth = listAnswer.Intersect(listAnswerUser).ToList();
                 if (listBoth.Any())
                 {
@@ -101,14 +101,15 @@ public class UserQuizService : IUserQuizService
                     }
                     else
                     {
-                        var totalAnswer = await _quizAnswerRepository.GetAllQuizAnswerByQuizQuestionId(itemSubmit.QuestionId);
+                        var totalAnswer =
+                            await _quizAnswerRepository.GetAllQuizAnswerByQuizQuestionId(itemSubmit.QuestionId);
                         var scoreQuestion = numberScore / totalAnswer.Count();
                         var scoreResult = scoreQuestion * listBoth.Count();
                         var history = new HistoryQuizDto()
                         {
                             QuestionId = itemSubmit.QuestionId,
                             AnswerId = itemSubmit.AnswerId ?? null,
-                            IsCorrect = true,
+                            IsCorrect = false,
                             Score = scoreResult,
                             QuizQuestionDto = _mapper.Map<QuizQuestionDto>(quizQuestion)
                         };
@@ -141,6 +142,7 @@ public class UserQuizService : IUserQuizService
             HistoryQuizzes = _mapper.Map<List<HistoryQuiz>>(listHistory),
             QuizId = userQuizSubmitDto.QuizId,
             UserId = userQuizSubmitDto.UserId,
+            TotalScoreQuiz = quiz.Score
         };
         var userQuizCreate = await _userQuizRepository.CreateUserQuiz(userQuiz);
         var result = _mapper.Map<UserQuizDto>(userQuizCreate);

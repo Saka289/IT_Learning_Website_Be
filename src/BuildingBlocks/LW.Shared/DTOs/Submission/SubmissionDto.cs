@@ -18,6 +18,7 @@ public class SubmissionDto
     public string? StandardError { get; set; }
     public string? Message { get; set; }
     public int LanguageId { get; set; }
+    public string? LanguageName { get; set; }
     public int ProblemId { get; set; }
     public string UserId { get; set; }
     public DateTimeOffset CreatedDate { get; set; }

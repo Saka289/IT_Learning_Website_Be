@@ -79,7 +79,7 @@ public class ElasticSearchService<T, K> : IElasticSearchService<T, K> where T : 
         if (!response.IsValid)
         {
             _logger.Error($"Failed to update index document: {response.IsValid.ToString()}");
-            return response.OriginalException.Message;
+            return null;
         }
 
         return response.Id;

@@ -42,7 +42,7 @@ public static class ModelMappingExtensions
         };
     }
 
-    public static SubmissionDto ToSubmissionDto(this CompileDto compileDto, Submission submission, int testCaseId)
+    public static SubmissionDto ToSubmissionDto(this CompileDto compileDto, Submission submission, int testCaseId, string languageName)
     {
         return new SubmissionDto
         {
@@ -58,6 +58,7 @@ public static class ModelMappingExtensions
             Message = compileDto.message,
             ExecutionTime = compileDto.time,
             LanguageId = submission.LanguageId,
+            LanguageName = languageName,
             MemoryUsage = compileDto.memory,
             ProblemId = submission.ProblemId,
             SourceCode = compileDto.source_code,

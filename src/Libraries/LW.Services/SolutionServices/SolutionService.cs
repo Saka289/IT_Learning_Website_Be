@@ -91,7 +91,6 @@ public class SolutionService : ISolutionService
         }
 
         var solutionMapper = _mapper.Map<Solution>(solutionCreateDto);
-        solutionMapper.Coding = solutionCreateDto.Coding.Base64Encode();
         var solutionCreate = await _solutionRepository.CreateSolution(solutionMapper);
         solutionCreate.ApplicationUser = user;
         solutionCreate.Problem = problem;
@@ -121,7 +120,6 @@ public class SolutionService : ISolutionService
         }
 
         var solutionMapper = _mapper.Map(solutionUpdateDto, solutionEntity);
-        solutionMapper.Coding = solutionMapper.Coding.Base64Encode();
         var solutionUpdate = await _solutionRepository.UpdateSolution(solutionMapper);
         solutionUpdate.ApplicationUser = user;
         solutionUpdate.Problem = problem;
