@@ -72,6 +72,14 @@ public class PostCommentService : IPostCommentService
             return new ApiResult<PostCommentDto>(false, "Not found user");
         }
 
+        if (postCommentCreate.ParentId != null && postCommentCreate.ParentId > 0)
+        {
+            var parentComment = await _postCommentRepository.GetPostCommentById(Convert.ToInt32(postCommentCreate.ParentId));
+            if (parentComment == null)
+            {
+                return new ApiResult<PostCommentDto>(false, "Not found parent comment");
+            }
+        }
         var comment = _mapper.Map<PostComment>(postCommentCreate);
         // auto vote correct begin equal 0
         comment.CorrectVote = 0;
@@ -99,7 +107,14 @@ public class PostCommentService : IPostCommentService
         {
             return new ApiResult<PostCommentDto>(false, "Not found user");
         }
-
+        if (postCommentUpdate.ParentId != null && postCommentUpdate.ParentId > 0)
+        {
+            var parentComment = await _postCommentRepository.GetPostCommentById(Convert.ToInt32(postCommentUpdate.ParentId));
+            if (parentComment == null)
+            {
+                return new ApiResult<PostCommentDto>(false, "Not found parent comment");
+            }
+        }
         var updateDto = _mapper.Map(postCommentUpdate, comment);
         await _postCommentRepository.UpdatePostComment(updateDto);
         var result = _mapper.Map<PostCommentDto>(updateDto);
