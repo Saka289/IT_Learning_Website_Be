@@ -105,7 +105,7 @@ public class GradeService : IGradeService
         }
         else
         {
-            var gradeListAll = await _gradeRepository.GetAllGradePagination();
+            var gradeListAll = await _gradeRepository.GetAllGrade(true);
             if (!gradeListAll.Any())
             {
                 return new ApiResult<PagedList<GradeDto>>(false, "Grade is null !!!");

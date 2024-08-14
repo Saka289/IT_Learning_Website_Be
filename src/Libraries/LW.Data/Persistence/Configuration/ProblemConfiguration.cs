@@ -10,6 +10,7 @@ public class ProblemConfiguration : IEntityTypeConfiguration<Problem>
     {
         builder.Property(x => x.LessonId).IsRequired(false);
         builder.Property(x => x.TopicId).IsRequired(false);
+        builder.Property(x => x.GradeId).IsRequired(false);
         
         builder.HasOne(p => p.Topic)
             .WithMany(t => t.Problems)

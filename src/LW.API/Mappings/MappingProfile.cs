@@ -74,6 +74,8 @@ public class MappingProfile : Profile
             .ForMember(x => x.TypeId, y => y.MapFrom(src => src.Type))
             .ForMember(x => x.TypeName, y => y.MapFrom(src => src.Type.GetDisplayNameEnum()))
             .ReverseMap();
+        CreateMap<Problem, GradeProblemCustomDto>().ReverseMap();
+        CreateMap<Quiz, GradeQuizCustomDto>().ReverseMap();
         //Document 
         CreateMap<Document, DocumentDto>()
             .ForMember(x => x.GradeId, y => y.MapFrom(src => src.GradeId))

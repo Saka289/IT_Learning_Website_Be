@@ -24,10 +24,13 @@ public class Quiz : EntityAuditBase<int>
     public bool IsActive { get; set; }
     public int? TopicId { get; set; }
     public int? LessonId { get; set; }
+    public int? GradeId { get; set; }
     [ForeignKey(nameof(TopicId))]
     public virtual Topic Topic { get; set; }
     [ForeignKey(nameof(LessonId))]
     public virtual Lesson Lesson { get; set; }
+    [ForeignKey(nameof(GradeId))]
+    public virtual Grade Grade { get; set; }
     public virtual ICollection<QuizQuestionRelation> QuizQuestionRelations { get; set; }
     public virtual ICollection<UserQuiz> UserQuizzes { get; set; }
 }
