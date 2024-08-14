@@ -21,8 +21,13 @@ public static class EncodeHelperExtensions
 
     public static string Base64Decode(this string base64EncodedData)
     {
-        var base64EncodedBytes = Convert.FromBase64String(base64EncodedData);
-        return Encoding.UTF8.GetString(base64EncodedBytes);
+        if (base64EncodedData.IsBase64String())
+        {
+            var base64EncodedBytes = Convert.FromBase64String(base64EncodedData);
+            return Encoding.UTF8.GetString(base64EncodedBytes);
+        }
+
+        return base64EncodedData;
     }
 
     public static bool IsBase64String(this string base64)

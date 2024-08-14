@@ -1,6 +1,7 @@
 ﻿using AutoMapper;
 using LW.Contracts.Common;
 using LW.Data.Entities;
+using LW.Data.Repositories.GradeRepositories;
 using LW.Data.Repositories.LessonRepositories;
 using LW.Data.Repositories.QuizRepositories;
 using LW.Data.Repositories.TopicRepositories;
@@ -20,13 +21,14 @@ public class QuizService : IQuizService
     private readonly IQuizRepository _quizRepository;
     private readonly ILessonRepository _lessonRepository;
     private readonly ITopicRepository _topicRepository;
+    private readonly IGradeRepository _gradeRepository;
     private readonly IMapper _mapper;
     private readonly IElasticSearchService<QuizDto, int> _elasticSearchService;
     private readonly ILogger _logger;
 
     public QuizService(IQuizRepository quizRepository, IMapper mapper,
         IElasticSearchService<QuizDto, int> elasticSearchService, ILogger logger, ILessonRepository lessonRepository,
-        ITopicRepository topicRepository)
+        ITopicRepository topicRepository, IGradeRepository gradeRepository)
     {
         _quizRepository = quizRepository;
         _mapper = mapper;
@@ -34,6 +36,7 @@ public class QuizService : IQuizService
         _logger = logger;
         _lessonRepository = lessonRepository;
         _topicRepository = topicRepository;
+        _gradeRepository = gradeRepository;
     }
 
     public async Task<ApiResult<IEnumerable<QuizDto>>> GetAllQuiz()
@@ -155,6 +158,15 @@ public class QuizService : IQuizService
             }
         }
 
+        if (quizCreateDto.GradeId > 0)
+        {
+            var gradeEntity = await _gradeRepository.GetGradeById(Convert.ToInt32(quizCreateDto.GradeId));
+            if (gradeEntity is null)
+            {
+                return new ApiResult<QuizDto>(false, "Grade is null");
+            }
+        }
+
         var quizEntity = _mapper.Map<Quiz>(quizCreateDto);
         quizEntity.KeyWord = (quizCreateDto.TagValues is not null)
             ? quizCreateDto.TagValues.ConvertToTagString()
@@ -190,6 +202,15 @@ public class QuizService : IQuizService
             if (topicEntity == null)
             {
                 return new ApiResult<QuizDto>(false, "Topic is null !!!");
+            }
+        }
+        
+        if (quizUpdateDto.GradeId > 0)
+        {
+            var gradeEntity = await _gradeRepository.GetGradeById(Convert.ToInt32(quizUpdateDto.GradeId));
+            if (gradeEntity is null)
+            {
+                return new ApiResult<QuizDto>(false, "Grade is null");
             }
         }
 
