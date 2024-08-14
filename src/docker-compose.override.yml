@@ -117,6 +117,10 @@ services:
       - educationDB
       - lw_elasticsearch
       - lw_kibana
+      - lw_judge0Server
+      - lw_judge0Workers
+      - db
+      - redis
     ports:
       - "8000:80"
     restart: always
