@@ -11,11 +11,17 @@ public class CreateProblemCommandValidator : AbstractValidator<ProblemCreateDto>
         RuleFor(x => x.Description).NotNull().NotEmpty();
         RuleFor(x => x.Difficulty).NotNull().NotEmpty().IsInEnum();
         RuleFor(x => x.IsActive).NotNull().NotEmpty();        
-        RuleFor(x => x).Must(HaveValidTopicOrLesson).WithMessage("If TopicId is set, LessonId must be null, and vice versa.");
+        RuleFor(x => x).Must(HaveValidTopicLessonGrade).WithMessage("Only one of TopicId, LessonId, or GradeId should have a value, the others must be null.");
     }
     
-    private bool HaveValidTopicOrLesson(ProblemCreateDto problem)
+    private bool HaveValidTopicLessonGrade(ProblemCreateDto problem)
     {
-        return !(problem.TopicId.HasValue && problem.LessonId.HasValue);
+        int count = 0;
+
+        if (problem.TopicId.HasValue) count++;
+        if (problem.LessonId.HasValue) count++;
+        if (problem.GradeId.HasValue) count++;
+        
+        return count == 1;
     }
 }

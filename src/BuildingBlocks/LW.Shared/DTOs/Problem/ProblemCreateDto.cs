@@ -11,4 +11,5 @@ public class ProblemCreateDto
     public IEnumerable<string>? TagValues { get; set; }
     public int? TopicId { get; set; }
     public int? LessonId { get; set; }
+    public int? GradeId { get; set; }
 }

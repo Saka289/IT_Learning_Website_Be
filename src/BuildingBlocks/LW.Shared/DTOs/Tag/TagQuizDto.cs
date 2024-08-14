@@ -13,5 +13,6 @@ public class TagQuizDto
     public bool IsActive { get; set; }
     public int? TopicId { get; set; }
     public int? LessonId { get; set; }
+    public int? GradeId { get; set; }
     public int TotalQuestion { get; set; }
 }

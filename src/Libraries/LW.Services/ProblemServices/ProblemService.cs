@@ -1,6 +1,7 @@
 ﻿using AutoMapper;
 using LW.Contracts.Common;
 using LW.Data.Entities;
+using LW.Data.Repositories.GradeRepositories;
 using LW.Data.Repositories.LessonRepositories;
 using LW.Data.Repositories.ProblemRepositories;
 using LW.Data.Repositories.SolutionRepositories;
@@ -23,6 +24,7 @@ public class ProblemService : IProblemService
     private readonly ILessonRepository _lessonRepository;
     private readonly ISubmissionRepository _submissionRepository;
     private readonly ISolutionRepository _solutionRepository;
+    private readonly IGradeRepository _gradeRepository;
     private readonly IMapper _mapper;
     private readonly IElasticSearchService<ProblemDto, int> _elasticSearchService;
     private readonly IElasticSearchService<SolutionDto, int> _elasticSearchSolutionService;
@@ -30,7 +32,7 @@ public class ProblemService : IProblemService
     public ProblemService(IProblemRepository problemRepository, IMapper mapper,
         IElasticSearchService<ProblemDto, int> elasticSearchService, ITopicRepository topicRepository,
         ILessonRepository lessonRepository, ISubmissionRepository submissionRepository,
-        ISolutionRepository solutionRepository, IElasticSearchService<SolutionDto, int> elasticSearchSolutionService)
+        ISolutionRepository solutionRepository, IElasticSearchService<SolutionDto, int> elasticSearchSolutionService, IGradeRepository gradeRepository)
     {
         _problemRepository = problemRepository;
         _mapper = mapper;
@@ -40,6 +42,7 @@ public class ProblemService : IProblemService
         _submissionRepository = submissionRepository;
         _solutionRepository = solutionRepository;
         _elasticSearchSolutionService = elasticSearchSolutionService;
+        _gradeRepository = gradeRepository;
     }
 
     public async Task<ApiResult<IEnumerable<ProblemDto>>> GetAllProblem()
@@ -132,6 +135,15 @@ public class ProblemService : IProblemService
 
     public async Task<ApiResult<ProblemDto>> CreateProblem(ProblemCreateDto problemCreateDto)
     {
+        if (problemCreateDto.GradeId > 0)
+        {
+            var grade = await _gradeRepository.GetGradeById(Convert.ToInt32(problemCreateDto.GradeId));
+            if (grade is null)
+            {
+                return new ApiResult<ProblemDto>(false, "Grade not found !!!");
+            }
+        }
+        
         if (problemCreateDto.TopicId > 0)
         {
             var topic = await _topicRepository.GetTopicByAllId(Convert.ToInt32(problemCreateDto.TopicId));
@@ -164,6 +176,15 @@ public class ProblemService : IProblemService
         if (problem is null)
         {
             return new ApiResult<ProblemDto>(false, "Problem not found !!!");
+        }
+        
+        if (problemUpdateDto.GradeId > 0)
+        {
+            var grade = await _gradeRepository.GetGradeById(Convert.ToInt32(problemUpdateDto.GradeId));
+            if (grade is null)
+            {
+                return new ApiResult<ProblemDto>(false, "Grade not found !!!");
+            }
         }
 
         if (problemUpdateDto.TopicId > 0)
