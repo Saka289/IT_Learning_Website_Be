@@ -133,7 +133,13 @@ public static class ServiceExtensions
         services.AddSignalR();
         services.AddHttpContextAccessor();
         services.Configure<RouteOptions>(options => options.LowercaseUrls = true);
-        services.AddIdentity<ApplicationUser, IdentityRole>(options => { options.SignIn.RequireConfirmedEmail = true; })
+        services.AddIdentity<ApplicationUser, IdentityRole>(options =>
+            {
+                options.SignIn.RequireConfirmedEmail = true;
+                options.Lockout.AllowedForNewUsers = true;
+                options.Lockout.DefaultLockoutTimeSpan = TimeSpan.FromMinutes(5);
+                options.Lockout.MaxFailedAccessAttempts = 5;
+            })
             .AddEntityFrameworkStores<AppDbContext>()
             .AddSignInManager<SignInManager<ApplicationUser>>()
             .AddDefaultTokenProviders();
