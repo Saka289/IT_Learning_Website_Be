@@ -97,8 +97,7 @@ public class AdminAuthorService : IAdminAuthorService
         }
 
         var adminDto = _mapper.Map<RegisterMemberResponseDto>(user);
-        await _elasticSearchService.CreateDocumentAsync(ElasticConstant.ElasticUsers, user.ToMemberDto(_userManager),
-            a => a.Id);
+        await _elasticSearchService.CreateDocumentAsync(ElasticConstant.ElasticUsers, user.ToMemberDto(_userManager), a => a.Id);
         return new ApiResult<RegisterMemberResponseDto>(true, adminDto, "Register successfully");
     }
 
