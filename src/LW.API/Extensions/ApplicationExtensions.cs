@@ -6,24 +6,18 @@ public static class ApplicationExtensions
 {
     public static void UseInfrastructure(this IApplicationBuilder app, IWebHostEnvironment env)
     {
-        // // Configure the HTTP request pipeline.
-        // if (env.IsDevelopment())
-        // {
-        //     app.UseSwagger();
-        //     app.UseSwaggerUI();
-        // }
-
-        app.UseSwagger();
-        app.UseSwaggerUI(options =>
+        // Configure the HTTP request pipeline.
+        if (env.IsDevelopment() || env.IsProduction())
         {
-            options.SwaggerEndpoint("/swagger/v1/swagger.json", "LW-API");
-            options.RoutePrefix = string.Empty;
-        });
+            app.UseSwagger();
+            app.UseSwaggerUI();
+        }
+        
         app.UseCors();
-
+        
         app.UseRouting();
         // for production only 
-        app.UseHttpsRedirection();
+        // app.UseHttpsRedirection();
 
         app.UseAuthentication();
 
