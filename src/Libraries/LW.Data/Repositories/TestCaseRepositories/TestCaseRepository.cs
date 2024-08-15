@@ -25,7 +25,10 @@ public class TestCaseRepository : RepositoryBase<TestCase, int>, ITestCaseReposi
 
     public async Task<IEnumerable<TestCase>> GetAllTestCaseByProblemId(int problemId)
     {
-        return await FindAll().Where(t => t.ProblemId == problemId).ToListAsync();
+        return await FindAll()
+            .Where(t => t.ProblemId == problemId)
+            .OrderBy(t => t.IsHidden)
+            .ToListAsync();
     }
 
     public async Task<TestCase?> GetTestCaseById(int id)

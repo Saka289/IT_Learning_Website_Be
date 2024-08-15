@@ -61,10 +61,10 @@ namespace LW.API.Controllers.Admin
             return Ok(result);
         }
 
-        [HttpPost("assignRole/{email}/{roleName}")]
-        public async Task<ActionResult<ApiResult<bool>>> AssignRoleToEmail(string email, string roleName)
+        [HttpPost("assignRole/{userId}/{roleName}")]
+        public async Task<ActionResult<ApiResult<bool>>> AssignRoleToEmail(string userId, string roleName)
         {
-            var result = await _adminAuthorService.AssignRoleAsync(email, roleName);
+            var result = await _adminAuthorService.AssignRoleAsync(userId, roleName);
             if (!result.IsSucceeded)
             {
                 return BadRequest(result);

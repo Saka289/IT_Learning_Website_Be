@@ -191,24 +191,22 @@ public class AdminAuthorService : IAdminAuthorService
         return new ApiSuccessResult<PagedList<MemberDto>>(pagedResult);
     }
 
-    public async Task<ApiResult<bool>> AssignRoleAsync(string email, string roleName)
+    public async Task<ApiResult<bool>> AssignRoleAsync(string userId, string roleName)
     {
-        var user = await _userManager.FindByEmailAsync(email);
-        if (user != null)
+        var user = await _userManager.FindByIdAsync(userId);
+        if (user == null)
         {
-            if (!_roleManager.RoleExistsAsync(roleName).GetAwaiter().GetResult())
-            {
-                _roleManager.CreateAsync(new IdentityRole(roleName)).GetAwaiter().GetResult();
-            }
-
-            await _userManager.AddToRoleAsync(user, roleName);
-            return new ApiResult<bool>(true,
-                $"Assign {roleName} to user with email {email} successfully !");
+            return new ApiResult<bool>(false, "Don't find user with userId " + userId);
+        }
+        
+        if (!_roleManager.RoleExistsAsync(roleName).GetAwaiter().GetResult())
+        {
+            _roleManager.CreateAsync(new IdentityRole(roleName)).GetAwaiter().GetResult();
         }
 
-        await _elasticSearchService.UpdateDocumentAsync(ElasticConstant.ElasticUsers, user.ToMemberDto(_userManager),
-            user.Id);
-        return new ApiResult<bool>(false, "Don't find user with email " + email);
+        await _userManager.AddToRoleAsync(user, roleName);
+        await _elasticSearchService.UpdateDocumentAsync(ElasticConstant.ElasticUsers, user.ToMemberDto(_userManager), user.Id);
+        return new ApiResult<bool>(true, $"Assign {roleName} to user with userId {userId} successfully !");
     }
 
     public async Task<ApiResult<IEnumerable<string>>> AssignMultiRoleAsync(AssignMultipleRoleDto assignMultipleRoleDto)
