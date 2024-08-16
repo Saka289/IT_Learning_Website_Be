@@ -31,11 +31,20 @@ public class SubmissionRepository : RepositoryBase<Submission, int>, ISubmission
         return await FindAll().AnyAsync(s => s.ProblemId == problemId && s.UserId.Equals(userId) && s.Submit);
     }
 
-    public async Task<Submission?> GetSubmissionByProblemIdUserId(int problemId, string userId, int languageId)
+    public async Task<Submission?> GetSubmissionByProblemIdUserIdLanguageId(int problemId, string userId, int languageId)
     {
         return await FindAll()
             .Include(p => p.ProgramLanguage).DefaultIfEmpty()
             .Where(s => s.ProblemId == problemId && s.UserId.Equals(userId) && s.LanguageId == languageId && s.Status == EStatusSubmission.Accepted && s.Submit)
+            .OrderByDescending(s => s.CreatedDate)
+            .FirstOrDefaultAsync();
+    }
+
+    public async Task<Submission?> GetSubmissionByProblemIdUserId(int problemId, string userId)
+    {
+        return await FindAll()
+            .Include(p => p.ProgramLanguage).DefaultIfEmpty()
+            .Where(s => s.ProblemId == problemId && s.UserId.Equals(userId) && s.Status == EStatusSubmission.Accepted && s.Submit)
             .OrderByDescending(s => s.CreatedDate)
             .FirstOrDefaultAsync();
     }

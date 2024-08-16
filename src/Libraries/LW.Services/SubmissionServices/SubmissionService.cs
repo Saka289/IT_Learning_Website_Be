@@ -58,12 +58,20 @@ public class SubmissionService : ISubmissionService
 
     public async Task<ApiResult<SubmissionDto>> GetSubmission(SubmissionRequestDto submissionRequestDto)
     {
-        var submission = await _submissionRepository.GetSubmissionByProblemIdUserId(submissionRequestDto.ProblemId, submissionRequestDto.UserId, submissionRequestDto.LanguageId);
+        var submission = new Submission();
+        if (submissionRequestDto.LanguageId > 0)
+        {
+            submission = await _submissionRepository.GetSubmissionByProblemIdUserIdLanguageId(submissionRequestDto.ProblemId, submissionRequestDto.UserId, Convert.ToInt32(submissionRequestDto.LanguageId));
+        }
+        else
+        {
+            submission = await _submissionRepository.GetSubmissionByProblemIdUserId(submissionRequestDto.ProblemId, submissionRequestDto.UserId);
+        }
         if (submission is null)
         {
             return new ApiResult<SubmissionDto>(false, "Submission not found !!!");
         }
-
+        
         var result = _mapper.Map<SubmissionDto>(submission);
         return new ApiSuccessResult<SubmissionDto>(result);
     }

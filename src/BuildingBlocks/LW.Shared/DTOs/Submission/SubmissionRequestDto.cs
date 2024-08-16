@@ -8,5 +8,5 @@ public class SubmissionRequestDto
     public int ProblemId { get; set; }
     [Required]
     public string UserId { get; set; }
-    public int LanguageId { get; set; }
+    public int? LanguageId { get; set; } = 0;
 }
