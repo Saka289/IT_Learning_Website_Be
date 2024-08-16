@@ -58,12 +58,20 @@ public class SubmissionService : ISubmissionService
 
     public async Task<ApiResult<SubmissionDto>> GetSubmission(SubmissionRequestDto submissionRequestDto)
     {
-        var submission = await _submissionRepository.GetSubmissionByProblemIdUserId(submissionRequestDto.ProblemId, submissionRequestDto.UserId, submissionRequestDto.LanguageId);
+        var submission = new Submission();
+        if (submissionRequestDto.LanguageId > 0)
+        {
+            submission = await _submissionRepository.GetSubmissionByProblemIdUserIdLanguageId(submissionRequestDto.ProblemId, submissionRequestDto.UserId, Convert.ToInt32(submissionRequestDto.LanguageId));
+        }
+        else
+        {
+            submission = await _submissionRepository.GetSubmissionByProblemIdUserId(submissionRequestDto.ProblemId, submissionRequestDto.UserId);
+        }
         if (submission is null)
         {
             return new ApiResult<SubmissionDto>(false, "Submission not found !!!");
         }
-
+        
         var result = _mapper.Map<SubmissionDto>(submission);
         return new ApiSuccessResult<SubmissionDto>(result);
     }
@@ -111,8 +119,7 @@ public class SubmissionService : ISubmissionService
         return result;
     }
 
-    private async Task<ApiResult<IEnumerable<SubmissionDto>>> ProcessTestCases(SubmitProblemDto submitProblemDto,
-        IEnumerable<TestCase> testCases, ProgramLanguage programLanguage, string sourceCode)
+    private async Task<ApiResult<IEnumerable<SubmissionDto>>> ProcessTestCases(SubmitProblemDto submitProblemDto, IEnumerable<TestCase> testCases, ProgramLanguage programLanguage, string sourceCode)
     {
         var submission = new CompileDto();
         var submissionList = new List<SubmissionDto>();
@@ -125,25 +132,20 @@ public class SubmissionService : ISubmissionService
                 stdin = item.Input ?? null,
                 expected_output = item.Output
             });
-            if (submission.status_id != (int)EStatusSubmission.Accepted ||
-                submission.status_id == (int)EStatusSubmission.WrongAnswer)
+            if (submission.status_id != (int)EStatusSubmission.Accepted || submission.status_id == (int)EStatusSubmission.WrongAnswer)
             {
-                var submissionCreateFail =
-                    await _submissionRepository.CreateSubmission(submission.ToSubmission(submitProblemDto));
-                submissionList.Add(submission.ToSubmissionDto(submissionCreateFail, item.Id));
-                return new ApiResult<IEnumerable<SubmissionDto>>(false, submissionList,
-                    ((EStatusSubmission)submission.status_id).ToString());
+                var submissionCreateFail = await _submissionRepository.CreateSubmission(submission.ToSubmission(submitProblemDto));
+                submissionList.Add(submission.ToSubmissionDto(submissionCreateFail, item.Id, programLanguage.Name));
+                return new ApiResult<IEnumerable<SubmissionDto>>(false, submissionList, ((EStatusSubmission)submission.status_id).ToString());
             }
 
-            var submissionCreateSuccess =
-                await _submissionRepository.CreateSubmission(submission.ToSubmission(submitProblemDto));
-            submissionList.Add(submission.ToSubmissionDto(submissionCreateSuccess, item.Id));
+            var submissionCreateSuccess = await _submissionRepository.CreateSubmission(submission.ToSubmission(submitProblemDto));
+            submissionList.Add(submission.ToSubmissionDto(submissionCreateSuccess, item.Id, programLanguage.Name));
         }
 
         if (submitProblemDto.Submit)
         {
-            var submissionEntity =
-                await _submissionRepository.GetSubmissionById(submissionList.Select(x => x.Id).Last());
+            var submissionEntity = await _submissionRepository.GetSubmissionById(submissionList.Select(x => x.Id).Last());
             if (submissionEntity is null)
             {
                 return new ApiResult<IEnumerable<SubmissionDto>>(false, "Submit problem failed !!!");
@@ -153,7 +155,6 @@ public class SubmissionService : ISubmissionService
             await _submissionRepository.UpdateSubmission(submissionEntity);
         }
 
-        return new ApiResult<IEnumerable<SubmissionDto>>(true, submissionList,
-            ((EStatusSubmission)submission.status_id).ToString());
+        return new ApiResult<IEnumerable<SubmissionDto>>(true, submissionList, ((EStatusSubmission)submission.status_id).ToString());
     }
 }

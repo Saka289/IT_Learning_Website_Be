@@ -232,7 +232,7 @@ public class UserService : IUserService
             AccessToken = accessToken,
             RefreshToken = refreshToken
         };
-        _elasticSearchService.CreateDocumentAsync(ElasticConstant.ElasticUsers, user.ToMemberDto(_userManager), a => a.Id);
+        await _elasticSearchService.CreateDocumentAsync(ElasticConstant.ElasticUsers, user.ToMemberDto(_userManager), a => a.Id);
         return new ApiResult<LoginResponseUserDto>(true, loginResponseUserDto, "Login successfully !!!");
     }
 
@@ -290,14 +290,13 @@ public class UserService : IUserService
             AccessToken = accessToken,
             RefreshToken = refreshToken
         };
-        _elasticSearchService.CreateDocumentAsync(ElasticConstant.ElasticUsers, user.ToMemberDto(_userManager), a => a.Id);
+        await _elasticSearchService.CreateDocumentAsync(ElasticConstant.ElasticUsers, user.ToMemberDto(_userManager), a => a.Id);
         return new ApiResult<LoginResponseUserDto>(true, loginResponseUserDto, "Login successfully !!!");
     }
 
     public async Task<ApiResult<bool>> ChangePassword(ChangePasswordDto changePasswordDto)
     {
-        var user = await _userManager.Users.FirstOrDefaultAsync(u =>
-            u.Email.ToLower().Equals(changePasswordDto.Email.ToLower()));
+        var user = await _userManager.Users.FirstOrDefaultAsync(u => u.Email.ToLower().Equals(changePasswordDto.Email.ToLower()));
         var password = await _userManager.CheckPasswordAsync(user, changePasswordDto.Password);
         if (password == false)
         {
@@ -308,7 +307,7 @@ public class UserService : IUserService
         var result = await _userManager.ResetPasswordAsync(user, token, changePasswordDto.NewPassword);
         if (!result.Succeeded)
         {
-            return new ApiResult<bool>(false, result.Errors.FirstOrDefault().Description);
+            return new ApiResult<bool>(false, result.Errors.FirstOrDefault()!.Description);
         }
 
         return new ApiResult<bool>(true, "Changed password successfully !!!");
@@ -513,7 +512,7 @@ public class UserService : IUserService
                 PhoneNumber = user.PhoneNumber,
                 Image = user.Image
             };
-            _elasticSearchService.UpdateDocumentAsync(ElasticConstant.ElasticUsers, user.ToMemberDto(_userManager), updateUserDto.UserId);
+            await _elasticSearchService.UpdateDocumentAsync(ElasticConstant.ElasticUsers, user.ToMemberDto(_userManager), updateUserDto.UserId);
             return new ApiResult<UpdateResponseUserDto>(true, userResponseCreate, $"Update User Successfully !");
         }
 
@@ -532,7 +531,7 @@ public class UserService : IUserService
             Image = user.Image,
             Dob = user.Dob.ToString()
         };
-        _elasticSearchService.UpdateDocumentAsync(ElasticConstant.ElasticUsers, user.ToMemberDto(_userManager), updateUserDto.UserId);
+        await _elasticSearchService.UpdateDocumentAsync(ElasticConstant.ElasticUsers, user.ToMemberDto(_userManager), updateUserDto.UserId);
         return new ApiResult<UpdateResponseUserDto>(true, userResponseUpdate, $"Update User Successfully !");
     }
 

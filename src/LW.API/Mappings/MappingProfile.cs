@@ -74,6 +74,8 @@ public class MappingProfile : Profile
             .ForMember(x => x.TypeId, y => y.MapFrom(src => src.Type))
             .ForMember(x => x.TypeName, y => y.MapFrom(src => src.Type.GetDisplayNameEnum()))
             .ReverseMap();
+        CreateMap<Problem, GradeProblemCustomDto>().ReverseMap();
+        CreateMap<Quiz, GradeQuizCustomDto>().ReverseMap();
         //Document 
         CreateMap<Document, DocumentDto>()
             .ForMember(x => x.GradeId, y => y.MapFrom(src => src.GradeId))
@@ -296,7 +298,10 @@ public class MappingProfile : Profile
         CreateMap<Editorial, EditorialCreateDto>().ReverseMap();
         CreateMap<Editorial, EditorialUpdateDto>().ReverseMap();
         // TestCase
-        CreateMap<TestCase, TestCaseDto>().ReverseMap();
+        CreateMap<TestCase, TestCaseDto>()
+            .ForMember(x => x.Input, y => y.MapFrom(src => src.Input!.Base64Decode()))
+            .ForMember(x => x.Output, y => y.MapFrom(src => src.Output.Base64Decode()))
+            .ReverseMap();
         CreateMap<TestCase, TestCaseCreateDto>().ReverseMap();
         CreateMap<TestCase, TestCaseUpdateDto>().ReverseMap();
         // ExecuteCode
@@ -308,6 +313,7 @@ public class MappingProfile : Profile
         // Submission
         CreateMap<Submission, SubmissionDto>()
             .ForMember(x => x.StatusId, y => y.MapFrom(src => (int)src.Status))
+            .ForMember(x => x.LanguageName, y => y.MapFrom(src => src.ProgramLanguage.Name))
             .ReverseMap();
         //Post
         CreateMap<Post, PostDto>()

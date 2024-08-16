@@ -6,6 +6,7 @@ namespace LW.Data.Repositories.ProblemRepositories;
 public interface IProblemRepository : IRepositoryBase<Problem, int>
 {
     Task<IEnumerable<Problem>> GetAllProblem();
+    Task<IEnumerable<Problem>> GetAllProblemCustom();
     Task<IEnumerable<Problem>> GetAllProblemByTopic(int topicId);
     Task<IEnumerable<Problem>> GetAllProblemByLesson(int lessonId);
     Task<IEnumerable<Problem>> SearchProblemByTag(string tag, bool order);
@@ -13,4 +14,5 @@ public interface IProblemRepository : IRepositoryBase<Problem, int>
     Task<Problem> CreateProblem(Problem problem);
     Task<Problem> UpdateProblem(Problem problem);
     Task<bool> DeleteProblem(int id);
+    Task<bool> DeleteRangeProblem(IEnumerable<Problem> problems);
 }

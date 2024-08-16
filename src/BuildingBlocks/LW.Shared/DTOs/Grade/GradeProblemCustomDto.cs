@@ -1,12 +1,11 @@
 ﻿using LW.Shared.Enums;
 
-namespace LW.Shared.DTOs.Problem;
+namespace LW.Shared.DTOs.Grade;
 
-public class ProblemDto
+public class GradeProblemCustomDto
 {
     public int Id { get; set; }
     public string Title { get; set; }
-    public string KeyWord { get; set; }
     public string Description { get; set; }
     public int Difficulty { get; set; }
     public string DifficultyName { get; set; }

@@ -256,13 +256,14 @@ public class TopicService : ITopicService
                 if (listProblemInLesson.Any())
                 {
                     var listProblemInLessonId = listProblemInLesson.Select(p => p.Id);
-                    await _elasticSearchProblemService.DeleteDocumentRangeAsync(ElasticConstant.ElasticProblems,
-                        listProblemInLessonId);
+                    await _problemRepository.DeleteRangeProblem(listProblemInLesson);
+                    await _elasticSearchProblemService.DeleteDocumentRangeAsync(ElasticConstant.ElasticProblems, listProblemInLessonId);
                 }
 
                 if (listQuizInLesson.Any())
                 {
                     var listQuizInLessonId = listQuizInLesson.Select(q => q.Id);
+                    await _quizRepository.DeleteRangeQuiz(listQuizInLesson);
                     await _elasticSearchQuizService.DeleteDocumentRangeAsync(ElasticConstant.ElasticQuizzes,
                         listQuizInLessonId);
                 }
@@ -285,15 +286,15 @@ public class TopicService : ITopicService
         if (listQuiz.Any())
         {
             var listQuizId = listQuiz.Select(q => q.Id);
-            await _elasticSearchQuizService.DeleteDocumentRangeAsync(ElasticConstant.ElasticQuizzes,
-                listQuizId);
+            await _quizRepository.DeleteRangeQuiz(listQuiz);
+            await _elasticSearchQuizService.DeleteDocumentRangeAsync(ElasticConstant.ElasticQuizzes, listQuizId);
         }
 
         if (listProblem.Any())
         {
             var listProblemId = listProblem.Select(p => p.Id);
-            await _elasticSearchProblemService.DeleteDocumentRangeAsync(ElasticConstant.ElasticProblems,
-                listProblemId);
+            await _problemRepository.DeleteRangeProblem(listProblem);
+            await _elasticSearchProblemService.DeleteDocumentRangeAsync(ElasticConstant.ElasticProblems, listProblemId);
         }
 
         if (topic.ParentId is null)

@@ -13,6 +13,7 @@ public class Problem : EntityAuditBase<int>
     public bool IsActive { get; set; }
     public int? TopicId { get; set; }
     public int? LessonId { get; set; }
+    public int? GradeId { get; set; }
     [NotMapped]
     public EStatusProblem Status { get; set; }
     [ForeignKey(nameof(TopicId))]
@@ -20,6 +21,8 @@ public class Problem : EntityAuditBase<int>
     [ForeignKey(nameof(LessonId))]
     public virtual Lesson Lesson { get; set; }
     public virtual Editorial Editorial { get; set; }
+    [ForeignKey(nameof(GradeId))]
+    public virtual Grade Grade { get; set; }
     public virtual ICollection<Submission> Submissions { get; set; }
     public virtual ICollection<TestCase> TestCases { get; set; }
     public virtual ICollection<ExecuteCode> ExecuteCodes { get; set; }

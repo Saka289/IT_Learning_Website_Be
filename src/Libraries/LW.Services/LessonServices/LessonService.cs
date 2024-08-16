@@ -256,6 +256,7 @@ public class LessonService : ILessonService
         if (listProblemInLesson.Any())
         {
             var listProblemInLessonId = listProblemInLesson.Select(p => p.Id);
+            await _problemRepository.DeleteRangeProblem(listProblemInLesson);
             await _elasticSearchProblemService.DeleteDocumentRangeAsync(ElasticConstant.ElasticProblems,
                 listProblemInLessonId);
         }
@@ -263,6 +264,7 @@ public class LessonService : ILessonService
         if (listQuizInLesson.Any())
         {
             var listQuizInLessonId = listQuizInLesson.Select(q => q.Id);
+            await _quizRepository.DeleteRangeQuiz(listQuizInLesson);
             await _elasticSearchQuizService.DeleteDocumentRangeAsync(ElasticConstant.ElasticQuizzes,
                 listQuizInLessonId);
         }
@@ -313,6 +315,7 @@ public class LessonService : ILessonService
             if (listProblemInLesson.Any())
             {
                 var listProblemInLessonId = listProblemInLesson.Select(p => p.Id);
+                await _problemRepository.DeleteRangeProblem(listProblemInLesson);
                 await _elasticSearchProblemService.DeleteDocumentRangeAsync(ElasticConstant.ElasticProblems,
                     listProblemInLessonId);
             }
@@ -320,6 +323,7 @@ public class LessonService : ILessonService
             if (listQuizInLesson.Any())
             {
                 var listQuizInLessonId = listQuizInLesson.Select(q => q.Id);
+                await _quizRepository.DeleteRangeQuiz(listQuizInLesson);
                 await _elasticSearchQuizService.DeleteDocumentRangeAsync(ElasticConstant.ElasticQuizzes,
                     listQuizInLessonId);
             }

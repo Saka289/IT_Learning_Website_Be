@@ -19,6 +19,11 @@ public class ProblemRepository : RepositoryBase<Problem, int>, IProblemRepositor
             .ToListAsync();
     }
 
+    public async Task<IEnumerable<Problem>> GetAllProblemCustom()
+    {
+        return await FindAll().Where(p => p.TopicId == null && p.LessonId == null).ToListAsync();
+    }
+
     public async Task<IEnumerable<Problem>> GetAllProblemByTopic(int topicId)
     {
         return await FindAll().Where(x => x.TopicId == topicId).ToListAsync();
@@ -65,6 +70,18 @@ public class ProblemRepository : RepositoryBase<Problem, int>, IProblemRepositor
         }
 
         await DeleteAsync(problem);
+        return true;
+    }
+
+    public async Task<bool> DeleteRangeProblem(IEnumerable<Problem> problems)
+    {
+        problems = problems.Where(p => p != null);
+        if (!problems.Any())
+        {
+            return false;
+        }
+
+        await DeleteListAsync(problems);
         return true;
     }
 }

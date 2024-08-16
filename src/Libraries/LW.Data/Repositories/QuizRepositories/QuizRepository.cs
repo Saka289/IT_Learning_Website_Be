@@ -21,6 +21,11 @@ public class QuizRepository : RepositoryBase<Quiz, int>, IQuizRepository
             .ToListAsync();
     }
 
+    public async Task<IEnumerable<Quiz>> GetAllQuizCustom()
+    {
+        return await FindAll().Where(q => q.TopicId == null && q.LessonId == null).ToListAsync();
+    }
+
     public async Task<IEnumerable<Quiz>> GetAllQuizByTopicId(int topicId, bool isInclude = false)
     {
         if (!isInclude)
@@ -43,9 +48,9 @@ public class QuizRepository : RepositoryBase<Quiz, int>, IQuizRepository
         }
 
         return await FindAll()
-            .Include(l => l.Lesson)
-            .Include(l => l.Topic)
-            .Include(q => q.QuizQuestionRelations)
+            .Include(l => l.Lesson).DefaultIfEmpty()
+            .Include(l => l.Topic).DefaultIfEmpty()
+            .Include(q => q.QuizQuestionRelations).DefaultIfEmpty()
             .Where(q => q.LessonId == lessonId).ToListAsync();
     }
 
@@ -90,6 +95,18 @@ public class QuizRepository : RepositoryBase<Quiz, int>, IQuizRepository
         }
 
         await DeleteAsync(quiz);
+        return true;
+    }
+
+    public async Task<bool> DeleteRangeQuiz(IEnumerable<Quiz> quizzes)
+    {
+        quizzes = quizzes.Where(q => q != null);
+        if (!quizzes.Any())
+        {
+            return false;
+        }
+
+        await DeleteListAsync(quizzes);
         return true;
     }
 }

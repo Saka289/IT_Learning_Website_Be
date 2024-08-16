@@ -4,6 +4,7 @@ public class UserQuizDto
 {
     public int Id { get; set; }
     public decimal Score { get; set; }
+    public decimal TotalScoreQuiz { get; set; }
     public int  NumberCorrect { get; set; }
     public int TotalQuestion { get; set; }
     public List<HistoryQuizDto>? HistoryQuizzes { get; set; }

@@ -3,6 +3,7 @@ using System;
 using LW.Data.Persistence;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
@@ -10,9 +11,10 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace LW.Data.Persistence.Migrations
 {
     [DbContext(typeof(AppDbContext))]
-    partial class AppDbContextModelSnapshot : ModelSnapshot
+    [Migration("20240813041057_Init_Update_CodeOnline_Versione")]
+    partial class Init_Update_CodeOnline_Versione
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -754,9 +756,6 @@ namespace LW.Data.Persistence.Migrations
                     b.Property<int>("Difficulty")
                         .HasColumnType("int");
 
-                    b.Property<int?>("GradeId")
-                        .HasColumnType("int");
-
                     b.Property<bool>("IsActive")
                         .HasColumnType("tinyint(1)");
 
@@ -781,8 +780,6 @@ namespace LW.Data.Persistence.Migrations
                         .HasColumnType("int");
 
                     b.HasKey("Id");
-
-                    b.HasIndex("GradeId");
 
                     b.HasIndex("LessonId");
 
@@ -842,9 +839,6 @@ namespace LW.Data.Persistence.Migrations
                         .IsRequired()
                         .HasColumnType("longtext");
 
-                    b.Property<int?>("GradeId")
-                        .HasColumnType("int");
-
                     b.Property<bool>("IsActive")
                         .HasColumnType("tinyint(1)");
 
@@ -878,8 +872,6 @@ namespace LW.Data.Persistence.Migrations
                         .HasColumnType("int");
 
                     b.HasKey("Id");
-
-                    b.HasIndex("GradeId");
 
                     b.HasIndex("LessonId");
 
@@ -1703,10 +1695,6 @@ namespace LW.Data.Persistence.Migrations
 
             modelBuilder.Entity("LW.Data.Entities.Problem", b =>
                 {
-                    b.HasOne("LW.Data.Entities.Grade", "Grade")
-                        .WithMany("ProblemsCustom")
-                        .HasForeignKey("GradeId");
-
                     b.HasOne("LW.Data.Entities.Lesson", "Lesson")
                         .WithMany("Problems")
                         .HasForeignKey("LessonId")
@@ -1718,8 +1706,6 @@ namespace LW.Data.Persistence.Migrations
                         .HasForeignKey("TopicId")
                         .OnDelete(DeleteBehavior.SetNull)
                         .IsRequired();
-
-                    b.Navigation("Grade");
 
                     b.Navigation("Lesson");
 
@@ -1728,10 +1714,6 @@ namespace LW.Data.Persistence.Migrations
 
             modelBuilder.Entity("LW.Data.Entities.Quiz", b =>
                 {
-                    b.HasOne("LW.Data.Entities.Grade", "Grade")
-                        .WithMany("QuizzesCustom")
-                        .HasForeignKey("GradeId");
-
                     b.HasOne("LW.Data.Entities.Lesson", "Lesson")
                         .WithMany("Quizzes")
                         .HasForeignKey("LessonId")
@@ -1743,8 +1725,6 @@ namespace LW.Data.Persistence.Migrations
                         .HasForeignKey("TopicId")
                         .OnDelete(DeleteBehavior.SetNull)
                         .IsRequired();
-
-                    b.Navigation("Grade");
 
                     b.Navigation("Lesson");
 
@@ -2038,10 +2018,6 @@ namespace LW.Data.Persistence.Migrations
                     b.Navigation("Exams");
 
                     b.Navigation("Posts");
-
-                    b.Navigation("ProblemsCustom");
-
-                    b.Navigation("QuizzesCustom");
 
                     b.Navigation("UserGrades");
                 });

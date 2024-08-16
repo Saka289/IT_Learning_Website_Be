@@ -12,5 +12,6 @@ public class GradeProblemDto
     public bool IsActive { get; set; }
     public int? TopicId { get; set; }
     public int? LessonId { get; set; }
+    public int? GradeId { get; set; }
     public EStatusProblem Status { get; set; }
 }

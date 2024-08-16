@@ -156,7 +156,8 @@ public class AppDbContextSeed
             PhoneNumber = "1234567890",
             Image = CloudinaryConstant.Avatar,
             PublicId = CloudinaryConstant.AvatarPublicKey,
-            Dob = DateOnly.FromDateTime(DateTime.Now)
+            Dob = DateOnly.FromDateTime(DateTime.Now),
+            LockoutEnabled = true,
         };
         admin.PasswordHash = hasher.HashPassword(admin, "Admin@1234");
 
@@ -173,7 +174,8 @@ public class AppDbContextSeed
             PhoneNumber = "1234567890",
             Image = CloudinaryConstant.Avatar,
             PublicId = CloudinaryConstant.AvatarPublicKey,
-            Dob = DateOnly.FromDateTime(DateTime.Now)
+            Dob = DateOnly.FromDateTime(DateTime.Now),
+            LockoutEnabled = true,
         };
         user.PasswordHash = hasher.HashPassword(user, "User@1234");
 
@@ -190,7 +192,8 @@ public class AppDbContextSeed
             PhoneNumber = "1234567890",
             Image = CloudinaryConstant.Avatar,
             PublicId = CloudinaryConstant.AvatarPublicKey,
-            Dob = DateOnly.FromDateTime(DateTime.Now)
+            Dob = DateOnly.FromDateTime(DateTime.Now),
+            LockoutEnabled = true,
         };
         contentManager.PasswordHash = hasher.HashPassword(contentManager, "Manager@1234");
 
