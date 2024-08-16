@@ -213,15 +213,27 @@ public class ExamService : IExamService
             objUpdate.ExamEssayFile = filePath.Url;
         }
 
+
         if (examUpdateDto.ExamSolutionFileUpload != null && examUpdateDto.ExamSolutionFileUpload.Length > 0)
         {
-            var filePath = await _cloudinaryService.UpdateFileAsync(exam.PublicExamEssaySolutionId,
-                examUpdateDto.ExamSolutionFileUpload);
-            objUpdate.PublicExamEssaySolutionId = filePath.PublicId;
-            objUpdate.ExamSolutionFile = filePath.Url;
-            objUpdate.UrlDownloadSolutionFile = filePath.UrlDownload;
+            if (!string.IsNullOrEmpty(exam.PublicExamEssaySolutionId))
+            {
+                var filePath = await _cloudinaryService.UpdateFileAsync(exam.PublicExamEssaySolutionId,
+                    examUpdateDto.ExamSolutionFileUpload);
+                objUpdate.PublicExamEssaySolutionId = filePath.PublicId;
+                objUpdate.ExamSolutionFile = filePath.Url;
+                objUpdate.UrlDownloadSolutionFile = filePath.UrlDownload;
+            }
+            else
+            {
+                var filePath = await _cloudinaryService.CreateFileAsync(examUpdateDto.ExamSolutionFileUpload,
+                    CloudinaryConstant.FolderExamFilePdf);
+                objUpdate.PublicExamEssaySolutionId = filePath.PublicId;
+                objUpdate.ExamSolutionFile = filePath.Url;
+                objUpdate.UrlDownloadSolutionFile = filePath.UrlDownload;
+            }
         }
-        
+
         objUpdate.KeyWord = (examUpdateDto.TagValues is not null) ? examUpdateDto.TagValues.ConvertToTagString() : examUpdateDto.Title!.RemoveDiacritics();
         await _examRepository.UpdateExam(objUpdate);
         var examDto = _mapper.Map<ExamDto>(objUpdate);
