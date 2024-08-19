@@ -12,7 +12,7 @@ public class UpdateQuizCommandValidator : AbstractValidator<QuizUpdateDto>
         RuleFor(x => x.Description).NotNull().NotEmpty().Length(5, 250);
         RuleFor(x => x.Score).NotNull().NotEmpty().GreaterThan(0);
         RuleFor(x => x.Type).NotNull().NotEmpty().IsInEnum();
-        RuleFor(x => x.IsActive).NotNull().NotEmpty();
+        RuleFor(x => x.IsActive).NotNull();
         RuleFor(x => x).Must(HaveValidTopicLessonGrade).WithMessage("Only one of TopicId, LessonId, or GradeId should have a value, the others must be null.");
     }
     
