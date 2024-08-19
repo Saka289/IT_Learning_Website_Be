@@ -7,8 +7,8 @@ public class CreateProgramLanguageCommandValidator : AbstractValidator<ProgramLa
 {
     public CreateProgramLanguageCommandValidator()
     {
-        RuleFor(x => x.Name).NotNull().NotEmpty();
+        RuleFor(x => x.Name).NotNull().NotEmpty().Length(5,200);
         RuleFor(x => x.BaseId).NotNull().GreaterThan(0);
-        RuleFor(x => x.IsActive).NotNull().NotEmpty();
+        RuleFor(x => x.IsActive).NotNull();
     }
 }
