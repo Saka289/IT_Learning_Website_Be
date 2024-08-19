@@ -11,7 +11,8 @@ public class UpdateLessonCommandValidator : AbstractValidator<LessonUpdateDto>
         RuleFor(x => x.Title).NotNull().NotEmpty().Length(5, 250);
         RuleFor(x => x.Content).NotNull().NotEmpty().Length(5, 250);
         RuleFor(x => x.TopicId).NotNull().NotEmpty().GreaterThan(0);
-        RuleFor(x => x).Must(HaveValidContentOrFilePath).WithMessage("Either Content or FilePath must be provided, but not both.");
+        RuleFor(x => x).Must(HaveValidContentOrFilePath)
+            .WithMessage("Either Content or FilePath must be provided, but not both.");
     }
 
     private bool HaveValidContentOrFilePath(LessonUpdateDto lesson)

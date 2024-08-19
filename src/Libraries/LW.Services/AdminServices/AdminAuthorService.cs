@@ -97,7 +97,8 @@ public class AdminAuthorService : IAdminAuthorService
         }
 
         var adminDto = _mapper.Map<RegisterMemberResponseDto>(user);
-        await _elasticSearchService.CreateDocumentAsync(ElasticConstant.ElasticUsers, user.ToMemberDto(_userManager), a => a.Id);
+        await _elasticSearchService.CreateDocumentAsync(ElasticConstant.ElasticUsers, user.ToMemberDto(_userManager),
+            a => a.Id);
         return new ApiResult<RegisterMemberResponseDto>(true, adminDto, "Register successfully");
     }
 
@@ -109,10 +110,10 @@ public class AdminAuthorService : IAdminAuthorService
             return new ApiResult<LoginAdminResponseDto>(false, "Invalid Email !!!");
         }
 
-        var isRoles = await _userManager.IsInRoleAsync(user, RoleConstant.RoleAdmin);
-        if (!isRoles)
+        var isRoles = await _userManager.GetRolesAsync(user);
+        if (!isRoles.FirstOrDefault()!.Contains(RoleConstant.RoleAdmin) && !isRoles.FirstOrDefault()!.Contains(RoleConstant.RoleContentManager))
         {
-            return new ApiResult<LoginAdminResponseDto>(false, "User is not an Admin !!!");
+            return new ApiResult<LoginAdminResponseDto>(false, "User is not an Admin or ContentManager!!!");
         }
 
         var checkPassword = await _signInManager.CheckPasswordSignInAsync(user, model.Password, true);
@@ -198,14 +199,15 @@ public class AdminAuthorService : IAdminAuthorService
         {
             return new ApiResult<bool>(false, "Don't find user with userId " + userId);
         }
-        
+
         if (!_roleManager.RoleExistsAsync(roleName).GetAwaiter().GetResult())
         {
             _roleManager.CreateAsync(new IdentityRole(roleName)).GetAwaiter().GetResult();
         }
 
         await _userManager.AddToRoleAsync(user, roleName);
-        await _elasticSearchService.UpdateDocumentAsync(ElasticConstant.ElasticUsers, user.ToMemberDto(_userManager), user.Id);
+        await _elasticSearchService.UpdateDocumentAsync(ElasticConstant.ElasticUsers, user.ToMemberDto(_userManager),
+            user.Id);
         return new ApiResult<bool>(true, $"Assign {roleName} to user with userId {userId} successfully !");
     }
 
@@ -337,7 +339,8 @@ public class AdminAuthorService : IAdminAuthorService
         }
 
         await _userManager.SetLockoutEndDateAsync(user, DateTime.UtcNow.AddDays(30));
-        await _elasticSearchService.UpdateDocumentAsync(ElasticConstant.ElasticUsers, user.ToMemberDto(_userManager), userId);
+        await _elasticSearchService.UpdateDocumentAsync(ElasticConstant.ElasticUsers, user.ToMemberDto(_userManager),
+            userId);
         return new ApiResult<bool>(true, true, $"LockMember Successfully !");
     }
 
