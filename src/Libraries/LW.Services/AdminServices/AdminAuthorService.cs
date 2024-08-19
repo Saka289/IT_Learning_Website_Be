@@ -530,13 +530,14 @@ public class AdminAuthorService : IAdminAuthorService
         var emailRequest = new MailRequest()
         {
             ToAddress = user.Email,
-            Body = $"<p>Hello: {user.FirstName} {user.LastName}</p>" +
-                   $"<p>Username: {user.UserName}.</p>" +
-                   "<p>In order to reset your password, please click on the following link.</p>" +
-                   $"<p><a href=\"{url}\">Click here</a></p>" +
-                   "<p>Thank you,</p>" +
-                   $"<br>{_verifyEmailSettings.ApplicationName}",
-            Subject = $"Hello, Forgot Password your email."
+            Body = $"<h4>Xin chào {user.FirstName} {user.LastName}</h4>" +
+                   $"<p>Chúng tôi đã nhận được yêu cầu đặt lại mật khẩu cho tài khoản của bạn với tên đăng nhập: {user.UserName}.</p>" +
+                   "<span>Để tiến hành đặt lại mật khẩu, vui lòng nhấp vào liên kết dưới đây: </span>" +
+                   $"<span><a class=\"button\" href=\"{url}\" target=\"_blank\">Click here</a></span>" +
+                   "<p>Nếu bạn không yêu cầu thay đổi mật khẩu, hãy bỏ qua email này.</p>" +
+                   "<h4>Trân trọng,</h4>" +
+                   $"<h4>{_verifyEmailSettings.ApplicationName}</h4>",
+            Subject = $"Xin chào, Đặt lại mật khẩu tài khoản của bạn !!!"
         };
 
         try
