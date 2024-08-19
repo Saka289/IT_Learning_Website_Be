@@ -1,4 +1,4 @@
-﻿using LW.Contracts.Common.Interfaces;
+﻿using LW.Contracts.Common;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Converters;
 using Newtonsoft.Json.Serialization;

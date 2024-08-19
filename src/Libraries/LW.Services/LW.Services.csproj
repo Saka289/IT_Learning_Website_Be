@@ -1,9 +1,25 @@
-<Project Sdk="Microsoft.NET.Sdk">
+﻿<Project Sdk="Microsoft.NET.Sdk">
 
     <PropertyGroup>
         <TargetFramework>net6.0</TargetFramework>
         <ImplicitUsings>enable</ImplicitUsings>
         <Nullable>enable</Nullable>
     </PropertyGroup>
+
+    <ItemGroup>
+        <ProjectReference Include="..\..\BuildingBlocks\LW.Infrastructure\LW.Infrastructure.csproj" />
+        <ProjectReference Include="..\..\BuildingBlocks\LW.Shared\LW.Shared.csproj" />
+        <ProjectReference Include="..\LW.Cache\LW.Cache.csproj" />
+        <ProjectReference Include="..\LW.Data\LW.Data.csproj" />
+    </ItemGroup>
+
+    <ItemGroup>
+        <PackageReference Include="EPPlus" Version="7.2.1" />
+        <PackageReference Include="Google.Apis.Auth" Version="1.68.0" />
+        <PackageReference Include="Microsoft.AspNetCore.Authentication.Facebook" Version="6.0.30" />
+        <PackageReference Include="Microsoft.AspNetCore.Authentication.Google" Version="6.0.30" />
+        <PackageReference Include="Microsoft.OpenApi" Version="1.6.14" />
+        <PackageReference Include="MockQueryable.Moq" Version="6.0.1" />
+    </ItemGroup>
 
 </Project>

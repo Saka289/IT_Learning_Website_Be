@@ -1,4 +1,6 @@
-﻿namespace LW.API.Extensions;
+﻿using LW.Infrastructure.Hubs;
+
+namespace LW.API.Extensions;
 
 public static class ApplicationExtensions
 {
@@ -10,16 +12,20 @@ public static class ApplicationExtensions
             app.UseSwagger();
             app.UseSwaggerUI();
         }
+        app.UseCors();
 
         app.UseRouting();
         // for production only 
         // app.UseHttpsRedirection();
+
+        app.UseAuthentication();
 
         app.UseAuthorization();
 
         app.UseEndpoints(endpoints =>
         {
             endpoints.MapDefaultControllerRoute();
+            endpoints.MapHub<NotificationHub>("/notificationHub");
         });
     }
 }

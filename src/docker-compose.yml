@@ -5,11 +5,25 @@ services:
   educationDB:
     image: mysql:8.0.37
   
-  cacheDB:
-    image: redis:alpine
+  redis:
+    image: redis:7.2.4
+  
+  db:
+    image: postgres:16.2
   
   #infrastructure section
+  lw_elasticsearch:
+    image: docker.elastic.co/elasticsearch/elasticsearch:7.17.22
+
+  lw_kibana:
+    image: docker.elastic.co/kibana/kibana:7.17.22
   
+  lw_judge0Server:
+    image: judge0/judge0:1.13.1
+
+  lw_judge0Workers:
+    image: judge0/judge0:1.13.1
+
   #api section
   lw.api:
     image: ${DOCKER_REGISTRY-}lw-api:${PLATFORM:-linux}-${TAG:-latest}
@@ -20,10 +34,16 @@ services:
 #network section
 networks:
   default:
-    name: network_service
+    name: lw_network_service
     driver: bridge
 
 #vollumes section
 volumes:
-  mysql_data:
-    name: mysql_data
+  lw_mysql_data:
+    name: lw_mysql_data
+  lw_elasticsearch_data:
+    name: lw_elasticsearch_data
+  lw_jaeger_data:
+    name: lw_jaeger_data
+  lw_judge0_data:
+    name: lw_judge0_data

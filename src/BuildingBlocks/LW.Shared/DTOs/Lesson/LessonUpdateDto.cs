@@ -1,0 +1,16 @@
+﻿using System.ComponentModel.DataAnnotations;
+using System.ComponentModel.DataAnnotations.Schema;
+using Microsoft.AspNetCore.Http;
+
+namespace LW.Shared.DTOs.Lesson;
+
+public class LessonUpdateDto
+{
+    public int Id { get; set; }
+    public string Title { get; set; }
+    private bool IsActive { get; set; } = false;
+    public string? Content { get; set; }
+    public IFormFile? FilePath { get; set; }
+    public int TopicId { get; set; }
+    public IEnumerable<string>? TagValues { get; set; }
+}
