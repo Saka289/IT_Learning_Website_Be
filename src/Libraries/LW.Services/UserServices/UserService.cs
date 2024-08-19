@@ -133,6 +133,12 @@ public class UserService : IUserService
         {
             return new ApiResult<LoginResponseUserDto>(false, "Invalid UserName or Email !!!");
         }
+        
+        var isRoles = await _userManager.IsInRoleAsync(user, RoleConstant.RoleUser);
+        if (!isRoles)
+        {
+            return new ApiResult<LoginResponseUserDto>(false, "Admin or ContentManager is not an User!!!");
+        }
 
         var checkPassword = await _signInManager.CheckPasswordSignInAsync(user, loginUserDto.Password, true);
         if (checkPassword.IsLockedOut)
@@ -201,6 +207,13 @@ public class UserService : IUserService
         };
 
         var user = await _userManager.CreateUserFromSocialLogin(userCreated, ELoginProvider.Google);
+        
+        var isRoles = await _userManager.IsInRoleAsync(user, RoleConstant.RoleUser);
+        if (!isRoles)
+        {
+            return new ApiResult<LoginResponseUserDto>(false, "Admin or ContentManager is not an User!!!");
+        }
+        
         var isLockedOut  = await _userManager.IsLockedOutAsync(user);
         if (isLockedOut)
         {
@@ -258,6 +271,13 @@ public class UserService : IUserService
         };
 
         var user = await _userManager.CreateUserFromSocialLogin(userCreated, ELoginProvider.Facebook);
+        
+        var isRoles = await _userManager.IsInRoleAsync(user, RoleConstant.RoleUser);
+        if (!isRoles)
+        {
+            return new ApiResult<LoginResponseUserDto>(false, "Admin or ContentManager is not an User!!!");
+        }
+        
         var isLockedOut  = await _userManager.IsLockedOutAsync(user);
         if (isLockedOut)
         {

@@ -174,7 +174,12 @@ public class TagService : ITagService
         {
             return new ApiResult<TagDto>(false, "Not found tag to update");
         }
-
+        var tagExist = await _tagRepository.GetTagByKeyword(tagUpdateDto.Title.RemoveDiacritics());
+        if (tagExist != null)
+        {
+            return new ApiResult<TagDto>(false,
+                "It seems that there is already a tag with the same value as the tag exist");
+        }
         var tag = _mapper.Map(tagUpdateDto, check);
         tag.KeyWord = tagUpdateDto.Title.RemoveDiacritics();
         await _tagRepository.UpdateTag(tag);
