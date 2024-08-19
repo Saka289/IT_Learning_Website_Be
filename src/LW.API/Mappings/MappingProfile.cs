@@ -55,7 +55,9 @@ public class MappingProfile : Profile
         CreateMap<ApplicationUser, RegisterUserDto>().ReverseMap();
         CreateMap<ApplicationUser, UserResponseDto>()
             .ForMember(x => x.Dob, y => y.MapFrom(src => src.Dob.ToString()))
+            .ForMember(x => x.UserGrade, y => y.MapFrom(src => src.UserGrades.Select(x => x.Grade).ToList()))
             .ReverseMap();
+        CreateMap<Grade, UserGradeResponseDto>().ReverseMap();
         //Grade
         CreateMap<Grade, GradeDto>().ReverseMap();
         CreateMap<Grade, GradeCreateDto>().ReverseMap();

@@ -560,7 +560,10 @@ public class UserService : IUserService
             return new ApiResult<UserResponseDto>(false, "UserId is null or empty !!!");
         }
 
-        var user = await _userManager.Users.FirstOrDefaultAsync(u => u.Id == userId);
+        var user = await _userManager.Users
+            .Include(u => u.UserGrades)
+            .ThenInclude(g => g.Grade)
+            .FirstOrDefaultAsync(u => u.Id == userId);
         if (user == null)
         {
             return new ApiResult<UserResponseDto>(false, "User not found !!!");

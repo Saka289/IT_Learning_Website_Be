@@ -1,4 +1,6 @@
-﻿namespace LW.Shared.DTOs.User;
+﻿using LW.Shared.DTOs.Grade;
+
+namespace LW.Shared.DTOs.User;
 
 public class UserResponseDto
 {
@@ -10,4 +12,5 @@ public class UserResponseDto
     public string PhoneNumber { get; set; }
     public string Dob { get; set; }
     public string Image { get; set; }
+    public IEnumerable<UserGradeResponseDto>? UserGrade { get; set; }
 }
