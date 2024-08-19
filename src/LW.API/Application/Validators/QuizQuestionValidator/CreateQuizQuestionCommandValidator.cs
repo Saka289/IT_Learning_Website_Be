@@ -8,9 +8,9 @@ public class CreateQuizQuestionCommandValidator : AbstractValidator<QuizQuestion
     public CreateQuizQuestionCommandValidator()
     {
         RuleFor(x => x.Type).NotNull().NotEmpty().IsInEnum();
-        RuleFor(x => x.IsActive).NotNull().NotEmpty();
+        RuleFor(x => x.IsActive).NotNull();
         RuleFor(x => x.QuestionLevel).NotNull().NotEmpty().IsInEnum();
-        RuleFor(x => x.IsShuffle).NotNull().NotEmpty();
+        RuleFor(x => x.IsShuffle).NotNull();
         RuleFor(x => x.QuizAnswers).NotNull().NotEmpty();
     }
 }
