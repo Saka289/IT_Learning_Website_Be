@@ -10,6 +10,7 @@ public class UserQuizDto
     public List<HistoryQuizDto>? HistoryQuizzes { get; set; }
     public string UserId { get; set; }
     public int QuizId { get; set; }
+    public string? QuizTitle { get; set; }
     public DateTimeOffset CreatedDate { get; set; }
     public DateTimeOffset? LastModifiedDate { get; set; }
 }

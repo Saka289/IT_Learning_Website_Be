@@ -77,7 +77,10 @@ public class MappingProfile : Profile
             .ForMember(x => x.TypeName, y => y.MapFrom(src => src.Type.GetDisplayNameEnum()))
             .ReverseMap();
         CreateMap<Problem, GradeProblemCustomDto>().ReverseMap();
-        CreateMap<Quiz, GradeQuizCustomDto>().ReverseMap();
+        CreateMap<Quiz, GradeQuizCustomDto>()
+            .ForMember(x => x.TypeName, y => y.MapFrom(src => src.Type.GetDisplayNameEnum()))
+            .ForMember(x => x.TypeId, y => y.MapFrom(src => src.Type))
+            .ReverseMap();
         //Document 
         CreateMap<Document, DocumentDto>()
             .ForMember(x => x.GradeId, y => y.MapFrom(src => src.GradeId))
@@ -250,7 +253,10 @@ public class MappingProfile : Profile
         CreateMap<QuizAnswer, QuizAnswerCreateDto>().ReverseMap();
         CreateMap<QuizAnswer, QuizAnswerUpdateDto>().ReverseMap();
         //UserQuiz
-        CreateMap<UserQuiz, UserQuizDto>().ReverseMap();
+        CreateMap<UserQuiz, UserQuizDto>()
+            .ForMember(x => x.QuizTitle, y => y.MapFrom(src => src.Quiz.Title))
+            .ForMember(x => x.TotalScoreQuiz, y => y.MapFrom(src => src.Quiz.Score))
+            .ReverseMap();
         CreateMap<HistoryQuiz, HistoryQuizDto>().ReverseMap();
         //Tag
         CreateMap<Tag, TagDto>().ReverseMap();
@@ -291,7 +297,7 @@ public class MappingProfile : Profile
         CreateMap<Solution, SolutionUpdateDto>().ReverseMap();
         // Problem
         CreateMap<Problem, ProblemDto>()
-            .ForMember(x => x.DifficultyName, y => y.MapFrom(src => src.Difficulty.ToString()))
+            .ForMember(x => x.DifficultyName, y => y.MapFrom(src => src.Difficulty.GetDisplayNameEnum()))
             .ReverseMap();
         CreateMap<Problem, ProblemCreateDto>().ReverseMap();
         CreateMap<Problem, ProblemUpdateDto>().ReverseMap();
