@@ -316,7 +316,7 @@ public class UserService : IUserService
     {
         var user = await _userManager.Users.FirstOrDefaultAsync(u => u.Email.ToLower().Equals(changePasswordDto.Email.ToLower()));
         var password = await _userManager.CheckPasswordAsync(user, changePasswordDto.Password);
-        if (password == false)
+        if (password == false && !changePasswordDto.LoginProvider)
         {
             return new ApiResult<bool>(false, "The password you entered is incorrect.");
         }

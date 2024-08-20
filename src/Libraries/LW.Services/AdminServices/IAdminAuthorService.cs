@@ -15,6 +15,7 @@ public interface IAdminAuthorService
     // manage account
     Task<ApiResult<PagedList<MemberDto>>> GetAllMemberByRolePagination(SearchAdminDto searchAdminDto);
     public Task<ApiResult<bool>> AssignRoleAsync(string userId, string roleName);
+    public Task<ApiResult<bool>> UpdateRoleMemberAsync(string userId, string roleName);
     public Task<ApiResult<IEnumerable<string>>> AssignMultiRoleAsync(AssignMultipleRoleDto assignMultipleRoleDto);
     public Task<ApiResult<IEnumerable<string>>> GetAllRoleOfUserAsync(string userId);
     public Task<ApiResult<bool>> DeleteAsync(string userId);
