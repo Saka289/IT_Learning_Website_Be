@@ -9,7 +9,7 @@ public class CreateTopicCommandValidator:AbstractValidator<TopicCreateDto>
     {
         RuleFor(x => x.Title).NotNull().NotEmpty().Length(5, 250);
         RuleFor(x => x.Description).NotNull().NotEmpty().Length(5, 250); RuleFor(x => x.Objectives).NotNull().NotEmpty().Length(5, 250);
-        RuleFor(x => x.IsActive).NotEmpty();
+        RuleFor(x => x.IsActive).NotNull();
         RuleFor(x => x.DocumentId).NotNull().NotEmpty().GreaterThan(0);
     }
 }

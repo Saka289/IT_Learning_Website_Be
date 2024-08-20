@@ -8,6 +8,7 @@ public interface IQuizService
 {
     Task<ApiResult<IEnumerable<QuizDto>>> GetAllQuiz();
     Task<ApiResult<PagedList<QuizDto>>> GetAllQuizPagination(SearchQuizDto searchQuizDto);
+    Task<ApiResult<IEnumerable<QuizDto>>> GetAllQuizNoPagination(SearchQuizDto searchQuizDto);
     Task<ApiResult<QuizDto>> GetQuizById(int id);
     Task<ApiResult<bool>> UpdateQuizStatus(int id);
     Task<ApiResult<QuizDto>> CreateQuiz(QuizCreateDto quizCreateDto);

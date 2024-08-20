@@ -6,8 +6,8 @@ public class ChangePasswordDto
 {
     [Required, EmailAddress]
     public string Email { get; set; }
-    [Required]
-    public string Password { get; set; }
+    public string? Password { get; set; }
     [Required]
     public string NewPassword { get; set; }
+    public bool LoginProvider { get; set; } = false;
 }
