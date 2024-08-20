@@ -206,9 +206,38 @@ public class AdminAuthorService : IAdminAuthorService
         }
 
         await _userManager.AddToRoleAsync(user, roleName);
-        await _elasticSearchService.UpdateDocumentAsync(ElasticConstant.ElasticUsers, user.ToMemberDto(_userManager),
-            user.Id);
+        await _elasticSearchService.UpdateDocumentAsync(ElasticConstant.ElasticUsers, user.ToMemberDto(_userManager), user.Id);
         return new ApiResult<bool>(true, $"Assign {roleName} to user with userId {userId} successfully !");
+    }
+
+    public async Task<ApiResult<bool>> UpdateRoleMemberAsync(string userId, string roleName)
+    {
+        var user = await _userManager.FindByIdAsync(userId);
+        if (user == null)
+        {
+            return new ApiResult<bool>(false, "User not found with userId " + userId);
+        }
+        
+        var roleExists = await _roleManager.RoleExistsAsync(roleName);
+        if (!roleExists)
+        {
+            return new ApiResult<bool>(false, "Role not found: " + roleName);
+        }
+        
+        var currentRoles = await _userManager.GetRolesAsync(user);
+        var removeResult = await _userManager.RemoveFromRolesAsync(user, currentRoles);
+        if (!removeResult.Succeeded)
+        {
+            return new ApiResult<bool>(false, "Failed to remove existing roles.");
+        }
+        
+        var addResult = await _userManager.AddToRoleAsync(user, roleName);
+        if (!addResult.Succeeded)
+        {
+            return new ApiResult<bool>(false, "Failed to add role: " + roleName);
+        }
+        await _elasticSearchService.UpdateDocumentAsync(ElasticConstant.ElasticUsers, user.ToMemberDto(_userManager), user.Id);
+        return new ApiResult<bool>(true, "User role updated successfully.");
     }
 
     public async Task<ApiResult<IEnumerable<string>>> AssignMultiRoleAsync(AssignMultipleRoleDto assignMultipleRoleDto)

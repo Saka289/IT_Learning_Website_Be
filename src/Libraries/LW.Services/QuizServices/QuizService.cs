@@ -109,6 +109,62 @@ public class QuizService : IQuizService
         return new ApiSuccessResult<PagedList<QuizDto>>(pagedResult);
     }
 
+    public async Task<ApiResult<IEnumerable<QuizDto>>> GetAllQuizNoPagination(SearchQuizDto searchQuizDto)
+    {
+        IEnumerable<QuizDto> quizList = new List<QuizDto>();
+        if (!string.IsNullOrEmpty(searchQuizDto.Value))
+        {
+            var quizListSearch = await _elasticSearchService.SearchDocumentFieldAsync(ElasticConstant.ElasticQuizzes,
+                new SearchRequestValue
+                {
+                    Value = searchQuizDto.Value,
+                    Size = searchQuizDto.Size,
+                });
+            if (quizListSearch is null)
+            {
+                return new ApiResult<IEnumerable<QuizDto>>(false, "Quiz not found !!!");
+            }
+
+            quizList = quizListSearch.ToList();
+        }
+        else
+        {
+            var quizListAll = await _quizRepository.GetAllQuiz();
+            if (quizListAll.All(q => q == null))
+            {
+                return new ApiResult<IEnumerable<QuizDto>>(false, "Quiz is null !!!");
+            }
+
+            quizList = _mapper.Map<IEnumerable<QuizDto>>(quizListAll);
+        }
+
+        if (searchQuizDto.Custom == ECustomQuiz.Custom)
+        {
+            quizList = quizList.Where(t => t.LessonId == null && t.TopicId == null);
+        }
+        else if (searchQuizDto.Custom == ECustomQuiz.TopicAndLesson)
+        {
+            quizList = quizList.Where(t => t.LessonId != null || t.TopicId != null);
+        }
+
+        if (searchQuizDto.TopicId > 0)
+        {
+            quizList = quizList.Where(t => t.TopicId == searchQuizDto.TopicId);
+        }
+
+        if (searchQuizDto.LessonId > 0)
+        {
+            quizList = quizList.Where(t => t.LessonId == searchQuizDto.LessonId);
+        }
+
+        if (searchQuizDto.Type > 0)
+        {
+            quizList = quizList.Where(q => q.TypeId.Equals((int)searchQuizDto.Type));
+        }
+
+        return new ApiSuccessResult<IEnumerable<QuizDto>>(quizList);
+    }
+
     public async Task<ApiResult<QuizDto>> GetQuizById(int id)
     {
         var quizEntity = await _quizRepository.GetQuizById(id);
@@ -204,7 +260,7 @@ public class QuizService : IQuizService
                 return new ApiResult<QuizDto>(false, "Topic is null !!!");
             }
         }
-        
+
         if (quizUpdateDto.GradeId > 0)
         {
             var gradeEntity = await _gradeRepository.GetGradeById(Convert.ToInt32(quizUpdateDto.GradeId));
