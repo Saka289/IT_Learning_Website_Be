@@ -9,7 +9,7 @@ public class UpdateDocumentCommandValidator : AbstractValidator<DocumentUpdateDt
     {
         RuleFor(x => x.Id).NotNull().NotEmpty().GreaterThan(0);
         RuleFor(x => x.Title).NotNull().NotEmpty().Length(5, 250);
-        RuleFor(x => x.Description).NotNull().NotEmpty().Length(5, 250);
+        RuleFor(x => x.Description).NotNull().NotEmpty();
         RuleFor(x => x.IsActive).NotNull();
         RuleFor(x => x.GradeId).NotNull().NotEmpty().GreaterThan(0);
         RuleFor(x => x.Author).NotNull().NotEmpty().Length(5, 250);
