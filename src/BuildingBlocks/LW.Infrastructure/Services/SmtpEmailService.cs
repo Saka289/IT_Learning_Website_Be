@@ -26,6 +26,7 @@ public class SmtpEmailService : ISmtpEmailService
         var emailMessage = new MimeMessage()
         {
             Sender = new MailboxAddress(_setting.DisplayName, request.From ?? _setting.From),
+            From = { new MailboxAddress(_setting.DisplayName, request.From ?? _setting.From) },
             Subject = request.Subject,
             Body = new BodyBuilder
             {
