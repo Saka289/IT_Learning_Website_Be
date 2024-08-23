@@ -146,6 +146,18 @@ public class LessonService : ILessonService
             return new ApiResult<LessonDto>(false, "TopicId not found !!!");
         }
 
+        var isDuplicateIndex = await FindDuplicateLessonIndex(lessonCreateDto.Index);
+        if (isDuplicateIndex)
+        {
+            return new ApiResult<LessonDto>(false, "Lesson Index is Duplicate !!!");
+        }
+
+        var isDuplicateLesson = await FindDuplicateLesson(lessonCreateDto.Title!);
+        if (isDuplicateLesson)
+        {
+            return new ApiResult<LessonDto>(false, "Lesson Title is Duplicate !!!");
+        }
+
         var lessonEntity = _mapper.Map<Lesson>(lessonCreateDto);
         var filePath = new FileDto();
         if (string.IsNullOrEmpty(lessonEntity.Content) || lessonEntity.Content == null)
@@ -162,7 +174,9 @@ public class LessonService : ILessonService
             lessonEntity.Content = lessonCreateDto.Content.Base64Encode();
         }
 
-        lessonEntity.KeyWord = (lessonCreateDto.TagValues is not null) ? lessonCreateDto.TagValues.ConvertToTagString() : lessonCreateDto.Title.RemoveDiacritics();
+        lessonEntity.KeyWord = (lessonCreateDto.TagValues is not null)
+            ? lessonCreateDto.TagValues.ConvertToTagString()
+            : lessonCreateDto.Title.RemoveDiacritics();
         lessonEntity.FilePath = filePath.Url;
         lessonEntity.PublicId = filePath.PublicId;
         lessonEntity.UrlDownload = filePath.UrlDownload;
@@ -185,6 +199,18 @@ public class LessonService : ILessonService
         if (lessonEntity is null)
         {
             return new ApiResult<LessonDto>(false, "Lesson not found !!!");
+        }
+        
+        var isDuplicateIndex = await FindDuplicateLessonIndex(lessonUpdateDto.Index, lessonUpdateDto.Id);
+        if (isDuplicateIndex)
+        {
+            return new ApiResult<LessonDto>(false, "Lesson Index is Duplicate !!!");
+        }
+        
+        var isDuplicate = await FindDuplicateLesson(lessonUpdateDto.Title!, lessonUpdateDto.Id);
+        if (isDuplicate)
+        {
+            return new ApiResult<LessonDto>(false, "Lesson Title is Duplicate !!!");
         }
 
         var model = _mapper.Map(lessonUpdateDto, lessonEntity);
@@ -238,7 +264,7 @@ public class LessonService : ILessonService
         {
             return new ApiResult<bool>(false, "Lesson not found !!!");
         }
-        
+
         // delete problem quiz
         var listProblemInLesson = await _problemRepository.GetAllProblemByLesson(id);
         foreach (var problem in listProblemInLesson)
@@ -334,7 +360,7 @@ public class LessonService : ILessonService
         {
             return new ApiResult<bool>(false, "Failed Delete Lesson not found !!!");
         }
-        
+
         await _elasticSearchService.DeleteDocumentRangeAsync(ElasticConstant.ElasticLessons, listId.Select(x => x.Id));
         return new ApiSuccessResult<bool>(true, "Delete Lessons Successfully !!!");
     }
@@ -352,7 +378,40 @@ public class LessonService : ILessonService
             await _elasticSearchService.UpdateDocumentAsync(ElasticConstant.ElasticLessons, result, result.Id);
             var quizzes = await _quizRepository.GetAllQuizByTopicId(id, true);
             var resultQuiz = _mapper.Map<IEnumerable<QuizDto>>(quizzes);
-            await _elasticSearchQuizService.UpdateDocumentRangeAsync(ElasticConstant.ElasticQuizzes, resultQuiz, d => d.Id);
+            await _elasticSearchQuizService.UpdateDocumentRangeAsync(ElasticConstant.ElasticQuizzes, resultQuiz,
+                d => d.Id);
         }
+    }
+
+    private async Task<bool> FindDuplicateLesson(string title, int id = 0)
+    {
+        var listLesson = await _lessonRepository.GetAllLesson();
+        if (id > 0)
+        {
+            listLesson = listLesson.Where(l => l.Id != id);
+        }
+
+        if (listLesson.Any(l => l.Title!.Trim().ToLower().Equals(title.Trim().ToLower())))
+        {
+            return true;
+        }
+
+        return false;
+    }
+
+    private async Task<bool> FindDuplicateLessonIndex(int index, int id = 0)
+    {
+        var listLesson = await _lessonRepository.GetAllLesson();
+        if (id > 0)
+        {
+            listLesson = listLesson.Where(l => l.Id != id);
+        }
+        
+        if (listLesson.Any(l => l.Index == index))
+        {
+            return true;
+        }
+
+        return false;
     }
 }

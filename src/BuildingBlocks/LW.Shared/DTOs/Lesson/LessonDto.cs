@@ -11,6 +11,7 @@ public class LessonDto
     public string PublicId { get; set; }
     public string UrlDownload { get; set; }
     public int TopicId { get; set; }
+    public int Index { get; set; }
     public string TopicTitle { get; set; }
     public DateTimeOffset CreatedDate { get; set; }
     public DateTimeOffset? LastModifiedDate { get; set; }

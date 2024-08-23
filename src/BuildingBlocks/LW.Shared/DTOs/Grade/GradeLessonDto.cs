@@ -10,6 +10,7 @@ public class GradeLessonDto
     public string PublicId { get; set; }
     public string UrlDownload { get; set; }
     public int TopicId { get; set; }
+    public int Index { get; set; }
     public IEnumerable<GradeProblemDto> Problems { get; set; }
     public IEnumerable<GradeQuizDto> Quizzes { get; set; }
 }
