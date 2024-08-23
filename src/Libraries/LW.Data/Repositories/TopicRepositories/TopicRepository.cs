@@ -96,10 +96,10 @@ public class TopicRepository : RepositoryBase<Topic, int>, ITopicRepository
         return await FindAll()
             .Include(d => d.Document).Where(d => d.Document.IsActive == true)
             .Include(c => c.ChildTopics.Where(c => c.IsActive == true))
-            .ThenInclude(l => l.Lessons.Where(l => l.IsActive))
+            .ThenInclude(l => l.Lessons.Where(l => l.IsActive).OrderBy(l => l.Index))
             .Include(p => p.ParentTopic)
-            .ThenInclude(l => l.Lessons.Where(l => l.IsActive))
-            .Include(l => l.Lessons.Where(l => l.IsActive))
+            .ThenInclude(l => l.Lessons.Where(l => l.IsActive).OrderBy(l => l.Index))
+            .Include(l => l.Lessons.Where(l => l.IsActive).OrderBy(l => l.Index))
             .FirstOrDefaultAsync(t => t.Id == id && t.IsActive);
     }
 

@@ -841,6 +841,7 @@ public class AppDbContextSeed
                 UrlDownload =
                     "https://res.cloudinary.com/itsupport18/raw/upload/fl_attachment/v1/LessonFile/FILE-5a5f56e6-6081-47d3-81db-fa35f3a898e0.pdf",
                 TopicId = 6,
+                Index = 1,
             },
             new()
             {
@@ -854,6 +855,7 @@ public class AppDbContextSeed
                 UrlDownload =
                     "https://res.cloudinary.com/itsupport18/raw/upload/fl_attachment/v1/LessonFile/FILE-a662a89a-8bc1-4ba9-98dc-3580b5ae1782.pdf",
                 TopicId = 6,
+                Index = 2,
             },
             new Lesson()
             {
@@ -867,6 +869,7 @@ public class AppDbContextSeed
                 UrlDownload =
                     "https://res.cloudinary.com/itsupport18/raw/upload/fl_attachment/v1/LessonFile/FILE-3a204b73-f357-490d-9a42-f11b42318ca5.pdf",
                 TopicId = 6,
+                Index = 3,
             }
         };
     }
