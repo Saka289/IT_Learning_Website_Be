@@ -25,6 +25,8 @@ namespace LW.Shared.DTOs.Document
         public double? AverageRating { get; set; }
         public int TotalReviewer { get; set; }
         public string GradeTitle { get; set; }
+        public string Image { get; set; }
+        public string PublicId { get; set; }
         public DateTimeOffset CreatedDate { get; set; }
         public DateTimeOffset? LastModifiedDate { get; set; }
     }

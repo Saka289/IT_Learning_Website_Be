@@ -6,7 +6,7 @@ namespace LW.Services.ProblemServices;
 
 public interface IProblemService
 {
-    Task<ApiResult<IEnumerable<ProblemDto>>> GetAllProblem();
+    Task<ApiResult<IEnumerable<ProblemDto>>> GetAllProblem(bool? status);
     Task<ApiResult<IEnumerable<TagDto>>> GetProblemIdByTag(int id);
     Task<ApiResult<PagedList<ProblemDto>>> GetAllProblemPagination(SearchProblemDto searchProblemDto);
     Task<ApiResult<ProblemDto>> GetProblemById(int id);

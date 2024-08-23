@@ -27,9 +27,9 @@ namespace LW.API.Controllers.Public
         }
 
         [HttpGet("GetAllQuizQuestion")]
-        public async Task<ActionResult<ApiResult<IEnumerable<QuizQuestionDto>>>> GetAllQuizQuestion()
+        public async Task<ActionResult<ApiResult<IEnumerable<QuizQuestionDto>>>> GetAllQuizQuestion(bool? status)
         {
-            var result = await _quizQuestionService.GetAllQuizQuestion();
+            var result = await _quizQuestionService.GetAllQuizQuestion(status);
             if (!result.IsSucceeded)
             {
                 return NotFound(result);

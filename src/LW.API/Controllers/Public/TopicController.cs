@@ -26,9 +26,9 @@ namespace LW.API.Controllers.Public
         }
 
         [HttpGet("GetAllTopic")]
-        public async Task<ActionResult<ApiResult<TopicDto>>> GetAllTopic()
+        public async Task<ActionResult<ApiResult<TopicDto>>> GetAllTopic(bool? status)
         {
-            var result = await _topicService.GetAll();
+            var result = await _topicService.GetAll(status);
             if (!result.IsSucceeded)
             {
                 return NotFound(result);
@@ -38,9 +38,9 @@ namespace LW.API.Controllers.Public
         }
         
         [HttpGet("GetAllTopicByDocument/{documentId}")]
-        public async Task<ActionResult<ApiResult<TopicDto>>> GetAllTopicByDocument(int documentId)
+        public async Task<ActionResult<ApiResult<TopicDto>>> GetAllTopicByDocument(int documentId, bool? status)
         {
-            var result = await _topicService.GetAllTopicByDocument(documentId);
+            var result = await _topicService.GetAllTopicByDocument(documentId, status);
             if (!result.IsSucceeded)
             {
                 return NotFound(result);

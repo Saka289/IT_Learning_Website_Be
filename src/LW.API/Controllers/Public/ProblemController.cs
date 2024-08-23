@@ -26,9 +26,9 @@ namespace LW.API.Controllers.Public
         }
 
         [HttpGet("GetAllProblem")]
-        public async Task<ActionResult<ApiResult<IEnumerable<ProblemDto>>>> GetAllProblem()
+        public async Task<ActionResult<ApiResult<IEnumerable<ProblemDto>>>> GetAllProblem(bool? status)
         {
-            var result = await _problemService.GetAllProblem();
+            var result = await _problemService.GetAllProblem(status);
             if (!result.IsSucceeded)
             {
                 return NotFound(result);

@@ -63,12 +63,17 @@ public class QuizQuestionService : IQuizQuestionService
         _quizQuestionRelationRepository = quizQuestionRelationRepository;
     }
 
-    public async Task<ApiResult<IEnumerable<QuizQuestionDto>>> GetAllQuizQuestion()
+    public async Task<ApiResult<IEnumerable<QuizQuestionDto>>> GetAllQuizQuestion(bool? status)
     {
         var quizQuestionList = await _quizQuestionRepository.GetAllQuizQuestion();
         if (!quizQuestionList.Any())
         {
             return new ApiResult<IEnumerable<QuizQuestionDto>>(false, "Quiz Question is null !!!");
+        }
+
+        if (status != null)
+        {
+            quizQuestionList = quizQuestionList.Where(q => q.IsActive == status);
         }
 
         var result = _mapper.Map<IEnumerable<QuizQuestionDto>>(quizQuestionList);
@@ -102,6 +107,11 @@ public class QuizQuestionService : IQuizQuestionService
             }
 
             quizQuestionList = _mapper.Map<IEnumerable<QuizQuestionDto>>(quizQuestionListAll);
+        }
+        
+        if (searchAllQuizQuestionDto.Status != null)
+        {
+            quizQuestionList = quizQuestionList.Where(q => q.IsActive == searchAllQuizQuestionDto.Status);
         }
 
         if (searchAllQuizQuestionDto.QuizId > 0)
@@ -155,6 +165,11 @@ public class QuizQuestionService : IQuizQuestionService
             }
 
             quizQuestionList = _mapper.Map<IEnumerable<QuizQuestionDto>>(quizQuestionListAll);
+        }
+        
+        if (searchQuizQuestionDto.Status != null)
+        {
+            quizQuestionList = quizQuestionList.Where(q => q.IsActive == searchQuizQuestionDto.Status);
         }
 
         if (quiz.IsShuffle)

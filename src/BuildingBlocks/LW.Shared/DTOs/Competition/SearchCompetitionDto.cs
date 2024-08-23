@@ -4,4 +4,5 @@ namespace LW.Shared.DTOs.Competition;
 
 public class SearchCompetitionDto : SearchRequestValue
 {
+    public bool? Status { get; set; }
 }

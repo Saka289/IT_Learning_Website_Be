@@ -42,12 +42,17 @@ public class ExamService : IExamService
         _gradeRepository = gradeRepository;
     }
 
-    public async Task<ApiResult<IEnumerable<ExamDto>>> GetAllExam()
+    public async Task<ApiResult<IEnumerable<ExamDto>>> GetAllExam(bool? status)
     {
         var listExam = await _examRepository.GetAllExam();
         if (listExam.Count() == 0)
         {
             return new ApiResult<IEnumerable<ExamDto>>(false, "Not Found");
+        }
+
+        if (status != null)
+        {
+            listExam = listExam.Where(e => e.IsActive == status);
         }
 
         var result = _mapper.Map<IEnumerable<ExamDto>>(listExam);
@@ -81,6 +86,11 @@ public class ExamService : IExamService
             }
 
             examList = _mapper.Map<IEnumerable<ExamDto>>(examListAll);
+        }
+        
+        if (searchExamDto.Status != null)
+        {
+            examList = examList.Where(e => e.IsActive == searchExamDto.Status);
         }
 
         if (searchExamDto.CompetitionId > 0)
@@ -125,12 +135,17 @@ public class ExamService : IExamService
         return new ApiResult<ExamDto>(true, result, "Get Exam By Id Successfully");
     }
 
-    public async Task<ApiResult<IEnumerable<ExamDto>>> GetExamByType(EExamType type)
+    public async Task<ApiResult<IEnumerable<ExamDto>>> GetExamByType(EExamType type, bool? status)
     {
         var listExam = await _examRepository.GetExamByType(type);
         if (listExam == null)
         {
             return new ApiResult<IEnumerable<ExamDto>>(false, "NotFound");
+        }
+        
+        if (status != null)
+        {
+            listExam = listExam.Where(e => e.IsActive == status);
         }
 
         var result = _mapper.Map<IEnumerable<ExamDto>>(listExam);

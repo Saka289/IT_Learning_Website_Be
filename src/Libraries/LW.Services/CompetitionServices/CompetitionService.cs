@@ -33,12 +33,17 @@ public class CompetitionService : ICompetitionService
         _cloudinaryService = cloudinaryService;
     }
 
-    public async Task<ApiResult<IEnumerable<CompetitionDto>>> GetAllCompetition()
+    public async Task<ApiResult<IEnumerable<CompetitionDto>>> GetAllCompetition(bool? status)
     {
         var competitionList = await _competitionRepository.GetAllCompetition();
         if (!competitionList.Any())
         {
             return new ApiResult<IEnumerable<CompetitionDto>>(false, "Competitions is null !!!");
+        }
+
+        if (status != null)
+        {
+            competitionList = competitionList.Where(c => c.IsActive == status);
         }
 
         var result = _mapper.Map<IEnumerable<CompetitionDto>>(competitionList);
@@ -71,6 +76,11 @@ public class CompetitionService : ICompetitionService
             }
 
             competitionList = _mapper.Map<IEnumerable<CompetitionDto>>(competitionListAll);
+        }
+        
+        if (searchCompetitionDto.Status != null)
+        {
+            competitionList = competitionList.Where(c => c.IsActive == searchCompetitionDto.Status);
         }
 
         var pagedResult = await PagedList<CompetitionDto>.ToPageListAsync(competitionList.AsQueryable().BuildMock(), searchCompetitionDto.PageIndex, searchCompetitionDto.PageSize, searchCompetitionDto.OrderBy, searchCompetitionDto.IsAscending);

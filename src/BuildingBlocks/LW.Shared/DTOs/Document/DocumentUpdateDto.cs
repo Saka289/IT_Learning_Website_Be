@@ -4,6 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using LW.Shared.Enums;
+using Microsoft.AspNetCore.Http;
 
 namespace LW.Shared.DTOs.Document
 {
@@ -11,7 +12,7 @@ namespace LW.Shared.DTOs.Document
     {
         public int Id { get; set; }
         public string Title { get; set; }
-        
+
         //public string Code { get; set; }
         public EBookCollection BookCollection { get; set; } //1-KetNoiTriThuc 2-CanhDieu 3-ChanTroiSangTao
         public string Author { get; set; }
@@ -21,6 +22,7 @@ namespace LW.Shared.DTOs.Document
         public string Description { get; set; }
         public bool IsActive { get; set; }
         public int GradeId { get; set; }
+        public IFormFile? Image { get; set; }
         public IEnumerable<string>? TagValues { get; set; }
     }
 }

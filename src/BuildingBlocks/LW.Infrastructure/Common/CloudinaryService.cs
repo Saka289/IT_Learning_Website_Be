@@ -61,7 +61,7 @@ public class CloudinaryService : ICloudinaryService
         return fileImage;
     }
 
-    public async Task<FileImageDto> UpdateImageAsync(string publicId, IFormFile file)
+    public async Task<FileImageDto> UpdateImageAsync(string publicId, IFormFile file, string? folderName = null)
     {
         string decodedUrl = string.Empty;
         if (file == null || file.Length == 0)
@@ -70,9 +70,9 @@ public class CloudinaryService : ICloudinaryService
             return null;
         }
 
-        if (string.IsNullOrEmpty(publicId))
+        if (string.IsNullOrEmpty(publicId) && !string.IsNullOrEmpty(folderName))
         {
-            var creteFile = await CreateImageAsync(file, CloudinaryConstant.FolderUserImage);
+            var creteFile = await CreateImageAsync(file, folderName);
             var createFileImage = new FileImageDto()
             {
                 PublicId = creteFile.PublicId,

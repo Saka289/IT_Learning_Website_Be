@@ -28,9 +28,9 @@ namespace LW.API.Controllers.Public
         }
 
         [HttpGet("GetAllLesson")]
-        public async Task<ActionResult<ApiResult<IEnumerable<LessonDto>>>> GetAllLesson()
+        public async Task<ActionResult<ApiResult<IEnumerable<LessonDto>>>> GetAllLesson(bool? status)
         {
-            var result = await _lessonService.GetAllLesson();
+            var result = await _lessonService.GetAllLesson(status);
             if (!result.IsSucceeded)
             {
                 return NotFound(result);
@@ -40,9 +40,9 @@ namespace LW.API.Controllers.Public
         }
 
         [HttpGet("GetAllLessonByTopic/{topicId}")]
-        public async Task<ActionResult<ApiResult<IEnumerable<LessonDto>>>> GetAllLessonByTopic(int topicId)
+        public async Task<ActionResult<ApiResult<IEnumerable<LessonDto>>>> GetAllLessonByTopic(int topicId, bool? status)
         {
-            var result = await _lessonService.GetAllLessonByTopic(topicId);
+            var result = await _lessonService.GetAllLessonByTopic(topicId, status);
             if (!result.IsSucceeded)
             {
                 return NotFound(result);

@@ -315,8 +315,7 @@ public class AdminAuthorService : IAdminAuthorService
         {
             if (user.Image == null)
             {
-                var createImage =
-                    await _cloudinaryService.CreateImageAsync(updateAdminDto.Image, CloudinaryConstant.FolderUserImage);
+                var createImage = await _cloudinaryService.CreateImageAsync(updateAdminDto.Image, CloudinaryConstant.FolderUserImage);
                 if (createImage == null)
                 {
                     return new ApiResult<UpdateAdminDto>(false,
@@ -328,11 +327,10 @@ public class AdminAuthorService : IAdminAuthorService
             }
             else
             {
-                var updateImage = await _cloudinaryService.UpdateImageAsync(user.PublicId, updateAdminDto.Image);
+                var updateImage = await _cloudinaryService.UpdateImageAsync(user.PublicId!, updateAdminDto.Image, CloudinaryConstant.FolderUserImage);
                 if (updateImage == null)
                 {
-                    return new ApiResult<UpdateAdminDto>(false,
-                        $"Upload Image Fail !");
+                    return new ApiResult<UpdateAdminDto>(false, $"Upload Image Fail !");
                 }
 
                 user.PublicId = updateImage.PublicId;

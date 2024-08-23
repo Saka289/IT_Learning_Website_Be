@@ -4,6 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using LW.Shared.Enums;
+using Microsoft.AspNetCore.Http;
 
 namespace LW.Shared.DTOs.Document
 {
@@ -19,6 +20,7 @@ namespace LW.Shared.DTOs.Document
         public string Description { get; set; }
         public bool IsActive { get; set; } = true;
         public int GradeId { get; set; }
+        public IFormFile Image { get; set; }
         public IEnumerable<string>? TagValues { get; set; }
     }
 }
