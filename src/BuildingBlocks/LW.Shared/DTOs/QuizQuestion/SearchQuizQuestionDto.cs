@@ -9,4 +9,5 @@ public class SearchQuizQuestionDto : SearchRequestValue
     [Required]
     public int QuizId { get; set; } = 0;
     public int NumberOfQuestion { get; set; } = 0;
+    public bool? Status { get; set; }
 }

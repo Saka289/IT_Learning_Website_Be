@@ -73,7 +73,7 @@ namespace LW.Data.Repositories.DocumentRepositories
             return result;
         }
 
-        public async Task<Document> GetDocumentById(int id)
+        public async Task<Document?> GetDocumentById(int id)
         {
             var document = await FindByCondition(x => x.Id == id)
                 .Include(g => g.Grade)

@@ -534,7 +534,7 @@ public class UserService : IUserService
             return new ApiResult<UpdateResponseUserDto>(true, userResponseCreate, $"Update User Successfully !");
         }
 
-        var imageUpdatePath = await _cloudinaryService.UpdateImageAsync(user.PublicId, updateUserDto.Image);
+        var imageUpdatePath = await _cloudinaryService.UpdateImageAsync(user.PublicId!, updateUserDto.Image, CloudinaryConstant.FolderUserImage);
 
         user.Image = imageUpdatePath.Url;
         user.PublicId = imageUpdatePath.PublicId;

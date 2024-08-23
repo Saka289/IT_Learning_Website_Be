@@ -14,11 +14,13 @@ using LW.Infrastructure.Extensions;
 using LW.Shared.Constant;
 using LW.Shared.DTOs.Document;
 using LW.Shared.DTOs.Exam;
+using LW.Shared.DTOs.File;
 using LW.Shared.DTOs.Lesson;
 using LW.Shared.DTOs.Problem;
 using LW.Shared.DTOs.Quiz;
 using LW.Shared.DTOs.Solution;
 using LW.Shared.DTOs.Topic;
+using LW.Shared.Enums;
 using LW.Shared.SeedWork;
 using Microsoft.OpenApi.Extensions;
 using MockQueryable.Moq;
@@ -37,6 +39,7 @@ public class DocumentService : IDocumentService
     private readonly IElasticSearchService<QuizDto, int> _elasticSearchQuizService;
     private readonly IElasticSearchService<SolutionDto, int> _elasticSearchSolutionService;
     private readonly IMapper _mapper;
+    private readonly ICloudinaryService _cloudinaryService;
     private readonly ITopicRepository _topicRepository;
     private readonly ILessonRepository _lessonRepository;
     private readonly IProblemRepository _problemRepository;
@@ -51,7 +54,7 @@ public class DocumentService : IDocumentService
         IElasticSearchService<ProblemDto, int> elasticSearchProblemService,
         IElasticSearchService<QuizDto, int> elasticSearchQuizService,
         IElasticSearchService<SolutionDto, int> elasticSearchSolutionService, IProblemRepository problemRepository,
-        IQuizRepository quizRepository, ISolutionRepository solutionRepository)
+        IQuizRepository quizRepository, ISolutionRepository solutionRepository, ICloudinaryService cloudinaryService)
     {
         _documentRepository = documentRepository;
         _mapper = mapper;
@@ -68,9 +71,10 @@ public class DocumentService : IDocumentService
         _problemRepository = problemRepository;
         _quizRepository = quizRepository;
         _solutionRepository = solutionRepository;
+        _cloudinaryService = cloudinaryService;
     }
 
-    public async Task<ApiResult<IEnumerable<DocumentDto>>> GetAllDocument()
+    public async Task<ApiResult<IEnumerable<DocumentDto>>> GetAllDocument(bool? status)
     {
         var documentList = await _documentRepository.GetAllDocument();
         if (!documentList.Any())
@@ -87,11 +91,16 @@ public class DocumentService : IDocumentService
             item.TotalReviewer = item.CommentDocuments.Count;
         }
 
+        if (status != null)
+        {
+            documentList = documentList.Where(d => d.IsActive == status);
+        }
+
         var result = _mapper.Map<IEnumerable<DocumentDto>>(documentList);
         return new ApiSuccessResult<IEnumerable<DocumentDto>>(result);
     }
 
-    public async Task<ApiResult<IEnumerable<DocumentDto>>> GetAllDocumentByGrade(int id)
+    public async Task<ApiResult<IEnumerable<DocumentDto>>> GetAllDocumentByGrade(int id, bool? status)
     {
         var documentList = await _documentRepository.GetAllDocumentByGrade(id);
         if (!documentList.Any())
@@ -106,6 +115,11 @@ public class DocumentService : IDocumentService
                 : 0;
             item.AverageRating = averageRating;
             item.TotalReviewer = item.CommentDocuments.Count;
+        }
+
+        if (status != null)
+        {
+            documentList = documentList.Where(d => d.IsActive == status);
         }
 
         var result = _mapper.Map<IEnumerable<DocumentDto>>(documentList);
@@ -140,6 +154,11 @@ public class DocumentService : IDocumentService
             }
 
             documentList = _mapper.Map<IEnumerable<DocumentDto>>(documentListAll);
+        }
+
+        if (searchDocumentDto.Status != null)
+        {
+            documentList = documentList.Where(d => d.IsActive == searchDocumentDto.Status);
         }
 
         if (searchDocumentDto.GradeId > 0)
@@ -193,12 +212,17 @@ public class DocumentService : IDocumentService
             return new ApiResult<DocumentDto>(false, "GradeID not found !!!");
         }
 
+        var imagePath = new FileImageDto();
+        if (documentCreateDto.Image.Length > 0)
+        {
+            imagePath = await _cloudinaryService.CreateImageAsync(documentCreateDto.Image, CloudinaryConstant.FolderDocumentImage);
+        }
+
         var documentEntity = _mapper.Map<Document>(documentCreateDto);
+        documentEntity.Image = imagePath.Url;
+        documentEntity.PublicId = imagePath.PublicId;
         // mã hóa code field
-        documentEntity.Code = EncodeHelperExtensions.EncodeDocument(
-            documentEntity.BookCollection.GetDisplayName().ToUpper(),
-            documentEntity.TypeOfBook.GetDisplayName().ToUpper(), documentEntity.PublicationYear,
-            documentEntity.Edition);
+        documentEntity.Code = EncodeHelperExtensions.EncodeDocument(documentEntity.BookCollection.GetDisplayName().ToUpper(), documentEntity.TypeOfBook.GetDisplayName().ToUpper(), documentEntity.PublicationYear, documentEntity.Edition);
         documentEntity.KeyWord = (documentCreateDto.TagValues is not null) ? documentCreateDto.TagValues.ConvertToTagString() : documentCreateDto.Title.RemoveDiacritics();
         await _documentRepository.CreateDocument(documentEntity);
         await CreateOrUpdateElasticDocument(documentEntity.Id, true);
@@ -220,10 +244,22 @@ public class DocumentService : IDocumentService
             return new ApiResult<DocumentDto>(false, "Document not found !!!");
         }
 
+        var imagePath = new FileImageDto();
+        if (documentUpdateDto.Image != null && documentUpdateDto.Image.Length > 0)
+        {
+            imagePath = await _cloudinaryService.UpdateImageAsync(documentEntity.PublicId, documentUpdateDto.Image);
+        }
+        else
+        {
+            imagePath.PublicId = documentEntity.PublicId;
+            imagePath.Url = documentEntity.Image;
+        }
+
         var model = _mapper.Map(documentUpdateDto, documentEntity);
+        model.Image = imagePath.Url;
+        model.PublicId = imagePath.PublicId;
         // encode code field
-        model.Code = EncodeHelperExtensions.EncodeDocument(model.BookCollection.GetDisplayName().ToUpper(),
-            model.TypeOfBook.GetDisplayName().ToUpper(), model.PublicationYear, model.Edition);
+        model.Code = EncodeHelperExtensions.EncodeDocument(model.BookCollection.GetDisplayName().ToUpper(), model.TypeOfBook.GetDisplayName().ToUpper(), model.PublicationYear, model.Edition);
         model.KeyWord = (documentUpdateDto.TagValues is not null) ? documentUpdateDto.TagValues.ConvertToTagString() : documentUpdateDto.Title.RemoveDiacritics();
         var updateDocument = await _documentRepository.UpdateDocument(model);
         await CreateOrUpdateElasticDocument(documentUpdateDto.Id, false);

@@ -6,8 +6,8 @@ namespace LW.Services.TopicServices;
 
 public interface ITopicService
 {
-    public Task<ApiResult<IEnumerable<TopicDto>>> GetAll();
-    public Task<ApiResult<IEnumerable<TopicDto>>> GetAllTopicByDocument(int id);
+    public Task<ApiResult<IEnumerable<TopicDto>>> GetAll(bool? status);
+    public Task<ApiResult<IEnumerable<TopicDto>>> GetAllTopicByDocument(int id, bool? status);
     public Task<ApiResult<IEnumerable<TagDto>>> GetTopicIdByTag(int id);
     public Task<ApiResult<PagedList<TopicDto>>> GetAllTopicPagination(SearchTopicDto searchTopicDto);
     public Task<ApiResult<TopicDto>> GetById(int id);

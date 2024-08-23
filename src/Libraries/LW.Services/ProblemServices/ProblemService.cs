@@ -49,12 +49,17 @@ public class ProblemService : IProblemService
         _tagRepository = tagRepository;
     }
 
-    public async Task<ApiResult<IEnumerable<ProblemDto>>> GetAllProblem()
+    public async Task<ApiResult<IEnumerable<ProblemDto>>> GetAllProblem(bool? status)
     {
         var problem = await _problemRepository.GetAllProblem();
         if (!problem.Any())
         {
             return new ApiResult<IEnumerable<ProblemDto>>(false, "Problem not found !!!");
+        }
+
+        if (status != null)
+        {
+            problem = problem.Where(p => p.IsActive == status);
         }
 
         var result = _mapper.Map<IEnumerable<ProblemDto>>(problem);
@@ -112,6 +117,11 @@ public class ProblemService : IProblemService
 
             problemList = _mapper.Map<IEnumerable<ProblemDto>>(problemListAll);
         }
+        
+        if (searchProblemDto.Status != null)
+        {
+            problemList = problemList.Where(p => p.IsActive == searchProblemDto.StatusProblem);
+        }
 
         if (!string.IsNullOrEmpty(searchProblemDto.UserId))
         {
@@ -125,6 +135,11 @@ public class ProblemService : IProblemService
         if (searchProblemDto.Difficulty > 0)
         {
             problemList = problemList.Where(p => p.Difficulty == (int)searchProblemDto.Difficulty);
+        }
+
+        if (searchProblemDto.GradeId > 0)
+        {
+            problemList = problemList.Where(p => p.GradeId == searchProblemDto.GradeId);
         }
 
         if (searchProblemDto.TopicId > 0)

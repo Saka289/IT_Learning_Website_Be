@@ -9,7 +9,7 @@ public interface IDocumentRepository : IRepositoryBase<Document, int>
     Task<IEnumerable<Document>> GetAllDocumentByGrade(int id);
     Task<IEnumerable<Document>> GetAllDocumentPagination();
     Task<IEnumerable<Document>> SearchDocumentByTag(string tag, bool order);
-    Task<Document> GetDocumentById(int id);
+    Task<Document?> GetDocumentById(int id);
     Task<Document> CreateDocument(Document document);
     Task<Document> UpdateDocument(Document document);
     Task<bool> DeleteDocument(int id);

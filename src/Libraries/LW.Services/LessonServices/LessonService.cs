@@ -61,24 +61,34 @@ public class LessonService : ILessonService
         _tagRepository = tagRepository;
     }
 
-    public async Task<ApiResult<IEnumerable<LessonDto>>> GetAllLesson()
+    public async Task<ApiResult<IEnumerable<LessonDto>>> GetAllLesson(bool? status)
     {
         var lessonList = await _lessonRepository.GetAllLesson();
         if (!lessonList.Any())
         {
             return new ApiResult<IEnumerable<LessonDto>>(false, "Lesson is null !!!");
         }
+        
+        if (status != null)
+        {
+            lessonList = lessonList.Where(l => l.IsActive == status);
+        }
 
         var result = _mapper.Map<IEnumerable<LessonDto>>(lessonList);
         return new ApiSuccessResult<IEnumerable<LessonDto>>(result);
     }
 
-    public async Task<ApiResult<IEnumerable<LessonDto>>> GetAllLessonByTopic(int id)
+    public async Task<ApiResult<IEnumerable<LessonDto>>> GetAllLessonByTopic(int id, bool? status)
     {
         var lessonList = await _lessonRepository.GetAllLessonByTopic(id);
         if (!lessonList.Any())
         {
             return new ApiResult<IEnumerable<LessonDto>>(false, "Lesson is null !!!");
+        }
+        
+        if (status != null)
+        {
+            lessonList = lessonList.Where(l => l.IsActive == status);
         }
 
         var result = _mapper.Map<IEnumerable<LessonDto>>(lessonList);
@@ -135,6 +145,11 @@ public class LessonService : ILessonService
             }
 
             lessonList = _mapper.Map<IEnumerable<LessonDto>>(lessonListAll);
+        }
+        
+        if (searchLessonDto.Status != null)
+        {
+            lessonList = lessonList.Where(l => l.IsActive == searchLessonDto.Status);
         }
 
         if (searchLessonDto.TopicId > 0)

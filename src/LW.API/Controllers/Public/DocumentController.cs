@@ -21,9 +21,9 @@ namespace LW.API.Controllers.Public
         }
 
         [HttpGet("GetAllDocument")]
-        public async Task<ActionResult<ApiResult<IEnumerable<DocumentDto>>>> GetAllDocument()
+        public async Task<ActionResult<ApiResult<IEnumerable<DocumentDto>>>> GetAllDocument(bool? status)
         {
-            var result = await _documentService.GetAllDocument();
+            var result = await _documentService.GetAllDocument(status);
             if (!result.IsSucceeded)
             {
                 return NotFound(result);
@@ -33,9 +33,9 @@ namespace LW.API.Controllers.Public
         }
 
         [HttpGet("GetAllDocumentByGrade/{gradeId}")]
-        public async Task<ActionResult<ApiResult<IEnumerable<DocumentDto>>>> GetAllDocumentByGrade(int gradeId)
+        public async Task<ActionResult<ApiResult<IEnumerable<DocumentDto>>>> GetAllDocumentByGrade(int gradeId, bool? status)
         {
-            var result = await _documentService.GetAllDocumentByGrade(gradeId);
+            var result = await _documentService.GetAllDocumentByGrade(gradeId, status);
             if (!result.IsSucceeded)
             {
                 return NotFound(result);
@@ -70,8 +70,7 @@ namespace LW.API.Controllers.Public
         }
 
         [HttpPost("CreateDocument")]
-        public async Task<ActionResult<ApiResult<DocumentDto>>> CreateDocument(
-            [FromBody] DocumentCreateDto documentCreateDto)
+        public async Task<ActionResult<ApiResult<DocumentDto>>> CreateDocument([FromForm] DocumentCreateDto documentCreateDto)
         {
             var validationResult = await new CreateDocumentCommandValidator().ValidateAsync(documentCreateDto);
             if (!validationResult.IsValid)
@@ -89,8 +88,7 @@ namespace LW.API.Controllers.Public
         }
 
         [HttpPut("UpdateDocument")]
-        public async Task<ActionResult<ApiResult<DocumentDto>>> UpdateDocument(
-            [FromBody] DocumentUpdateDto documentUpdateDto)
+        public async Task<ActionResult<ApiResult<DocumentDto>>> UpdateDocument([FromForm] DocumentUpdateDto documentUpdateDto)
         {
             var validationResult = await new UpdateDocumentCommandValidator().ValidateAsync(documentUpdateDto);
             if (!validationResult.IsValid)
@@ -108,7 +106,7 @@ namespace LW.API.Controllers.Public
         }
 
 
-        [HttpPut("UpdateStatusDocument")]
+        [HttpPut("UpdateStatusDocument/{id}")]
         public async Task<ActionResult<ApiResult<bool>>> UpdateStatusDocument(int id)
         {
             var result = await _documentService.UpdateStatusDocument(id);

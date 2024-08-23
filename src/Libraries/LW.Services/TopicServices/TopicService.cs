@@ -65,7 +65,7 @@ public class TopicService : ITopicService
     }
 
 
-    public async Task<ApiResult<IEnumerable<TopicDto>>> GetAll()
+    public async Task<ApiResult<IEnumerable<TopicDto>>> GetAll(bool? status)
     {
         var list = await _topicRepository.GetAllTopic();
         if (!list.Any())
@@ -73,16 +73,26 @@ public class TopicService : ITopicService
             return new ApiResult<IEnumerable<TopicDto>>(false, "List topic is null !!!");
         }
 
+        if (status != null)
+        {
+            list = list.Where(t => t.IsActive == status);
+        }
+
         var result = _mapper.Map<IEnumerable<TopicDto>>(list);
         return new ApiResult<IEnumerable<TopicDto>>(true, result, "Get all topic successfully !");
     }
 
-    public async Task<ApiResult<IEnumerable<TopicDto>>> GetAllTopicByDocument(int id)
+    public async Task<ApiResult<IEnumerable<TopicDto>>> GetAllTopicByDocument(int id, bool? status)
     {
         var list = await _topicRepository.GetAllTopicByDocument(id);
         if (!list.Any())
         {
             return new ApiResult<IEnumerable<TopicDto>>(false, "List topic is null !!!");
+        }
+        
+        if (status != null)
+        {
+            list = list.Where(t => t.IsActive == status);
         }
 
         var result = _mapper.Map<IEnumerable<TopicDto>>(list);
@@ -139,6 +149,11 @@ public class TopicService : ITopicService
             }
 
             topicList = _mapper.Map<IEnumerable<TopicDto>>(topicListAll);
+        }
+        
+        if (searchTopicDto.Status != null)
+        {
+            topicList = topicList.Where(t => t.IsActive == searchTopicDto.Status);
         }
 
         if (searchTopicDto.DocumentId > 0)
