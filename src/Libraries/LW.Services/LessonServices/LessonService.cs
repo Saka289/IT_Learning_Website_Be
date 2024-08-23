@@ -6,6 +6,7 @@ using LW.Data.Repositories.LessonRepositories;
 using LW.Data.Repositories.ProblemRepositories;
 using LW.Data.Repositories.QuizRepositories;
 using LW.Data.Repositories.SolutionRepositories;
+using LW.Data.Repositories.TagRepositories;
 using LW.Data.Repositories.TopicRepositories;
 using LW.Infrastructure.Extensions;
 using LW.Shared.Constant;
@@ -14,6 +15,7 @@ using LW.Shared.DTOs.Lesson;
 using LW.Shared.DTOs.Problem;
 using LW.Shared.DTOs.Quiz;
 using LW.Shared.DTOs.Solution;
+using LW.Shared.DTOs.Tag;
 using LW.Shared.SeedWork;
 using Microsoft.EntityFrameworkCore;
 using MockQueryable.Moq;
@@ -28,6 +30,7 @@ public class LessonService : ILessonService
     private readonly IProblemRepository _problemRepository;
     private readonly IQuizRepository _quizRepository;
     private readonly ISolutionRepository _solutionRepository;
+    private readonly ITagRepository _tagRepository;
     private readonly IElasticSearchService<LessonDto, int> _elasticSearchService;
     private readonly IElasticSearchService<ProblemDto, int> _elasticSearchProblemService;
     private readonly IElasticSearchService<QuizDto, int> _elasticSearchQuizService;
@@ -41,7 +44,7 @@ public class LessonService : ILessonService
         ILogger logger, IProblemRepository problemRepository, IQuizRepository quizRepository,
         ISolutionRepository solutionRepository, IElasticSearchService<ProblemDto, int> elasticSearchProblemService,
         IElasticSearchService<QuizDto, int> elasticSearchQuizService,
-        IElasticSearchService<SolutionDto, int> elasticSearchSolutionService)
+        IElasticSearchService<SolutionDto, int> elasticSearchSolutionService, ITagRepository tagRepository)
     {
         _lessonRepository = lessonRepository;
         _topicRepository = topicRepository;
@@ -55,6 +58,7 @@ public class LessonService : ILessonService
         _elasticSearchProblemService = elasticSearchProblemService;
         _elasticSearchQuizService = elasticSearchQuizService;
         _elasticSearchSolutionService = elasticSearchSolutionService;
+        _tagRepository = tagRepository;
     }
 
     public async Task<ApiResult<IEnumerable<LessonDto>>> GetAllLesson()
@@ -79,6 +83,29 @@ public class LessonService : ILessonService
 
         var result = _mapper.Map<IEnumerable<LessonDto>>(lessonList);
         return new ApiSuccessResult<IEnumerable<LessonDto>>(result);
+    }
+
+    public async Task<ApiResult<IEnumerable<TagDto>>> GetLessonIdByTag(int id)
+    {
+        var lesson = await _lessonRepository.GetLessonById(id);
+        if (lesson is null)
+        {
+            return new ApiResult<IEnumerable<TagDto>>(false, "Lesson not found !!!");
+        }
+
+        var listStringTag = lesson.KeyWord.Trim().Split(',', StringSplitOptions.RemoveEmptyEntries);
+        var listTag = new List<Tag>();
+        foreach (var item in listStringTag)
+        {
+            var tagEntity = await _tagRepository.GetTagByKeyword(item);
+            if (tagEntity is not null)
+            {
+                listTag.Add(tagEntity);
+            }
+        }
+
+        var result = _mapper.Map<IEnumerable<TagDto>>(listTag);
+        return new ApiSuccessResult<IEnumerable<TagDto>>(result);
     }
 
     public async Task<ApiResult<PagedList<LessonDto>>> GetAllLessonPagination(SearchLessonDto searchLessonDto)
