@@ -7,6 +7,7 @@ using LW.Data.Repositories.LessonRepositories;
 using LW.Data.Repositories.ProblemRepositories;
 using LW.Data.Repositories.QuizRepositories;
 using LW.Data.Repositories.SolutionRepositories;
+using LW.Data.Repositories.TagRepositories;
 using LW.Data.Repositories.TopicRepositories;
 using LW.Infrastructure.Extensions;
 using LW.Shared.Constant;
@@ -14,6 +15,7 @@ using LW.Shared.DTOs.Lesson;
 using LW.Shared.DTOs.Problem;
 using LW.Shared.DTOs.Quiz;
 using LW.Shared.DTOs.Solution;
+using LW.Shared.DTOs.Tag;
 using LW.Shared.DTOs.Topic;
 using LW.Shared.SeedWork;
 using Microsoft.EntityFrameworkCore;
@@ -29,6 +31,7 @@ public class TopicService : ITopicService
     private readonly IProblemRepository _problemRepository;
     private readonly IQuizRepository _quizRepository;
     private readonly ISolutionRepository _solutionRepository;
+    private readonly ITagRepository _tagRepository;
     private readonly IMapper _mapper;
     private readonly IDocumentRepository _documentRepository;
     private readonly IElasticSearchService<TopicDto, int> _elasticSearchService;
@@ -43,7 +46,7 @@ public class TopicService : ITopicService
         IElasticSearchService<LessonDto, int> elasticSearchLessonService, IQuizRepository quizRepository,
         IElasticSearchService<QuizDto, int> elasticSearchQuizService, IProblemRepository problemRepository,
         ISolutionRepository solutionRepository, IElasticSearchService<ProblemDto, int> elasticSearchProblemService,
-        IElasticSearchService<SolutionDto, int> elasticSearchSolutionService)
+        IElasticSearchService<SolutionDto, int> elasticSearchSolutionService, ITagRepository tagRepository)
     {
         _topicRepository = topicRepository;
         _mapper = mapper;
@@ -58,6 +61,7 @@ public class TopicService : ITopicService
         _solutionRepository = solutionRepository;
         _elasticSearchProblemService = elasticSearchProblemService;
         _elasticSearchSolutionService = elasticSearchSolutionService;
+        _tagRepository = tagRepository;
     }
 
 
@@ -83,6 +87,29 @@ public class TopicService : ITopicService
 
         var result = _mapper.Map<IEnumerable<TopicDto>>(list);
         return new ApiResult<IEnumerable<TopicDto>>(true, result, "Get all topic successfully !");
+    }
+
+    public async Task<ApiResult<IEnumerable<TagDto>>> GetTopicIdByTag(int id)
+    {
+        var topic = await _topicRepository.GetTopicByAllId(id);
+        if (topic is null)
+        {
+            return new ApiResult<IEnumerable<TagDto>>(false, "Topic not found !!!");
+        }
+
+        var listStringTag = topic.KeyWord.Trim().Split(',', StringSplitOptions.RemoveEmptyEntries);
+        var listTag = new List<Tag>();
+        foreach (var item in listStringTag)
+        {
+            var tagEntity = await _tagRepository.GetTagByKeyword(item);
+            if (tagEntity is not null)
+            {
+                listTag.Add(tagEntity);
+            }
+        }
+
+        var result = _mapper.Map<IEnumerable<TagDto>>(listTag);
+        return new ApiSuccessResult<IEnumerable<TagDto>>(result);
     }
 
     public async Task<ApiResult<PagedList<TopicDto>>> GetAllTopicPagination(SearchTopicDto searchTopicDto)
@@ -145,7 +172,9 @@ public class TopicService : ITopicService
         }
 
         var topic = _mapper.Map<Topic>(model);
-        topic.KeyWord = (model.TagValues is not null) ? model.TagValues.ConvertToTagString() : model.Title.RemoveDiacritics();
+        topic.KeyWord = (model.TagValues is not null)
+            ? model.TagValues.ConvertToTagString()
+            : model.Title.RemoveDiacritics();
         await _topicRepository.CreateTopic(topic);
         if (model.ParentId != null)
         {
@@ -174,7 +203,9 @@ public class TopicService : ITopicService
         }
 
         var topicUpdate = _mapper.Map(model, topicEntity);
-        topicUpdate.KeyWord = (model.TagValues is not null) ? model.TagValues.ConvertToTagString() : model.Title.RemoveDiacritics();
+        topicUpdate.KeyWord = (model.TagValues is not null)
+            ? model.TagValues.ConvertToTagString()
+            : model.Title.RemoveDiacritics();
         await _topicRepository.UpdateTopic(topicUpdate);
         if (model.ParentId is not null)
         {
@@ -257,7 +288,8 @@ public class TopicService : ITopicService
                 {
                     var listProblemInLessonId = listProblemInLesson.Select(p => p.Id);
                     await _problemRepository.DeleteRangeProblem(listProblemInLesson);
-                    await _elasticSearchProblemService.DeleteDocumentRangeAsync(ElasticConstant.ElasticProblems, listProblemInLessonId);
+                    await _elasticSearchProblemService.DeleteDocumentRangeAsync(ElasticConstant.ElasticProblems,
+                        listProblemInLessonId);
                 }
 
                 if (listQuizInLesson.Any())
@@ -307,15 +339,16 @@ public class TopicService : ITopicService
         {
             var topicChildDelete = await _topicRepository.GetTopicById(Convert.ToInt32(topic.ParentId));
             var topicResult = _mapper.Map<TopicDto>(topicChildDelete);
-            await _elasticSearchService.UpdateDocumentAsync(ElasticConstant.ElasticTopics, topicResult, Convert.ToInt32(topic.ParentId));
+            await _elasticSearchService.UpdateDocumentAsync(ElasticConstant.ElasticTopics, topicResult,
+                Convert.ToInt32(topic.ParentId));
         }
-        
+
         var isDeleted = await _topicRepository.DeleteTopic(id);
         if (!isDeleted)
         {
             return new ApiResult<bool>(false, "Delete topic failed");
         }
-        
+
         return new ApiResult<bool>(true, "Delete topic successfully");
     }
 

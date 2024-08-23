@@ -7,6 +7,7 @@ using LW.API.Application.Validators.LessonValidator;
 using LW.Services.LessonServices;
 using LW.Shared.Constant;
 using LW.Shared.DTOs.Lesson;
+using LW.Shared.DTOs.Tag;
 using LW.Shared.SeedWork;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
@@ -42,6 +43,18 @@ namespace LW.API.Controllers.Public
         public async Task<ActionResult<ApiResult<IEnumerable<LessonDto>>>> GetAllLessonByTopic(int topicId)
         {
             var result = await _lessonService.GetAllLessonByTopic(topicId);
+            if (!result.IsSucceeded)
+            {
+                return NotFound(result);
+            }
+
+            return Ok(result);
+        }
+        
+        [HttpGet("GetLessonIdByTag/{id}")]
+        public async Task<ActionResult<ApiResult<IEnumerable<TagDto>>>> GetLessonIdByTag(int id)
+        {
+            var result = await _lessonService.GetLessonIdByTag(id);
             if (!result.IsSucceeded)
             {
                 return NotFound(result);
