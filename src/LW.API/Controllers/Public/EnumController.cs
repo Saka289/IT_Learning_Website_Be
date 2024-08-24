@@ -34,7 +34,7 @@ namespace LW.API.Controllers.Public
 
             return Ok(result);
         }
-
+        
         [HttpGet("GetAllBookType")]
         public async Task<ActionResult<ApiResult<IEnumerable<EnumDto>>>> GetBookType()
         {

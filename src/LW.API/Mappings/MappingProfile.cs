@@ -18,6 +18,7 @@ using LW.Shared.DTOs.ExecuteCode;
 using LW.Shared.DTOs.FavoritePost;
 using LW.Shared.DTOs.Index;
 using LW.Shared.DTOs.Lesson;
+using LW.Shared.DTOs.Level;
 using LW.Shared.DTOs.Problem;
 using LW.Shared.DTOs.ProgramLanguage;
 using LW.Shared.DTOs.Notification;
@@ -58,6 +59,8 @@ public class MappingProfile : Profile
             .ForMember(x => x.UserGrade, y => y.MapFrom(src => src.UserGrades.Select(x => x.Grade).ToList()))
             .ReverseMap();
         CreateMap<Grade, UserGradeResponseDto>().ReverseMap();
+        //Level
+        CreateMap<Level, LevelDto>().ReverseMap();
         //Grade
         CreateMap<Grade, GradeDto>().ReverseMap();
         CreateMap<Grade, GradeCreateDto>().ReverseMap();

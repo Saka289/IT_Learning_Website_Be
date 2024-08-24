@@ -247,7 +247,7 @@ public class DocumentService : IDocumentService
         var imagePath = new FileImageDto();
         if (documentUpdateDto.Image != null && documentUpdateDto.Image.Length > 0)
         {
-            imagePath = await _cloudinaryService.UpdateImageAsync(documentEntity.PublicId, documentUpdateDto.Image);
+            imagePath = await _cloudinaryService.UpdateImageAsync(documentEntity.PublicId!, documentUpdateDto.Image);
         }
         else
         {

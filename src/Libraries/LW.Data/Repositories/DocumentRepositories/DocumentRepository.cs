@@ -38,8 +38,8 @@ namespace LW.Data.Repositories.DocumentRepositories
         public async Task<IEnumerable<Document>> GetAllDocument()
         {
             var documents = await FindAll()
-                .Include(g => g.Grade)
-                .Include(c => c.CommentDocuments)
+                .Include(g => g.Grade).DefaultIfEmpty()
+                .Include(c => c.CommentDocuments).DefaultIfEmpty()
                 .ToListAsync();
             return documents;
         }
