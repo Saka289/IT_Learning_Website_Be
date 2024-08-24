@@ -16,7 +16,7 @@ public interface IUserService
     public Task<ApiResult<bool>> ForgotPassword(string email);
     public Task<ApiResult<bool>> ResetPassword(ResetPasswordDto resetPasswordDto);
     public Task<ApiResult<bool>> SendVerifyEmail(string email);
-    public Task<ApiResult<bool>> VerifyEmail(string token);
+    public Task<ApiResult<bool>> VerifyEmail(string email, string token);
     public Task<ApiResult<TokenResponseDto>> RefreshToken(TokenRequestDto tokenRequestDto);
     public Task<ApiResult<bool>> Revoke(string emailOrUserName);
     public Task<ApiResult<UpdateResponseUserDto>> UpdateUser(UpdateUserDto updateUserDto);
