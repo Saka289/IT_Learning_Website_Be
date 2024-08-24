@@ -39,11 +39,13 @@ namespace LW.API.Controllers.Public
             {
                 return BadRequest(validationResult);
             }
+
             var result = await _userService.Register(registerUserDto);
             if (!result.IsSucceeded)
             {
                 return BadRequest(result);
             }
+
             return Ok(result);
         }
 
@@ -55,17 +57,19 @@ namespace LW.API.Controllers.Public
             {
                 return BadRequest(result);
             }
+
             return Ok(result);
         }
 
         [HttpGet("VerifyEmail")]
-        public async Task<ActionResult<ApiResult<bool>>> VerifyEmail([Required] string token)
+        public async Task<ActionResult<ApiResult<bool>>> VerifyEmail([Required] string email, [Required] string token)
         {
-            var result = await _userService.VerifyEmail(token);
+            var result = await _userService.VerifyEmail(email, token);
             if (!result.IsSucceeded)
             {
                 return BadRequest(result);
             }
+
             return Ok(result);
         }
 
@@ -77,6 +81,7 @@ namespace LW.API.Controllers.Public
             {
                 return BadRequest(result);
             }
+
             return Ok(result);
         }
 
@@ -89,6 +94,7 @@ namespace LW.API.Controllers.Public
             {
                 return BadRequest(result);
             }
+
             return Ok(result);
         }
 
@@ -101,6 +107,7 @@ namespace LW.API.Controllers.Public
             {
                 return BadRequest(result);
             }
+
             return Ok(result);
         }
 
@@ -112,6 +119,7 @@ namespace LW.API.Controllers.Public
             {
                 return BadRequest(result);
             }
+
             return Ok(result);
         }
 
@@ -123,6 +131,7 @@ namespace LW.API.Controllers.Public
             {
                 return BadRequest(result);
             }
+
             return Ok(result);
         }
 
@@ -134,6 +143,7 @@ namespace LW.API.Controllers.Public
             {
                 return BadRequest(result);
             }
+
             return Ok(result);
         }
 
@@ -146,6 +156,7 @@ namespace LW.API.Controllers.Public
             {
                 return BadRequest(result);
             }
+
             return Ok(result);
         }
 
@@ -157,25 +168,29 @@ namespace LW.API.Controllers.Public
             {
                 return BadRequest(result);
             }
+
             return Ok(result);
         }
-        
+
         [HttpPut("UpdateUser")]
-        public async Task<ActionResult<ApiResult<UpdateResponseUserDto>>> UpdateUser([FromForm] UpdateUserDto updateUserDto)
+        public async Task<ActionResult<ApiResult<UpdateResponseUserDto>>> UpdateUser(
+            [FromForm] UpdateUserDto updateUserDto)
         {
             var validationResult = await new UpdateUserCommandValidator().ValidateAsync(updateUserDto);
             if (!validationResult.IsValid)
             {
                 return BadRequest(validationResult);
             }
+
             var result = await _userService.UpdateUser(updateUserDto);
             if (!result.IsSucceeded)
             {
                 return BadRequest(result);
             }
+
             return Ok(result);
         }
-        
+
         [HttpGet("GetUser/{userId}")]
         public async Task<ActionResult<ApiResult<UserResponseDto>>> GetUser([Required] string userId)
         {
@@ -184,6 +199,7 @@ namespace LW.API.Controllers.Public
             {
                 return BadRequest(result);
             }
+
             return Ok(result);
         }
     }
