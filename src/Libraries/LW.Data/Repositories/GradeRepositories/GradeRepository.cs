@@ -20,8 +20,8 @@ public class GradeRepository : RepositoryBase<Grade, int>, IGradeRepository
         }
         return await FindAll()
             .Include(g => g.Exams.Where(e => e.IsActive))
-            .Include(g => g.QuizzesCustom.Where(q => q.IsActive))
-            .Include(g => g.ProblemsCustom.Where(p => p.IsActive))
+            .Include(g => g.QuizzesCustom.Where(q => q.IsActive && q.TopicId == null && q.LessonId == null))
+            .Include(g => g.ProblemsCustom.Where(p => p.IsActive && p.TopicId == null && p.LessonId == null))
             .Include(g => g.Documents.Where(d => d.IsActive))
             .ThenInclude(c => c.CommentDocuments)
             .Include(g => g.Documents.Where(d => d.IsActive))
@@ -67,8 +67,8 @@ public class GradeRepository : RepositoryBase<Grade, int>, IGradeRepository
         }
         return await FindAll()
             .Include(g => g.Exams.Where(e => e.IsActive))
-            .Include(g => g.QuizzesCustom.Where(q => q.IsActive))
-            .Include(g => g.ProblemsCustom.Where(p => p.IsActive))
+            .Include(g => g.QuizzesCustom.Where(q => q.IsActive && q.TopicId == null && q.LessonId == null))
+            .Include(g => g.ProblemsCustom.Where(p => p.IsActive && p.TopicId == null && p.LessonId == null))
             .Include(g => g.Documents.Where(d => d.IsActive))
             .ThenInclude(c => c.CommentDocuments)
             .Include(g => g.Documents.Where(d => d.IsActive))

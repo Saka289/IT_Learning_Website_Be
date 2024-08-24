@@ -98,6 +98,11 @@ public class QuizService : IQuizService
         {
             quizList = quizList.Where(t => t.LessonId != null || t.TopicId != null);
         }
+        
+        if (searchQuizDto.GradeId > 0)
+        {
+            quizList = quizList.Where(t => t.GradeId == searchQuizDto.GradeId);
+        }
 
         if (searchQuizDto.TopicId > 0)
         {
@@ -160,6 +165,11 @@ public class QuizService : IQuizService
         else if (searchQuizDto.Custom == ECustomQuiz.TopicAndLesson)
         {
             quizList = quizList.Where(t => t.LessonId != null || t.TopicId != null);
+        }
+        
+        if (searchQuizDto.GradeId > 0)
+        {
+            quizList = quizList.Where(t => t.GradeId == searchQuizDto.GradeId);
         }
 
         if (searchQuizDto.TopicId > 0)
