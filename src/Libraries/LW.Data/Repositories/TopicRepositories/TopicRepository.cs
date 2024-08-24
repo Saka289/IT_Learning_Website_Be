@@ -94,11 +94,12 @@ public class TopicRepository : RepositoryBase<Topic, int>, ITopicRepository
     public async Task<Topic> GetAllTopicIndex(int id)
     {
         return await FindAll()
-            .Include(d => d.Document).Where(d => d.Document.IsActive == true)
-            .Include(c => c.ChildTopics.Where(c => c.IsActive == true))
+            .Include(d => d.Document).Where(d => d.Document.IsActive)
+            .Include(c => c.ChildTopics.Where(c => c.IsActive))
             .ThenInclude(l => l.Lessons.Where(l => l.IsActive).OrderBy(l => l.Index))
             .Include(p => p.ParentTopic)
             .ThenInclude(l => l.Lessons.Where(l => l.IsActive).OrderBy(l => l.Index))
+            .Where(p => p.IsActive)
             .Include(l => l.Lessons.Where(l => l.IsActive).OrderBy(l => l.Index))
             .FirstOrDefaultAsync(t => t.Id == id && t.IsActive);
     }

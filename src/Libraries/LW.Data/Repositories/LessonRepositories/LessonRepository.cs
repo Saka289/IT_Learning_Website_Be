@@ -90,7 +90,7 @@ public class LessonRepository : RepositoryBase<Lesson, int>, ILessonRepository
             .Where(t => t.Topic.IsActive)
             .Include(t => t.Topic)
             .ThenInclude(d => d.Document)
-            .Where(t => t.Topic.Document.IsActive)
+            .Where(t => t.Topic.IsActive)
             .FirstOrDefaultAsync(l => l.Id == id && l.IsActive);
     }
 
