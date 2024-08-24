@@ -7,6 +7,7 @@ using LW.API.Application.Validators.GradeValidator;
 using LW.Services.ExamServices;
 using LW.Shared.DTOs.Exam;
 using LW.Shared.DTOs.Grade;
+using LW.Shared.DTOs.Tag;
 using LW.Shared.Enums;
 using LW.Shared.SeedWork;
 using Microsoft.AspNetCore.Http;
@@ -42,6 +43,18 @@ namespace LW.API.Controllers.Public
         public async Task<ActionResult<ApiResult<IEnumerable<ExamDto>>>> GetAllExamByType(EExamType type, bool? status)
         {
             var result = await _examService.GetExamByType(type, status);
+            if (!result.IsSucceeded)
+            {
+                return NotFound(result);
+            }
+
+            return Ok(result);
+        }
+        
+        [HttpGet("GetExamIdByTag/{id}")]
+        public async Task<ActionResult<ApiResult<IEnumerable<TagDto>>>> GetExamIdByTag(int id)
+        {
+            var result = await _examService.GetExamIdByTag(id);
             if (!result.IsSucceeded)
             {
                 return NotFound(result);
