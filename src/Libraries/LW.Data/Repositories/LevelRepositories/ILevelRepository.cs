@@ -6,4 +6,5 @@ namespace LW.Data.Repositories.LevelRepositories;
 public interface ILevelRepository: IRepositoryBase<Level, int>
 {
     Task<IEnumerable<Level>> GetAllLevel();
+    Task<Level?> GetLevelById(int id);
 }

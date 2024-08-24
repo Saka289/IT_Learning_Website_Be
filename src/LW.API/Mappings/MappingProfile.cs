@@ -208,6 +208,7 @@ public class MappingProfile : Profile
         CreateMap<Exam, ExamDto>()
             .ForMember(x => x.CompetitionId, y => y.MapFrom(src => src.Competition.Id))
             .ForMember(x => x.CompetitionTitle, y => y.MapFrom(src => src.Competition.Title))
+            .ForMember(x => x.LevelId, y => y.MapFrom(src => src.Grade != null ? src.Grade.LevelId : src.Level.Id))
             .ReverseMap();
         CreateMap<Exam, ExamCreateDto>().ReverseMap();
         CreateMap<Exam, ExamUpdateDto>().ReverseMap();
