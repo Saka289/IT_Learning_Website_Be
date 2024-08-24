@@ -104,4 +104,14 @@ public class EnumService : IEnumService
         }
         return new ApiSuccessResult<IEnumerable<EnumDto>>(result);
     }
+
+    public async Task<ApiResult<IEnumerable<EnumDto>>> GetAllLevel()
+    {
+        var result = typeof(ELevel).ToEnumDto();
+        if (result is null)
+        {
+            return new ApiResult<IEnumerable<EnumDto>>(false, "Get all type of lvel not found !!!");
+        }
+        return new ApiSuccessResult<IEnumerable<EnumDto>>(result);
+    }
 }

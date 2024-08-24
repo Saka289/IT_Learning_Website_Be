@@ -31,7 +31,13 @@ public class AppDbContextSeed
             await elasticClient.BulkAsync(b => b.Index(ElasticConstant.ElasticUsers).IndexMany(result));
             logger.Information("Seeded data User and Roles for ElasticSearch associated with {IElasticClient}", nameof(IElasticClient));
         }
-
+        if (!context.Levels.Any())
+        {
+            var dataLevel = SeedLevel();
+            await context.Levels.AddRangeAsync(dataLevel);
+            await context.SaveChangesAsync();
+        }
+        
         if (!context.Grades.Any())
         {
             var dataGrade = SeedGrade();
@@ -218,7 +224,27 @@ public class AppDbContextSeed
             }
         );
     }
-
+    private static IEnumerable<Level> SeedLevel()
+    {
+        return new List<Level>()
+        {
+            new()
+            {
+                //Id = 1
+               Name = "Tiểu học"
+            },
+            new()
+            {
+                //2
+                Name = "Trung học cơ sở"
+            },
+            new()
+            {
+                //3
+                Name = "Trung học phổ thông"
+            },
+        };
+    }
     private static IEnumerable<Grade> SeedGrade()
     {
         return new List<Grade>()
@@ -228,60 +254,78 @@ public class AppDbContextSeed
                 Title = "Lớp 3",
                 KeyWord = "lop 3",
                 IsActive = true,
+                LevelId = 1
             },
             new()
             {
                 Title = "Lớp 4",
                 KeyWord = "lop 4",
                 IsActive = true,
+                LevelId = 1
+
             },
             new()
             {
                 Title = "Lớp 5",
                 KeyWord = "lop 5",
                 IsActive = true,
+                LevelId = 1
+
             },
             new()
             {
                 Title = "Lớp 6",
                 KeyWord = "lop 6",
                 IsActive = true,
+                LevelId = 2
+
             },
             new()
             {
                 Title = "Lớp 7",
                 KeyWord = "lop 7",
                 IsActive = true,
+                LevelId = 2
+
             },
             new()
             {
                 Title = "Lớp 8",
                 KeyWord = "lop 8",
                 IsActive = true,
+                LevelId = 2
+
             },
             new()
             {
                 Title = "Lớp 9",
                 KeyWord = "lop 9",
                 IsActive = true,
+                LevelId = 2
+
             },
             new()
             {
                 Title = "Lớp 10",
                 KeyWord = "lop 10",
                 IsActive = true,
+                LevelId = 3
+
             },
             new()
             {
                 Title = "Lớp 11",
                 KeyWord = "lop 11",
                 IsActive = true,
+                LevelId = 3
+
             },
             new()
             {
                 Title = "Lớp 12",
                 KeyWord = "lop 12",
                 IsActive = true,
+                LevelId = 3
             },
         };
     }

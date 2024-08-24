@@ -34,7 +34,19 @@ namespace LW.API.Controllers.Public
 
             return Ok(result);
         }
+        
+        [HttpGet("GetAllLevel")]
+        public async Task<ActionResult<ApiResult<IEnumerable<EnumDto>>>> GetAllLevel()
+        {
+            var result = await _enumService.GetAllLevel();
+            if (!result.IsSucceeded)
+            {
+                return NotFound(result);
+            }
 
+            return Ok(result);
+        }
+        
         [HttpGet("GetAllBookType")]
         public async Task<ActionResult<ApiResult<IEnumerable<EnumDto>>>> GetBookType()
         {

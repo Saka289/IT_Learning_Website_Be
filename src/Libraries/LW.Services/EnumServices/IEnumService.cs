@@ -15,4 +15,5 @@ public interface IEnumService
     Task<ApiResult<IEnumerable<EnumDto>>> GetAllStatusSubmission();
     Task<ApiResult<IEnumerable<EnumDto>>> GetAllStatusProblem();
     Task<ApiResult<IEnumerable<EnumDto>>> GetAllTypeDifficulty();
+    Task<ApiResult<IEnumerable<EnumDto>>> GetAllLevel();
 }

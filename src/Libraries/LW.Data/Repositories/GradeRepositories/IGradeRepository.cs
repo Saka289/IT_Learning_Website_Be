@@ -10,4 +10,6 @@ public interface IGradeRepository : IRepositoryBase<Grade, int>
     Task<Grade> CreateGrade(Grade grade);
     Task<Grade> UpdateGrade(Grade grade);
     Task<bool> DeleteGrade(int id);
+    Task<IEnumerable<Grade>> GetAllGradeByLevelId(int LevelId);
+
 }

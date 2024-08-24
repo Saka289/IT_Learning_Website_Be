@@ -129,4 +129,9 @@ public class GradeRepository : RepositoryBase<Grade, int>, IGradeRepository
         await DeleteAsync(grade);
         return true;
     }
+
+    public async Task<IEnumerable<Grade>> GetAllGradeByLevelId(int LevelId)
+    {
+        return await FindByCondition(x => x.LevelId== LevelId).ToListAsync();
+    }
 }

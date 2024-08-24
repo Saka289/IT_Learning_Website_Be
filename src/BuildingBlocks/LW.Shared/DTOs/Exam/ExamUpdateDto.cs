@@ -17,6 +17,8 @@ public class ExamUpdateDto
     public int NumberQuestion { set; get; }
     public IEnumerable<string>? TagValues { get; set; }
     public bool IsActive { get; set; } = false;
+    
+    public int? LevelId { get; set; }
     public int? GradeId { get; set; }
 
 }
