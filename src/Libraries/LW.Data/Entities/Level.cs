@@ -5,8 +5,8 @@ namespace LW.Data.Entities;
 
 public class Level : EntityBase<int>
 {
-    [Required] public string Name { get; set; }
-    
+    [Required]
+    public string Title { get; set; }
     public ICollection<Grade> Grades { get; set; }
     public ICollection<Exam> Exams { get; set; }
 }

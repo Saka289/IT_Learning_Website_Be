@@ -20,24 +20,29 @@ namespace LW.Data.Persistence;
 
 public class AppDbContextSeed
 {
-    public static async Task SeedDataAsync(AppDbContext context, ILogger logger, IElasticClient elasticClient, IMapper mapper)
+    public static async Task SeedDataAsync(AppDbContext context, ILogger logger, IElasticClient elasticClient,
+        IMapper mapper)
     {
         if (!context.Users.Any() && !context.Roles.Any())
         {
             SeedDataUserRoles(context);
             await context.SaveChangesAsync();
-            logger.Information("Seeded data User and Roles for Education DB associated with context {DbContextName}", nameof(AppDbContext));
+            logger.Information("Seeded data User and Roles for Education DB associated with context {DbContextName}",
+                nameof(AppDbContext));
             var result = await context.Users.Select(u => u.ToUserDto(context)).ToListAsync();
             await elasticClient.BulkAsync(b => b.Index(ElasticConstant.ElasticUsers).IndexMany(result));
-            logger.Information("Seeded data User and Roles for ElasticSearch associated with {IElasticClient}", nameof(IElasticClient));
+            logger.Information("Seeded data User and Roles for ElasticSearch associated with {IElasticClient}",
+                nameof(IElasticClient));
         }
+
         if (!context.Levels.Any())
         {
             var dataLevel = SeedLevel();
             await context.Levels.AddRangeAsync(dataLevel);
             await context.SaveChangesAsync();
+            logger.Information("Seeded data Levels for Education DB associated with context {DbContextName}", nameof(AppDbContext));
         }
-        
+
         if (!context.Grades.Any())
         {
             var dataGrade = SeedGrade();
@@ -124,7 +129,7 @@ public class AppDbContextSeed
         string ADMIN_ID = Guid.NewGuid().ToString();
         string USER_ID = Guid.NewGuid().ToString();
         string CONTENTMANAGER_ID = Guid.NewGuid().ToString();
-        
+
         context.Roles.AddRange(new List<IdentityRole>
         {
             new IdentityRole
@@ -224,27 +229,26 @@ public class AppDbContextSeed
             }
         );
     }
+
     private static IEnumerable<Level> SeedLevel()
     {
         return new List<Level>()
         {
             new()
             {
-                //Id = 1
-               Name = "Tiểu học"
+                Title = "Tiểu học"
             },
             new()
             {
-                //2
-                Name = "Trung học cơ sở"
+                Title = "Trung học cơ sở"
             },
             new()
             {
-                //3
-                Name = "Trung học phổ thông"
+                Title = "Trung học phổ thông"
             },
         };
     }
+
     private static IEnumerable<Grade> SeedGrade()
     {
         return new List<Grade>()
@@ -262,7 +266,6 @@ public class AppDbContextSeed
                 KeyWord = "lop 4",
                 IsActive = true,
                 LevelId = 1
-
             },
             new()
             {
@@ -270,7 +273,6 @@ public class AppDbContextSeed
                 KeyWord = "lop 5",
                 IsActive = true,
                 LevelId = 1
-
             },
             new()
             {
@@ -278,7 +280,6 @@ public class AppDbContextSeed
                 KeyWord = "lop 6",
                 IsActive = true,
                 LevelId = 2
-
             },
             new()
             {
@@ -286,7 +287,6 @@ public class AppDbContextSeed
                 KeyWord = "lop 7",
                 IsActive = true,
                 LevelId = 2
-
             },
             new()
             {
@@ -294,7 +294,6 @@ public class AppDbContextSeed
                 KeyWord = "lop 8",
                 IsActive = true,
                 LevelId = 2
-
             },
             new()
             {
@@ -302,7 +301,6 @@ public class AppDbContextSeed
                 KeyWord = "lop 9",
                 IsActive = true,
                 LevelId = 2
-
             },
             new()
             {
@@ -310,7 +308,6 @@ public class AppDbContextSeed
                 KeyWord = "lop 10",
                 IsActive = true,
                 LevelId = 3
-
             },
             new()
             {
@@ -318,7 +315,6 @@ public class AppDbContextSeed
                 KeyWord = "lop 11",
                 IsActive = true,
                 LevelId = 3
-
             },
             new()
             {

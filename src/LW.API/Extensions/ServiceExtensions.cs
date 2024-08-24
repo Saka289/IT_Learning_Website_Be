@@ -317,7 +317,6 @@ public static class ServiceExtensions
         services.AddTransient<ISerializeService, SerializeService>();
         // IRepository 
         services.AddScoped<ILevelRepository, LevelRepository>();
-
         services.AddScoped<IGradeRepository, GradeRepository>();
         services.AddScoped<IDocumentRepository, DocumentRepository>();
         services.AddScoped<ITopicRepository, TopicRepository>();
