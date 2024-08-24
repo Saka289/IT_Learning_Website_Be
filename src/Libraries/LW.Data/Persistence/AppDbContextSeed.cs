@@ -20,16 +20,27 @@ namespace LW.Data.Persistence;
 
 public class AppDbContextSeed
 {
-    public static async Task SeedDataAsync(AppDbContext context, ILogger logger, IElasticClient elasticClient, IMapper mapper)
+    public static async Task SeedDataAsync(AppDbContext context, ILogger logger, IElasticClient elasticClient,
+        IMapper mapper)
     {
         if (!context.Users.Any() && !context.Roles.Any())
         {
             SeedDataUserRoles(context);
             await context.SaveChangesAsync();
-            logger.Information("Seeded data User and Roles for Education DB associated with context {DbContextName}", nameof(AppDbContext));
+            logger.Information("Seeded data User and Roles for Education DB associated with context {DbContextName}",
+                nameof(AppDbContext));
             var result = await context.Users.Select(u => u.ToUserDto(context)).ToListAsync();
             await elasticClient.BulkAsync(b => b.Index(ElasticConstant.ElasticUsers).IndexMany(result));
-            logger.Information("Seeded data User and Roles for ElasticSearch associated with {IElasticClient}", nameof(IElasticClient));
+            logger.Information("Seeded data User and Roles for ElasticSearch associated with {IElasticClient}",
+                nameof(IElasticClient));
+        }
+
+        if (!context.Levels.Any())
+        {
+            var dataLevel = SeedLevel();
+            await context.Levels.AddRangeAsync(dataLevel);
+            await context.SaveChangesAsync();
+            logger.Information("Seeded data Levels for Education DB associated with context {DbContextName}", nameof(AppDbContext));
         }
 
         if (!context.Grades.Any())
@@ -118,7 +129,7 @@ public class AppDbContextSeed
         string ADMIN_ID = Guid.NewGuid().ToString();
         string USER_ID = Guid.NewGuid().ToString();
         string CONTENTMANAGER_ID = Guid.NewGuid().ToString();
-        
+
         context.Roles.AddRange(new List<IdentityRole>
         {
             new IdentityRole
@@ -219,6 +230,25 @@ public class AppDbContextSeed
         );
     }
 
+    private static IEnumerable<Level> SeedLevel()
+    {
+        return new List<Level>()
+        {
+            new()
+            {
+                Title = "Tiểu học"
+            },
+            new()
+            {
+                Title = "Trung học cơ sở"
+            },
+            new()
+            {
+                Title = "Trung học phổ thông"
+            },
+        };
+    }
+
     private static IEnumerable<Grade> SeedGrade()
     {
         return new List<Grade>()
@@ -228,60 +258,70 @@ public class AppDbContextSeed
                 Title = "Lớp 3",
                 KeyWord = "lop 3",
                 IsActive = true,
+                LevelId = 1
             },
             new()
             {
                 Title = "Lớp 4",
                 KeyWord = "lop 4",
                 IsActive = true,
+                LevelId = 1
             },
             new()
             {
                 Title = "Lớp 5",
                 KeyWord = "lop 5",
                 IsActive = true,
+                LevelId = 1
             },
             new()
             {
                 Title = "Lớp 6",
                 KeyWord = "lop 6",
                 IsActive = true,
+                LevelId = 2
             },
             new()
             {
                 Title = "Lớp 7",
                 KeyWord = "lop 7",
                 IsActive = true,
+                LevelId = 2
             },
             new()
             {
                 Title = "Lớp 8",
                 KeyWord = "lop 8",
                 IsActive = true,
+                LevelId = 2
             },
             new()
             {
                 Title = "Lớp 9",
                 KeyWord = "lop 9",
                 IsActive = true,
+                LevelId = 2
             },
             new()
             {
                 Title = "Lớp 10",
                 KeyWord = "lop 10",
                 IsActive = true,
+                LevelId = 3
             },
             new()
             {
                 Title = "Lớp 11",
                 KeyWord = "lop 11",
                 IsActive = true,
+                LevelId = 3
             },
             new()
             {
                 Title = "Lớp 12",
                 KeyWord = "lop 12",
                 IsActive = true,
+                LevelId = 3
             },
         };
     }

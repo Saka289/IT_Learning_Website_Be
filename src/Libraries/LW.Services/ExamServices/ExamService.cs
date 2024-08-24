@@ -97,7 +97,10 @@ public class ExamService : IExamService
         {
             examList = examList.Where(t => t.CompetitionId == searchExamDto.CompetitionId);
         }
-
+        if (searchExamDto.LevelId > 0)
+        {
+            examList = examList.Where(t => t.LevelId == searchExamDto.LevelId);
+        }
         if (searchExamDto.GradeId > 0)
         {
             examList = examList.Where(t => t.GradeId == searchExamDto.GradeId);
@@ -159,7 +162,9 @@ public class ExamService : IExamService
         {
             return new ApiResult<ExamDto>(false, "Competition not found !!!");
         }
-
+        
+        
+        
         if (examCreateDto.GradeId > 0)
         {
             var gradeExist = await _gradeRepository.GetGradeById(Convert.ToInt32(examCreateDto.GradeId), false);
@@ -167,6 +172,7 @@ public class ExamService : IExamService
             {
                 return new ApiResult<ExamDto>(false, "Grade not found");
             }
+            examCreateDto.LevelId = null;
         }
 
         var obj = _mapper.Map<Exam>(examCreateDto);
@@ -211,6 +217,8 @@ public class ExamService : IExamService
             {
                 return new ApiResult<ExamDto>(false, "Grade not found");
             }
+
+            examUpdateDto.LevelId = null;
         }
 
         var exam = await _examRepository.GetExamById(examUpdateDto.Id);
