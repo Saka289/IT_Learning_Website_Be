@@ -32,10 +32,8 @@ public class Document : EntityAuditBase<int>
     public double? AverageRating { get; set; }
     [NotMapped]
     public int TotalReviewer { get; set; }
-    [Required] 
-    public string Image { get; set; }
-    [Required] 
-    public string PublicId { get; set; }
+    public string? Image { get; set; }
+    public string? PublicId { get; set; }
     [Required] 
     public int GradeId { get; set; }
     [ForeignKey(nameof(GradeId))] 

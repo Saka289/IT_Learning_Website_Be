@@ -344,6 +344,8 @@ public class AppDbContextSeed
                 PublicationYear = 2022,
                 Edition = 1,
                 TypeOfBook = EBookType.SGK,
+                Image = "https://res.cloudinary.com/itsupport18/image/upload/v1724503824/DocumentImage/IMAGE-e1a2d5c6-e4dc-4563-8d81-10799747eb0b.png",
+                PublicId = "DocumentImage/IMAGE-e1a2d5c6-e4dc-4563-8d81-10799747eb0b",
                 IsActive = true,
             },
             new()
@@ -360,6 +362,8 @@ public class AppDbContextSeed
                 PublicationYear = 2022,
                 Edition = 1,
                 TypeOfBook = EBookType.SGK,
+                Image = "https://res.cloudinary.com/itsupport18/image/upload/v1724503824/DocumentImage/IMAGE-e1a2d5c6-e4dc-4563-8d81-10799747eb0b.png",
+                PublicId = "DocumentImage/IMAGE-e1a2d5c6-e4dc-4563-8d81-10799747eb0b",
                 IsActive = true,
             },
             new()
@@ -376,6 +380,8 @@ public class AppDbContextSeed
                 PublicationYear = 2022,
                 Edition = 1,
                 TypeOfBook = EBookType.SGK,
+                Image = "https://res.cloudinary.com/itsupport18/image/upload/v1724503824/DocumentImage/IMAGE-e1a2d5c6-e4dc-4563-8d81-10799747eb0b.png",
+                PublicId = "DocumentImage/IMAGE-e1a2d5c6-e4dc-4563-8d81-10799747eb0b",
                 IsActive = true,
             },
             new()
@@ -392,6 +398,8 @@ public class AppDbContextSeed
                 PublicationYear = 2022,
                 Edition = 1,
                 TypeOfBook = EBookType.SGK,
+                Image = "https://res.cloudinary.com/itsupport18/image/upload/v1724503824/DocumentImage/IMAGE-e1a2d5c6-e4dc-4563-8d81-10799747eb0b.png",
+                PublicId = "DocumentImage/IMAGE-e1a2d5c6-e4dc-4563-8d81-10799747eb0b",
                 IsActive = true,
             },
             new()
@@ -408,6 +416,8 @@ public class AppDbContextSeed
                 PublicationYear = 2022,
                 Edition = 1,
                 TypeOfBook = EBookType.SGK,
+                Image = "https://res.cloudinary.com/itsupport18/image/upload/v1724503824/DocumentImage/IMAGE-e1a2d5c6-e4dc-4563-8d81-10799747eb0b.png",
+                PublicId = "DocumentImage/IMAGE-e1a2d5c6-e4dc-4563-8d81-10799747eb0b",
                 IsActive = true,
             },
             new()
@@ -424,6 +434,8 @@ public class AppDbContextSeed
                 PublicationYear = 2022,
                 Edition = 1,
                 TypeOfBook = EBookType.SGK,
+                Image = "https://res.cloudinary.com/itsupport18/image/upload/v1724503824/DocumentImage/IMAGE-e1a2d5c6-e4dc-4563-8d81-10799747eb0b.png",
+                PublicId = "DocumentImage/IMAGE-e1a2d5c6-e4dc-4563-8d81-10799747eb0b",
                 IsActive = true,
             },
             new()
@@ -440,6 +452,8 @@ public class AppDbContextSeed
                 PublicationYear = 2022,
                 Edition = 1,
                 TypeOfBook = EBookType.SGK,
+                Image = "https://res.cloudinary.com/itsupport18/image/upload/v1724503824/DocumentImage/IMAGE-e1a2d5c6-e4dc-4563-8d81-10799747eb0b.png",
+                PublicId = "DocumentImage/IMAGE-e1a2d5c6-e4dc-4563-8d81-10799747eb0b",
                 IsActive = true,
             },
         };
