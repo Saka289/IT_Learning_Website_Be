@@ -79,6 +79,7 @@ using LW.Services.QuizQuestionRelationServices;
 using LW.Services.QuizQuestionServices;
 using LW.Services.QuizServices;
 using LW.Services.SolutionServices;
+using LW.Services.StatisticServices;
 using LW.Services.SubmissionServices;
 using LW.Services.TagServices;
 using LW.Services.TestCaseServices;
@@ -383,6 +384,7 @@ public static class ServiceExtensions
         services.AddScoped<IPostService, PostService>();
         services.AddScoped<IPostCommentService, PostCommentService>();
         services.AddScoped<INotificationService, NotificationService>();
+        services.AddScoped<IStatisticService, StatisticService>();
         return services;
     }
 }
