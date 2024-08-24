@@ -6,6 +6,7 @@ using System.Threading.Tasks;
 using LW.API.Application.Validators.ProblemValidator;
 using LW.Services.ProblemServices;
 using LW.Shared.DTOs.Problem;
+using LW.Shared.DTOs.Tag;
 using LW.Shared.SeedWork;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
@@ -25,9 +26,9 @@ namespace LW.API.Controllers.Public
         }
 
         [HttpGet("GetAllProblem")]
-        public async Task<ActionResult<ApiResult<IEnumerable<ProblemDto>>>> GetAllProblem()
+        public async Task<ActionResult<ApiResult<IEnumerable<ProblemDto>>>> GetAllProblem(bool? status)
         {
-            var result = await _problemService.GetAllProblem();
+            var result = await _problemService.GetAllProblem(status);
             if (!result.IsSucceeded)
             {
                 return NotFound(result);
@@ -46,6 +47,18 @@ namespace LW.API.Controllers.Public
             }
             
             Response.Headers.Add("X-Pagination", JsonConvert.SerializeObject(result.Data.GetMetaData()));
+            return Ok(result);
+        }
+        
+        [HttpGet("GetProblemIdByTag/{id}")]
+        public async Task<ActionResult<ApiResult<IEnumerable<TagDto>>>> GetProblemIdByTag(int id)
+        {
+            var result = await _problemService.GetProblemIdByTag(id);
+            if (!result.IsSucceeded)
+            {
+                return NotFound(result);
+            }
+
             return Ok(result);
         }
         

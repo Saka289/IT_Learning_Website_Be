@@ -28,9 +28,9 @@ namespace LW.API.Controllers.Public
         }
 
         [HttpGet("GetAllExam")]
-        public async Task<ActionResult<ApiResult<IEnumerable<ExamDto>>>> GetAllExam()
+        public async Task<ActionResult<ApiResult<IEnumerable<ExamDto>>>> GetAllExam(bool? status)
         {
-            var result = await _examService.GetAllExam();
+            var result = await _examService.GetAllExam(status);
             if (!result.IsSucceeded)
             {
                 return NotFound(result);
@@ -39,9 +39,9 @@ namespace LW.API.Controllers.Public
             return Ok(result);
         }
         [HttpGet("GetAllExamByType")]
-        public async Task<ActionResult<ApiResult<IEnumerable<ExamDto>>>> GetAllExamByType(EExamType type)
+        public async Task<ActionResult<ApiResult<IEnumerable<ExamDto>>>> GetAllExamByType(EExamType type, bool? status)
         {
-            var result = await _examService.GetExamByType(type);
+            var result = await _examService.GetExamByType(type, status);
             if (!result.IsSucceeded)
             {
                 return NotFound(result);

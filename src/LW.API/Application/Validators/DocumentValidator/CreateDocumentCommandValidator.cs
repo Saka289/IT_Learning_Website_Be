@@ -8,11 +8,11 @@ public class CreateDocumentCommandValidator : AbstractValidator<DocumentCreateDt
 {
     public CreateDocumentCommandValidator()
     {
-        RuleFor(x => x.Title).NotNull().NotEmpty().Length(5, 250);
+        RuleFor(x => x.Title).NotNull().NotEmpty();
         RuleFor(x => x.Description).NotNull().NotEmpty();
         RuleFor(x => x.IsActive).NotNull();
         RuleFor(x => x.GradeId).NotNull().NotEmpty().GreaterThan(0);
-        RuleFor(x => x.Author).NotNull().NotEmpty().Length(5, 250);
+        RuleFor(x => x.Author).NotNull().NotEmpty();
         RuleFor(x => x.PublicationYear)
             .NotNull()
             .NotEmpty()
@@ -21,5 +21,6 @@ public class CreateDocumentCommandValidator : AbstractValidator<DocumentCreateDt
         RuleFor(x => x.BookCollection).NotNull().NotEmpty().IsInEnum();
         RuleFor(x => x.TypeOfBook).NotNull().NotEmpty().IsInEnum();
         RuleFor(x => x.Edition).NotNull().NotEmpty().GreaterThan(0);
+        RuleFor(x => x.Image).NotNull().NotEmpty();
     }
 }

@@ -12,17 +12,12 @@ public class UpdateProblemCommandValidator : AbstractValidator<ProblemUpdateDto>
         RuleFor(x => x.Description).NotNull().NotEmpty();
         RuleFor(x => x.Difficulty).NotNull().NotEmpty().IsInEnum();
         RuleFor(x => x.IsActive).NotNull().NotEmpty();
-        RuleFor(x => x).Must(HaveValidTopicLessonGrade).WithMessage("Only one of TopicId, LessonId, or GradeId should have a value, the others must be null.");
+        RuleFor(x => x.GradeId).NotNull().GreaterThan(0);
+        RuleFor(x => x).Must(HaveValidTopicOrLesson).WithMessage("Either TopicId or LessonId should have a value, but not both.");
     }
     
-    private bool HaveValidTopicLessonGrade(ProblemUpdateDto problem)
+    private bool HaveValidTopicOrLesson(ProblemUpdateDto problem)
     {
-        int count = 0;
-
-        if (problem.TopicId.HasValue) count++;
-        if (problem.LessonId.HasValue) count++;
-        if (problem.GradeId.HasValue) count++;
-        
-        return count == 1;
+        return !(problem.TopicId.HasValue && problem.LessonId.HasValue) || (!problem.TopicId.HasValue && !problem.LessonId.HasValue);
     }
 }

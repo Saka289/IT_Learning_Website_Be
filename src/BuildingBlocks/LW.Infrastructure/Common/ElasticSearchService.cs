@@ -60,7 +60,7 @@ public class ElasticSearchService<T, K> : IElasticSearchService<T, K> where T : 
             .Refresh(Refresh.True)
         );
 
-        if (!response.IsValid)
+        if (!response.ApiCall.Success)
         {
             _logger.Error($"Bulk indexing failed: {response.IsValid.ToString()}");
             return null;
@@ -99,17 +99,16 @@ public class ElasticSearchService<T, K> : IElasticSearchService<T, K> where T : 
         }
 
         var response = await _elasticClient.BulkAsync(bulkDescriptor);
-        if (!response.IsValid)
+        if (!response.ApiCall.Success)
         {
-            _logger.Error($"Failed to bulk update documents: {response.OriginalException.Message}");
+            _logger.Error($"Failed to bulk update documents: {response.Errors.ToString()}");
             return null;
         }
 
         return response.Items.Select(i => i.Id).Where(id => !string.IsNullOrEmpty(id));
     }
 
-    public async Task<IEnumerable<T>> SearchDocumentAsync(string indexName,
-        SearchRequestParameters searchRequestParameters)
+    public async Task<IEnumerable<T>> SearchDocumentAsync(string indexName, SearchRequestParameters searchRequestParameters)
     {
         object searchValue = searchRequestParameters.Value;
         if (int.TryParse(searchRequestParameters.Value, out int intValue))
@@ -272,7 +271,7 @@ public class ElasticSearchService<T, K> : IElasticSearchService<T, K> where T : 
         }
 
         var response = await _elasticClient.BulkAsync(bulkDescriptor);
-        if (!response.IsValid)
+        if (!response.ApiCall.Success)
         {
             _logger.Error($"Failed to delete document: {response.IsValid.ToString()}");
             return false;

@@ -10,4 +10,5 @@ public class SearchExamDto : SearchRequestValue
     public int? Year { get; set; }
     public int? Type { get; set; }
     public int? GradeId { get; set; }
+    public bool? Status { get; set; }
 }

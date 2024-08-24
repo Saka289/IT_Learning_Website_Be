@@ -5,6 +5,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using LW.API.Application.Validators.TopicValidator;
 using LW.Services.TopicServices;
+using LW.Shared.DTOs.Tag;
 using LW.Shared.DTOs.Topic;
 using LW.Shared.SeedWork;
 using Microsoft.AspNetCore.Http;
@@ -25,9 +26,9 @@ namespace LW.API.Controllers.Public
         }
 
         [HttpGet("GetAllTopic")]
-        public async Task<ActionResult<ApiResult<TopicDto>>> GetAllTopic()
+        public async Task<ActionResult<ApiResult<TopicDto>>> GetAllTopic(bool? status)
         {
-            var result = await _topicService.GetAll();
+            var result = await _topicService.GetAll(status);
             if (!result.IsSucceeded)
             {
                 return NotFound(result);
@@ -37,9 +38,20 @@ namespace LW.API.Controllers.Public
         }
         
         [HttpGet("GetAllTopicByDocument/{documentId}")]
-        public async Task<ActionResult<ApiResult<TopicDto>>> GetAllTopicByDocument(int documentId)
+        public async Task<ActionResult<ApiResult<TopicDto>>> GetAllTopicByDocument(int documentId, bool? status)
         {
-            var result = await _topicService.GetAllTopicByDocument(documentId);
+            var result = await _topicService.GetAllTopicByDocument(documentId, status);
+            if (!result.IsSucceeded)
+            {
+                return NotFound(result);
+            }
+            return Ok(result);
+        }
+        
+        [HttpGet("GetTopicIdByTag/{id}")]
+        public async Task<ActionResult<ApiResult<IEnumerable<TagDto>>>> GetTopicIdByTag(int id)
+        {
+            var result = await _topicService.GetTopicIdByTag(id);
             if (!result.IsSucceeded)
             {
                 return NotFound(result);

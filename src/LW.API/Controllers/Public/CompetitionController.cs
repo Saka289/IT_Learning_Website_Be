@@ -22,9 +22,9 @@ namespace LW.API.Controllers.Public
             _competitionService = competitionService;
         }
          [HttpGet("GetAllCompetition")]
-        public async Task<ActionResult<ApiResult<IEnumerable<CompetitionDto>>>> GetAllCompetition()
+        public async Task<ActionResult<ApiResult<IEnumerable<CompetitionDto>>>> GetAllCompetition(bool? status)
         {
-            var result = await _competitionService.GetAllCompetition();
+            var result = await _competitionService.GetAllCompetition(status);
             if (!result.IsSucceeded)
             {
                 return NotFound();

@@ -33,6 +33,10 @@ public class Document : EntityAuditBase<int>
     [NotMapped]
     public int TotalReviewer { get; set; }
     [Required] 
+    public string Image { get; set; }
+    [Required] 
+    public string PublicId { get; set; }
+    [Required] 
     public int GradeId { get; set; }
     [ForeignKey(nameof(GradeId))] 
     public virtual Grade Grade { get; set; }

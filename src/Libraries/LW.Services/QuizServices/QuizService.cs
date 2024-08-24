@@ -39,12 +39,17 @@ public class QuizService : IQuizService
         _gradeRepository = gradeRepository;
     }
 
-    public async Task<ApiResult<IEnumerable<QuizDto>>> GetAllQuiz()
+    public async Task<ApiResult<IEnumerable<QuizDto>>> GetAllQuiz(bool? status)
     {
         var quizList = await _quizRepository.GetAllQuiz();
         if (quizList.All(q => q == null))
         {
             return new ApiResult<IEnumerable<QuizDto>>(false, "Quiz is null !!!");
+        }
+
+        if (status != null)
+        {
+            quizList = quizList.Where(q => q.IsActive == status);
         }
 
         var result = _mapper.Map<IEnumerable<QuizDto>>(quizList);
@@ -78,6 +83,11 @@ public class QuizService : IQuizService
             }
 
             quizList = _mapper.Map<IEnumerable<QuizDto>>(quizListAll);
+        }
+        
+        if (searchQuizDto.Status != null)
+        {
+            quizList = quizList.Where(q => q.IsActive == searchQuizDto.Status);
         }
 
         if (searchQuizDto.Custom == ECustomQuiz.Custom)
@@ -136,6 +146,11 @@ public class QuizService : IQuizService
             }
 
             quizList = _mapper.Map<IEnumerable<QuizDto>>(quizListAll);
+        }
+        
+        if (searchQuizDto.Status != null)
+        {
+            quizList = quizList.Where(q => q.IsActive == searchQuizDto.Status);
         }
 
         if (searchQuizDto.Custom == ECustomQuiz.Custom)

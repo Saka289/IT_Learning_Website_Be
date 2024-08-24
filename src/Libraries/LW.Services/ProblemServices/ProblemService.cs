@@ -6,11 +6,13 @@ using LW.Data.Repositories.LessonRepositories;
 using LW.Data.Repositories.ProblemRepositories;
 using LW.Data.Repositories.SolutionRepositories;
 using LW.Data.Repositories.SubmissionRepositories;
+using LW.Data.Repositories.TagRepositories;
 using LW.Data.Repositories.TopicRepositories;
 using LW.Infrastructure.Extensions;
 using LW.Shared.Constant;
 using LW.Shared.DTOs.Problem;
 using LW.Shared.DTOs.Solution;
+using LW.Shared.DTOs.Tag;
 using LW.Shared.Enums;
 using LW.Shared.SeedWork;
 using MockQueryable.Moq;
@@ -25,6 +27,7 @@ public class ProblemService : IProblemService
     private readonly ISubmissionRepository _submissionRepository;
     private readonly ISolutionRepository _solutionRepository;
     private readonly IGradeRepository _gradeRepository;
+    private readonly ITagRepository _tagRepository;
     private readonly IMapper _mapper;
     private readonly IElasticSearchService<ProblemDto, int> _elasticSearchService;
     private readonly IElasticSearchService<SolutionDto, int> _elasticSearchSolutionService;
@@ -32,7 +35,7 @@ public class ProblemService : IProblemService
     public ProblemService(IProblemRepository problemRepository, IMapper mapper,
         IElasticSearchService<ProblemDto, int> elasticSearchService, ITopicRepository topicRepository,
         ILessonRepository lessonRepository, ISubmissionRepository submissionRepository,
-        ISolutionRepository solutionRepository, IElasticSearchService<SolutionDto, int> elasticSearchSolutionService, IGradeRepository gradeRepository)
+        ISolutionRepository solutionRepository, IElasticSearchService<SolutionDto, int> elasticSearchSolutionService, IGradeRepository gradeRepository, ITagRepository tagRepository)
     {
         _problemRepository = problemRepository;
         _mapper = mapper;
@@ -43,9 +46,10 @@ public class ProblemService : IProblemService
         _solutionRepository = solutionRepository;
         _elasticSearchSolutionService = elasticSearchSolutionService;
         _gradeRepository = gradeRepository;
+        _tagRepository = tagRepository;
     }
 
-    public async Task<ApiResult<IEnumerable<ProblemDto>>> GetAllProblem()
+    public async Task<ApiResult<IEnumerable<ProblemDto>>> GetAllProblem(bool? status)
     {
         var problem = await _problemRepository.GetAllProblem();
         if (!problem.Any())
@@ -53,8 +57,36 @@ public class ProblemService : IProblemService
             return new ApiResult<IEnumerable<ProblemDto>>(false, "Problem not found !!!");
         }
 
+        if (status != null)
+        {
+            problem = problem.Where(p => p.IsActive == status);
+        }
+
         var result = _mapper.Map<IEnumerable<ProblemDto>>(problem);
         return new ApiSuccessResult<IEnumerable<ProblemDto>>(result);
+    }
+
+    public async Task<ApiResult<IEnumerable<TagDto>>> GetProblemIdByTag(int id)
+    {
+        var problem = await _problemRepository.GetProblemById(id);
+        if (problem is null)
+        {
+            return new ApiResult<IEnumerable<TagDto>>(false, "Problem not found !!!");
+        }
+
+        var listStringTag = problem.KeyWord.Trim().Split(',', StringSplitOptions.RemoveEmptyEntries);
+        var listTag = new List<Tag>();
+        foreach (var item in listStringTag)
+        {
+            var tagEntity = await _tagRepository.GetTagByKeyword(item);
+            if (tagEntity is not null)
+            {
+                listTag.Add(tagEntity);
+            }
+        }
+
+        var result = _mapper.Map<IEnumerable<TagDto>>(listTag);
+        return new ApiSuccessResult<IEnumerable<TagDto>>(result);
     }
 
     public async Task<ApiResult<PagedList<ProblemDto>>> GetAllProblemPagination(SearchProblemDto searchProblemDto)
@@ -85,6 +117,11 @@ public class ProblemService : IProblemService
 
             problemList = _mapper.Map<IEnumerable<ProblemDto>>(problemListAll);
         }
+        
+        if (searchProblemDto.Status != null)
+        {
+            problemList = problemList.Where(p => p.IsActive == searchProblemDto.StatusProblem);
+        }
 
         if (!string.IsNullOrEmpty(searchProblemDto.UserId))
         {
@@ -98,6 +135,11 @@ public class ProblemService : IProblemService
         if (searchProblemDto.Difficulty > 0)
         {
             problemList = problemList.Where(p => p.Difficulty == (int)searchProblemDto.Difficulty);
+        }
+
+        if (searchProblemDto.GradeId > 0)
+        {
+            problemList = problemList.Where(p => p.GradeId == searchProblemDto.GradeId);
         }
 
         if (searchProblemDto.TopicId > 0)
