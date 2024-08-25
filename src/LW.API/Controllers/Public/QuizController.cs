@@ -5,9 +5,11 @@ using System.Linq;
 using System.Threading.Tasks;
 using LW.API.Application.Validators.QuizValidator;
 using LW.Services.QuizServices;
+using LW.Shared.Constant;
 using LW.Shared.DTOs.Quiz;
 using LW.Shared.Enums;
 using LW.Shared.SeedWork;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Newtonsoft.Json;
@@ -16,6 +18,7 @@ namespace LW.API.Controllers.Public
 {
     [Route("api/[controller]")]
     [ApiController]
+    [Authorize(Roles = $"{RoleConstant.RoleAdmin},{RoleConstant.RoleContentManager}")]
     public class QuizController : ControllerBase
     {
         private readonly IQuizService _quizService;
@@ -26,6 +29,7 @@ namespace LW.API.Controllers.Public
         }
 
         [HttpGet("GetAllQuiz")]
+        [AllowAnonymous]
         public async Task<ActionResult<ApiResult<IEnumerable<QuizDto>>>> GetAllQuiz(bool? status)
         {
             var result = await _quizService.GetAllQuiz(status);
@@ -38,6 +42,7 @@ namespace LW.API.Controllers.Public
         }
 
         [HttpGet("GetAllQuizPagination")]
+        [AllowAnonymous]
         public async Task<ActionResult<ApiResult<PagedList<QuizDto>>>> GetAllQuizPagination([FromQuery] SearchQuizDto searchQuizDto)
         {
             var result = await _quizService.GetAllQuizPagination(searchQuizDto);
@@ -51,6 +56,7 @@ namespace LW.API.Controllers.Public
         }
         
         [HttpGet("GetAllQuizNoPagination")]
+        [AllowAnonymous]
         public async Task<ActionResult<ApiResult<IEnumerable<QuizDto>>>> GetAllQuizNoPagination([FromQuery] SearchQuizDto searchQuizDto)
         {
             var result = await _quizService.GetAllQuizNoPagination(searchQuizDto);
@@ -63,6 +69,7 @@ namespace LW.API.Controllers.Public
         }
 
         [HttpGet("GetQuizById/{id}")]
+        [AllowAnonymous]
         public async Task<ActionResult<ApiResult<QuizDto>>> GetQuizById([Required] int id)
         {
             var result = await _quizService.GetQuizById(id);

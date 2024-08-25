@@ -5,9 +5,11 @@ using System.Linq;
 using System.Threading.Tasks;
 using LW.API.Application.Validators.ProblemValidator;
 using LW.Services.ProblemServices;
+using LW.Shared.Constant;
 using LW.Shared.DTOs.Problem;
 using LW.Shared.DTOs.Tag;
 using LW.Shared.SeedWork;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Newtonsoft.Json;
@@ -16,6 +18,7 @@ namespace LW.API.Controllers.Public
 {
     [Route("api/[controller]")]
     [ApiController]
+    [Authorize(Roles = $"{RoleConstant.RoleAdmin},{RoleConstant.RoleContentManager}")]
     public class ProblemController : ControllerBase
     {
         private readonly IProblemService _problemService;
@@ -26,6 +29,7 @@ namespace LW.API.Controllers.Public
         }
 
         [HttpGet("GetAllProblem")]
+        [AllowAnonymous]
         public async Task<ActionResult<ApiResult<IEnumerable<ProblemDto>>>> GetAllProblem(bool? status)
         {
             var result = await _problemService.GetAllProblem(status);
@@ -38,6 +42,7 @@ namespace LW.API.Controllers.Public
         }
         
         [HttpGet("GetAllProblemPagination")]
+        [AllowAnonymous]
         public async Task<ActionResult<ApiResult<PagedList<ProblemDto>>>> GetAllProblemPagination([FromQuery] SearchProblemDto searchProblemDto)
         {
             var result = await _problemService.GetAllProblemPagination(searchProblemDto);
@@ -51,6 +56,7 @@ namespace LW.API.Controllers.Public
         }
         
         [HttpGet("GetProblemIdByTag/{id}")]
+        [AllowAnonymous]
         public async Task<ActionResult<ApiResult<IEnumerable<TagDto>>>> GetProblemIdByTag(int id)
         {
             var result = await _problemService.GetProblemIdByTag(id);
@@ -63,6 +69,7 @@ namespace LW.API.Controllers.Public
         }
         
         [HttpGet("GetProblemById/{id}")]
+        [AllowAnonymous]
         public async Task<ActionResult<ApiResult<ProblemDto>>> GetProblemById([Required] int id)
         {
             var result = await _problemService.GetProblemById(id);

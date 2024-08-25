@@ -18,4 +18,9 @@ public class LevelRepository: RepositoryBase<Level, int>, ILevelRepository
     {
         return await FindAll().ToListAsync();
     }
+
+    public async Task<Level?> GetLevelById(int id)
+    {
+        return await FindByCondition(x => x.Id == id).FirstOrDefaultAsync();
+    }
 }

@@ -7,6 +7,7 @@ using LW.API.Application.Validators.CommentDocumentValidator;
 using LW.Services.CommentDocumentServices;
 using LW.Shared.DTOs.CommentDocument;
 using LW.Shared.SeedWork;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Newtonsoft.Json;
@@ -15,6 +16,7 @@ namespace LW.API.Controllers.Public
 {
     [Route("api/[controller]")]
     [ApiController]
+    [Authorize]
     public class CommentDocumentController : ControllerBase
     {
         private readonly ICommentDocumentService _commentDocumentService;
@@ -25,6 +27,7 @@ namespace LW.API.Controllers.Public
         }
 
         [HttpGet("GetAllCommentByDocumentIdPagination")]
+        [AllowAnonymous]
         public async Task<ActionResult<ApiResult<PagedList<PagedList<CommentDocumentDto>>>>> GetAllCommentByDocumentIdPagination([Required] int documentId, [FromQuery] PagingRequestParameters pagingRequestParameters)
         {
             var result = await _commentDocumentService.GetAllCommentByDocumentIdPagination(documentId, pagingRequestParameters);

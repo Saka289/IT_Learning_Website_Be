@@ -7,4 +7,5 @@ public class SearchSolutionDto : SearchRequestValue
 {
     [Required]
     public int ProblemId { get; set; }
+    public bool? Status { get; set; }
 }

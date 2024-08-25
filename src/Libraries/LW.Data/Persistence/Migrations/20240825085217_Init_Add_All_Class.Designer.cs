@@ -11,8 +11,8 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace LW.Data.Persistence.Migrations
 {
     [DbContext(typeof(AppDbContext))]
-    [Migration("20240824111931_Init_Update_Table_Exam_Final")]
-    partial class Init_Update_Table_Exam_Final
+    [Migration("20240825085217_Init_Add_All_Class")]
+    partial class Init_Add_All_Class
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
@@ -223,7 +223,6 @@ namespace LW.Data.Persistence.Migrations
                         .HasColumnType("int");
 
                     b.Property<string>("Image")
-                        .IsRequired()
                         .HasColumnType("longtext");
 
                     b.Property<bool>("IsActive")
@@ -240,7 +239,6 @@ namespace LW.Data.Persistence.Migrations
                         .HasColumnType("datetime(6)");
 
                     b.Property<string>("PublicId")
-                        .IsRequired()
                         .HasColumnType("longtext");
 
                     b.Property<int>("PublicationYear")
@@ -629,7 +627,7 @@ namespace LW.Data.Persistence.Migrations
                         .ValueGeneratedOnAdd()
                         .HasColumnType("int");
 
-                    b.Property<string>("Name")
+                    b.Property<string>("Title")
                         .IsRequired()
                         .HasColumnType("longtext");
 

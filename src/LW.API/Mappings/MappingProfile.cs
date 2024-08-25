@@ -208,6 +208,7 @@ public class MappingProfile : Profile
         CreateMap<Exam, ExamDto>()
             .ForMember(x => x.CompetitionId, y => y.MapFrom(src => src.Competition.Id))
             .ForMember(x => x.CompetitionTitle, y => y.MapFrom(src => src.Competition.Title))
+            .ForMember(x => x.LevelId, y => y.MapFrom(src => src.Grade != null ? src.Grade.LevelId : src.Level.Id))
             .ReverseMap();
         CreateMap<Exam, ExamCreateDto>().ReverseMap();
         CreateMap<Exam, ExamUpdateDto>().ReverseMap();
@@ -233,8 +234,10 @@ public class MappingProfile : Profile
         CreateMap<HistoryAnswer, HistoryAnswerDto>().ReverseMap();
         //Quiz
         CreateMap<Quiz, QuizDto>()
-            .ForMember(x => x.TopicTitle, y => y.MapFrom(src => src.Topic.Title))
-            .ForMember(x => x.LessonTitle, y => y.MapFrom(src => src.Lesson.Title))
+            .ForMember(x => x.TopicTitle, y => y.MapFrom(src => (src.Topic == null) ? string.Empty : src.Topic.Title))
+            .ForMember(x => x.TopicId, y => y.MapFrom(src => src.TopicId ?? 0))
+            .ForMember(x => x.LessonTitle, y => y.MapFrom(src => (src.Lesson == null) ? string.Empty : src.Lesson.Title))
+            .ForMember(x => x.LessonId, y => y.MapFrom(src => src.LessonId ?? 0))
             .ForMember(x => x.TotalQuestion, y => y.MapFrom(src => src.QuizQuestionRelations.Count))
             .ForMember(x => x.TypeName, y => y.MapFrom(src => src.Type.GetDisplayNameEnum()))
             .ForMember(x => x.TypeId, y => y.MapFrom(src => src.Type))
@@ -301,6 +304,8 @@ public class MappingProfile : Profile
         // Problem
         CreateMap<Problem, ProblemDto>()
             .ForMember(x => x.DifficultyName, y => y.MapFrom(src => src.Difficulty.GetDisplayNameEnum()))
+            .ForMember(x => x.TopicId, y => y.MapFrom(src => src.TopicId ?? 0))
+            .ForMember(x => x.LessonId, y => y.MapFrom(src => src.LessonId ?? 0))
             .ReverseMap();
         CreateMap<Problem, ProblemCreateDto>().ReverseMap();
         CreateMap<Problem, ProblemUpdateDto>().ReverseMap();

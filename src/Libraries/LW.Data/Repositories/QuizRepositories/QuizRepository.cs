@@ -71,6 +71,7 @@ public class QuizRepository : RepositoryBase<Quiz, int>, IQuizRepository
         return await FindByCondition(q => q.Id == id)
             .Include(l => l.Lesson).DefaultIfEmpty()
             .Include(l => l.Topic).DefaultIfEmpty()
+            .Include(q => q.QuizQuestionRelations).DefaultIfEmpty()
             .FirstOrDefaultAsync();
     }
 

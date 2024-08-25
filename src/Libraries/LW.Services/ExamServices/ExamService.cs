@@ -6,12 +6,15 @@ using LW.Data.Repositories.CompetitionRepositories;
 using LW.Data.Repositories.ExamCodeRepositories;
 using LW.Data.Repositories.ExamRepositories;
 using LW.Data.Repositories.GradeRepositories;
+using LW.Data.Repositories.TagRepositories;
+using LW.Data.Repositories.LevelRepositories;
 using LW.Infrastructure.Extensions;
 using LW.Shared.Constant;
 using LW.Shared.DTOs;
 using LW.Shared.DTOs.Exam;
 using LW.Shared.DTOs.File;
 using LW.Shared.DTOs.Lesson;
+using LW.Shared.DTOs.Tag;
 using LW.Shared.Enums;
 using LW.Shared.SeedWork;
 using MockQueryable.Moq;
@@ -27,11 +30,13 @@ public class ExamService : IExamService
     private readonly IExamCodeRepository _examCodeRepository;
     private readonly ICompetitionRepository _competitionRepository;
     private readonly IGradeRepository _gradeRepository;
+    private readonly ITagRepository _tagRepository;
+    private readonly ILevelRepository _levelRepository;
 
     public ExamService(IMapper mapper, IExamRepository examRepository,
         IElasticSearchService<ExamDto, int> elasticSearchService, ICloudinaryService cloudinaryService,
         IExamCodeRepository examCodeRepository, ICompetitionRepository competitionRepository,
-        IGradeRepository gradeRepository)
+        IGradeRepository gradeRepository, ITagRepository tagRepository, ILevelRepository levelRepository)
     {
         _mapper = mapper;
         _examRepository = examRepository;
@@ -40,6 +45,8 @@ public class ExamService : IExamService
         _examCodeRepository = examCodeRepository;
         _competitionRepository = competitionRepository;
         _gradeRepository = gradeRepository;
+        _tagRepository = tagRepository;
+        _levelRepository = levelRepository;
     }
 
     public async Task<ApiResult<IEnumerable<ExamDto>>> GetAllExam(bool? status)
@@ -87,7 +94,7 @@ public class ExamService : IExamService
 
             examList = _mapper.Map<IEnumerable<ExamDto>>(examListAll);
         }
-        
+
         if (searchExamDto.Status != null)
         {
             examList = examList.Where(e => e.IsActive == searchExamDto.Status);
@@ -97,10 +104,12 @@ public class ExamService : IExamService
         {
             examList = examList.Where(t => t.CompetitionId == searchExamDto.CompetitionId);
         }
+
         if (searchExamDto.LevelId > 0)
         {
             examList = examList.Where(t => t.LevelId == searchExamDto.LevelId);
         }
+
         if (searchExamDto.GradeId > 0)
         {
             examList = examList.Where(t => t.GradeId == searchExamDto.GradeId);
@@ -126,6 +135,29 @@ public class ExamService : IExamService
         return new ApiSuccessResult<PagedList<ExamDto>>(pagedResult);
     }
 
+    public async Task<ApiResult<IEnumerable<TagDto>>> GetExamIdByTag(int id)
+    {
+        var exam = await _examRepository.GetExamById(id);
+        if (exam is null)
+        {
+            return new ApiResult<IEnumerable<TagDto>>(false, "Exam not found !!!");
+        }
+
+        var listStringTag = exam.KeyWord!.Trim().Split(',', StringSplitOptions.RemoveEmptyEntries);
+        var listTag = new List<Tag>();
+        foreach (var item in listStringTag)
+        {
+            var tagEntity = await _tagRepository.GetTagByKeyword(item);
+            if (tagEntity is not null)
+            {
+                listTag.Add(tagEntity);
+            }
+        }
+
+        var result = _mapper.Map<IEnumerable<TagDto>>(listTag);
+        return new ApiSuccessResult<IEnumerable<TagDto>>(result);
+    }
+
     public async Task<ApiResult<ExamDto>> GetExamById(int id)
     {
         var exam = await _examRepository.GetExamById(id);
@@ -145,7 +177,7 @@ public class ExamService : IExamService
         {
             return new ApiResult<IEnumerable<ExamDto>>(false, "NotFound");
         }
-        
+
         if (status != null)
         {
             listExam = listExam.Where(e => e.IsActive == status);
@@ -162,9 +194,8 @@ public class ExamService : IExamService
         {
             return new ApiResult<ExamDto>(false, "Competition not found !!!");
         }
-        
-        
-        
+
+
         if (examCreateDto.GradeId > 0)
         {
             var gradeExist = await _gradeRepository.GetGradeById(Convert.ToInt32(examCreateDto.GradeId), false);
@@ -172,10 +203,12 @@ public class ExamService : IExamService
             {
                 return new ApiResult<ExamDto>(false, "Grade not found");
             }
+
             examCreateDto.LevelId = null;
         }
 
         var obj = _mapper.Map<Exam>(examCreateDto);
+
         if (examCreateDto.ExamEssayFileUpload != null && examCreateDto.ExamEssayFileUpload.Length > 0)
         {
             var filePath = await _cloudinaryService.CreateFileAsync(examCreateDto.ExamEssayFileUpload,
@@ -195,8 +228,24 @@ public class ExamService : IExamService
 
         var keyWordValue = (examCreateDto.TagValues is not null) ? examCreateDto.TagValues.ConvertToTagString() : examCreateDto.Title!.RemoveDiacritics();
         obj.KeyWord = keyWordValue;
+        if (examCreateDto.GradeId > 0) // chon Grade thi de Level la null truowcs khi add db
+        {
+            obj.LevelId = null;
+        }
+
         await _examRepository.CreateExam(obj);
         obj.Competition = competition;
+        if (examCreateDto.GradeId > 0)
+        {
+            var gradeExist = await _gradeRepository.GetGradeById(Convert.ToInt32(examCreateDto.GradeId), false);
+            obj.Grade = gradeExist;
+        }
+        else
+        {
+            var level = await _levelRepository.GetLevelById(Convert.ToInt32(examCreateDto.LevelId));
+            obj.Level = level;
+        }
+
         var result = _mapper.Map<ExamDto>(obj);
         await _elasticSearchService.CreateDocumentAsync(ElasticConstant.ElasticExams, result, x => x.Id);
         return new ApiResult<ExamDto>(true, result, "Create exam successfully");
@@ -217,8 +266,6 @@ public class ExamService : IExamService
             {
                 return new ApiResult<ExamDto>(false, "Grade not found");
             }
-
-            examUpdateDto.LevelId = null;
         }
 
         var exam = await _examRepository.GetExamById(examUpdateDto.Id);
@@ -228,6 +275,9 @@ public class ExamService : IExamService
         }
 
         var objUpdate = _mapper.Map(examUpdateDto, exam);
+        // map tat ca thuoc tinh của dto vao exam
+        // 1 -1  vs 1- null -> 1 1
+        // 1-null vs 1-1 -> 1- null
         if (examUpdateDto.ExamEssayFileUpload != null && examUpdateDto.ExamEssayFileUpload.Length > 0)
         {
             var filePath =
@@ -257,9 +307,30 @@ public class ExamService : IExamService
             }
         }
 
-        objUpdate.KeyWord = (examUpdateDto.TagValues is not null) ? examUpdateDto.TagValues.ConvertToTagString() : examUpdateDto.Title!.RemoveDiacritics();
+        objUpdate.KeyWord = (examUpdateDto.TagValues is not null)
+            ? examUpdateDto.TagValues.ConvertToTagString()
+            : examUpdateDto.Title!.RemoveDiacritics();
+        if (examUpdateDto.GradeId > 0) // chọn grade 
+        {
+            objUpdate.LevelId = null;
+        }
+        
         await _examRepository.UpdateExam(objUpdate);
+        if (examUpdateDto.GradeId > 0)
+        {
+            var gradeExist = await _gradeRepository.GetGradeById(Convert.ToInt32(examUpdateDto.GradeId), false);
+            objUpdate.Grade = gradeExist;
+        }                                           
+        else
+        {
+            var level = await _levelRepository.GetLevelById(Convert.ToInt32(examUpdateDto.LevelId));
+            objUpdate.Level = level;
+        }
         var examDto = _mapper.Map<ExamDto>(objUpdate);
+        if (examDto.GradeId == null)
+        {
+            examDto.GradeId = 0;
+        }
         await _elasticSearchService.UpdateDocumentAsync(ElasticConstant.ElasticExams, examDto, examUpdateDto.Id);
         return new ApiResult<ExamDto>(true, examDto, "Update exam successfully");
     }

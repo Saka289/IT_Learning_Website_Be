@@ -6,6 +6,7 @@ using LW.API.Application.Validators.SubmissionValidator;
 using LW.Services.SubmissionServices;
 using LW.Shared.DTOs.Submission;
 using LW.Shared.SeedWork;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 
@@ -13,6 +14,7 @@ namespace LW.API.Controllers.Public
 {
     [Route("api/[controller]")]
     [ApiController]
+    [Authorize]
     public class SubmissionController : ControllerBase
     {
         private readonly ISubmissionService _submissionService;
@@ -23,6 +25,7 @@ namespace LW.API.Controllers.Public
         }
         
         [HttpGet("GetAllSubmission")]
+        [AllowAnonymous]
         public async Task<ActionResult<ApiResult<IEnumerable<SubmissionDto>>>> GetAllSubmission([FromQuery]SubmissionRequestDto submissionRequestDto)
         {
             var result = await _submissionService.GetAllSubmission(submissionRequestDto);
@@ -35,6 +38,7 @@ namespace LW.API.Controllers.Public
         }
         
         [HttpGet("GetSubmission")]
+        [AllowAnonymous]
         public async Task<ActionResult<ApiResult<SubmissionDto>>> GetSubmission([FromQuery]SubmissionRequestDto submissionRequestDto)
         {
             var result = await _submissionService.GetSubmission(submissionRequestDto);

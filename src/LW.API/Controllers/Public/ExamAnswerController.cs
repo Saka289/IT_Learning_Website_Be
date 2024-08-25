@@ -4,9 +4,11 @@ using System.Linq;
 using System.Threading.Tasks;
 using LW.API.Application.Validators.ExamAnswerValidator;
 using LW.Services.ExamAnswerServices;
+using LW.Shared.Constant;
 using LW.Shared.DTOs;
 using LW.Shared.DTOs.ExamAnswer;
 using LW.Shared.SeedWork;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 
@@ -14,6 +16,7 @@ namespace LW.API.Controllers.Public
 {
     [Route("api/[controller]")]
     [ApiController]
+    [Authorize(Roles = $"{RoleConstant.RoleAdmin},{RoleConstant.RoleContentManager}")]
     public class ExamAnswerController : ControllerBase
     {
         private readonly IExamAnswerService _examAnswerService;
@@ -24,6 +27,7 @@ namespace LW.API.Controllers.Public
         }
 
         [HttpGet("GetAllExamAnswerByExamCodeId/{examCodeId}")]
+        [AllowAnonymous]
         public async Task<ActionResult<ApiResult<IEnumerable<ExamAnswerDto>>>> GetAllExamAnswerByExamCodeId(int examCodeId)
         {
             var result = await _examAnswerService.GetExamAnswerByExamCodeId(examCodeId);
@@ -36,6 +40,7 @@ namespace LW.API.Controllers.Public
         }
 
         [HttpGet("GetExamAnswerById/{id}")]
+        [AllowAnonymous]
         public async Task<ActionResult<ApiResult<ExamAnswerDto>>> GetExamAnswerById(int id)
         {
             var result = await _examAnswerService.GetExamAnswerById(id);

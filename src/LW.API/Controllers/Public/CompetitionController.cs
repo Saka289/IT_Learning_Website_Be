@@ -4,8 +4,10 @@ using System.Linq;
 using System.Threading.Tasks;
 using LW.API.Application.Validators.CompetitionValidator;
 using LW.Services.CompetitionServices;
+using LW.Shared.Constant;
 using LW.Shared.DTOs.Competition;
 using LW.Shared.SeedWork;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Newtonsoft.Json;
@@ -14,6 +16,7 @@ namespace LW.API.Controllers.Public
 {
     [Route("api/[controller]")]
     [ApiController]
+    [Authorize(Roles = $"{RoleConstant.RoleAdmin},{RoleConstant.RoleContentManager}")]
     public class CompetitionController : ControllerBase
     {
         private readonly ICompetitionService _competitionService;
@@ -21,7 +24,9 @@ namespace LW.API.Controllers.Public
         {
             _competitionService = competitionService;
         }
-         [HttpGet("GetAllCompetition")]
+        
+        [HttpGet("GetAllCompetition")]
+        [AllowAnonymous]
         public async Task<ActionResult<ApiResult<IEnumerable<CompetitionDto>>>> GetAllCompetition(bool? status)
         {
             var result = await _competitionService.GetAllCompetition(status);
@@ -32,6 +37,7 @@ namespace LW.API.Controllers.Public
             return Ok(result);
         }
         [HttpGet("GetAllCompetitionPagination")]
+        [AllowAnonymous]
         public async Task<ActionResult<ApiResult<PagedList<CompetitionDto>>>> GetAllCompetitionPagination([FromQuery]SearchCompetitionDto searchCompetitionDto)
         {
             var result = await _competitionService.GetAllCompetitionPagination(searchCompetitionDto);
@@ -44,6 +50,7 @@ namespace LW.API.Controllers.Public
         }
 
         [HttpGet("GetCompetitionById")]
+        [AllowAnonymous]
         public async Task<ActionResult<ApiResult<CompetitionDto>>> GetAllCompetitionById(int id)
         {
             var result = await _competitionService.GetCompetitionById(id);

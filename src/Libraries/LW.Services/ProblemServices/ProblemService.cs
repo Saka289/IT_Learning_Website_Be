@@ -118,7 +118,7 @@ public class ProblemService : IProblemService
             problemList = _mapper.Map<IEnumerable<ProblemDto>>(problemListAll);
         }
         
-        if (searchProblemDto.Status != null)
+        if (searchProblemDto.StatusProblem != null)
         {
             problemList = problemList.Where(p => p.IsActive == searchProblemDto.StatusProblem);
         }

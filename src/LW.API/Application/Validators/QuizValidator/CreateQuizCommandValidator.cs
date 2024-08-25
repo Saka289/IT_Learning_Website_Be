@@ -12,18 +12,12 @@ public class CreateQuizCommandValidator : AbstractValidator<QuizCreateDto>
         RuleFor(x => x.Score).NotNull().NotEmpty().GreaterThan(0);
         RuleFor(x => x.Type).NotNull().NotEmpty().IsInEnum();
         RuleFor(x => x.IsActive).NotNull().NotEmpty();
-        RuleFor(x => x).Must(HaveValidTopicLessonGrade)
-            .WithMessage("Only one of TopicId, LessonId, or GradeId should have a value, the others must be null.");
+        RuleFor(x => x.GradeId).NotNull().NotEmpty();
+        RuleFor(x => x).Must(HaveValidTopicOrLesson).WithMessage("Either TopicId or LessonId should have a value, but not both.");
     }
 
-    private bool HaveValidTopicLessonGrade(QuizCreateDto quiz)
+    private bool HaveValidTopicOrLesson(QuizCreateDto quiz)
     {
-        int count = 0;
-
-        if (quiz.TopicId.HasValue) count++;
-        if (quiz.LessonId.HasValue) count++;
-        if (quiz.GradeId.HasValue) count++;
-
-        return count == 1;
+        return !(quiz.TopicId.HasValue && quiz.LessonId.HasValue) || (!quiz.TopicId.HasValue && !quiz.LessonId.HasValue);
     }
 }

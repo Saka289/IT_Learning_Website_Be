@@ -11,6 +11,7 @@ using LW.Shared.Constant;
 using LW.Shared.DTOs.Admin;
 using LW.Shared.DTOs.Member;
 using LW.Shared.SeedWork;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
@@ -21,6 +22,7 @@ namespace LW.API.Controllers.Admin
 {
     [Route("api/[controller]")]
     [ApiController]
+    [Authorize(Roles = RoleConstant.RoleAdmin)]
     public class AdminController : ControllerBase
     {
         private readonly IAdminAuthorService _adminAuthorService;
@@ -50,6 +52,7 @@ namespace LW.API.Controllers.Admin
         }
 
         [HttpPost("login")]
+        [AllowAnonymous]
         public async Task<ActionResult<ApiResult<LoginAdminResponseDto>>> Login([FromBody] LoginAdminDto loginAdminDto)
         {
             var result = await _adminAuthorService.LoginAdminAsync(loginAdminDto);
@@ -201,6 +204,7 @@ namespace LW.API.Controllers.Admin
         }
 
         [HttpPost("ForgotPassword")]
+        [AllowAnonymous]
         public async Task<ActionResult<ApiResult<bool>>> ForgotPassword(string email)
         {
             var result = await _adminAuthorService.ForgotPasswordAsync(email);
