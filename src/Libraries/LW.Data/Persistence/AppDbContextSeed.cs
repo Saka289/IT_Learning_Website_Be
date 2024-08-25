@@ -40,7 +40,8 @@ public class AppDbContextSeed
             var dataLevel = SeedLevel();
             await context.Levels.AddRangeAsync(dataLevel);
             await context.SaveChangesAsync();
-            logger.Information("Seeded data Levels for Education DB associated with context {DbContextName}", nameof(AppDbContext));
+            logger.Information("Seeded data Levels for Education DB associated with context {DbContextName}",
+                nameof(AppDbContext));
         }
 
         if (!context.Grades.Any())
@@ -345,7 +346,8 @@ public class AppDbContextSeed
                 PublicationYear = 2022,
                 Edition = 1,
                 TypeOfBook = EBookType.SGK,
-                Image = "https://res.cloudinary.com/itsupport18/image/upload/v1724549802/DocumentImage/IMAGE-ac73f011-a7f8-4c28-8865-1cdb5e5599a0.png",
+                Image =
+                    "https://res.cloudinary.com/itsupport18/image/upload/v1724549802/DocumentImage/IMAGE-ac73f011-a7f8-4c28-8865-1cdb5e5599a0.png",
                 PublicId = "DocumentImage/IMAGE-ac73f011-a7f8-4c28-8865-1cdb5e5599a0",
                 IsActive = true,
             },
@@ -363,7 +365,8 @@ public class AppDbContextSeed
                 PublicationYear = 2022,
                 Edition = 1,
                 TypeOfBook = EBookType.SGK,
-                Image = "https://res.cloudinary.com/itsupport18/image/upload/v1724549814/DocumentImage/IMAGE-2f0a9f34-e12a-4033-8705-f7ad66b0bfa4.png",
+                Image =
+                    "https://res.cloudinary.com/itsupport18/image/upload/v1724549814/DocumentImage/IMAGE-2f0a9f34-e12a-4033-8705-f7ad66b0bfa4.png",
                 PublicId = "DocumentImage/IMAGE-2f0a9f34-e12a-4033-8705-f7ad66b0bfa4",
                 IsActive = true,
             },
@@ -381,7 +384,8 @@ public class AppDbContextSeed
                 PublicationYear = 2022,
                 Edition = 1,
                 TypeOfBook = EBookType.SGK,
-                Image = "https://res.cloudinary.com/itsupport18/image/upload/v1724549827/DocumentImage/IMAGE-cce848ee-a4db-4a30-bed1-6a69554891d7.png",
+                Image =
+                    "https://res.cloudinary.com/itsupport18/image/upload/v1724549827/DocumentImage/IMAGE-cce848ee-a4db-4a30-bed1-6a69554891d7.png",
                 PublicId = "DocumentImage/IMAGE-cce848ee-a4db-4a30-bed1-6a69554891d7",
                 IsActive = true,
             },
@@ -399,7 +403,8 @@ public class AppDbContextSeed
                 PublicationYear = 2022,
                 Edition = 1,
                 TypeOfBook = EBookType.SGK,
-                Image = "https://res.cloudinary.com/itsupport18/image/upload/v1724549845/DocumentImage/IMAGE-d62b50ea-ecc7-435c-9d5b-f971a6abc21c.png",
+                Image =
+                    "https://res.cloudinary.com/itsupport18/image/upload/v1724549845/DocumentImage/IMAGE-d62b50ea-ecc7-435c-9d5b-f971a6abc21c.png",
                 PublicId = "DocumentImage/IMAGE-d62b50ea-ecc7-435c-9d5b-f971a6abc21c",
                 IsActive = true,
             },
@@ -417,7 +422,8 @@ public class AppDbContextSeed
                 PublicationYear = 2022,
                 Edition = 1,
                 TypeOfBook = EBookType.SGK,
-                Image = "https://res.cloudinary.com/itsupport18/image/upload/v1724549961/DocumentImage/IMAGE-7737648d-65b4-4728-8908-ae6c6778ad47.jpg",
+                Image =
+                    "https://res.cloudinary.com/itsupport18/image/upload/v1724549961/DocumentImage/IMAGE-7737648d-65b4-4728-8908-ae6c6778ad47.jpg",
                 PublicId = "DocumentImage/IMAGE-7737648d-65b4-4728-8908-ae6c6778ad47",
                 IsActive = true,
             },
@@ -435,7 +441,8 @@ public class AppDbContextSeed
                 PublicationYear = 2022,
                 Edition = 1,
                 TypeOfBook = EBookType.SGK,
-                Image = "https://res.cloudinary.com/itsupport18/image/upload/v1724549980/DocumentImage/IMAGE-e858c002-e115-41df-8ef3-02cf0b915809.png",
+                Image =
+                    "https://res.cloudinary.com/itsupport18/image/upload/v1724549980/DocumentImage/IMAGE-e858c002-e115-41df-8ef3-02cf0b915809.png",
                 PublicId = "DocumentImage/IMAGE-e858c002-e115-41df-8ef3-02cf0b915809",
                 IsActive = true,
             },
@@ -453,7 +460,8 @@ public class AppDbContextSeed
                 PublicationYear = 2022,
                 Edition = 1,
                 TypeOfBook = EBookType.SGK,
-                Image = "https://res.cloudinary.com/itsupport18/image/upload/v1724549995/DocumentImage/IMAGE-2d6cf316-19f7-4496-a79e-e74729ff320e.png",
+                Image =
+                    "https://res.cloudinary.com/itsupport18/image/upload/v1724549995/DocumentImage/IMAGE-2d6cf316-19f7-4496-a79e-e74729ff320e.png",
                 PublicId = "DocumentImage/IMAGE-2d6cf316-19f7-4496-a79e-e74729ff320e",
                 IsActive = true,
             },
@@ -471,7 +479,8 @@ public class AppDbContextSeed
                 PublicationYear = 2022,
                 Edition = 1,
                 TypeOfBook = EBookType.SGK,
-                Image = "https://res.cloudinary.com/itsupport18/image/upload/v1724559457/DocumentImage/IMAGE-80d0b547-73e2-4b4e-b20f-d977ed8d3716.jpg",
+                Image =
+                    "https://res.cloudinary.com/itsupport18/image/upload/v1724559457/DocumentImage/IMAGE-80d0b547-73e2-4b4e-b20f-d977ed8d3716.jpg",
                 PublicId = "DocumentImage/IMAGE-80d0b547-73e2-4b4e-b20f-d977ed8d3716",
                 IsActive = true,
             },
@@ -489,7 +498,8 @@ public class AppDbContextSeed
                 PublicationYear = 2022,
                 Edition = 1,
                 TypeOfBook = EBookType.SGK,
-                Image = "https://res.cloudinary.com/itsupport18/image/upload/v1724559513/DocumentImage/IMAGE-67f09b37-fae0-427d-b188-5038e05e8bcf.png",
+                Image =
+                    "https://res.cloudinary.com/itsupport18/image/upload/v1724559513/DocumentImage/IMAGE-67f09b37-fae0-427d-b188-5038e05e8bcf.png",
                 PublicId = "DocumentImage/IMAGE-67f09b37-fae0-427d-b188-5038e05e8bcf",
                 IsActive = true,
             },
@@ -507,7 +517,8 @@ public class AppDbContextSeed
                 PublicationYear = 2022,
                 Edition = 1,
                 TypeOfBook = EBookType.SGK,
-                Image = "https://res.cloudinary.com/itsupport18/image/upload/v1724559574/DocumentImage/IMAGE-ba805d3e-6142-4781-a958-bdd1dfc35d75.png",
+                Image =
+                    "https://res.cloudinary.com/itsupport18/image/upload/v1724559574/DocumentImage/IMAGE-ba805d3e-6142-4781-a958-bdd1dfc35d75.png",
                 PublicId = "DocumentImage/IMAGE-ba805d3e-6142-4781-a958-bdd1dfc35d75",
                 IsActive = true,
             },
@@ -526,7 +537,8 @@ public class AppDbContextSeed
                 PublicationYear = 2022,
                 Edition = 1,
                 TypeOfBook = EBookType.SGK,
-                Image = "https://res.cloudinary.com/itsupport18/image/upload/v1724561682/DocumentImage/IMAGE-a25df04b-3f46-4815-9e14-4ce6058ee917.png",
+                Image =
+                    "https://res.cloudinary.com/itsupport18/image/upload/v1724561682/DocumentImage/IMAGE-a25df04b-3f46-4815-9e14-4ce6058ee917.png",
                 PublicId = "DocumentImage/IMAGE-a25df04b-3f46-4815-9e14-4ce6058ee917",
                 IsActive = true,
             },
@@ -544,7 +556,8 @@ public class AppDbContextSeed
                 PublicationYear = 2022,
                 Edition = 1,
                 TypeOfBook = EBookType.SGK,
-                Image = "https://res.cloudinary.com/itsupport18/image/upload/v1724561777/DocumentImage/IMAGE-15603d5b-716c-476b-af19-172bd1a46986.png",
+                Image =
+                    "https://res.cloudinary.com/itsupport18/image/upload/v1724561777/DocumentImage/IMAGE-15603d5b-716c-476b-af19-172bd1a46986.png",
                 PublicId = "DocumentImage/IMAGE-15603d5b-716c-476b-af19-172bd1a46986",
                 IsActive = true,
             },
@@ -562,7 +575,8 @@ public class AppDbContextSeed
                 PublicationYear = 2022,
                 Edition = 1,
                 TypeOfBook = EBookType.SGK,
-                Image = "https://res.cloudinary.com/itsupport18/image/upload/v1724561875/DocumentImage/IMAGE-0bf338b1-4d72-481c-88e8-3cbe78f8ecf0.png",
+                Image =
+                    "https://res.cloudinary.com/itsupport18/image/upload/v1724561875/DocumentImage/IMAGE-0bf338b1-4d72-481c-88e8-3cbe78f8ecf0.png",
                 PublicId = "DocumentImage/IMAGE-0bf338b1-4d72-481c-88e8-3cbe78f8ecf0",
                 IsActive = true,
             },
@@ -580,7 +594,8 @@ public class AppDbContextSeed
                 PublicationYear = 2022,
                 Edition = 1,
                 TypeOfBook = EBookType.SGK,
-                Image = "https://res.cloudinary.com/itsupport18/image/upload/v1724562065/DocumentImage/IMAGE-f540ec77-1eb7-4c81-89f6-0c7d9cf975f3.png",
+                Image =
+                    "https://res.cloudinary.com/itsupport18/image/upload/v1724562065/DocumentImage/IMAGE-f540ec77-1eb7-4c81-89f6-0c7d9cf975f3.png",
                 PublicId = "DocumentImage/IMAGE-f540ec77-1eb7-4c81-89f6-0c7d9cf975f3",
                 IsActive = true,
             },
@@ -598,7 +613,8 @@ public class AppDbContextSeed
                 PublicationYear = 2022,
                 Edition = 1,
                 TypeOfBook = EBookType.SGK,
-                Image = "https://res.cloudinary.com/itsupport18/image/upload/v1724562201/DocumentImage/IMAGE-392e0b12-05b9-4fdf-87dc-da9792304d41.jpg",
+                Image =
+                    "https://res.cloudinary.com/itsupport18/image/upload/v1724562201/DocumentImage/IMAGE-392e0b12-05b9-4fdf-87dc-da9792304d41.jpg",
                 PublicId = "DocumentImage/IMAGE-392e0b12-05b9-4fdf-87dc-da9792304d41",
                 IsActive = true,
             },
@@ -616,7 +632,8 @@ public class AppDbContextSeed
                 PublicationYear = 2022,
                 Edition = 1,
                 TypeOfBook = EBookType.SGK,
-                Image = "https://res.cloudinary.com/itsupport18/image/upload/v1724574421/DocumentImage/IMAGE-9ee21f56-d3b5-44ad-abe1-ef4ca33cb43e.png",
+                Image =
+                    "https://res.cloudinary.com/itsupport18/image/upload/v1724574421/DocumentImage/IMAGE-9ee21f56-d3b5-44ad-abe1-ef4ca33cb43e.png",
                 PublicId = "DocumentImage/IMAGE-9ee21f56-d3b5-44ad-abe1-ef4ca33cb43e",
                 IsActive = true,
             },
@@ -634,7 +651,8 @@ public class AppDbContextSeed
                 PublicationYear = 2022,
                 Edition = 1,
                 TypeOfBook = EBookType.SGK,
-                Image = "https://res.cloudinary.com/itsupport18/image/upload/v1724574480/DocumentImage/IMAGE-05fecbfb-9d83-4b1f-b35f-85f1ab494d4a.png",
+                Image =
+                    "https://res.cloudinary.com/itsupport18/image/upload/v1724574480/DocumentImage/IMAGE-05fecbfb-9d83-4b1f-b35f-85f1ab494d4a.png",
                 PublicId = "DocumentImage/IMAGE-05fecbfb-9d83-4b1f-b35f-85f1ab494d4a",
                 IsActive = true,
             },
@@ -652,7 +670,8 @@ public class AppDbContextSeed
                 PublicationYear = 2022,
                 Edition = 1,
                 TypeOfBook = EBookType.SGK,
-                Image = "https://res.cloudinary.com/itsupport18/image/upload/v1724574524/DocumentImage/IMAGE-48e7dd2c-cbc1-4710-9215-6056da6fb386.png",
+                Image =
+                    "https://res.cloudinary.com/itsupport18/image/upload/v1724574524/DocumentImage/IMAGE-48e7dd2c-cbc1-4710-9215-6056da6fb386.png",
                 PublicId = "DocumentImage/IMAGE-48e7dd2c-cbc1-4710-9215-6056da6fb386",
                 IsActive = true,
             },
@@ -670,7 +689,8 @@ public class AppDbContextSeed
                 PublicationYear = 2022,
                 Edition = 1,
                 TypeOfBook = EBookType.SGK,
-                Image = "https://res.cloudinary.com/itsupport18/image/upload/v1724574582/DocumentImage/IMAGE-3f96bd0b-5d53-409a-98a9-b6f7de8d60c4.png",
+                Image =
+                    "https://res.cloudinary.com/itsupport18/image/upload/v1724574582/DocumentImage/IMAGE-3f96bd0b-5d53-409a-98a9-b6f7de8d60c4.png",
                 PublicId = "DocumentImage/IMAGE-3f96bd0b-5d53-409a-98a9-b6f7de8d60c4",
                 IsActive = true,
             },
@@ -688,7 +708,8 @@ public class AppDbContextSeed
                 PublicationYear = 2022,
                 Edition = 1,
                 TypeOfBook = EBookType.SGK,
-                Image = "https://res.cloudinary.com/itsupport18/image/upload/v1724574629/DocumentImage/IMAGE-96cfdf02-bde4-412c-921c-f6addb7a1f90.png",
+                Image =
+                    "https://res.cloudinary.com/itsupport18/image/upload/v1724574629/DocumentImage/IMAGE-96cfdf02-bde4-412c-921c-f6addb7a1f90.png",
                 PublicId = "DocumentImage/IMAGE-96cfdf02-bde4-412c-921c-f6addb7a1f90",
                 IsActive = true,
             },
@@ -740,7 +761,6 @@ public class AppDbContextSeed
             new()
             {
                 //4
-
                 Title = "Chủ đề D Đạo đức, Pháp luật và Văn hóa trong môi trường số",
                 KeyWord = "chu de d dao duc, phap luat va van hoa trong moi truong so",
                 Description =
@@ -753,7 +773,6 @@ public class AppDbContextSeed
             new()
             {
                 //5
-
                 Title = "Chủ đề E Ứng dụng tin học",
                 KeyWord = "chu de e ung dung tin hoc",
                 Description =
@@ -767,7 +786,6 @@ public class AppDbContextSeed
             new()
             {
                 //6
-
                 Title = "Chủ đề F: Giải quyết vấn đề với sự trợ giúp của máy tính",
                 KeyWord = "chu de f: giai quyet van de voi su tro giup cua may tinh",
                 Description =
@@ -781,7 +799,6 @@ public class AppDbContextSeed
             new()
             {
                 //7
-
                 Title = "Chủ đề A1. Khám phá máy tính",
                 KeyWord = "chu de a1. ung dung tin hoc",
                 Description =
@@ -795,7 +812,6 @@ public class AppDbContextSeed
             new()
             {
                 //8
-
                 Title = "Chủ đề A2. Thông tin và xử lí thông tin",
                 KeyWord = "chu de a2. thong tin va xu li thong tin",
                 Description =
@@ -809,7 +825,6 @@ public class AppDbContextSeed
             new()
             {
                 //9
-
                 Title = "Chủ đề A3. Làm quen với cách gõ bàn phím",
                 KeyWord = "chu de a3. lam quen voi cach go ban phim",
                 Description =
@@ -823,7 +838,6 @@ public class AppDbContextSeed
             new()
             {
                 //10
-
                 Title = "Chủ đề C1. Sắp xếp để dễ tìm",
                 KeyWord = "chu de c1. sap xep de de tim",
                 Description =
@@ -837,7 +851,6 @@ public class AppDbContextSeed
             new()
             {
                 //11
-
                 Title = "Chủ đề C2. Làm quen với thư mục lưu trữ thông tin trong máy tính",
                 KeyWord = "chu de c2. lam quen voi thu muc luu tru thong tin trong may tinh",
                 Description =
@@ -851,7 +864,6 @@ public class AppDbContextSeed
             new()
             {
                 //12
-
                 Title = "Chủ đề E1. Làm quen với bài trình chiếu đơn giản",
                 KeyWord = "chu de e1. lam quen voi bai trinh chieu don gian",
                 Description =
@@ -865,7 +877,6 @@ public class AppDbContextSeed
             new()
             {
                 //13
-
                 Title = "Chủ đề E2. Sử dụng phần mềm luyện tập thao tác với chuột máy tính",
                 KeyWord = "chu de e2. su dung phan mem luyen tap va thao tac voi chuot may tinh",
                 Description =
@@ -879,7 +890,6 @@ public class AppDbContextSeed
             new()
             {
                 //14
-
                 Title = "Chủ đề E3. Sử dụng công cụ đa phương tiện để tìm hiểu thế giới tự nhiên",
                 KeyWord = "chu de e3. su dung cong cu da phuong tien de tim hieu the gioi tu nhien",
                 Description =
@@ -893,7 +903,6 @@ public class AppDbContextSeed
             new()
             {
                 //15
-
                 Title = "Chủ đề F1. Thực hiện công việc theo các bước",
                 KeyWord = "chu de f1. thuc hien cong viec theo cac buoc",
                 Description =
@@ -961,7 +970,6 @@ public class AppDbContextSeed
             new()
             {
                 //20
-
                 Title = "Chủ đề D Đạo đức, Pháp luật và Văn hóa trong môi trường số - bản quyền sử dụng phần mềm",
                 KeyWord = "chu de d dao duc, phap luat va van hoa trong moi truong so - ban quyen su dung phan mem",
                 Description =
@@ -974,7 +982,6 @@ public class AppDbContextSeed
             new()
             {
                 //21
-
                 Title = "Chủ đề E Ứng dụng tin học",
                 KeyWord = "chu de e ung dung tin hoc",
                 Description =
@@ -988,7 +995,6 @@ public class AppDbContextSeed
             new()
             {
                 //22
-
                 Title = "Chủ đề F: Giải quyết vấn đề với sự trợ giúp của máy tính",
                 KeyWord = "chu de f: giai quyet van de voi su tro giup cua may tinh",
                 Description =
@@ -1002,7 +1008,6 @@ public class AppDbContextSeed
             new()
             {
                 //23
-
                 Title = "Chủ đề A1. Phần cứng và phần mềm",
                 KeyWord = "chu de a1. phan cung va phan mem",
                 Description =
@@ -1016,7 +1021,6 @@ public class AppDbContextSeed
             new()
             {
                 //24
-
                 Title = "Chủ đề A2. Lợi ích của việc gõ bàn phím đúng cách",
                 KeyWord = "chu de a2. loi ich cua viec go ban phim dung cach",
                 Description =
@@ -1031,7 +1035,6 @@ public class AppDbContextSeed
             new()
             {
                 //25
-
                 Title = "Chủ đề C1. Bước đầu tìm kiếm thông tin trên internet",
                 KeyWord = "chu de c1. buoc dau tim kiem thong tin tren internet",
                 Description =
@@ -1045,7 +1048,6 @@ public class AppDbContextSeed
             new()
             {
                 //26
-
                 Title = "Chủ đề C2. Tổ chức cây thư mục lưu trữ thông tin trong máy tính",
                 KeyWord = "chu de c2. to chuc cay thu muc luu tru thong tin trong may tinh",
                 Description =
@@ -1059,7 +1061,6 @@ public class AppDbContextSeed
             new()
             {
                 //27
-
                 Title = "Chủ đề E1. Tạo bài trình chiếu",
                 KeyWord = "chu de e1. lam quen voi bai trinh chieu don gian",
                 Description =
@@ -1073,7 +1074,6 @@ public class AppDbContextSeed
             new()
             {
                 //28
-
                 Title = "Chủ đề E2. Tập soạn thảo văn bản",
                 KeyWord = "chu de e2. su dung phan mem luyen tap va thao tac voi chuot may tinh",
                 Description =
@@ -1087,7 +1087,6 @@ public class AppDbContextSeed
             new()
             {
                 //29
-
                 Title = "Lựa chọn 1. Sử dụng công cụ đa phương tiện để tìm hiểu lịch sử, văn hóa",
                 KeyWord = "lua chon 1. su dung cong cu da phuong tien de tim hieu lich su, van hoa",
                 Description =
@@ -1101,7 +1100,6 @@ public class AppDbContextSeed
             new()
             {
                 //30
-
                 Title = "Lựa chọn 2. Sử dụng phần mềm luyện gõ bàn phím",
                 KeyWord = "lua chon 2. su dung phan mem luyen go ban phim",
                 Description =
