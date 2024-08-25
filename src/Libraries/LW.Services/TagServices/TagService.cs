@@ -47,12 +47,17 @@ public class TagService : ITagService
         _problemRepository = problemRepository;
     }
 
-    public async Task<ApiResult<IEnumerable<TagDto>>> GetAllTag()
+    public async Task<ApiResult<IEnumerable<TagDto>>> GetAllTag(bool? status)
     {
         var tags = await _tagRepository.GetAllTag();
         if (!tags.Any())
         {
             return new ApiResult<IEnumerable<TagDto>>(false, "Not found list");
+        }
+
+        if (status != null)
+        {
+            tags = tags.Where(t => t.IsActive == status);
         }
 
         var tagDtos = _mapper.Map<IEnumerable<TagDto>>(tags);
@@ -87,6 +92,11 @@ public class TagService : ITagService
 
             tagList = _mapper.Map<IEnumerable<TagDto>>(tagListAll);
         }
+        
+        if (searchTagDto.Status != null)
+        {
+            tagList = tagList.Where(t => t.IsActive == searchTagDto.Status);
+        }
 
         var pagedResult = await PagedList<TagDto>.ToPageListAsync(tagList.AsQueryable().BuildMock(),
             searchTagDto.PageIndex, searchTagDto.PageSize, searchTagDto.OrderBy, searchTagDto.IsAscending);
@@ -101,6 +111,16 @@ public class TagService : ITagService
         var lessonList = await _lessonRepository.SearchLessonByTag(searchAllTagDto.TagValue.ConvertToTagString(), searchAllTagDto.OrderDate);
         var quizList = await _quizRepository.SearchQuizByTag(searchAllTagDto.TagValue.ConvertToTagString(), searchAllTagDto.OrderDate);
         var problemList = await _problemRepository.SearchProblemByTag(searchAllTagDto.TagValue.ConvertToTagString(), searchAllTagDto.OrderDate);
+        
+        if (searchAllTagDto.Status != null)
+        {
+            examList = examList.Where(e => e.IsActive == searchAllTagDto.Status);
+            documentList = documentList.Where(d => d.IsActive == searchAllTagDto.Status);
+            topicList = topicList.Where(t => t.IsActive == searchAllTagDto.Status);
+            lessonList = lessonList.Where(l => l.IsActive == searchAllTagDto.Status);
+            quizList = quizList.Where(q => q.IsActive == searchAllTagDto.Status);
+            problemList = problemList.Where(p => p.IsActive == searchAllTagDto.Status);
+        }
 
         var exams = _mapper.Map<IEnumerable<TagExamDto>>(examList);
         var documents = _mapper.Map<IEnumerable<TagDocumentDto>>(documentList);
