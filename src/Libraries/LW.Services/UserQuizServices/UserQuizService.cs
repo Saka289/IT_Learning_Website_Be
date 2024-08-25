@@ -87,7 +87,7 @@ public class UserQuizService : IUserQuizService
                 var listBoth = listAnswer.Intersect(listAnswerUser).ToList();
                 if (listBoth.Any())
                 {
-                    if (listBoth.Count() == listAnswer.Count())
+                    if (listAnswer.Count() == listAnswerUser.Count() && listBoth.Count() == listAnswer.Count())
                     {
                         var history = new HistoryQuizDto()
                         {
