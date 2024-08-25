@@ -4,8 +4,10 @@ using System.Linq;
 using System.Threading.Tasks;
 using LW.Data.Entities;
 using LW.Services.AdminServices;
+using LW.Shared.Constant;
 using LW.Shared.DTOs.Admin;
 using LW.Shared.SeedWork;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
@@ -14,6 +16,7 @@ namespace LW.API.Controllers.Admin
 {
     [Route("api/[controller]")]
     [ApiController]
+    [Authorize(Roles = RoleConstant.RoleAdmin)]
     public class RoleController : ControllerBase
     {
         private readonly IAdminAuthorService _adminAuthorService;

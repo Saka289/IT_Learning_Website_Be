@@ -5,8 +5,10 @@ using System.Linq;
 using System.Threading.Tasks;
 using LW.API.Application.Validators.ExecuteCodeValidator;
 using LW.Services.ExecuteCodeServices;
+using LW.Shared.Constant;
 using LW.Shared.DTOs.ExecuteCode;
 using LW.Shared.SeedWork;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 
@@ -14,6 +16,7 @@ namespace LW.API.Controllers.Public
 {
     [Route("api/[controller]")]
     [ApiController]
+    [Authorize(Roles = $"{RoleConstant.RoleAdmin},{RoleConstant.RoleContentManager}")]
     public class ExecuteCodeController : ControllerBase
     {
         private readonly IExecuteCodeService _executeCodeService;
@@ -24,6 +27,7 @@ namespace LW.API.Controllers.Public
         }
         
         [HttpGet("GetAllExecuteCode")]
+        [AllowAnonymous]
         public async Task<ActionResult<ApiResult<IEnumerable<ExecuteCodeDto>>>> GetAllExecuteCode()
         {
             var result = await _executeCodeService.GetAllExecuteCode();
@@ -36,6 +40,7 @@ namespace LW.API.Controllers.Public
         }
         
         [HttpGet("GetAllExecuteCodeByProblemId/{problemId}")]
+        [AllowAnonymous]
         public async Task<ActionResult<ApiResult<IEnumerable<ExecuteCodeDto>>>> GetAllExecuteCodeByProblemId([Required]int problemId, int? languages)
         {
             var result = await _executeCodeService.GetAllExecuteCodeByProblemId(problemId, languages);
@@ -48,6 +53,7 @@ namespace LW.API.Controllers.Public
         }
         
         [HttpGet("GetExecuteCodeById/{id}")]
+        [AllowAnonymous]
         public async Task<ActionResult<ApiResult<ExecuteCodeDto>>> GetExecuteCodeById(int id)
         {
             var result = await _executeCodeService.GetExecuteCodeById(id);

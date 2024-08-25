@@ -6,8 +6,10 @@ using System.Linq;
 using System.Threading.Tasks;
 using LW.API.Application.Validators.TestCaseValidator;
 using LW.Services.TestCaseServices;
+using LW.Shared.Constant;
 using LW.Shared.DTOs.TestCase;
 using LW.Shared.SeedWork;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 
@@ -15,6 +17,7 @@ namespace LW.API.Controllers.Public
 {
     [Route("api/[controller]")]
     [ApiController]
+    [Authorize(Roles = $"{RoleConstant.RoleAdmin},{RoleConstant.RoleContentManager}")]
     public class TestCaseController : ControllerBase
     {
         private readonly ITestCaseService _testCaseService;
@@ -25,6 +28,7 @@ namespace LW.API.Controllers.Public
         }
         
         [HttpGet("GetAllTestCase")]
+        [AllowAnonymous]
         public async Task<ActionResult<ApiResult<IEnumerable<TestCaseDto>>>> GetAllTestCase()
         {
             var result = await _testCaseService.GetAllTestCase();
@@ -37,6 +41,7 @@ namespace LW.API.Controllers.Public
         }
         
         [HttpGet("GetAllTestCaseByProblemId/{problemId}")]
+        [AllowAnonymous]
         public async Task<ActionResult<ApiResult<IEnumerable<TestCaseDto>>>> GetAllTestCaseByProblemId(int problemId)
         {
             var result = await _testCaseService.GetAllTestCaseByProblemId(problemId);
@@ -49,6 +54,7 @@ namespace LW.API.Controllers.Public
         }
         
         [HttpGet("GetTestCaseById/{id}")]
+        [AllowAnonymous]
         public async Task<ActionResult<ApiResult<TestCaseDto>>> GetTestCaseById(int id)
         {
             var result = await _testCaseService.GetTestCaseById(id);

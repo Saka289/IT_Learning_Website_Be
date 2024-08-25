@@ -7,6 +7,7 @@ using LW.API.Application.Validators.UserQuizValidator;
 using LW.Services.UserQuizServices;
 using LW.Shared.DTOs.UserQuiz;
 using LW.Shared.SeedWork;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 
@@ -14,6 +15,7 @@ namespace LW.API.Controllers.Public
 {
     [Route("api/[controller]")]
     [ApiController]
+    [Authorize]
     public class UserQuizController : ControllerBase
     {
         private readonly IUserQuizService _userQuizService;

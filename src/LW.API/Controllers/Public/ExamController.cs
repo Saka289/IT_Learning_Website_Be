@@ -5,11 +5,13 @@ using System.Threading.Tasks;
 using LW.API.Application.Validators.ExamValidator;
 using LW.API.Application.Validators.GradeValidator;
 using LW.Services.ExamServices;
+using LW.Shared.Constant;
 using LW.Shared.DTOs.Exam;
 using LW.Shared.DTOs.Grade;
 using LW.Shared.DTOs.Tag;
 using LW.Shared.Enums;
 using LW.Shared.SeedWork;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Build.Framework;
@@ -19,6 +21,7 @@ namespace LW.API.Controllers.Public
 {
     [Route("api/[controller]")]
     [ApiController]
+    [Authorize(Roles = $"{RoleConstant.RoleAdmin},{RoleConstant.RoleContentManager}")]
     public class ExamController : ControllerBase
     {
         private readonly IExamService _examService;
@@ -29,6 +32,7 @@ namespace LW.API.Controllers.Public
         }
 
         [HttpGet("GetAllExam")]
+        [AllowAnonymous]
         public async Task<ActionResult<ApiResult<IEnumerable<ExamDto>>>> GetAllExam(bool? status)
         {
             var result = await _examService.GetAllExam(status);
@@ -40,6 +44,7 @@ namespace LW.API.Controllers.Public
             return Ok(result);
         }
         [HttpGet("GetAllExamByType")]
+        [AllowAnonymous]
         public async Task<ActionResult<ApiResult<IEnumerable<ExamDto>>>> GetAllExamByType(EExamType type, bool? status)
         {
             var result = await _examService.GetExamByType(type, status);
@@ -52,6 +57,7 @@ namespace LW.API.Controllers.Public
         }
         
         [HttpGet("GetExamIdByTag/{id}")]
+        [AllowAnonymous]
         public async Task<ActionResult<ApiResult<IEnumerable<TagDto>>>> GetExamIdByTag(int id)
         {
             var result = await _examService.GetExamIdByTag(id);
@@ -64,6 +70,7 @@ namespace LW.API.Controllers.Public
         }
 
         [HttpGet("GetAllExamPagination")]
+        [AllowAnonymous]
         public async Task<ActionResult<ApiResult<PagedList<ExamDto>>>> GetAllExamPagination([FromQuery] SearchExamDto searchExamDto)
         {
             var result = await _examService.GetAllExamPagination(searchExamDto);
@@ -77,6 +84,7 @@ namespace LW.API.Controllers.Public
         }
 
         [HttpGet("GetExamById/{id}")]
+        [AllowAnonymous]
         public async Task<ActionResult<ApiResult<ExamDto>>> GetExamById( int id)
         {
             var result = await _examService.GetExamById(id);

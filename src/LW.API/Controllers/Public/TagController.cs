@@ -5,8 +5,10 @@ using System.Threading.Tasks;
 using LW.API.Application.Validators.TagValidatior;
 using LW.Data.Entities;
 using LW.Services.TagServices;
+using LW.Shared.Constant;
 using LW.Shared.DTOs.Tag;
 using LW.Shared.SeedWork;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Build.Framework;
@@ -16,6 +18,7 @@ namespace LW.API.Controllers.Public
 {
     [Route("api/[controller]")]
     [ApiController]
+    [Authorize(Roles = $"{RoleConstant.RoleAdmin},{RoleConstant.RoleContentManager}")]
     public class TagController : ControllerBase
     {
         private readonly ITagService _tagService;
@@ -23,7 +26,9 @@ namespace LW.API.Controllers.Public
         {
             _tagService = tagService;
         }
-         [HttpGet("GetAllTag")]
+        
+        [HttpGet("GetAllTag")]
+        [AllowAnonymous]
         public async Task<ActionResult<ApiResult<TagDto>>> GetAllTag(bool? status)
         {
             var result = await _tagService.GetAllTag(status);
@@ -36,6 +41,7 @@ namespace LW.API.Controllers.Public
         
         
         [HttpGet("GetAllTagPagination")]
+        [AllowAnonymous]
         public async Task<ActionResult<ApiResult<PagedList<TagDto>>>> GetAllTagPagination([FromQuery] SearchTagDto searchTagDto)
         {
             var result = await _tagService.GetAllTagPagination(searchTagDto);
@@ -48,6 +54,7 @@ namespace LW.API.Controllers.Public
         }
         
         [HttpGet("SearchTagPagination")]
+        [AllowAnonymous]
         public async Task<ActionResult<ApiResult<TagAllDto>>> SearchTagPagination([FromQuery] SearchAllTagDto searchAllTagDto)
         {
             var result = await _tagService.SearchTagPagination(searchAllTagDto);
@@ -59,6 +66,7 @@ namespace LW.API.Controllers.Public
         }
 
         [HttpGet("GetTagById")]
+        [AllowAnonymous]
         public async Task<ActionResult<ApiResult<TagDto>>> GetTagById(int id)
         {
             var result = await _tagService.GetTagById(id);

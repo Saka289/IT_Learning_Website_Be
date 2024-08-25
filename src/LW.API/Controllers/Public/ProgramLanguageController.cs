@@ -5,14 +5,17 @@ using System.Linq;
 using System.Threading.Tasks;
 using LW.API.Application.Validators.ProgramLanguageValidator;
 using LW.Services.ProgramLanguageServices;
+using LW.Shared.Constant;
 using LW.Shared.DTOs.ProgramLanguage;
 using LW.Shared.SeedWork;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 namespace LW.API.Controllers.Public
 {
     [Route("api/[controller]")]
     [ApiController]
+    [Authorize(Roles = $"{RoleConstant.RoleAdmin},{RoleConstant.RoleContentManager}")]
     public class ProgramLanguageController : ControllerBase
     {
         private readonly IProgramLanguageService _programLanguageService;
@@ -23,6 +26,7 @@ namespace LW.API.Controllers.Public
         }
 
         [HttpGet("GetAllProgramLanguage")]
+        [AllowAnonymous]
         public async Task<ActionResult<ApiResult<IEnumerable<ProgramLanguageDto>>>> GetAllProgramLanguage()
         {
             var result = await _programLanguageService.GetAllProgramLanguage();
@@ -35,6 +39,7 @@ namespace LW.API.Controllers.Public
         }
 
         [HttpGet("GetProgramLanguageById/{id}")]
+        [AllowAnonymous]
         public async Task<ActionResult<ApiResult<ProgramLanguageDto>>> GetProgramLanguageById(int id)
         {
             var result = await _programLanguageService.GetProgramLanguageById(id);

@@ -59,6 +59,11 @@ public class SolutionService : ISolutionService
 
             solutionList = _mapper.Map<IEnumerable<SolutionDto>>(solutionListAll);
         }
+
+        if (searchSolutionDto.Status != null)
+        {
+            solutionList = solutionList.Where(s => s.IsActive == searchSolutionDto.Status);
+        }
         
         var pagedResult = await PagedList<SolutionDto>.ToPageListAsync(solutionList.AsQueryable().BuildMock(), searchSolutionDto.PageIndex, searchSolutionDto.PageSize, searchSolutionDto.OrderBy, searchSolutionDto.IsAscending);
         return new ApiSuccessResult<PagedList<SolutionDto>>(pagedResult);

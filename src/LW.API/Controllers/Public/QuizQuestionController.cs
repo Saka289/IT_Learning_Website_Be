@@ -5,9 +5,11 @@ using System.Linq;
 using System.Threading.Tasks;
 using LW.API.Application.Validators.QuizQuestionValidator;
 using LW.Services.QuizQuestionServices;
+using LW.Shared.Constant;
 using LW.Shared.DTOs.QuizAnswer;
 using LW.Shared.DTOs.QuizQuestion;
 using LW.Shared.SeedWork;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Nest;
@@ -17,6 +19,7 @@ namespace LW.API.Controllers.Public
 {
     [Route("api/[controller]")]
     [ApiController]
+    [Authorize(Roles = $"{RoleConstant.RoleAdmin},{RoleConstant.RoleContentManager}")]
     public class QuizQuestionController : ControllerBase
     {
         private readonly IQuizQuestionService _quizQuestionService;
@@ -27,6 +30,7 @@ namespace LW.API.Controllers.Public
         }
 
         [HttpGet("GetAllQuizQuestion")]
+        [AllowAnonymous]
         public async Task<ActionResult<ApiResult<IEnumerable<QuizQuestionDto>>>> GetAllQuizQuestion(bool? status)
         {
             var result = await _quizQuestionService.GetAllQuizQuestion(status);
@@ -39,6 +43,7 @@ namespace LW.API.Controllers.Public
         }
         
         [HttpGet("GetAllQuizQuestionPagination")]
+        [AllowAnonymous]
         public async Task<ActionResult<ApiResult<PagedList<QuizQuestionDto>>>> GetAllQuizQuestionPagination([FromQuery] SearchAllQuizQuestionDto searchAllQuizQuestionDto)
         {
             var result = await _quizQuestionService.GetAllQuizQuestionPagination(searchAllQuizQuestionDto);
@@ -51,6 +56,7 @@ namespace LW.API.Controllers.Public
         }
         
         [HttpGet("GetAllQuizQuestionByQuizId")]
+        [AllowAnonymous]
         public async Task<ActionResult<ApiResult<IEnumerable<object>>>> GetAllQuizQuestionByQuizId([FromQuery] SearchQuizQuestionDto searchQuizQuestionDto)
         {
             var result = await _quizQuestionService.GetAllQuizQuestionByQuizId(searchQuizQuestionDto);
@@ -62,6 +68,7 @@ namespace LW.API.Controllers.Public
         }
         
         [HttpGet("GetQuizQuestionById/{id}")]
+        [AllowAnonymous]
         public async Task<ActionResult<ApiResult<IEnumerable<QuizQuestionDto>>>> GetQuizQuestionById([Required] int id)
         {
             var result = await _quizQuestionService.GetQuizQuestionById(id);

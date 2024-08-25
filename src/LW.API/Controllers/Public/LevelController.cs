@@ -20,6 +20,7 @@ namespace LW.API.Controllers.Public
         {
             _levelService = levelService;
         }
+        
         [HttpGet("GetAllLevel")]
         public async Task<ActionResult<ApiResult<IEnumerable<LevelDto>>>> GetAllLevel()
         {
