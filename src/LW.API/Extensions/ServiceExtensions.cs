@@ -300,7 +300,9 @@ public static class ServiceExtensions
         {
             options.AddDefaultPolicy(builder =>
             {
-                builder.WithOrigins(settings.ClientUrl).AllowAnyHeader().AllowAnyMethod()
+                builder.WithOrigins(settings.ClientUrl, "http://localhost:5173")
+                    .AllowAnyHeader()
+                    .AllowAnyMethod()
                     .WithExposedHeaders("X-Pagination");
             });
         });
