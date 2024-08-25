@@ -28,4 +28,16 @@ public class LevelService : ILevelService
         var result = _mapper.Map<IEnumerable<LevelDto>>(levels);
         return new ApiSuccessResult<IEnumerable<LevelDto>>(result);
     }
+
+    public async Task<ApiResult<LevelDto>> GetLevelById(int id)
+    {
+        var level = await _levelRepository.GetLevelById(id);
+        if (level == null)
+        {
+            return new ApiResult<LevelDto>(false, "Not found level");
+        }
+
+        var result = _mapper.Map<LevelDto>(level);
+        return new ApiResult<LevelDto>(true, result, "Get by id successfully");
+    }
 }

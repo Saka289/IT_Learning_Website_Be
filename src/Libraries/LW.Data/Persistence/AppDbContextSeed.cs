@@ -332,20 +332,21 @@ public class AppDbContextSeed
         {
             new()
             {
+                // Sách giáo khoa tin học cánh diều
                 //1
                 Code = "CD0301",
                 Title = "Sách giáo khoa tin học lớp 3 Cánh diều",
                 BookCollection = EBookCollection.CanhDieu,
                 Description =
-                    "Sách giáo khoa Tin học lớp 3 - Cánh diều là một công cụ hữu ích và phổ biến trong việc giáo dục cơ bản tại Việt Nam, dành cho học sinh ở cấp tiểu học. Cuốn sách này được thiết kế để trang bị kiến thức và kỹ năng cơ bản về máy tính và công nghệ thông tin cho học sinh, từ đó giúp các em hòa nhập tốt hơn vào môi trường giáo dục hiện đại và thế giới ngày càng kỹ thuật số. Cuốn sách gồm nhiều chủ đề được chia thành các phần và bài học cụ thể, giúp học sinh có thể dễ dàng theo dõi và tích lũy kiến thức từng bước một",
+                    "Sách giáo khoa Tin học lớp 3 - Cánh diều là một bộ sách hữu ích và phổ biến trong việc giáo dục cơ bản tại Việt Nam, dành cho học sinh ở cấp tiểu học. Cuốn sách này được thiết kế để trang bị kiến thức và kỹ năng cơ bản về máy tính và công nghệ thông tin cho học sinh, từ đó giúp các em hòa nhập tốt hơn vào môi trường giáo dục hiện đại và thế giới ngày càng kỹ thuật số. Cuốn sách gồm nhiều chủ đề được chia thành các phần và bài học cụ thể, giúp học sinh có thể dễ dàng theo dõi và tích lũy kiến thức từng bước một",
                 KeyWord = "sach giao khoa tin học lop 3 canh dieu",
                 GradeId = 1,
-                Author = "Hồ Sĩ Đàm",
+                Author = "Hồ Sĩ Đàm(Tổng chủ biên), Nguyễn Thanh Thủy(Chủ biên)",
                 PublicationYear = 2022,
                 Edition = 1,
                 TypeOfBook = EBookType.SGK,
-                Image = "https://res.cloudinary.com/itsupport18/image/upload/v1724503824/DocumentImage/IMAGE-e1a2d5c6-e4dc-4563-8d81-10799747eb0b.png",
-                PublicId = "DocumentImage/IMAGE-e1a2d5c6-e4dc-4563-8d81-10799747eb0b",
+                Image = "https://res.cloudinary.com/itsupport18/image/upload/v1724549802/DocumentImage/IMAGE-ac73f011-a7f8-4c28-8865-1cdb5e5599a0.png",
+                PublicId = "DocumentImage/IMAGE-ac73f011-a7f8-4c28-8865-1cdb5e5599a0",
                 IsActive = true,
             },
             new()
@@ -358,12 +359,12 @@ public class AppDbContextSeed
                     "Sách giáo khoa Tin học lớp 4 Cánh diều được biên soạn theo chương trình giáo dục phổ thông 2018, với mục tiêu giúp học sinh hình thành và phát triển năng lực sử dụng máy tính và công nghệ thông tin một cách hiệu quả.",
                 KeyWord = "sach giao khoa tin học lop 4 canh dieu",
                 GradeId = 2,
-                Author = "Hồ Sĩ Đàm, Hồ Cẩm Hà",
+                Author = "Hồ Sĩ Đàm(Tổng chủ biên), Nguyễn THanh Thủy (Chủ biên)",
                 PublicationYear = 2022,
                 Edition = 1,
                 TypeOfBook = EBookType.SGK,
-                Image = "https://res.cloudinary.com/itsupport18/image/upload/v1724503824/DocumentImage/IMAGE-e1a2d5c6-e4dc-4563-8d81-10799747eb0b.png",
-                PublicId = "DocumentImage/IMAGE-e1a2d5c6-e4dc-4563-8d81-10799747eb0b",
+                Image = "https://res.cloudinary.com/itsupport18/image/upload/v1724549814/DocumentImage/IMAGE-2f0a9f34-e12a-4033-8705-f7ad66b0bfa4.png",
+                PublicId = "DocumentImage/IMAGE-2f0a9f34-e12a-4033-8705-f7ad66b0bfa4",
                 IsActive = true,
             },
             new()
@@ -376,12 +377,12 @@ public class AppDbContextSeed
                     "Sách giáo khoa Tin học lớp 5 Cánh diều được biên soạn theo chương trình giáo dục phổ thông 2018, với mục tiêu giúp học sinh hình thành và phát triển năng lực sử dụng máy tính và công nghệ thông tin một cách hiệu quả.",
                 KeyWord = "sach giao khoa tin học lop 5 canh dieu",
                 GradeId = 3,
-                Author = "Hồ Sĩ Đàm, Hồ Cẩm Hà",
+                Author = "Hồ Sĩ Đàm (Tổng chủ biên), Nguyễn THanh Thủy (Chủ biên)",
                 PublicationYear = 2022,
                 Edition = 1,
                 TypeOfBook = EBookType.SGK,
-                Image = "https://res.cloudinary.com/itsupport18/image/upload/v1724503824/DocumentImage/IMAGE-e1a2d5c6-e4dc-4563-8d81-10799747eb0b.png",
-                PublicId = "DocumentImage/IMAGE-e1a2d5c6-e4dc-4563-8d81-10799747eb0b",
+                Image = "https://res.cloudinary.com/itsupport18/image/upload/v1724549827/DocumentImage/IMAGE-cce848ee-a4db-4a30-bed1-6a69554891d7.png",
+                PublicId = "DocumentImage/IMAGE-cce848ee-a4db-4a30-bed1-6a69554891d7",
                 IsActive = true,
             },
             new()
@@ -394,12 +395,12 @@ public class AppDbContextSeed
                     "Sách giáo khoa Tin học lớp 6 Cánh diều được biên soạn theo chương trình giáo dục phổ thông 2018, với mục tiêu giúp học sinh hình thành và phát triển năng lực sử dụng máy tính và công nghệ thông tin một cách hiệu quả.",
                 KeyWord = "sach giao khoa tin học lop 6 canh dieu",
                 GradeId = 4,
-                Author = "Hồ Sĩ Đàm, Hồ Cẩm Hà",
+                Author = "Hồ Sĩ Đàm (Tổng chủ biên), Nguyễn Thanh Thủy (Chủ biên)",
                 PublicationYear = 2022,
                 Edition = 1,
                 TypeOfBook = EBookType.SGK,
-                Image = "https://res.cloudinary.com/itsupport18/image/upload/v1724503824/DocumentImage/IMAGE-e1a2d5c6-e4dc-4563-8d81-10799747eb0b.png",
-                PublicId = "DocumentImage/IMAGE-e1a2d5c6-e4dc-4563-8d81-10799747eb0b",
+                Image = "https://res.cloudinary.com/itsupport18/image/upload/v1724549845/DocumentImage/IMAGE-d62b50ea-ecc7-435c-9d5b-f971a6abc21c.png",
+                PublicId = "DocumentImage/IMAGE-d62b50ea-ecc7-435c-9d5b-f971a6abc21c",
                 IsActive = true,
             },
             new()
@@ -412,12 +413,12 @@ public class AppDbContextSeed
                     "Sách giáo khoa Tin học lớp 7 Cánh diều được biên soạn theo chương trình giáo dục phổ thông 2018, với mục tiêu giúp học sinh hình thành và phát triển năng lực sử dụng máy tính và công nghệ thông tin một cách hiệu quả.",
                 KeyWord = "sach giao khoa tin học lop 7 canh dieu",
                 GradeId = 5,
-                Author = "Hồ Sĩ Đàm, Hồ Cẩm Hà",
+                Author = "Hồ Sĩ Đàm (Tổng chủ biên), Nguyễn Thanh Thủy (Chủ biên)",
                 PublicationYear = 2022,
                 Edition = 1,
                 TypeOfBook = EBookType.SGK,
-                Image = "https://res.cloudinary.com/itsupport18/image/upload/v1724503824/DocumentImage/IMAGE-e1a2d5c6-e4dc-4563-8d81-10799747eb0b.png",
-                PublicId = "DocumentImage/IMAGE-e1a2d5c6-e4dc-4563-8d81-10799747eb0b",
+                Image = "https://res.cloudinary.com/itsupport18/image/upload/v1724549961/DocumentImage/IMAGE-7737648d-65b4-4728-8908-ae6c6778ad47.jpg",
+                PublicId = "DocumentImage/IMAGE-7737648d-65b4-4728-8908-ae6c6778ad47",
                 IsActive = true,
             },
             new()
@@ -430,18 +431,18 @@ public class AppDbContextSeed
                     "Sách giáo khoa Tin học lớp 8 Cánh diều được biên soạn theo chương trình giáo dục phổ thông 2018, với mục tiêu giúp học sinh hình thành và phát triển năng lực sử dụng máy tính và công nghệ thông tin một cách hiệu quả.",
                 KeyWord = "sach giao khoa tin học lop 8 canh dieu",
                 GradeId = 6,
-                Author = "Hồ Sĩ Đàm, Hồ Cẩm Hà",
+                Author = "Hồ Sĩ Đàm (Tổng chủ biên), Nguyễn Thanh Thủy (Chủ biên)",
                 PublicationYear = 2022,
                 Edition = 1,
                 TypeOfBook = EBookType.SGK,
-                Image = "https://res.cloudinary.com/itsupport18/image/upload/v1724503824/DocumentImage/IMAGE-e1a2d5c6-e4dc-4563-8d81-10799747eb0b.png",
-                PublicId = "DocumentImage/IMAGE-e1a2d5c6-e4dc-4563-8d81-10799747eb0b",
+                Image = "https://res.cloudinary.com/itsupport18/image/upload/v1724549980/DocumentImage/IMAGE-e858c002-e115-41df-8ef3-02cf0b915809.png",
+                PublicId = "DocumentImage/IMAGE-e858c002-e115-41df-8ef3-02cf0b915809",
                 IsActive = true,
             },
             new()
             {
                 //7
-                Code = "CD0606",
+                Code = "CD0607",
                 Title = "Sách giáo khoa tin học lớp 9 Cánh diều",
                 BookCollection = EBookCollection.CanhDieu,
                 Description =
@@ -452,8 +453,243 @@ public class AppDbContextSeed
                 PublicationYear = 2022,
                 Edition = 1,
                 TypeOfBook = EBookType.SGK,
-                Image = "https://res.cloudinary.com/itsupport18/image/upload/v1724503824/DocumentImage/IMAGE-e1a2d5c6-e4dc-4563-8d81-10799747eb0b.png",
-                PublicId = "DocumentImage/IMAGE-e1a2d5c6-e4dc-4563-8d81-10799747eb0b",
+                Image = "https://res.cloudinary.com/itsupport18/image/upload/v1724549995/DocumentImage/IMAGE-2d6cf316-19f7-4496-a79e-e74729ff320e.png",
+                PublicId = "DocumentImage/IMAGE-2d6cf316-19f7-4496-a79e-e74729ff320e",
+                IsActive = true,
+            },
+            new()
+            {
+                //8
+                Code = "CD06010",
+                Title = "Sách giáo khoa tin học lớp 10 Cánh diều",
+                BookCollection = EBookCollection.CanhDieu,
+                Description =
+                    "Sách giáo khoa Tin học lớp 10 Cánh diều được biên soạn theo chương trình giáo dục phổ thông 2018, với mục tiêu giúp học sinh hình thành và phát triển năng lực sử dụng máy tính và công nghệ thông tin một cách hiệu quả.",
+                KeyWord = "sach giao khoa tin học lop 10 canh dieu",
+                GradeId = 8,
+                Author = "Hồ Sĩ Đàm, Hồ Cẩm Hà",
+                PublicationYear = 2022,
+                Edition = 1,
+                TypeOfBook = EBookType.SGK,
+                Image = "https://res.cloudinary.com/itsupport18/image/upload/v1724559457/DocumentImage/IMAGE-80d0b547-73e2-4b4e-b20f-d977ed8d3716.jpg",
+                PublicId = "DocumentImage/IMAGE-80d0b547-73e2-4b4e-b20f-d977ed8d3716",
+                IsActive = true,
+            },
+            new()
+            {
+                //9
+                Code = "CD06011",
+                Title = "Sách giáo khoa tin học lớp 11 Cánh diều",
+                BookCollection = EBookCollection.CanhDieu,
+                Description =
+                    "Sách giáo khoa Tin học lớp 11 Cánh diều được biên soạn theo chương trình giáo dục phổ thông 2018, với mục tiêu giúp học sinh hình thành và phát triển năng lực sử dụng máy tính và công nghệ thông tin một cách hiệu quả.",
+                KeyWord = "sach giao khoa tin học lop 11 canh dieu",
+                GradeId = 9,
+                Author = "Hồ Sĩ Đàm, Hồ Cẩm Hà",
+                PublicationYear = 2022,
+                Edition = 1,
+                TypeOfBook = EBookType.SGK,
+                Image = "https://res.cloudinary.com/itsupport18/image/upload/v1724559513/DocumentImage/IMAGE-67f09b37-fae0-427d-b188-5038e05e8bcf.png",
+                PublicId = "DocumentImage/IMAGE-67f09b37-fae0-427d-b188-5038e05e8bcf",
+                IsActive = true,
+            },
+            new()
+            {
+                //10
+                Code = "CD06012",
+                Title = "Sách giáo khoa tin học lớp 12 Cánh diều",
+                BookCollection = EBookCollection.CanhDieu,
+                Description =
+                    "Sách giáo khoa Tin học lớp 12 Cánh diều được biên soạn theo chương trình giáo dục phổ thông 2018, với mục tiêu giúp học sinh hình thành và phát triển năng lực sử dụng máy tính và công nghệ thông tin một cách hiệu quả.",
+                KeyWord = "sach giao khoa tin học lop 12 canh dieu",
+                GradeId = 10,
+                Author = "Hồ Sĩ Đàm, Hồ Cẩm Hà",
+                PublicationYear = 2022,
+                Edition = 1,
+                TypeOfBook = EBookType.SGK,
+                Image = "https://res.cloudinary.com/itsupport18/image/upload/v1724559574/DocumentImage/IMAGE-ba805d3e-6142-4781-a958-bdd1dfc35d75.png",
+                PublicId = "DocumentImage/IMAGE-ba805d3e-6142-4781-a958-bdd1dfc35d75",
+                IsActive = true,
+            },
+            // Sách giáo khoa tin học Kết nối tri thức
+            new()
+            {
+                //11
+                Code = "KNTT0301",
+                Title = "Sách giáo khoa tin học lớp 3 Kết nối tri thức",
+                BookCollection = EBookCollection.KetNoiTriThuc,
+                Description =
+                    "Sách giáo khoa Tin học lớp 3 - Kết Nối Tri Thức là một bộ sách hữu ích và phổ biến trong việc giáo dục cơ bản tại Việt Nam, dành cho học sinh ở cấp tiểu học. Cuốn sách này được thiết kế để trang bị kiến thức và kỹ năng cơ bản về máy tính và công nghệ thông tin cho học sinh, từ đó giúp các em hòa nhập tốt hơn vào môi trường giáo dục hiện đại và thế giới ngày càng kỹ thuật số. Cuốn sách gồm nhiều chủ đề được chia thành các phần và bài học cụ thể, giúp học sinh có thể dễ dàng theo dõi và tích lũy kiến thức từng bước một",
+                KeyWord = "sach giao khoa tin học lop 3 ket noi tri thuc",
+                GradeId = 1,
+                Author = "Nguyễn Chí Công (Tổng chủ biên), Hoàng Thị Mai (Chủ biên)",
+                PublicationYear = 2022,
+                Edition = 1,
+                TypeOfBook = EBookType.SGK,
+                Image = "https://res.cloudinary.com/itsupport18/image/upload/v1724561682/DocumentImage/IMAGE-a25df04b-3f46-4815-9e14-4ce6058ee917.png",
+                PublicId = "DocumentImage/IMAGE-a25df04b-3f46-4815-9e14-4ce6058ee917",
+                IsActive = true,
+            },
+            new()
+            {
+                //12
+                Code = "KNTT0302",
+                Title = "Sách giáo khoa tin học lớp 4 Kết nối tri thức",
+                BookCollection = EBookCollection.KetNoiTriThuc,
+                Description =
+                    "Sách giáo khoa Tin học lớp 4 - Kết Nối Tri Thức là một bộ sách hữu ích và phổ biến trong việc giáo dục cơ bản tại Việt Nam, dành cho học sinh ở cấp tiểu học. Cuốn sách này được thiết kế để trang bị kiến thức và kỹ năng cơ bản về máy tính và công nghệ thông tin cho học sinh, từ đó giúp các em hòa nhập tốt hơn vào môi trường giáo dục hiện đại và thế giới ngày càng kỹ thuật số. Cuốn sách gồm nhiều chủ đề được chia thành các phần và bài học cụ thể, giúp học sinh có thể dễ dàng theo dõi và tích lũy kiến thức từng bước một",
+                KeyWord = "sach giao khoa tin học lop 4 ket noi tri thuc",
+                GradeId = 2,
+                Author = "Nguyễn Chí Công (Tổng chủ biên), Hoàng Thị Mai (Chủ biên)",
+                PublicationYear = 2022,
+                Edition = 1,
+                TypeOfBook = EBookType.SGK,
+                Image = "https://res.cloudinary.com/itsupport18/image/upload/v1724561777/DocumentImage/IMAGE-15603d5b-716c-476b-af19-172bd1a46986.png",
+                PublicId = "DocumentImage/IMAGE-15603d5b-716c-476b-af19-172bd1a46986",
+                IsActive = true,
+            },
+            new()
+            {
+                //13
+                Code = "KNTT0303",
+                Title = "Sách giáo khoa tin học lớp 5 Kết nối tri thức",
+                BookCollection = EBookCollection.KetNoiTriThuc,
+                Description =
+                    "Sách giáo khoa Tin học lớp 5 - Kết Nối Tri Thức là một bộ sách hữu ích và phổ biến trong việc giáo dục cơ bản tại Việt Nam, dành cho học sinh ở cấp tiểu học. Cuốn sách này được thiết kế để trang bị kiến thức và kỹ năng cơ bản về máy tính và công nghệ thông tin cho học sinh, từ đó giúp các em hòa nhập tốt hơn vào môi trường giáo dục hiện đại và thế giới ngày càng kỹ thuật số. Cuốn sách gồm nhiều chủ đề được chia thành các phần và bài học cụ thể, giúp học sinh có thể dễ dàng theo dõi và tích lũy kiến thức từng bước một",
+                KeyWord = "sach giao khoa tin học lop 5 ket noi tri thuc",
+                GradeId = 3,
+                Author = "Nguyễn Chí Công (Tổng chủ biên), Hoàng Thị Mai (Chủ biên)",
+                PublicationYear = 2022,
+                Edition = 1,
+                TypeOfBook = EBookType.SGK,
+                Image = "https://res.cloudinary.com/itsupport18/image/upload/v1724561875/DocumentImage/IMAGE-0bf338b1-4d72-481c-88e8-3cbe78f8ecf0.png",
+                PublicId = "DocumentImage/IMAGE-0bf338b1-4d72-481c-88e8-3cbe78f8ecf0",
+                IsActive = true,
+            },
+            new()
+            {
+                //14
+                Code = "KNTT0304",
+                Title = "Sách giáo khoa tin học lớp 6 Kết nối tri thức",
+                BookCollection = EBookCollection.KetNoiTriThuc,
+                Description =
+                    "Sách giáo khoa Tin học lớp 6 - Kết Nối Tri Thức là một bộ sách hữu ích và phổ biến trong việc giáo dục cơ bản tại Việt Nam, dành cho học sinh ở cấp tiểu học. Cuốn sách này được thiết kế để trang bị kiến thức và kỹ năng cơ bản về máy tính và công nghệ thông tin cho học sinh, từ đó giúp các em hòa nhập tốt hơn vào môi trường giáo dục hiện đại và thế giới ngày càng kỹ thuật số. Cuốn sách gồm nhiều chủ đề được chia thành các phần và bài học cụ thể, giúp học sinh có thể dễ dàng theo dõi và tích lũy kiến thức từng bước một",
+                KeyWord = "sach giao khoa tin học lop 6 ket noi tri thuc",
+                GradeId = 4,
+                Author = "Nguyễn Chí Công (Tổng chủ biên), Hoàng Thị Mai (Chủ biên)",
+                PublicationYear = 2022,
+                Edition = 1,
+                TypeOfBook = EBookType.SGK,
+                Image = "https://res.cloudinary.com/itsupport18/image/upload/v1724562065/DocumentImage/IMAGE-f540ec77-1eb7-4c81-89f6-0c7d9cf975f3.png",
+                PublicId = "DocumentImage/IMAGE-f540ec77-1eb7-4c81-89f6-0c7d9cf975f3",
+                IsActive = true,
+            },
+            new()
+            {
+                //15
+                Code = "KNTT0305",
+                Title = "Sách giáo khoa tin học lớp 7 Kết nối tri thức",
+                BookCollection = EBookCollection.KetNoiTriThuc,
+                Description =
+                    "Sách giáo khoa Tin học lớp 7 - Kết Nối Tri Thức là một bộ sách hữu ích và phổ biến trong việc giáo dục cơ bản tại Việt Nam, dành cho học sinh ở cấp tiểu học. Cuốn sách này được thiết kế để trang bị kiến thức và kỹ năng cơ bản về máy tính và công nghệ thông tin cho học sinh, từ đó giúp các em hòa nhập tốt hơn vào môi trường giáo dục hiện đại và thế giới ngày càng kỹ thuật số. Cuốn sách gồm nhiều chủ đề được chia thành các phần và bài học cụ thể, giúp học sinh có thể dễ dàng theo dõi và tích lũy kiến thức từng bước một",
+                KeyWord = "sach giao khoa tin học lop 7 ket noi tri thuc",
+                GradeId = 5,
+                Author = "Nguyễn Chí Công (Tổng chủ biên), Hoàng Thị Mai (Chủ biên)",
+                PublicationYear = 2022,
+                Edition = 1,
+                TypeOfBook = EBookType.SGK,
+                Image = "https://res.cloudinary.com/itsupport18/image/upload/v1724562201/DocumentImage/IMAGE-392e0b12-05b9-4fdf-87dc-da9792304d41.jpg",
+                PublicId = "DocumentImage/IMAGE-392e0b12-05b9-4fdf-87dc-da9792304d41",
+                IsActive = true,
+            },
+            new()
+            {
+                //16
+                Code = "KNTT0306",
+                Title = "Sách giáo khoa tin học lớp 8 Kết nối tri thức",
+                BookCollection = EBookCollection.KetNoiTriThuc,
+                Description =
+                    "Sách giáo khoa Tin học lớp 8 - Kết Nối Tri Thức là một bộ sách hữu ích và phổ biến trong việc giáo dục cơ bản tại Việt Nam, dành cho học sinh ở cấp tiểu học. Cuốn sách này được thiết kế để trang bị kiến thức và kỹ năng cơ bản về máy tính và công nghệ thông tin cho học sinh, từ đó giúp các em hòa nhập tốt hơn vào môi trường giáo dục hiện đại và thế giới ngày càng kỹ thuật số. Cuốn sách gồm nhiều chủ đề được chia thành các phần và bài học cụ thể, giúp học sinh có thể dễ dàng theo dõi và tích lũy kiến thức từng bước một",
+                KeyWord = "sach giao khoa tin học lop 8 ket noi tri thuc",
+                GradeId = 6,
+                Author = "Nguyễn Chí Công (Tổng chủ biên), Hoàng Thị Mai (Chủ biên)",
+                PublicationYear = 2022,
+                Edition = 1,
+                TypeOfBook = EBookType.SGK,
+                Image = "https://res.cloudinary.com/itsupport18/image/upload/v1724574421/DocumentImage/IMAGE-9ee21f56-d3b5-44ad-abe1-ef4ca33cb43e.png",
+                PublicId = "DocumentImage/IMAGE-9ee21f56-d3b5-44ad-abe1-ef4ca33cb43e",
+                IsActive = true,
+            },
+            new()
+            {
+                //17
+                Code = "KNTT0307",
+                Title = "Sách giáo khoa tin học lớp 9 Kết nối tri thức",
+                BookCollection = EBookCollection.KetNoiTriThuc,
+                Description =
+                    "Sách giáo khoa Tin học lớp 9 - Kết Nối Tri Thức là một bộ sách hữu ích và phổ biến trong việc giáo dục cơ bản tại Việt Nam, dành cho học sinh ở cấp tiểu học. Cuốn sách này được thiết kế để trang bị kiến thức và kỹ năng cơ bản về máy tính và công nghệ thông tin cho học sinh, từ đó giúp các em hòa nhập tốt hơn vào môi trường giáo dục hiện đại và thế giới ngày càng kỹ thuật số. Cuốn sách gồm nhiều chủ đề được chia thành các phần và bài học cụ thể, giúp học sinh có thể dễ dàng theo dõi và tích lũy kiến thức từng bước một",
+                KeyWord = "sach giao khoa tin học lop 9 ket noi tri thuc",
+                GradeId = 7,
+                Author = "Nguyễn Chí Công (Tổng chủ biên), Hoàng Thị Mai (Chủ biên)",
+                PublicationYear = 2022,
+                Edition = 1,
+                TypeOfBook = EBookType.SGK,
+                Image = "https://res.cloudinary.com/itsupport18/image/upload/v1724574480/DocumentImage/IMAGE-05fecbfb-9d83-4b1f-b35f-85f1ab494d4a.png",
+                PublicId = "DocumentImage/IMAGE-05fecbfb-9d83-4b1f-b35f-85f1ab494d4a",
+                IsActive = true,
+            },
+            new()
+            {
+                //18
+                Code = "KNTT0308",
+                Title = "Sách giáo khoa tin học lớp 10 Kết nối tri thức",
+                BookCollection = EBookCollection.KetNoiTriThuc,
+                Description =
+                    "Sách giáo khoa Tin học lớp 10 - Kết Nối Tri Thức là một bộ sách hữu ích và phổ biến trong việc giáo dục cơ bản tại Việt Nam, dành cho học sinh ở cấp tiểu học. Cuốn sách này được thiết kế để trang bị kiến thức và kỹ năng cơ bản về máy tính và công nghệ thông tin cho học sinh, từ đó giúp các em hòa nhập tốt hơn vào môi trường giáo dục hiện đại và thế giới ngày càng kỹ thuật số. Cuốn sách gồm nhiều chủ đề được chia thành các phần và bài học cụ thể, giúp học sinh có thể dễ dàng theo dõi và tích lũy kiến thức từng bước một",
+                KeyWord = "sach giao khoa tin học lop 10 ket noi tri thuc",
+                GradeId = 8,
+                Author = "Nguyễn Chí Công (Tổng chủ biên), Hoàng Thị Mai (Chủ biên)",
+                PublicationYear = 2022,
+                Edition = 1,
+                TypeOfBook = EBookType.SGK,
+                Image = "https://res.cloudinary.com/itsupport18/image/upload/v1724574524/DocumentImage/IMAGE-48e7dd2c-cbc1-4710-9215-6056da6fb386.png",
+                PublicId = "DocumentImage/IMAGE-48e7dd2c-cbc1-4710-9215-6056da6fb386",
+                IsActive = true,
+            },
+            new()
+            {
+                //19
+                Code = "KNTT0309",
+                Title = "Sách giáo khoa tin học lớp 11 Kết nối tri thức",
+                BookCollection = EBookCollection.KetNoiTriThuc,
+                Description =
+                    "Sách giáo khoa Tin học lớp 11 - Kết Nối Tri Thức là một bộ sách hữu ích và phổ biến trong việc giáo dục cơ bản tại Việt Nam, dành cho học sinh ở cấp tiểu học. Cuốn sách này được thiết kế để trang bị kiến thức và kỹ năng cơ bản về máy tính và công nghệ thông tin cho học sinh, từ đó giúp các em hòa nhập tốt hơn vào môi trường giáo dục hiện đại và thế giới ngày càng kỹ thuật số. Cuốn sách gồm nhiều chủ đề được chia thành các phần và bài học cụ thể, giúp học sinh có thể dễ dàng theo dõi và tích lũy kiến thức từng bước một",
+                KeyWord = "sach giao khoa tin học lop 11 ket noi tri thuc",
+                GradeId = 9,
+                Author = "Nguyễn Chí Công (Tổng chủ biên), Hoàng Thị Mai (Chủ biên)",
+                PublicationYear = 2022,
+                Edition = 1,
+                TypeOfBook = EBookType.SGK,
+                Image = "https://res.cloudinary.com/itsupport18/image/upload/v1724574582/DocumentImage/IMAGE-3f96bd0b-5d53-409a-98a9-b6f7de8d60c4.png",
+                PublicId = "DocumentImage/IMAGE-3f96bd0b-5d53-409a-98a9-b6f7de8d60c4",
+                IsActive = true,
+            },
+            new()
+            {
+                //20
+                Code = "KNTT03010",
+                Title = "Sách giáo khoa tin học lớp 12 Kết nối tri thức",
+                BookCollection = EBookCollection.KetNoiTriThuc,
+                Description =
+                    "Sách giáo khoa Tin học lớp 12 - Kết Nối Tri Thức là một bộ sách hữu ích và phổ biến trong việc giáo dục cơ bản tại Việt Nam, dành cho học sinh ở cấp tiểu học. Cuốn sách này được thiết kế để trang bị kiến thức và kỹ năng cơ bản về máy tính và công nghệ thông tin cho học sinh, từ đó giúp các em hòa nhập tốt hơn vào môi trường giáo dục hiện đại và thế giới ngày càng kỹ thuật số. Cuốn sách gồm nhiều chủ đề được chia thành các phần và bài học cụ thể, giúp học sinh có thể dễ dàng theo dõi và tích lũy kiến thức từng bước một",
+                KeyWord = "sach giao khoa tin học lop 12 ket noi tri thuc",
+                GradeId = 10,
+                Author = "Nguyễn Chí Công (Tổng chủ biên), Hoàng Thị Mai (Chủ biên)",
+                PublicationYear = 2022,
+                Edition = 1,
+                TypeOfBook = EBookType.SGK,
+                Image = "https://res.cloudinary.com/itsupport18/image/upload/v1724574629/DocumentImage/IMAGE-96cfdf02-bde4-412c-921c-f6addb7a1f90.png",
+                PublicId = "DocumentImage/IMAGE-96cfdf02-bde4-412c-921c-f6addb7a1f90",
                 IsActive = true,
             },
         };

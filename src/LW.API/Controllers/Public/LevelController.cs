@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.ComponentModel.DataAnnotations;
 using System.Linq;
 using System.Threading.Tasks;
 using LW.Services.LevelServices;
@@ -24,6 +25,17 @@ namespace LW.API.Controllers.Public
         public async Task<ActionResult<ApiResult<IEnumerable<LevelDto>>>> GetAllLevel()
         {
             var result = await _levelService.GetAllLevel();
+            if (!result.IsSucceeded)
+            {
+                return NotFound(result);
+            }
+
+            return Ok(result);
+        }
+        [HttpGet("GetLevelById")]
+        public async Task<ActionResult<ApiResult<LevelDto>>> GetLevelById([Required] int id)
+        {
+            var result = await _levelService.GetLevelById(id);
             if (!result.IsSucceeded)
             {
                 return NotFound(result);
