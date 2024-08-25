@@ -80,7 +80,8 @@ public class QuizQuestionService : IQuizQuestionService
         return new ApiSuccessResult<IEnumerable<QuizQuestionDto>>(result);
     }
 
-    public async Task<ApiResult<PagedList<QuizQuestionDto>>> GetAllQuizQuestionPagination(SearchAllQuizQuestionDto searchAllQuizQuestionDto)
+    public async Task<ApiResult<PagedList<QuizQuestionDto>>> GetAllQuizQuestionPagination(
+        SearchAllQuizQuestionDto searchAllQuizQuestionDto)
     {
         IEnumerable<QuizQuestionDto> quizQuestionList;
         if (!string.IsNullOrEmpty(searchAllQuizQuestionDto.Value))
@@ -108,7 +109,7 @@ public class QuizQuestionService : IQuizQuestionService
 
             quizQuestionList = _mapper.Map<IEnumerable<QuizQuestionDto>>(quizQuestionListAll);
         }
-        
+
         if (searchAllQuizQuestionDto.Status != null)
         {
             quizQuestionList = quizQuestionList.Where(q => q.IsActive == searchAllQuizQuestionDto.Status);
@@ -116,7 +117,8 @@ public class QuizQuestionService : IQuizQuestionService
 
         if (searchAllQuizQuestionDto.QuizId > 0)
         {
-            quizQuestionList = quizQuestionList.Where(q => q.QuizQuestionRelations.Any(q => q.QuizId == searchAllQuizQuestionDto.QuizId));
+            quizQuestionList = quizQuestionList.Where(q =>
+                q.QuizQuestionRelations.Any(q => q.QuizId == searchAllQuizQuestionDto.QuizId));
         }
 
         if (searchAllQuizQuestionDto.Level > 0)
@@ -131,7 +133,8 @@ public class QuizQuestionService : IQuizQuestionService
         return new ApiSuccessResult<PagedList<QuizQuestionDto>>(pagedResult);
     }
 
-    public async Task<ApiResult<IEnumerable<object>>> GetAllQuizQuestionByQuizId(SearchQuizQuestionDto searchQuizQuestionDto)
+    public async Task<ApiResult<IEnumerable<object>>> GetAllQuizQuestionByQuizId(
+        SearchQuizQuestionDto searchQuizQuestionDto)
     {
         var quiz = await _quizRepository.GetQuizById(Convert.ToInt32(searchQuizQuestionDto.QuizId));
         if (quiz is null)
@@ -166,7 +169,7 @@ public class QuizQuestionService : IQuizQuestionService
 
             quizQuestionList = _mapper.Map<IEnumerable<QuizQuestionDto>>(quizQuestionListAll);
         }
-        
+
         if (searchQuizQuestionDto.Status != null)
         {
             quizQuestionList = quizQuestionList.Where(q => q.IsActive == searchQuizQuestionDto.Status);
@@ -244,9 +247,7 @@ public class QuizQuestionService : IQuizQuestionService
 
         var quizQuestionEntity = _mapper.Map<QuizQuestion>(quizQuestionCreateDto);
 
-        var listQuizQuestion = (quizQuestionCreateDto.QuizId > 0)
-            ? await _quizQuestionRepository.GetAllQuizQuestionByQuizId(quizQuestionCreateDto.QuizId)
-            : await _quizQuestionRepository.GetAllQuizQuestion();
+        var listQuizQuestion = (quizQuestionCreateDto.QuizId > 0) ? await _quizQuestionRepository.GetAllQuizQuestionByQuizId(quizQuestionCreateDto.QuizId) : await _quizQuestionRepository.GetAllQuizQuestion();
         var numberHash = FindDuplicateQuestion(listQuizQuestion, quizQuestionEntity);
         if (numberHash == 0)
         {
@@ -265,8 +266,7 @@ public class QuizQuestionService : IQuizQuestionService
         quizQuestionEntity.HashQuestion = numberHash;
         if (quizQuestionCreateDto.Image != null && quizQuestionCreateDto.Image.Length > 0)
         {
-            var filePath = await _cloudinaryService.CreateImageAsync(quizQuestionCreateDto.Image,
-                CloudinaryConstant.FolderQuestionImage);
+            var filePath = await _cloudinaryService.CreateImageAsync(quizQuestionCreateDto.Image, CloudinaryConstant.FolderQuestionImage);
             quizQuestionEntity.Image = filePath.Url;
             quizQuestionEntity.PublicId = filePath.PublicId;
         }
@@ -304,7 +304,7 @@ public class QuizQuestionService : IQuizQuestionService
 
                 break;
             case ETypeQuestion.QuestionMultiChoice:
-                if (countAnswer != 6 || countAnswerTrue < 1)
+                if (countAnswer < 6 || countAnswerTrue < 1)
                 {
                     return new ApiResult<QuizQuestionDto>(false,
                         "Question is six answer and more than 1 correct answer !!!");
@@ -316,8 +316,7 @@ public class QuizQuestionService : IQuizQuestionService
         var modelQuestion = _mapper.Map(quizQuestionUpdateDto, quizQuestionEntity);
 
         var listQuizQuestion = await _quizQuestionRepository.GetAllQuizQuestion();
-        var numberHash = FindDuplicateQuestion(listQuizQuestion.Where(q => q.Id != quizQuestionUpdateDto.Id),
-            quizQuestionEntity);
+        var numberHash = FindDuplicateQuestion(listQuizQuestion.Where(q => q.Id != quizQuestionUpdateDto.Id), quizQuestionEntity);
         if (numberHash == 0)
         {
             return new ApiResult<QuizQuestionDto>(false, "Question is duplicate !!!");
@@ -326,19 +325,17 @@ public class QuizQuestionService : IQuizQuestionService
         var quizQuestion = await _quizQuestionRepository.GetQuizQuestionById(quizQuestionUpdateDto.Id);
         if (quizQuestionUpdateDto.Image != null && quizQuestionUpdateDto.Image.Length > 0)
         {
-            var filePath =
-                await _cloudinaryService.UpdateImageAsync(quizQuestionEntity.PublicId, quizQuestionUpdateDto.Image);
+            var filePath = await _cloudinaryService.UpdateImageAsync(quizQuestionEntity.PublicId, quizQuestionUpdateDto.Image);
             quizQuestionEntity.Image = filePath.Url;
             quizQuestionEntity.PublicId = filePath.PublicId;
         }
 
         modelQuestion.HashQuestion = numberHash;
-        modelQuestion.QuizQuestionRelations = quizQuestion.QuizQuestionRelations;
+        modelQuestion.QuizQuestionRelations = quizQuestion!.QuizQuestionRelations;
         modelQuestion.KeyWord = quizQuestionUpdateDto.Content.RemoveDiacritics();
         modelQuestion.Image = quizQuestion.Image;
         modelQuestion.PublicId = quizQuestion.PublicId;
-        var quizQuestionUpdate = await _quizQuestionRepository.UpdateQuizQuestion(modelQuestion);
-        if (quizQuestion.Type.Equals(quizQuestionUpdateDto.Type))
+        if (quizQuestion.Type.Equals(quizQuestionUpdateDto.Type) && countAnswer == quizQuestion.QuizAnswers.Count)
         {
             foreach (var item in quizQuestionUpdateDto.QuizAnswers)
             {
@@ -359,19 +356,23 @@ public class QuizQuestionService : IQuizQuestionService
             {
                 await _quizAnswerRepository.DeleteRangeAnswer(quizAnswers);
                 var quizAnswer = _mapper.Map<IEnumerable<QuizAnswer>>(quizQuestionUpdateDto.QuizAnswers);
+                foreach (var answer in quizAnswer)
+                {
+                    answer.QuizQuestionId = quizQuestionUpdateDto.Id;
+                }
+
                 await _quizAnswerRepository.CreateRangeQuizAnswer(quizAnswer);
             }
         }
 
+        var quizQuestionUpdate = await _quizQuestionRepository.UpdateQuizQuestion(modelQuestion);
         quizQuestionUpdate = await _quizQuestionRepository.GetQuizQuestionById(quizQuestionUpdateDto.Id);
         var result = _mapper.Map<QuizQuestionDto>(quizQuestionUpdate);
-        await _elasticSearchService.UpdateDocumentAsync(ElasticConstant.ElasticQuizQuestion, result,
-            quizQuestionUpdateDto.Id);
+        await _elasticSearchService.UpdateDocumentAsync(ElasticConstant.ElasticQuizQuestion, result, quizQuestionUpdateDto.Id);
         return new ApiSuccessResult<QuizQuestionDto>(result);
     }
 
-    public async Task<ApiResult<bool>> CreateRangeQuizQuestion(
-        IEnumerable<QuizQuestionCreateDto> quizQuestionsCreateDto)
+    public async Task<ApiResult<bool>> CreateRangeQuizQuestion(IEnumerable<QuizQuestionCreateDto> quizQuestionsCreateDto)
     {
         foreach (var item in quizQuestionsCreateDto)
         {
@@ -396,7 +397,8 @@ public class QuizQuestionService : IQuizQuestionService
                 case ETypeQuestion.QuestionMultiChoice:
                     if (countAnswer != 6 || countAnswerTrue < 1)
                     {
-                        return new ApiResult<bool>(false, "Question is six answer and more than 1 correct answer !!!");
+                        return new ApiResult<bool>(false,
+                            "Question is six answer and more than 1 correct answer !!!");
                     }
 
                     break;
@@ -404,25 +406,26 @@ public class QuizQuestionService : IQuizQuestionService
 
             var quizQuestionEntity = _mapper.Map<QuizQuestion>(item);
 
-            var listQuizQuestion = (item.QuizId > 0)
-                ? await _quizQuestionRepository.GetAllQuizQuestionByQuizId(item.QuizId)
-                : await _quizQuestionRepository.GetAllQuizQuestion();
+            var listQuizQuestion = (item.QuizId > 0) ? await _quizQuestionRepository.GetAllQuizQuestionByQuizId(item.QuizId) : await _quizQuestionRepository.GetAllQuizQuestion();
             var numberHash = FindDuplicateQuestion(listQuizQuestion, quizQuestionEntity);
             if (numberHash == 0)
             {
-                return new ApiResult<bool>(false, $"Question: {item.Content} is duplicate !!!");
+                return new ApiResult<bool>(false, "Question is duplicate !!!");
             }
 
-            quizQuestionEntity.QuizQuestionRelations = new List<QuizQuestionRelation>
+            if (item.QuizId > 0)
             {
-                new() { QuizId = item.QuizId }
-            };
-            quizQuestionEntity.HashQuestion = numberHash;
+                quizQuestionEntity.QuizQuestionRelations = new List<QuizQuestionRelation>
+                {
+                    new() { QuizId = item.QuizId }
+                };
+            }
+
             quizQuestionEntity.KeyWord = item.Content.RemoveDiacritics();
+            quizQuestionEntity.HashQuestion = numberHash;
             if (item.Image != null && item.Image.Length > 0)
             {
-                var filePath =
-                    await _cloudinaryService.CreateImageAsync(item.Image, CloudinaryConstant.FolderQuestionImage);
+                var filePath = await _cloudinaryService.CreateImageAsync(item.Image, CloudinaryConstant.FolderQuestionImage);
                 quizQuestionEntity.Image = filePath.Url;
                 quizQuestionEntity.PublicId = filePath.PublicId;
             }
@@ -435,20 +438,19 @@ public class QuizQuestionService : IQuizQuestionService
         return new ApiSuccessResult<bool>(true);
     }
 
-    public async Task<ApiResult<bool>> UpdateRangeQuizQuestion(
-        IEnumerable<QuizQuestionUpdateDto> quizQuestionsUpdateDto)
+    public async Task<ApiResult<bool>> UpdateRangeQuizQuestion(IEnumerable<QuizQuestionUpdateDto> quizQuestionsUpdateDto)
     {
-        foreach (var item in quizQuestionsUpdateDto)
+        foreach (var itemUpdate in quizQuestionsUpdateDto)
         {
-            var quizQuestionEntity = await _quizQuestionRepository.GetQuizQuestionById(item.Id);
+            var quizQuestionEntity = await _quizQuestionRepository.GetQuizQuestionById(itemUpdate.Id);
             if (quizQuestionEntity is null)
             {
                 return new ApiResult<bool>(false, "Quiz Question not found !!!");
             }
 
-            var countAnswer = item.QuizAnswers.Count();
-            var countAnswerTrue = item.QuizAnswers.Count(x => x.IsCorrect);
-            switch (item.Type)
+            var countAnswer = itemUpdate.QuizAnswers.Count();
+            var countAnswerTrue = itemUpdate.QuizAnswers.Count(x => x.IsCorrect);
+            switch (itemUpdate.Type)
             {
                 case ETypeQuestion.QuestionTrueFalse:
                     if (countAnswer != 2)
@@ -465,7 +467,7 @@ public class QuizQuestionService : IQuizQuestionService
 
                     break;
                 case ETypeQuestion.QuestionMultiChoice:
-                    if (countAnswer != 6 || countAnswerTrue < 1)
+                    if (countAnswer < 6 || countAnswerTrue < 1)
                     {
                         return new ApiResult<bool>(false, "Question is six answer and more than 1 correct answer !!!");
                     }
@@ -473,58 +475,62 @@ public class QuizQuestionService : IQuizQuestionService
                     break;
             }
 
-            var modelQuestion = _mapper.Map(item, quizQuestionEntity);
+            var modelQuestion = _mapper.Map(itemUpdate, quizQuestionEntity);
 
             var listQuizQuestion = await _quizQuestionRepository.GetAllQuizQuestion();
-            var numberHash = FindDuplicateQuestion(listQuizQuestion.Where(q => q.Id != item.Id), quizQuestionEntity);
+            var numberHash = FindDuplicateQuestion(listQuizQuestion.Where(q => q.Id != itemUpdate.Id), quizQuestionEntity);
             if (numberHash == 0)
             {
-                return new ApiResult<bool>(false, $"Question: {item.Content} is duplicate !!!");
+                return new ApiResult<bool>(false, "Question is duplicate !!!");
             }
 
-            var quizQuestion = await _quizQuestionRepository.GetQuizQuestionById(item.Id);
-            if (item.Image != null && item.Image.Length > 0)
+            var quizQuestion = await _quizQuestionRepository.GetQuizQuestionById(itemUpdate.Id);
+            if (itemUpdate.Image != null && itemUpdate.Image.Length > 0)
             {
-                var filePath = await _cloudinaryService.UpdateImageAsync(quizQuestionEntity.PublicId, item.Image);
+                var filePath = await _cloudinaryService.UpdateImageAsync(quizQuestionEntity.PublicId, itemUpdate.Image);
                 quizQuestionEntity.Image = filePath.Url;
                 quizQuestionEntity.PublicId = filePath.PublicId;
             }
 
             modelQuestion.HashQuestion = numberHash;
-            modelQuestion.QuizQuestionRelations = quizQuestion.QuizQuestionRelations;
-            modelQuestion.KeyWord = item.Content.RemoveDiacritics();
+            modelQuestion.QuizQuestionRelations = quizQuestion!.QuizQuestionRelations;
+            modelQuestion.KeyWord = itemUpdate.Content.RemoveDiacritics();
             modelQuestion.Image = quizQuestion.Image;
             modelQuestion.PublicId = quizQuestion.PublicId;
-            var quizQuestionUpdate = await _quizQuestionRepository.UpdateQuizQuestion(modelQuestion);
-            if (quizQuestion.Type.Equals(item.Type))
+            if (quizQuestion.Type.Equals(itemUpdate.Type) && countAnswer == quizQuestion.QuizAnswers.Count)
             {
-                foreach (var itemAnswer in item.QuizAnswers)
+                foreach (var item in itemUpdate.QuizAnswers)
                 {
-                    var quizAnswer = await _quizAnswerRepository.GetQuizAnswerById(itemAnswer.Id);
+                    var quizAnswer = await _quizAnswerRepository.GetQuizAnswerById(item.Id);
                     if (quizAnswer is null)
                     {
                         return new ApiResult<bool>(false, "Quiz answer not found !!!");
                     }
 
-                    var modelAnswer = _mapper.Map(itemAnswer, quizAnswer);
+                    var modelAnswer = _mapper.Map(item, quizAnswer);
                     await _quizAnswerRepository.UpdateQuizAnswer(modelAnswer);
                 }
             }
             else
             {
-                var quizAnswers = await _quizAnswerRepository.GetAllQuizAnswerByQuizQuestionId(item.Id);
+                var quizAnswers = await _quizAnswerRepository.GetAllQuizAnswerByQuizQuestionId(itemUpdate.Id);
                 if (quizAnswers.Any())
                 {
                     await _quizAnswerRepository.DeleteRangeAnswer(quizAnswers);
-                    var quizAnswer = _mapper.Map<IEnumerable<QuizAnswer>>(item.QuizAnswers);
+                    var quizAnswer = _mapper.Map<IEnumerable<QuizAnswer>>(itemUpdate.QuizAnswers);
+                    foreach (var answer in quizAnswer)
+                    {
+                        answer.QuizQuestionId = itemUpdate.Id;
+                    }
+
                     await _quizAnswerRepository.CreateRangeQuizAnswer(quizAnswer);
-                    quizQuestionUpdate.QuizAnswers = quizAnswer.ToList();
                 }
             }
 
-            quizQuestionUpdate = await _quizQuestionRepository.GetQuizQuestionById(item.Id);
+            var quizQuestionUpdate = await _quizQuestionRepository.UpdateQuizQuestion(modelQuestion);
+            quizQuestionUpdate = await _quizQuestionRepository.GetQuizQuestionById(itemUpdate.Id);
             var result = _mapper.Map<QuizQuestionDto>(quizQuestionUpdate);
-            await _elasticSearchService.UpdateDocumentAsync(ElasticConstant.ElasticQuizQuestion, result, item.Id);
+            await _elasticSearchService.UpdateDocumentAsync(ElasticConstant.ElasticQuizQuestion, result, itemUpdate.Id);
         }
 
         return new ApiSuccessResult<bool>(true);
@@ -1209,7 +1215,8 @@ public class QuizQuestionService : IQuizQuestionService
                 .ToArray();
             // map insert những thằng này vào db xong mình phải lấy ra được id của nó vừa insert rồi mới thực hiện được 
             //var quizQuestionRelations = 
-            var quizQuestionRelationCreate = await _quizQuestionRelationRepository.CreateRangeQuizQuestionRelation(resultArray);
+            var quizQuestionRelationCreate =
+                await _quizQuestionRelationRepository.CreateRangeQuizQuestionRelation(resultArray);
             return new ApiResult<bool>(true, $"Import Success: {quizQuestionCreate}");
         }
         catch (Exception ex)

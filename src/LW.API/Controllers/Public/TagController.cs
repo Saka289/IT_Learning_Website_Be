@@ -24,9 +24,9 @@ namespace LW.API.Controllers.Public
             _tagService = tagService;
         }
          [HttpGet("GetAllTag")]
-        public async Task<ActionResult<ApiResult<TagDto>>> GetAllTag()
+        public async Task<ActionResult<ApiResult<TagDto>>> GetAllTag(bool? status)
         {
-            var result = await _tagService.GetAllTag();
+            var result = await _tagService.GetAllTag(status);
             if (!result.IsSucceeded)
             {
                 return NotFound(result);

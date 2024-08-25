@@ -226,9 +226,7 @@ public class ExamService : IExamService
             obj.UrlDownloadSolutionFile = filePath.UrlDownload;
         }
 
-        var keyWordValue = (examCreateDto.TagValues is not null)
-            ? examCreateDto.TagValues.ConvertToTagString()
-            : examCreateDto.Title!.RemoveDiacritics();
+        var keyWordValue = (examCreateDto.TagValues is not null) ? examCreateDto.TagValues.ConvertToTagString() : examCreateDto.Title!.RemoveDiacritics();
         obj.KeyWord = keyWordValue;
         if (examCreateDto.GradeId > 0) // chon Grade thi de Level la null truowcs khi add db
         {
