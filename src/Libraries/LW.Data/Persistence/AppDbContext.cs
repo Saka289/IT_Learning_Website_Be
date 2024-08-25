@@ -108,7 +108,7 @@ public class AppDbContext : IdentityDbContext<ApplicationUser>
                             var token = tokenHandler.ReadToken(accessToken) as JwtSecurityToken;
                             string familyName = token.Claims.FirstOrDefault(u => u.Type == JwtRegisteredClaimNames.FamilyName)?.Value ?? string.Empty;
                             string givenName = token.Claims.FirstOrDefault(u => u.Type == JwtRegisteredClaimNames.GivenName)?.Value ?? string.Empty;
-                            addedUserEntity.LastModifiedBy = $"{familyName} {givenName}";
+                            addedUserEntity.CreatedBy = $"{familyName} {givenName}";
                             item.State = EntityState.Added;
                         }
                         else
