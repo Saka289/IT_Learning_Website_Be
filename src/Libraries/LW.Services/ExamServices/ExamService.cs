@@ -361,7 +361,7 @@ public class ExamService : IExamService
         await _examRepository.UpdateExam(exam);
         var examDto = _mapper.Map<ExamDto>(exam);
         await _elasticSearchService.UpdateDocumentAsync(ElasticConstant.ElasticExams, examDto, exam.Id);
-        return new ApiResult<bool>(true, "Cập nhật trạng thái thành công");
+        return new ApiResult<bool>(true, "Update status exam successfully");
     }
 
     public async Task<ApiResult<bool>> DeleteExam(int id)
