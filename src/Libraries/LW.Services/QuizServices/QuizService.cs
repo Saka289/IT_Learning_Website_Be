@@ -96,7 +96,7 @@ public class QuizService : IQuizService
         }
         else if (searchQuizDto.Custom == ECustomQuiz.TopicAndLesson)
         {
-            quizList = quizList.Where(t => t.LessonId != null || t.TopicId != null);
+            quizList = quizList.Where(t => t.LessonId != 0 || t.TopicId != 0);
         }
 
         if (searchQuizDto.GradeId > 0)
@@ -164,7 +164,7 @@ public class QuizService : IQuizService
         }
         else if (searchQuizDto.Custom == ECustomQuiz.TopicAndLesson)
         {
-            quizList = quizList.Where(t => t.LessonId != null || t.TopicId != null);
+            quizList = quizList.Where(t => t.LessonId != 0 || t.TopicId != 0);
         }
 
         if (searchQuizDto.GradeId > 0)
