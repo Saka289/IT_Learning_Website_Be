@@ -5,12 +5,15 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using System.ComponentModel.DataAnnotations;
 using LW.API.Application.Validators.DocumentValidator;
+using LW.Shared.Constant;
+using Microsoft.AspNetCore.Authorization;
 using Newtonsoft.Json;
 
 namespace LW.API.Controllers.Public
 {
     [Route("api/[controller]")]
     [ApiController]
+    [Authorize(Roles = $"{RoleConstant.RoleAdmin},{RoleConstant.RoleContentManager}")]
     public class DocumentController : ControllerBase
     {
         private readonly IDocumentService _documentService;
@@ -21,6 +24,7 @@ namespace LW.API.Controllers.Public
         }
 
         [HttpGet("GetAllDocument")]
+        [AllowAnonymous]
         public async Task<ActionResult<ApiResult<IEnumerable<DocumentDto>>>> GetAllDocument(bool? status)
         {
             var result = await _documentService.GetAllDocument(status);
@@ -33,6 +37,7 @@ namespace LW.API.Controllers.Public
         }
 
         [HttpGet("GetAllDocumentByGrade/{gradeId}")]
+        [AllowAnonymous]
         public async Task<ActionResult<ApiResult<IEnumerable<DocumentDto>>>> GetAllDocumentByGrade(int gradeId, bool? status)
         {
             var result = await _documentService.GetAllDocumentByGrade(gradeId, status);
@@ -45,6 +50,7 @@ namespace LW.API.Controllers.Public
         }
 
         [HttpGet("GetAllDocumentPagination")]
+        [AllowAnonymous]
         public async Task<ActionResult<ApiResult<PagedList<DocumentDto>>>> GetAllDocumentPagination([FromQuery] SearchDocumentDto searchDocumentDto)
         {
             var result = await _documentService.GetAllDocumentPagination(searchDocumentDto);
@@ -58,6 +64,7 @@ namespace LW.API.Controllers.Public
         }
 
         [HttpGet("GetDocumentById/{id}")]
+        [AllowAnonymous]
         public async Task<ActionResult<ApiResult<DocumentDto>>> GetDocumentById([Required] int id)
         {
             var result = await _documentService.GetDocumentById(id);

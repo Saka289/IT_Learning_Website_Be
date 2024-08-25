@@ -4,7 +4,9 @@ using System.Linq;
 using System.Threading.Tasks;
 using LW.API.Application.Validators.EditorialValidator;
 using LW.Services.EditorialServices;
+using LW.Shared.Constant;
 using LW.Shared.DTOs.Editorial;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 
@@ -12,6 +14,7 @@ namespace LW.API.Controllers.Public
 {
     [Route("api/[controller]")]
     [ApiController]
+    [Authorize(Roles = $"{RoleConstant.RoleAdmin},{RoleConstant.RoleContentManager}")]
     public class EditorialController : ControllerBase
     {
         private readonly IEditorialService _editorialService;
@@ -22,6 +25,7 @@ namespace LW.API.Controllers.Public
         }
 
         [HttpGet("GetAllEditorial")]
+        [AllowAnonymous]
         public async Task<ActionResult<IEnumerable<EditorialDto>>> GetAllEditorial()
         {
             var result = await _editorialService.GetAllEditorial();
@@ -34,6 +38,7 @@ namespace LW.API.Controllers.Public
         }
 
         [HttpGet("GetEditorialByProblemId/{problemId}")]
+        [AllowAnonymous]
         public async Task<ActionResult<EditorialDto>> GetEditorialByProblemId(int problemId)
         {
             var result = await _editorialService.GetEditorialByProblemId(problemId);
@@ -46,6 +51,7 @@ namespace LW.API.Controllers.Public
         }
         
         [HttpGet("GetEditorialById/{id}")]
+        [AllowAnonymous]
         public async Task<ActionResult<EditorialDto>> GetEditorialById(int id)
         {
             var result = await _editorialService.GetEditorialById(id);

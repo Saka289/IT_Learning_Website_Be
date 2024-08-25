@@ -5,8 +5,10 @@ using System.Linq;
 using System.Threading.Tasks;
 using LW.Services.Common;
 using LW.Services.NotificationServices;
+using LW.Shared.Constant;
 using LW.Shared.DTOs.Notification;
 using LW.Shared.SeedWork;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Newtonsoft.Json;
@@ -15,6 +17,7 @@ namespace LW.API.Controllers.Admin
 {
     [Route("api/[controller]")]
     [ApiController]
+    [Authorize(Roles = RoleConstant.RoleAdmin)]
     public class NotificationsController : ControllerBase
     {
         private readonly INotificationService _notificationService;

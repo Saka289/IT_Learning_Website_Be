@@ -5,9 +5,11 @@ using System.Linq;
 using System.Threading.Tasks;
 using LW.API.Application.Validators.TopicValidator;
 using LW.Services.TopicServices;
+using LW.Shared.Constant;
 using LW.Shared.DTOs.Tag;
 using LW.Shared.DTOs.Topic;
 using LW.Shared.SeedWork;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Newtonsoft.Json;
@@ -16,6 +18,7 @@ namespace LW.API.Controllers.Public
 {
     [Route("api/[controller]")]
     [ApiController]
+    [Authorize(Roles = $"{RoleConstant.RoleAdmin},{RoleConstant.RoleContentManager}")]
     public class TopicController : ControllerBase
     {
         private readonly ITopicService _topicService;
@@ -26,6 +29,7 @@ namespace LW.API.Controllers.Public
         }
 
         [HttpGet("GetAllTopic")]
+        [AllowAnonymous]
         public async Task<ActionResult<ApiResult<TopicDto>>> GetAllTopic(bool? status)
         {
             var result = await _topicService.GetAll(status);
@@ -38,6 +42,7 @@ namespace LW.API.Controllers.Public
         }
         
         [HttpGet("GetAllTopicByDocument/{documentId}")]
+        [AllowAnonymous]
         public async Task<ActionResult<ApiResult<TopicDto>>> GetAllTopicByDocument(int documentId, bool? status)
         {
             var result = await _topicService.GetAllTopicByDocument(documentId, status);
@@ -49,6 +54,7 @@ namespace LW.API.Controllers.Public
         }
         
         [HttpGet("GetTopicIdByTag/{id}")]
+        [AllowAnonymous]
         public async Task<ActionResult<ApiResult<IEnumerable<TagDto>>>> GetTopicIdByTag(int id)
         {
             var result = await _topicService.GetTopicIdByTag(id);
@@ -60,6 +66,7 @@ namespace LW.API.Controllers.Public
         }
         
         [HttpGet("GetAllTopicPagination")]
+        [AllowAnonymous]
         public async Task<ActionResult<ApiResult<PagedList<TopicDto>>>> GetAllTopicPagination([FromQuery] SearchTopicDto searchTopicDto)
         {
             var result = await _topicService.GetAllTopicPagination(searchTopicDto);
@@ -73,6 +80,7 @@ namespace LW.API.Controllers.Public
         }
 
         [HttpGet("GetTopicById")]
+        [AllowAnonymous]
         public async Task<ActionResult<ApiResult<TopicDto>>> GetTopicById(int id)
         {
             var result = await _topicService.GetById(id);

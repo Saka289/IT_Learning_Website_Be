@@ -14,6 +14,7 @@ using LW.Shared.SeedWork;
 using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.AspNetCore.Authentication.Google;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 
@@ -21,6 +22,7 @@ namespace LW.API.Controllers.Public
 {
     [Route("api/[controller]")]
     [ApiController]
+    [Authorize]
     public class UserController : ControllerBase
     {
         private readonly IUserService _userService;
@@ -31,6 +33,7 @@ namespace LW.API.Controllers.Public
         }
 
         [HttpPost("RegisterUser")]
+        [AllowAnonymous]
         public async Task<ActionResult<ApiResult<RegisterResponseUserDto>>> RegisterUser(
             [FromBody] RegisterUserDto registerUserDto)
         {
@@ -50,6 +53,7 @@ namespace LW.API.Controllers.Public
         }
 
         [HttpGet("SendVerifyEmail")]
+        [AllowAnonymous]
         public async Task<ActionResult<ApiResult<bool>>> SendVerifyEmail([Required] string email)
         {
             var result = await _userService.SendVerifyEmail(email);
@@ -62,6 +66,7 @@ namespace LW.API.Controllers.Public
         }
 
         [HttpGet("VerifyEmail")]
+        [AllowAnonymous]
         public async Task<ActionResult<ApiResult<bool>>> VerifyEmail([Required] string email, [Required] string token)
         {
             var result = await _userService.VerifyEmail(email, token);
@@ -74,6 +79,7 @@ namespace LW.API.Controllers.Public
         }
 
         [HttpPost("Login")]
+        [AllowAnonymous]
         public async Task<ActionResult<ApiResult<LoginResponseUserDto>>> Login([FromBody] LoginUserDto loginUserDto)
         {
             var result = await _userService.Login(loginUserDto);
@@ -86,6 +92,7 @@ namespace LW.API.Controllers.Public
         }
 
         [HttpPost("GoogleLogin")]
+        [AllowAnonymous]
         public async Task<ActionResult<ApiResult<LoginResponseUserDto>>> GoogleLogin(
             [FromBody] GoogleSignInDto googleSignInDto)
         {
@@ -99,6 +106,7 @@ namespace LW.API.Controllers.Public
         }
 
         [HttpPost("FacebookLogin")]
+        [AllowAnonymous]
         public async Task<ActionResult<ApiResult<LoginResponseUserDto>>> FacebookLogin(
             [FromBody] FacebookSignInDto facebookSignInDto)
         {
@@ -112,6 +120,7 @@ namespace LW.API.Controllers.Public
         }
 
         [HttpPost("ChangePassword")]
+        [AllowAnonymous]
         public async Task<ActionResult<ApiResult<bool>>> ChangePassword([FromBody] ChangePasswordDto changePasswordDto)
         {
             var result = await _userService.ChangePassword(changePasswordDto);
@@ -124,6 +133,7 @@ namespace LW.API.Controllers.Public
         }
 
         [HttpPost("ForgotPassword")]
+        [AllowAnonymous]
         public async Task<ActionResult<ApiResult<bool>>> ForgotPassword([FromBody] string email)
         {
             var result = await _userService.ForgotPassword(email);
@@ -136,6 +146,7 @@ namespace LW.API.Controllers.Public
         }
 
         [HttpPost("ResetPassword")]
+        [AllowAnonymous]
         public async Task<ActionResult<ApiResult<bool>>> ResetPassword([FromBody] ResetPasswordDto resetPasswordDto)
         {
             var result = await _userService.ResetPassword(resetPasswordDto);
@@ -148,8 +159,8 @@ namespace LW.API.Controllers.Public
         }
 
         [HttpPost("RefreshToken")]
-        public async Task<ActionResult<ApiResult<TokenResponseDto>>> RefreshToken(
-            [FromBody] TokenRequestDto tokenRequestDto)
+        [AllowAnonymous]
+        public async Task<ActionResult<ApiResult<TokenResponseDto>>> RefreshToken([FromBody] TokenRequestDto tokenRequestDto)
         {
             var result = await _userService.RefreshToken(tokenRequestDto);
             if (!result.IsSucceeded)
@@ -161,6 +172,7 @@ namespace LW.API.Controllers.Public
         }
 
         [HttpPost("Revoke")]
+        [AllowAnonymous]
         public async Task<ActionResult<ApiResult<TokenResponseDto>>> RevokeToken([FromBody] string emailOrUserName)
         {
             var result = await _userService.Revoke(emailOrUserName);
@@ -192,6 +204,7 @@ namespace LW.API.Controllers.Public
         }
 
         [HttpGet("GetUser/{userId}")]
+        [AllowAnonymous]
         public async Task<ActionResult<ApiResult<UserResponseDto>>> GetUser([Required] string userId)
         {
             var result = await _userService.GetUserByUserId(userId);

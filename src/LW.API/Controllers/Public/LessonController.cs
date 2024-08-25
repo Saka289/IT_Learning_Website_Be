@@ -18,6 +18,7 @@ namespace LW.API.Controllers.Public
 {
     [Route("api/[controller]")]
     [ApiController]
+    [Authorize(Roles = $"{RoleConstant.RoleAdmin},{RoleConstant.RoleContentManager}")]
     public class LessonController : ControllerBase
     {
         private readonly ILessonService _lessonService;
@@ -28,6 +29,7 @@ namespace LW.API.Controllers.Public
         }
 
         [HttpGet("GetAllLesson")]
+        [AllowAnonymous]
         public async Task<ActionResult<ApiResult<IEnumerable<LessonDto>>>> GetAllLesson(bool? status)
         {
             var result = await _lessonService.GetAllLesson(status);
@@ -40,6 +42,7 @@ namespace LW.API.Controllers.Public
         }
 
         [HttpGet("GetAllLessonByTopic/{topicId}")]
+        [AllowAnonymous]
         public async Task<ActionResult<ApiResult<IEnumerable<LessonDto>>>> GetAllLessonByTopic(int topicId, bool? status)
         {
             var result = await _lessonService.GetAllLessonByTopic(topicId, status);
@@ -52,6 +55,7 @@ namespace LW.API.Controllers.Public
         }
         
         [HttpGet("GetLessonIdByTag/{id}")]
+        [AllowAnonymous]
         public async Task<ActionResult<ApiResult<IEnumerable<TagDto>>>> GetLessonIdByTag(int id)
         {
             var result = await _lessonService.GetLessonIdByTag(id);
@@ -64,6 +68,7 @@ namespace LW.API.Controllers.Public
         }
 
         [HttpGet("GetAllLessonPagination")]
+        [AllowAnonymous]
         public async Task<ActionResult<ApiResult<PagedList<LessonDto>>>> GetAllLessonPagination([FromQuery] SearchLessonDto searchLessonDto)
         {
             var result = await _lessonService.GetAllLessonPagination(searchLessonDto);
@@ -77,6 +82,7 @@ namespace LW.API.Controllers.Public
         }
 
         [HttpGet("GetLessonById/{id}")]
+        [AllowAnonymous]
         public async Task<ActionResult<ApiResult<LessonDto>>> GetLessonById([Required] int id)
         {
             var result = await _lessonService.GetLessonById(id);

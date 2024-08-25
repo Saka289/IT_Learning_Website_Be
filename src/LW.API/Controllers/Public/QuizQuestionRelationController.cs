@@ -5,8 +5,10 @@ using System.Linq;
 using System.Threading.Tasks;
 using LW.API.Application.Validators.QuizQuestionRelationValidator;
 using LW.Services.QuizQuestionRelationServices;
+using LW.Shared.Constant;
 using LW.Shared.DTOs.QuizQuestionRelation;
 using LW.Shared.SeedWork;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 
@@ -14,6 +16,7 @@ namespace LW.API.Controllers.Public
 {
     [Route("api/[controller]")]
     [ApiController]
+    [Authorize(Roles = $"{RoleConstant.RoleAdmin},{RoleConstant.RoleContentManager}")]
     public class QuizQuestionRelationController : ControllerBase
     {
         private readonly IQuizQuestionRelationService _quizQuestionRelationService;
