@@ -20,8 +20,4 @@
         <ProjectReference Include="..\..\BuildingBlocks\LW.Logging\LW.Logging.csproj" />
     </ItemGroup>
 
-    <ItemGroup>
-      <Folder Include="Persistence\Migrations\" />
-    </ItemGroup>
-
 </Project>
