@@ -3,6 +3,7 @@ using AutoMapper;
 using LW.Contracts.Common;
 using LW.Data.Entities;
 using LW.Data.Repositories.CompetitionRepositories;
+using LW.Data.Repositories.ExamAnswerRepositories;
 using LW.Data.Repositories.ExamCodeRepositories;
 using LW.Data.Repositories.ExamRepositories;
 using LW.Data.Repositories.GradeRepositories;
@@ -32,11 +33,12 @@ public class ExamService : IExamService
     private readonly IGradeRepository _gradeRepository;
     private readonly ITagRepository _tagRepository;
     private readonly ILevelRepository _levelRepository;
+    private readonly IExamAnswerRepository _examAnswerRepository;
 
     public ExamService(IMapper mapper, IExamRepository examRepository,
         IElasticSearchService<ExamDto, int> elasticSearchService, ICloudinaryService cloudinaryService,
         IExamCodeRepository examCodeRepository, ICompetitionRepository competitionRepository,
-        IGradeRepository gradeRepository, ITagRepository tagRepository, ILevelRepository levelRepository)
+        IGradeRepository gradeRepository, ITagRepository tagRepository, ILevelRepository levelRepository, IExamAnswerRepository examAnswerRepository)
     {
         _mapper = mapper;
         _examRepository = examRepository;
@@ -47,6 +49,7 @@ public class ExamService : IExamService
         _gradeRepository = gradeRepository;
         _tagRepository = tagRepository;
         _levelRepository = levelRepository;
+        _examAnswerRepository = examAnswerRepository;
     }
 
     public async Task<ApiResult<IEnumerable<ExamDto>>> GetAllExam(bool? status)
@@ -342,14 +345,23 @@ public class ExamService : IExamService
         var exam = await _examRepository.GetExamById(id);
         if (exam == null)
         {
-            return new ApiResult<bool>(false, "Not found");
+            return new ApiResult<bool>(false, "Không tìm thấy bài kiểm tra");
         }
 
+        var examCodes = await _examCodeRepository.GetAllExamCodeByExamId(id);
+        foreach (var examCode in examCodes)
+        {
+            var examAnswers = await _examAnswerRepository.GetAllExamAnswerByExamCodeId(examCode.Id);
+            if (!examAnswers.Any()) // Kiểm tra nếu không có đáp án nào
+            {
+                return new ApiResult<bool>(false, $"Mã đề {examCode.Code} chưa có đầy đủ đáp án, vui lòng kiểm tra lại !");
+            }
+        }
         exam.IsActive = !exam.IsActive;
         await _examRepository.UpdateExam(exam);
         var examDto = _mapper.Map<ExamDto>(exam);
         await _elasticSearchService.UpdateDocumentAsync(ElasticConstant.ElasticExams, examDto, exam.Id);
-        return new ApiResult<bool>(true, "Update status exam successfully");
+        return new ApiResult<bool>(true, "Cập nhật trạng thái thành công");
     }
 
     public async Task<ApiResult<bool>> DeleteExam(int id)
