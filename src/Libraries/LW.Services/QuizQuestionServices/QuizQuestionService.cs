@@ -1116,7 +1116,7 @@ public class QuizQuestionService : IQuizQuestionService
         return shuffle?.value ?? false;
     }
 
-    private bool ValidateQuizQuestionImportDto(QuizQuestionImportDto dto,
+    public bool ValidateQuizQuestionImportDto(QuizQuestionImportDto dto,
         HashSet<(int hashNum, string title)> processHashNum)
     {
         bool isValid = true;
