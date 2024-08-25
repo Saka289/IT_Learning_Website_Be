@@ -220,6 +220,9 @@ namespace LW.Data.Persistence.Migrations
                     b.Property<int>("GradeId")
                         .HasColumnType("int");
 
+                    b.Property<string>("Image")
+                        .HasColumnType("longtext");
+
                     b.Property<bool>("IsActive")
                         .HasColumnType("tinyint(1)");
 
@@ -232,6 +235,9 @@ namespace LW.Data.Persistence.Migrations
 
                     b.Property<DateTimeOffset?>("LastModifiedDate")
                         .HasColumnType("datetime(6)");
+
+                    b.Property<string>("PublicId")
+                        .HasColumnType("longtext");
 
                     b.Property<int>("PublicationYear")
                         .HasColumnType("int");
@@ -336,6 +342,9 @@ namespace LW.Data.Persistence.Migrations
                     b.Property<DateTimeOffset?>("LastModifiedDate")
                         .HasColumnType("datetime(6)");
 
+                    b.Property<int?>("LevelId")
+                        .HasColumnType("int");
+
                     b.Property<int>("NumberQuestion")
                         .HasColumnType("int");
 
@@ -367,6 +376,8 @@ namespace LW.Data.Persistence.Migrations
                     b.HasIndex("CompetitionId");
 
                     b.HasIndex("GradeId");
+
+                    b.HasIndex("LevelId");
 
                     b.ToTable("Exams");
                 });
@@ -539,11 +550,16 @@ namespace LW.Data.Persistence.Migrations
                     b.Property<DateTimeOffset?>("LastModifiedDate")
                         .HasColumnType("datetime(6)");
 
+                    b.Property<int>("LevelId")
+                        .HasColumnType("int");
+
                     b.Property<string>("Title")
                         .IsRequired()
                         .HasColumnType("longtext");
 
                     b.HasKey("Id");
+
+                    b.HasIndex("LevelId");
 
                     b.ToTable("Grades");
                 });
@@ -566,6 +582,9 @@ namespace LW.Data.Persistence.Migrations
 
                     b.Property<string>("FilePath")
                         .HasColumnType("longtext");
+
+                    b.Property<int>("Index")
+                        .HasColumnType("int");
 
                     b.Property<bool>("IsActive")
                         .HasColumnType("tinyint(1)");
@@ -598,6 +617,21 @@ namespace LW.Data.Persistence.Migrations
                     b.HasIndex("TopicId");
 
                     b.ToTable("Lessons");
+                });
+
+            modelBuilder.Entity("LW.Data.Entities.Level", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    b.Property<string>("Title")
+                        .IsRequired()
+                        .HasColumnType("longtext");
+
+                    b.HasKey("Id");
+
+                    b.ToTable("Levels");
                 });
 
             modelBuilder.Entity("LW.Data.Entities.Notification", b =>
@@ -1580,9 +1614,15 @@ namespace LW.Data.Persistence.Migrations
                         .WithMany("Exams")
                         .HasForeignKey("GradeId");
 
+                    b.HasOne("LW.Data.Entities.Level", "Level")
+                        .WithMany("Exams")
+                        .HasForeignKey("LevelId");
+
                     b.Navigation("Competition");
 
                     b.Navigation("Grade");
+
+                    b.Navigation("Level");
                 });
 
             modelBuilder.Entity("LW.Data.Entities.ExamAnswer", b =>
@@ -1643,6 +1683,17 @@ namespace LW.Data.Persistence.Migrations
                     b.Navigation("ApplicationUser");
 
                     b.Navigation("Post");
+                });
+
+            modelBuilder.Entity("LW.Data.Entities.Grade", b =>
+                {
+                    b.HasOne("LW.Data.Entities.Level", "Level")
+                        .WithMany("Grades")
+                        .HasForeignKey("LevelId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Level");
                 });
 
             modelBuilder.Entity("LW.Data.Entities.Lesson", b =>
@@ -2051,6 +2102,13 @@ namespace LW.Data.Persistence.Migrations
                     b.Navigation("Problems");
 
                     b.Navigation("Quizzes");
+                });
+
+            modelBuilder.Entity("LW.Data.Entities.Level", b =>
+                {
+                    b.Navigation("Exams");
+
+                    b.Navigation("Grades");
                 });
 
             modelBuilder.Entity("LW.Data.Entities.Post", b =>

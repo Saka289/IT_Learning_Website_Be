@@ -37,6 +37,11 @@ public class Exam : EntityAuditBase<int>
     public int CompetitionId { get; set; }
     [ForeignKey(nameof(CompetitionId))]
     public virtual Competition Competition { get; set; }
+    
+    public int? LevelId { get; set; }
+    [ForeignKey(nameof(LevelId))]
+    public virtual Level? Level { get; set; }
+    
     public int? GradeId { get; set; }
     [ForeignKey(nameof(GradeId))]
     public virtual Grade? Grade { get; set; }

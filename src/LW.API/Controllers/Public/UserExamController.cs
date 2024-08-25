@@ -7,6 +7,7 @@ using LW.Services.UserExamServices;
 using LW.Shared.DTOs.User;
 using LW.Shared.DTOs.UserExam;
 using LW.Shared.SeedWork;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 
@@ -14,6 +15,7 @@ namespace LW.API.Controllers.Public
 {
     [Route("api/[controller]")]
     [ApiController]
+    [Authorize]
     public class UserExamController : ControllerBase
     {
         private readonly IUserExamService _userExamService;
@@ -36,6 +38,7 @@ namespace LW.API.Controllers.Public
         }
 
         [HttpGet("GetUserExamById/{id}")]
+        [AllowAnonymous]
         public async Task<ActionResult<ApiResult<bool>>> GetUserExamById(int id)
         {
             var result = await _userExamService.GetExamResultById(id);
@@ -48,6 +51,7 @@ namespace LW.API.Controllers.Public
         }
         
         [HttpGet("GetListResultExamOfUserByUserId/{userId}")]
+        [AllowAnonymous]
         public async Task<ActionResult<ApiResult<IEnumerable<UserExamDto>>>> GetListResultExamOfUserByUserId(string  userId)
         {
             var result = await _userExamService.GetListResultByUserId(userId);

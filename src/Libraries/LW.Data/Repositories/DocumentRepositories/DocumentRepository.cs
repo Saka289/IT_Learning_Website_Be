@@ -38,8 +38,8 @@ namespace LW.Data.Repositories.DocumentRepositories
         public async Task<IEnumerable<Document>> GetAllDocument()
         {
             var documents = await FindAll()
-                .Include(g => g.Grade)
-                .Include(c => c.CommentDocuments)
+                .Include(g => g.Grade).DefaultIfEmpty()
+                .Include(c => c.CommentDocuments).DefaultIfEmpty()
                 .ToListAsync();
             return documents;
         }
@@ -73,7 +73,7 @@ namespace LW.Data.Repositories.DocumentRepositories
             return result;
         }
 
-        public async Task<Document> GetDocumentById(int id)
+        public async Task<Document?> GetDocumentById(int id)
         {
             var document = await FindByCondition(x => x.Id == id)
                 .Include(g => g.Grade)
@@ -92,10 +92,10 @@ namespace LW.Data.Repositories.DocumentRepositories
         {
             return await FindAll()
                 .Include(t => t.Topics.Where(t => t.ParentId == null && t.IsActive))
-                .ThenInclude(ct => ct.Lessons.Where(ct => ct.IsActive))
+                .ThenInclude(ct => ct.Lessons.Where(ct => ct.IsActive).OrderBy(ct => ct.Index))
                 .Include(t => t.Topics)
                 .ThenInclude(c => c.ChildTopics.Where(c => c.IsActive))
-                .ThenInclude(cl => cl.Lessons.Where(cl => cl.IsActive))
+                .ThenInclude(cl => cl.Lessons.Where(cl => cl.IsActive).OrderBy(cl => cl.Index))
                 .FirstOrDefaultAsync(d => d.Id == id && d.IsActive);
         }
     }

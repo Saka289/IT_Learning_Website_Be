@@ -4,6 +4,7 @@ using System.Security.Cryptography;
 using System.Text;
 using LW.Data.Entities;
 using LW.Shared.Configurations;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.Extensions.Options;
 using Microsoft.IdentityModel.Tokens;
 
@@ -12,9 +13,11 @@ namespace LW.Services.Common.CommonServices.JwtTokenServices;
 public class JwtTokenService : IJwtTokenService
 {
     private readonly JwtSettings _jwtSettings;
+    private readonly UserManager<ApplicationUser> _userManager;
 
-    public JwtTokenService(IOptions<JwtSettings> jwtSettings)
+    public JwtTokenService(IOptions<JwtSettings> jwtSettings, UserManager<ApplicationUser> userManager)
     {
+        _userManager = userManager;
         _jwtSettings = jwtSettings.Value;
     }
 
@@ -24,8 +27,9 @@ public class JwtTokenService : IJwtTokenService
 
         var key = Encoding.ASCII.GetBytes(_jwtSettings.Secret);
 
-        var signingCredentials =
-            new SigningCredentials(new SymmetricSecurityKey(key), SecurityAlgorithms.HmacSha512Signature);
+        var signingCredentials = new SigningCredentials(new SymmetricSecurityKey(key), SecurityAlgorithms.HmacSha512Signature);
+
+        bool isSocialLogin = _userManager.GetLoginsAsync(applicationUser).Result.Any();
 
         var claimList = new List<Claim>
         {
@@ -35,6 +39,7 @@ public class JwtTokenService : IJwtTokenService
             new Claim(JwtRegisteredClaimNames.FamilyName, applicationUser.FirstName ?? string.Empty),
             new Claim(JwtRegisteredClaimNames.GivenName, applicationUser.LastName ?? string.Empty),
             new Claim("picture", applicationUser.Image ?? string.Empty),
+            new Claim("login_provider", isSocialLogin ? "social" : "local"),
         };
 
         claimList.AddRange(roles.Select(role => new Claim(ClaimTypes.Role, role)));

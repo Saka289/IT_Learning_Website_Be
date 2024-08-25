@@ -5,12 +5,15 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using System.ComponentModel.DataAnnotations;
 using LW.API.Application.Validators.DocumentValidator;
+using LW.Shared.Constant;
+using Microsoft.AspNetCore.Authorization;
 using Newtonsoft.Json;
 
 namespace LW.API.Controllers.Public
 {
     [Route("api/[controller]")]
     [ApiController]
+    [Authorize(Roles = $"{RoleConstant.RoleAdmin},{RoleConstant.RoleContentManager}")]
     public class DocumentController : ControllerBase
     {
         private readonly IDocumentService _documentService;
@@ -21,9 +24,10 @@ namespace LW.API.Controllers.Public
         }
 
         [HttpGet("GetAllDocument")]
-        public async Task<ActionResult<ApiResult<IEnumerable<DocumentDto>>>> GetAllDocument()
+        [AllowAnonymous]
+        public async Task<ActionResult<ApiResult<IEnumerable<DocumentDto>>>> GetAllDocument(bool? status)
         {
-            var result = await _documentService.GetAllDocument();
+            var result = await _documentService.GetAllDocument(status);
             if (!result.IsSucceeded)
             {
                 return NotFound(result);
@@ -33,9 +37,10 @@ namespace LW.API.Controllers.Public
         }
 
         [HttpGet("GetAllDocumentByGrade/{gradeId}")]
-        public async Task<ActionResult<ApiResult<IEnumerable<DocumentDto>>>> GetAllDocumentByGrade(int gradeId)
+        [AllowAnonymous]
+        public async Task<ActionResult<ApiResult<IEnumerable<DocumentDto>>>> GetAllDocumentByGrade(int gradeId, bool? status)
         {
-            var result = await _documentService.GetAllDocumentByGrade(gradeId);
+            var result = await _documentService.GetAllDocumentByGrade(gradeId, status);
             if (!result.IsSucceeded)
             {
                 return NotFound(result);
@@ -45,6 +50,7 @@ namespace LW.API.Controllers.Public
         }
 
         [HttpGet("GetAllDocumentPagination")]
+        [AllowAnonymous]
         public async Task<ActionResult<ApiResult<PagedList<DocumentDto>>>> GetAllDocumentPagination([FromQuery] SearchDocumentDto searchDocumentDto)
         {
             var result = await _documentService.GetAllDocumentPagination(searchDocumentDto);
@@ -58,6 +64,7 @@ namespace LW.API.Controllers.Public
         }
 
         [HttpGet("GetDocumentById/{id}")]
+        [AllowAnonymous]
         public async Task<ActionResult<ApiResult<DocumentDto>>> GetDocumentById([Required] int id)
         {
             var result = await _documentService.GetDocumentById(id);
@@ -70,8 +77,7 @@ namespace LW.API.Controllers.Public
         }
 
         [HttpPost("CreateDocument")]
-        public async Task<ActionResult<ApiResult<DocumentDto>>> CreateDocument(
-            [FromBody] DocumentCreateDto documentCreateDto)
+        public async Task<ActionResult<ApiResult<DocumentDto>>> CreateDocument([FromForm] DocumentCreateDto documentCreateDto)
         {
             var validationResult = await new CreateDocumentCommandValidator().ValidateAsync(documentCreateDto);
             if (!validationResult.IsValid)
@@ -89,8 +95,7 @@ namespace LW.API.Controllers.Public
         }
 
         [HttpPut("UpdateDocument")]
-        public async Task<ActionResult<ApiResult<DocumentDto>>> UpdateDocument(
-            [FromBody] DocumentUpdateDto documentUpdateDto)
+        public async Task<ActionResult<ApiResult<DocumentDto>>> UpdateDocument([FromForm] DocumentUpdateDto documentUpdateDto)
         {
             var validationResult = await new UpdateDocumentCommandValidator().ValidateAsync(documentUpdateDto);
             if (!validationResult.IsValid)
@@ -108,7 +113,7 @@ namespace LW.API.Controllers.Public
         }
 
 
-        [HttpPut("UpdateStatusDocument")]
+        [HttpPut("UpdateStatusDocument/{id}")]
         public async Task<ActionResult<ApiResult<bool>>> UpdateStatusDocument(int id)
         {
             var result = await _documentService.UpdateStatusDocument(id);

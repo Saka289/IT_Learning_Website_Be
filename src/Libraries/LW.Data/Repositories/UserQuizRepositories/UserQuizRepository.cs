@@ -14,7 +14,9 @@ public class UserQuizRepository : RepositoryBase<UserQuiz, int>, IUserQuizReposi
 
     public async Task<IEnumerable<UserQuiz>> GetAllUserQuizByUserId(string userId)
     {
-        return await FindAll().Where(uq => uq.UserId == userId).ToListAsync();
+        return await FindAll()
+            .Include(q => q.Quiz)
+            .Where(uq => uq.UserId == userId).ToListAsync();
     }
 
     public async Task<IEnumerable<UserQuiz>> GetAllUserQuizByQuizId(int quizId)

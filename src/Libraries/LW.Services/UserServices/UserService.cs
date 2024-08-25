@@ -1,4 +1,5 @@
 ﻿using System.Globalization;
+using System.Security.Cryptography;
 using System.Text;
 using AutoMapper;
 using Google.Apis.Auth;
@@ -53,7 +54,8 @@ public class UserService : IUserService
         ISmtpEmailService emailService, ILogger logger, IOptions<VerifyEmailSettings> verifyEmailSettings,
         IOptions<UrlBase> urlBase, IRedisCache<VerifyEmailTokenDto> redisCacheService,
         ISerializeService serializeService, IJwtTokenService jwtTokenService, IOptions<GoogleSettings> googleSettings,
-        IFacebookService facebookService, ICloudinaryService cloudinaryService, IElasticSearchService<MemberDto, string> elasticSearchService, SignInManager<ApplicationUser> signInManager)
+        IFacebookService facebookService, ICloudinaryService cloudinaryService,
+        IElasticSearchService<MemberDto, string> elasticSearchService, SignInManager<ApplicationUser> signInManager)
     {
         _roleManager = roleManager ?? throw new ArgumentNullException(nameof(roleManager));
         _mapper = mapper ?? throw new ArgumentNullException(nameof(mapper));
@@ -94,7 +96,8 @@ public class UserService : IUserService
                 $"An existing account is using {registerUserDto.Email}");
         }
 
-        var userNameExist = await _userManager.Users.AnyAsync(x => x.UserName.ToLower() == registerUserDto.UserName.ToLower());
+        var userNameExist =
+            await _userManager.Users.AnyAsync(x => x.UserName.ToLower() == registerUserDto.UserName.ToLower());
         if (userNameExist)
         {
             return new ApiResult<RegisterResponseUserDto>(false,
@@ -120,7 +123,8 @@ public class UserService : IUserService
             FullName = user.FirstName + " " + user.LastName,
             PhoneNumber = user.PhoneNumber,
         };
-        await _elasticSearchService.CreateDocumentAsync(ElasticConstant.ElasticUsers, user.ToMemberDto(_userManager), a => a.Id);
+        await _elasticSearchService.CreateDocumentAsync(ElasticConstant.ElasticUsers, user.ToMemberDto(_userManager),
+            a => a.Id);
         return new ApiResult<RegisterResponseUserDto>(true, userDto, "Create User Successfully");
     }
 
@@ -134,16 +138,25 @@ public class UserService : IUserService
             return new ApiResult<LoginResponseUserDto>(false, "Invalid UserName or Email !!!");
         }
 
+        var isRoles = await _userManager.IsInRoleAsync(user, RoleConstant.RoleUser);
+        if (!isRoles)
+        {
+            return new ApiResult<LoginResponseUserDto>(false, "Admin or ContentManager is not an User!!!");
+        }
+
         var checkPassword = await _signInManager.CheckPasswordSignInAsync(user, loginUserDto.Password, true);
         if (checkPassword.IsLockedOut)
         {
-            return new ApiResult<LoginResponseUserDto>(false, $"Your account has been locked. You should wait until {user.LockoutEnd} (UTC time) to be able to login");
+            return new ApiResult<LoginResponseUserDto>(false,
+                $"Your account has been locked. You should wait until {user.LockoutEnd} (UTC time) to be able to login");
         }
+
         if (!checkPassword.Succeeded)
         {
-            return new ApiResult<LoginResponseUserDto>(false, "The password you entered is incorrect. Please try again.");
+            return new ApiResult<LoginResponseUserDto>(false,
+                "The password you entered is incorrect. Please try again.");
         }
-        
+
         var roles = await _userManager.GetRolesAsync(user);
 
         var accessToken = _jwtTokenService.GenerateAccessToken(user, roles);
@@ -201,12 +214,20 @@ public class UserService : IUserService
         };
 
         var user = await _userManager.CreateUserFromSocialLogin(userCreated, ELoginProvider.Google);
-        var isLockedOut  = await _userManager.IsLockedOutAsync(user);
+
+        var isRoles = await _userManager.IsInRoleAsync(user, RoleConstant.RoleUser);
+        if (!isRoles)
+        {
+            return new ApiResult<LoginResponseUserDto>(false, "Admin or ContentManager is not an User!!!");
+        }
+
+        var isLockedOut = await _userManager.IsLockedOutAsync(user);
         if (isLockedOut)
         {
-            return new ApiResult<LoginResponseUserDto>(false, $"Your account has been locked. You should wait until {user.LockoutEnd} (UTC time) to be able to login");
+            return new ApiResult<LoginResponseUserDto>(false,
+                $"Your account has been locked. You should wait until {user.LockoutEnd} (UTC time) to be able to login");
         }
-        
+
         var roles = await _userManager.GetRolesAsync(user);
         var accessToken = _jwtTokenService.GenerateAccessToken(user, roles);
         var refreshToken = _jwtTokenService.GenerateRefreshToken();
@@ -230,7 +251,8 @@ public class UserService : IUserService
             AccessToken = accessToken,
             RefreshToken = refreshToken
         };
-        await _elasticSearchService.CreateDocumentAsync(ElasticConstant.ElasticUsers, user.ToMemberDto(_userManager), a => a.Id);
+        await _elasticSearchService.CreateDocumentAsync(ElasticConstant.ElasticUsers, user.ToMemberDto(_userManager),
+            a => a.Id);
         return new ApiResult<LoginResponseUserDto>(true, loginResponseUserDto, "Login successfully !!!");
     }
 
@@ -258,12 +280,20 @@ public class UserService : IUserService
         };
 
         var user = await _userManager.CreateUserFromSocialLogin(userCreated, ELoginProvider.Facebook);
-        var isLockedOut  = await _userManager.IsLockedOutAsync(user);
+
+        var isRoles = await _userManager.IsInRoleAsync(user, RoleConstant.RoleUser);
+        if (!isRoles)
+        {
+            return new ApiResult<LoginResponseUserDto>(false, "Admin or ContentManager is not an User!!!");
+        }
+
+        var isLockedOut = await _userManager.IsLockedOutAsync(user);
         if (isLockedOut)
         {
-            return new ApiResult<LoginResponseUserDto>(false, $"Your account has been locked. You should wait until {user.LockoutEnd} (UTC time) to be able to login");
+            return new ApiResult<LoginResponseUserDto>(false,
+                $"Your account has been locked. You should wait until {user.LockoutEnd} (UTC time) to be able to login");
         }
-        
+
         var roles = await _userManager.GetRolesAsync(user);
 
         var accessToken = _jwtTokenService.GenerateAccessToken(user, roles);
@@ -288,15 +318,17 @@ public class UserService : IUserService
             AccessToken = accessToken,
             RefreshToken = refreshToken
         };
-        await _elasticSearchService.CreateDocumentAsync(ElasticConstant.ElasticUsers, user.ToMemberDto(_userManager), a => a.Id);
+        await _elasticSearchService.CreateDocumentAsync(ElasticConstant.ElasticUsers, user.ToMemberDto(_userManager),
+            a => a.Id);
         return new ApiResult<LoginResponseUserDto>(true, loginResponseUserDto, "Login successfully !!!");
     }
 
     public async Task<ApiResult<bool>> ChangePassword(ChangePasswordDto changePasswordDto)
     {
-        var user = await _userManager.Users.FirstOrDefaultAsync(u => u.Email.ToLower().Equals(changePasswordDto.Email.ToLower()));
+        var user = await _userManager.Users.FirstOrDefaultAsync(u =>
+            u.Email.ToLower().Equals(changePasswordDto.Email.ToLower()));
         var password = await _userManager.CheckPasswordAsync(user, changePasswordDto.Password);
-        if (password == false)
+        if (password == false && !changePasswordDto.LoginProvider)
         {
             return new ApiResult<bool>(false, "The password you entered is incorrect.");
         }
@@ -354,62 +386,50 @@ public class UserService : IUserService
             return new ApiResult<bool>(false, $"An existing account is using {email}");
         }
 
-        var verifyEmailTokenDto = new VerifyEmailTokenDto { Email = email };
+        var token = GenerateCodeFromEmail(email);
+        var verifyEmailTokenDto = new VerifyEmailTokenDto
+        {
+            Email = email,
+            Token = token
+        };
 
         var options = new DistributedCacheEntryOptions()
             .SetAbsoluteExpiration(DateTime.Now.AddMinutes(10))
             .SetSlidingExpiration(TimeSpan.FromMinutes(5));
         await _redisCacheService.SetStringKey(email, verifyEmailTokenDto, options);
 
-        var token = _serializeService.Serialize(verifyEmailTokenDto);
-        token = WebEncoders.Base64UrlEncode(Encoding.UTF8.GetBytes(token));
-
         SendConfirmEmailAsync(email, token, new CancellationToken());
 
         return new ApiResult<bool>(true, $"Send email to: {email}");
     }
 
-    public async Task<ApiResult<bool>> VerifyEmail(string token)
+    public async Task<ApiResult<bool>> VerifyEmail(string email, string token)
     {
+        if (string.IsNullOrEmpty(email))
+        {
+            return new ApiResult<bool>(false, "An error occurred while verifying your email. Please try again later.");
+        }
+
         if (string.IsNullOrEmpty(token))
         {
             return new ApiResult<bool>(false, $"Token is null or empty !!!");
         }
 
-        try
+        var tokenKey = await _redisCacheService.GetStringKey(email);
+        if (tokenKey == null)
         {
-            var decodedTokenBytes = WebEncoders.Base64UrlDecode(token);
-            var decodedToken = Encoding.UTF8.GetString(decodedTokenBytes);
-
-            var verifyEmailDecode = _serializeService.Deserialize<VerifyEmailTokenDto>(decodedToken);
-
-            var result = await _redisCacheService.GetStringKey(verifyEmailDecode.Email);
-            if (result == null)
-            {
-                return new ApiResult<bool>(false,
-                    "Your email verification link has expired. Please request a new one.");
-            }
-
-            if (verifyEmailDecode.Id.Equals(result.Id))
-            {
-                verifyEmailDecode.IsVerifyEmail = true;
-                var options = new DistributedCacheEntryOptions()
-                    .SetAbsoluteExpiration(DateTime.Now.AddMinutes(5))
-                    .SetSlidingExpiration(TimeSpan.FromMinutes(2));
-                await _redisCacheService.SetStringKey(verifyEmailDecode.Email, verifyEmailDecode, options);
-                return new ApiResult<bool>(true, "Email verified successfully.");
-            }
-
-            return new ApiResult<bool>(false, "Invalid email verification link.");
+            return new ApiResult<bool>(false, "Your email verification link has expired. Please request a new one.");
         }
-        catch (FormatException ex)
+
+        if (!tokenKey.Token.Equals(token))
         {
             return new ApiResult<bool>(false, "Invalid token format.");
         }
-        catch (Exception ex)
-        {
-            return new ApiResult<bool>(false, "An error occurred while verifying your email. Please try again later.");
-        }
+
+        tokenKey.IsVerifyEmail = true;
+        var options = new DistributedCacheEntryOptions().SetAbsoluteExpiration(DateTime.Now.AddMinutes(5)).SetSlidingExpiration(TimeSpan.FromMinutes(2));
+        await _redisCacheService.SetStringKey(email, tokenKey, options);
+        return new ApiSuccessResult<bool>(true, "Email verified successfully.");
     }
 
     public async Task<ApiResult<TokenResponseDto>> RefreshToken(TokenRequestDto tokenRequestDto)
@@ -420,7 +440,7 @@ public class UserService : IUserService
         }
 
         var principal = _jwtTokenService.GetPrincipalFromExpiredToken(tokenRequestDto.AccessToken);
-        var userName = principal.Claims.FirstOrDefault(p => p.Type == JwtRegisteredClaimNames.Name).Value;
+        var userName = principal.Claims.FirstOrDefault(p => p.Type == JwtRegisteredClaimNames.Name)!.Value;
         if (userName is null)
         {
             return new ApiResult<TokenResponseDto>(false, $"Invalid AccessToken or refresh token !!!");
@@ -467,7 +487,8 @@ public class UserService : IUserService
 
     public async Task<ApiResult<UpdateResponseUserDto>> UpdateUser(UpdateUserDto updateUserDto)
     {
-        var user = await _userManager.Users.FirstOrDefaultAsync(u => u.Id.ToLower().Equals(updateUserDto.UserId) || u.Email.ToLower().Equals(updateUserDto.Email));
+        var user = await _userManager.Users.FirstOrDefaultAsync(u =>
+            u.Id.ToLower().Equals(updateUserDto.UserId) || u.Email.ToLower().Equals(updateUserDto.Email));
         if (user == null)
         {
             return new ApiResult<UpdateResponseUserDto>(false, $"User Not Found !");
@@ -495,7 +516,8 @@ public class UserService : IUserService
                 PhoneNumber = user.PhoneNumber,
                 Image = user.Image
             };
-            await _elasticSearchService.UpdateDocumentAsync(ElasticConstant.ElasticUsers, user.ToMemberDto(_userManager), updateUserDto.UserId);
+            await _elasticSearchService.UpdateDocumentAsync(ElasticConstant.ElasticUsers,
+                user.ToMemberDto(_userManager), updateUserDto.UserId);
             return new ApiResult<UpdateResponseUserDto>(true, userResponseCreate, $"Update User Successfully !");
         }
 
@@ -510,11 +532,13 @@ public class UserService : IUserService
                 PhoneNumber = user.PhoneNumber,
                 Image = user.Image
             };
-            await _elasticSearchService.UpdateDocumentAsync(ElasticConstant.ElasticUsers, user.ToMemberDto(_userManager), updateUserDto.UserId);
+            await _elasticSearchService.UpdateDocumentAsync(ElasticConstant.ElasticUsers,
+                user.ToMemberDto(_userManager), updateUserDto.UserId);
             return new ApiResult<UpdateResponseUserDto>(true, userResponseCreate, $"Update User Successfully !");
         }
 
-        var imageUpdatePath = await _cloudinaryService.UpdateImageAsync(user.PublicId, updateUserDto.Image);
+        var imageUpdatePath = await _cloudinaryService.UpdateImageAsync(user.PublicId!, updateUserDto.Image,
+            CloudinaryConstant.FolderUserImage);
 
         user.Image = imageUpdatePath.Url;
         user.PublicId = imageUpdatePath.PublicId;
@@ -529,7 +553,8 @@ public class UserService : IUserService
             Image = user.Image,
             Dob = user.Dob.ToString()
         };
-        await _elasticSearchService.UpdateDocumentAsync(ElasticConstant.ElasticUsers, user.ToMemberDto(_userManager), updateUserDto.UserId);
+        await _elasticSearchService.UpdateDocumentAsync(ElasticConstant.ElasticUsers, user.ToMemberDto(_userManager),
+            updateUserDto.UserId);
         return new ApiResult<UpdateResponseUserDto>(true, userResponseUpdate, $"Update User Successfully !");
     }
 
@@ -540,7 +565,10 @@ public class UserService : IUserService
             return new ApiResult<UserResponseDto>(false, "UserId is null or empty !!!");
         }
 
-        var user = await _userManager.Users.FirstOrDefaultAsync(u => u.Id == userId);
+        var user = await _userManager.Users
+            .Include(u => u.UserGrades)
+            .ThenInclude(g => g.Grade)
+            .FirstOrDefaultAsync(u => u.Id == userId);
         if (user == null)
         {
             return new ApiResult<UserResponseDto>(false, "User not found !!!");
@@ -553,14 +581,13 @@ public class UserService : IUserService
 
     private async Task SendConfirmEmailAsync(string email, string token, CancellationToken cancellationToken)
     {
-        var url = $"{_urlBase.ClientUrl}/{_verifyEmailSettings.VerifyEmailPath}?token={token}&email={email}";
         var emailRequest = new MailRequest()
         {
             ToAddress = email,
             Body = "<h4>Xác thực tài khoản</h4>" +
                    $"<h4>Chào bạn, {_verifyEmailSettings.ApplicationName} xin kính chào!</h4>" +
-                   "<span>Vui lòng xác thực tài khoản của bạn bằng cách nhấp vào liên kết dưới đây: </span>" +
-                   $"<span><a class=\"button\" href=\"{url}\" target=\"_blank\">Click here</a></span>" +
+                   "<p>Vui lòng xác thực tài khoản của bạn bằng cách sử dụng mã dưới đây: </p>" +
+                   $"<h3 style=\"background-color:#f9f9f9;padding:10px;border:1px solid #ccc;display:inline-block\">{token}</h3>" +
                    "<p>Nếu bạn không yêu cầu xác thực tài khoản, vui lòng bỏ qua email này.</p>" +
                    "<h4>Trân trọng,</h4>" +
                    $"<h4>{_verifyEmailSettings.ApplicationName}</h4>",
@@ -603,6 +630,16 @@ public class UserService : IUserService
         {
             _logger.Error(
                 $"Forgot Password your email {user.Email} failed due to an error with the email service: {ex.Message}");
+        }
+    }
+
+    private string GenerateCodeFromEmail(string email)
+    {
+        using (SHA256 sha256 = SHA256.Create())
+        {
+            byte[] hashBytes = sha256.ComputeHash(Encoding.UTF8.GetBytes(email));
+            int hashNumber = BitConverter.ToInt32(hashBytes, 0) & 0x7FFFFFFF;
+            return (hashNumber % 1000000).ToString("D6");
         }
     }
 }

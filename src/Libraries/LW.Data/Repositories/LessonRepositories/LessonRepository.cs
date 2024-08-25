@@ -14,12 +14,18 @@ public class LessonRepository : RepositoryBase<Lesson, int>, ILessonRepository
 
     public async Task<IEnumerable<Lesson>> GetAllLesson()
     {
-        return await FindAll().Include(t => t.Topic).ToListAsync();
+        return await FindAll()
+            .Include(t => t.Topic)
+            .OrderBy(l => l.Index)
+            .ToListAsync();
     }
 
     public async Task<IEnumerable<Lesson>> GetAllLessonByTopic(int id)
     {
-        return await FindAll().Include(t => t.Topic).Where(x => x.TopicId == id).ToListAsync();
+        return await FindAll()
+            .Include(t => t.Topic)
+            .OrderBy(l => l.Index)
+            .Where(x => x.TopicId == id).ToListAsync();
     }
 
     public async Task<Lesson?> GetLessonById(int id)
@@ -80,11 +86,11 @@ public class LessonRepository : RepositoryBase<Lesson, int>, ILessonRepository
         return await FindAll()
             .Include(t => t.Topic)
             .ThenInclude(c => c.ParentTopic)
-            .ThenInclude(l => l.Lessons.Where(l => l.IsActive == true))
+            .ThenInclude(l => l.Lessons.Where(l => l.IsActive == true).OrderBy(l => l.Index))
             .Where(t => t.Topic.IsActive)
             .Include(t => t.Topic)
             .ThenInclude(d => d.Document)
-            .Where(t => t.Topic.Document.IsActive)
+            .Where(t => t.Topic.IsActive)
             .FirstOrDefaultAsync(l => l.Id == id && l.IsActive);
     }
 

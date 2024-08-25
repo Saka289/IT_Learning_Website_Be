@@ -6,7 +6,7 @@ namespace LW.Contracts.Common;
 public interface ICloudinaryService
 {
     Task<FileImageDto> CreateImageAsync(IFormFile file, string folderName);
-    Task<FileImageDto> UpdateImageAsync(string publicId, IFormFile file);
+    Task<FileImageDto> UpdateImageAsync(string publicId, IFormFile file, string? folderName = null);
     Task<bool> DeleteImageAsync(string publicId);
     Task<FileDto> CreateFileAsync(IFormFile file, string folderName);
     Task<FileDto> UpdateFileAsync(string publicId, IFormFile file);
@@ -15,5 +15,4 @@ public interface ICloudinaryService
     Task<bool> DeleteFolderAsync(string folderName);
     Task<FileDto> ConvertHtmlToPdf(string htmlFile, string fileName, string folderName);
     Task<string> ConvertPdfToHtml(IFormFile file);
-
 }

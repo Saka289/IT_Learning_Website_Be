@@ -5,4 +5,5 @@ namespace LW.Shared.DTOs.Topic;
 public class SearchTopicDto : SearchRequestValue
 {
     public int? DocumentId { get; set; }
+    public bool? Status {get; set; }
 }

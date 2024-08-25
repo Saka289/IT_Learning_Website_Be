@@ -9,7 +9,7 @@ namespace LW.Services.QuizQuestionServices;
 
 public interface IQuizQuestionService
 {
-    Task<ApiResult<IEnumerable<QuizQuestionDto>>> GetAllQuizQuestion();
+    Task<ApiResult<IEnumerable<QuizQuestionDto>>> GetAllQuizQuestion(bool? status);
     Task<ApiResult<PagedList<QuizQuestionDto>>> GetAllQuizQuestionPagination(SearchAllQuizQuestionDto searchAllQuizQuestionDto);
     Task<ApiResult<IEnumerable<object>>> GetAllQuizQuestionByQuizId(SearchQuizQuestionDto searchQuizQuestionDto);
     Task<ApiResult<QuizQuestionDto>> GetQuizQuestionById(int id);

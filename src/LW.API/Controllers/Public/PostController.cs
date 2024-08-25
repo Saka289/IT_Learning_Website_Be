@@ -7,6 +7,7 @@ using LW.API.Application.Validators.PostValidator;
 using LW.Services.PostServices;
 using LW.Shared.DTOs.Post;
 using LW.Shared.SeedWork;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Newtonsoft.Json;
@@ -15,6 +16,7 @@ namespace LW.API.Controllers.Public
 {
     [Route("api/[controller]")]
     [ApiController]
+    [Authorize]
     public class PostController : ControllerBase
     {
         private readonly IPostService _postService;
@@ -25,6 +27,7 @@ namespace LW.API.Controllers.Public
         }
 
         [HttpGet("GetAllPostPagination")]
+        [AllowAnonymous]
         public async Task<ActionResult<ApiResult<PagedList<PostDto>>>> GetAllPostPagination(
             [FromQuery] PagingRequestParameters pagingRequestParameters)
         {
@@ -39,6 +42,7 @@ namespace LW.API.Controllers.Public
         }
 
         [HttpGet("GetAllPostByGradePagination")]
+        [AllowAnonymous]
         public async Task<ActionResult<ApiResult<PagedList<PostDto>>>> GetAllPostByGradePagination(
             [Required] int gradeId,
             [FromQuery] PagingRequestParameters pagingRequestParameters)
@@ -54,6 +58,7 @@ namespace LW.API.Controllers.Public
         }
 
         [HttpGet("GetAllPostByUserPagination")]
+        [AllowAnonymous]
         public async Task<ActionResult<ApiResult<PagedList<PostDto>>>> GetAllPostByUserPagination(
             [Required] string userId,
             [FromQuery] PagingRequestParameters pagingRequestParameters)
@@ -69,6 +74,7 @@ namespace LW.API.Controllers.Public
         }
 
         [HttpGet("GetAllPostByUserAndGradePagination")]
+        [AllowAnonymous]
         public async Task<ActionResult<ApiResult<PagedList<PostDto>>>> GetAllPostByUserAndGradePagination(
             [Required] string userId, [Required] int gradeId,
             [FromQuery] PagingRequestParameters pagingRequestParameters)
@@ -85,6 +91,7 @@ namespace LW.API.Controllers.Public
         }
 
         [HttpGet("GetAllPostNotAnswerByGradePagination")]
+        [AllowAnonymous]
         public async Task<ActionResult<ApiResult<PagedList<PostDto>>>> GetAllPostNotAnswerByGradePagination(int gradeId,
             [FromQuery] PagingRequestParameters pagingRequestParameters)
         {
@@ -99,6 +106,7 @@ namespace LW.API.Controllers.Public
         }
 
         [HttpGet("GetAllFavoritePostByUserPagination")]
+        [AllowAnonymous]
         public async Task<ActionResult<ApiResult<PagedList<PostDto>>>> GetAllFavoritePostByUserPagination(
             [Required] string userId,
             [FromQuery] PagingRequestParameters pagingRequestParameters)
@@ -114,6 +122,7 @@ namespace LW.API.Controllers.Public
         }
 
         [HttpGet("GetPostById")]
+        [AllowAnonymous]
         public async Task<ActionResult<ApiResult<PostDto>>> GetPostById(int id)
         {
             var result = await _postService.GetPostById(id);

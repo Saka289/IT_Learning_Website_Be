@@ -13,6 +13,8 @@ public class GradeDocumentDto
     public string TypeOfBook { get; set; }
     public bool IsActive { get; set; }
     public int GradeId { get; set; }
+    public string? Image { get; set; }
+    public string? PublicId { get; set; }
     public double? AverageRating { get; set; }
     public int TotalReviewer { get; set; }
     public IEnumerable<GradeTopicDto> Topics { get; set; }

@@ -16,6 +16,7 @@ public class Lesson : EntityAuditBase<int>
     public string? FilePath { get; set; }
     public string? PublicId { get; set; }
     public string? UrlDownload { get; set; }
+    public int Index { get; set; }
     [Required]
     public int TopicId { get; set; }
     [ForeignKey(nameof(TopicId))]

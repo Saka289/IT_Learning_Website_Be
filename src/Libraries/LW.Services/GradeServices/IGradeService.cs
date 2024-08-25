@@ -13,4 +13,6 @@ public interface IGradeService
     Task<ApiResult<GradeDto>> UpdateGrade(GradeUpdateDto gradeUpdateDto);
     Task<ApiResult<bool>> UpdateGradeStatus(int id);
     Task<ApiResult<bool>> DeleteGrade(int id);
+    Task<ApiResult<IEnumerable<GradeDto>>> GetListGradeByLevelId(int levelId);
+
 }

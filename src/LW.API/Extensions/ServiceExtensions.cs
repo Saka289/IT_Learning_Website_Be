@@ -35,6 +35,7 @@ using LW.Data.Repositories.ExamRepositories;
 using LW.Data.Repositories.FavoritePostRepositories;
 using LW.Data.Repositories.ExecuteCodeRepositories;
 using LW.Data.Repositories.LessonRepositories;
+using LW.Data.Repositories.LevelRepositories;
 using LW.Data.Repositories.ProblemRepositories;
 using LW.Data.Repositories.ProgramLanguageRepositories;
 using LW.Data.Repositories.NotificationRepositories;
@@ -69,6 +70,7 @@ using LW.Services.ExamServices;
 using LW.Services.ExecuteCodeServices;
 using LW.Services.IndexServices;
 using LW.Services.LessonServices;
+using LW.Services.LevelServices;
 using LW.Services.ProblemServices;
 using LW.Services.ProgramLanguageServices;
 using LW.Services.PostCommentServices;
@@ -77,6 +79,7 @@ using LW.Services.QuizQuestionRelationServices;
 using LW.Services.QuizQuestionServices;
 using LW.Services.QuizServices;
 using LW.Services.SolutionServices;
+using LW.Services.StatisticServices;
 using LW.Services.SubmissionServices;
 using LW.Services.TagServices;
 using LW.Services.TestCaseServices;
@@ -314,6 +317,7 @@ public static class ServiceExtensions
         services.AddTransient(typeof(IRedisCache<>), typeof(RedisCache<>));
         services.AddTransient<ISerializeService, SerializeService>();
         // IRepository 
+        services.AddScoped<ILevelRepository, LevelRepository>();
         services.AddScoped<IGradeRepository, GradeRepository>();
         services.AddScoped<IDocumentRepository, DocumentRepository>();
         services.AddScoped<ITopicRepository, TopicRepository>();
@@ -346,6 +350,7 @@ public static class ServiceExtensions
         // IService 
         services.AddScoped<IAdminAuthorService, AdminAuthorService>();
         services.AddScoped<IUserService, UserService>();
+        services.AddScoped<ILevelService, LevelService>();
         services.AddScoped<IGradeService, GradeService>();
         services.AddScoped<IDocumentService, DocumentService>();
         services.AddScoped<ITopicService, TopicService>();
@@ -379,6 +384,7 @@ public static class ServiceExtensions
         services.AddScoped<IPostService, PostService>();
         services.AddScoped<IPostCommentService, PostCommentService>();
         services.AddScoped<INotificationService, NotificationService>();
+        services.AddScoped<IStatisticService, StatisticService>();
         return services;
     }
 }
