@@ -62,6 +62,7 @@ namespace LW.API.Controllers.Public
         }
         
         [HttpPost("CreateUserGrade")]
+        [AllowAnonymous]
         public async Task<ActionResult<ApiResult<bool>>> CreateUserGrade(UserGradeCreateDto model)
         {
             var validationResult = await new CreateUserGradeCommandValidator().ValidateAsync(model);
@@ -78,6 +79,7 @@ namespace LW.API.Controllers.Public
         }
         
         [HttpPost("UpdateRangeUserGrade")]
+        [AllowAnonymous]
         public async Task<ActionResult<ApiResult<bool>>> UpdateRangeUserGrade(UserGradeCreateRangeDto models)
         {
             var listUserGradeDto = new List<UserGradeCreateDto>();
@@ -105,6 +107,7 @@ namespace LW.API.Controllers.Public
         }
         
         [HttpPost("CreateRangeUserGrade")]
+        [AllowAnonymous]
         public async Task<ActionResult<ApiResult<bool>>> CreateRangeUserGrade(UserGradeCreateRangeDto models)
         {
             var listUserGradeDto = new List<UserGradeCreateDto>();
@@ -129,6 +132,7 @@ namespace LW.API.Controllers.Public
         }
         
         [HttpPut("UpdateUserGrade")]
+        [AllowAnonymous]
         public async Task<ActionResult<ApiResult<bool>>> UpdateUserGrade(UserGradeUpdateDto model)
         {
             var result = await _userGradeService.UpdateUserGrade(model);

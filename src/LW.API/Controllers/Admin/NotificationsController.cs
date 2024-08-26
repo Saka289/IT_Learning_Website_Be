@@ -17,7 +17,7 @@ namespace LW.API.Controllers.Admin
 {
     [Route("api/[controller]")]
     [ApiController]
-    [Authorize(Roles = RoleConstant.RoleAdmin)]
+    [Authorize]
     public class NotificationsController : ControllerBase
     {
         private readonly INotificationService _notificationService;

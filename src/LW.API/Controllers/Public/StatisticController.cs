@@ -37,10 +37,10 @@ namespace LW.API.Controllers.Public
             return Ok(result);
         }
 
-        [HttpGet("CountRole")]
-        public async Task<ActionResult<ApiResult<int>>> CountRole()
+        [HttpGet("CountUserByRole")]
+        public async Task<ActionResult<ApiResult<IEnumerable<StatisticRoleDto>>>> CountUserByRole()
         {
-            var result = await _statisticService.CountRole();
+            var result = await _statisticService.CountUserByRole();
             if (!result.IsSucceeded)
             {
                 return NotFound(result);
