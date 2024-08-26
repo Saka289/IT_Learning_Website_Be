@@ -29,8 +29,6 @@ using LW.Shared.DTOs.Solution;
 
 namespace LW.UnitTests.Service
 {
-
-
     [TestFixture]
     public class GradeServiceTests
     {
@@ -102,15 +100,15 @@ namespace LW.UnitTests.Service
         {
             // Arrange
             var grades = new List<Grade>
-        {
-            new Grade { Id = 1, Title = "Grade 1" },
-            new Grade { Id = 2, Title = "Grade 2" }
-        };
+            {
+                new Grade { Id = 1, Title = "Grade 1" },
+                new Grade { Id = 2, Title = "Grade 2" }
+            };
             var gradeDtos = new List<GradeDto>
-        {
-            new GradeDto { Id = 1, Title = "Grade 1" },
-            new GradeDto { Id = 2, Title = "Grade 2" }
-        };
+            {
+                new GradeDto { Id = 1, Title = "Grade 1" },
+                new GradeDto { Id = 2, Title = "Grade 2" }
+            };
 
             _gradeRepository.GetAllGrade().Returns(Task.FromResult(grades.AsEnumerable()));
             _mapper.Map<IEnumerable<GradeDto>>(grades).Returns(gradeDtos);
@@ -122,7 +120,6 @@ namespace LW.UnitTests.Service
             Assert.IsTrue(result.IsSucceeded);
             Assert.AreEqual(gradeDtos, result.Data);
         }
-
 
 
         [Test]
@@ -223,7 +220,8 @@ namespace LW.UnitTests.Service
             //_gradeRepository.SaveChangesAsync().Returns(Task.CompletedTask);
 
             // Mock _elasticSearchService.CreateDocumentAsync()
-           _elasticSearchService.CreateDocumentAsync(Arg.Any<string>(), Arg.Any<GradeDto>(), Arg.Any<Func<GradeDto, int>>())
+            _elasticSearchService
+                .CreateDocumentAsync(Arg.Any<string>(), Arg.Any<GradeDto>(), Arg.Any<Func<GradeDto, int>>())
                 .Returns(Task.FromResult("Some result"));
 
             // Mock _elasticSearchService.UpdateDocumentAsync()
@@ -231,13 +229,15 @@ namespace LW.UnitTests.Service
                 .Returns(Task.FromResult("Some result"));
 
             // Mock _documentRepository.GetAllDocumentByGrade()
-            _documentRepository.GetAllDocumentByGrade(gradeUpdateDto.Id).Returns(Task.FromResult((IEnumerable<Document>)documents));
+            _documentRepository.GetAllDocumentByGrade(gradeUpdateDto.Id)
+                .Returns(Task.FromResult((IEnumerable<Document>)documents));
 
             // Mock _mapper.Map<IEnumerable<DocumentDto>>(documents)
             _mapper.Map<IEnumerable<DocumentDto>>(documents).Returns(documentDtos);
 
             // Mock _elasticSearchDocumentService.UpdateDocumentRangeAsync()
-            _elasticSearchDocumentService.UpdateDocumentRangeAsync(Arg.Any<string>(), Arg.Any<IEnumerable<DocumentDto>>(), Arg.Any<Func<DocumentDto, int>>())
+            _elasticSearchDocumentService.UpdateDocumentRangeAsync(Arg.Any<string>(),
+                    Arg.Any<IEnumerable<DocumentDto>>(), Arg.Any<Func<DocumentDto, int>>())
                 .Returns(Task.FromResult(Enumerable.Empty<string>()));
 
             // Act
@@ -248,9 +248,9 @@ namespace LW.UnitTests.Service
             Assert.AreEqual(null, result.Data);
 
             // Verifications
-            await _elasticSearchService.Received(1).UpdateDocumentAsync(ElasticConstant.ElasticGrades, gradeDto, gradeDto.Id);
+            await _elasticSearchService.Received(1)
+                .UpdateDocumentAsync(ElasticConstant.ElasticGrades, gradeDto, gradeDto.Id);
         }
-
 
 
         [Test]
@@ -282,32 +282,35 @@ namespace LW.UnitTests.Service
             int gradeId = 1;
             var grade = new Grade { Id = gradeId };
             var documents = new List<Document>
-    {
-        new Document { Id = 1 },
-        new Document { Id = 2 }
-    };
+            {
+                new Document { Id = 1 },
+                new Document { Id = 2 }
+            };
             var topics = new List<Topic>
-    {
-        new Topic { Id = 1 },
-        new Topic { Id = 2 }
-    };
+            {
+                new Topic { Id = 1 },
+                new Topic { Id = 2 }
+            };
             var topicChildren = new List<Topic>
-    {
-        new Topic { Id = 3 },
-        new Topic { Id = 4 }
-    };
+            {
+                new Topic { Id = 3 },
+                new Topic { Id = 4 }
+            };
             var lessons = new List<Lesson>
-    {
-        new Lesson { Id = 1 },
-        new Lesson { Id = 2 }
-    };
+            {
+                new Lesson { Id = 1 },
+                new Lesson { Id = 2 }
+            };
 
             // Mock return values
             _gradeRepository.GetGradeById(gradeId).Returns(Task.FromResult(grade));
-            _documentRepository.GetAllDocumentByGrade(gradeId).Returns(Task.FromResult((IEnumerable<Document>)documents));
+            _documentRepository.GetAllDocumentByGrade(gradeId)
+                .Returns(Task.FromResult((IEnumerable<Document>)documents));
             _topicRepository.GetAllTopicByDocument(Arg.Any<int>()).Returns(Task.FromResult((IEnumerable<Topic>)topics));
-            _topicRepository.GetAllTopicChild(Arg.Any<int>()).Returns(Task.FromResult((IEnumerable<Topic>)topicChildren));
-            _lessonRepository.GetAllLessonByTopic(Arg.Any<int>()).Returns(Task.FromResult((IEnumerable<Lesson>)lessons));
+            _topicRepository.GetAllTopicChild(Arg.Any<int>())
+                .Returns(Task.FromResult((IEnumerable<Topic>)topicChildren));
+            _lessonRepository.GetAllLessonByTopic(Arg.Any<int>())
+                .Returns(Task.FromResult((IEnumerable<Lesson>)lessons));
 
             _elasticSearchDocumentService
                 .DeleteDocumentRangeAsync(ElasticConstant.ElasticDocuments, Arg.Any<List<int>>())
@@ -322,7 +325,8 @@ namespace LW.UnitTests.Service
                 .Returns(Task.FromResult(true)); // Ensure type matches
 
             _gradeRepository.DeleteGrade(gradeId).Returns(Task.FromResult(true));
-            _elasticSearchService.DeleteDocumentAsync(ElasticConstant.ElasticGrades, gradeId).Returns(Task.FromResult(true));
+            _elasticSearchService.DeleteDocumentAsync(ElasticConstant.ElasticGrades, gradeId)
+                .Returns(Task.FromResult(true));
 
             // Act
             var result = await _gradeService.DeleteGrade(gradeId);
@@ -340,7 +344,5 @@ namespace LW.UnitTests.Service
             await _gradeRepository.Received().DeleteGrade(gradeId);
             await _elasticSearchService.Received().DeleteDocumentAsync(ElasticConstant.ElasticGrades, gradeId);
         }
-
     }
-
 }

@@ -80,12 +80,14 @@ namespace LW.UnitTests.Service
                 tagRepository
             );
         }
+
         [Test]
         public async Task CreateServiceDocumentNotFoundReturnDocumentNotFound()
         {
             // arrange
             TopicCreateDto topicCreateDto = new TopicCreateDto();
-            NSubstitute.Core.ConfiguredCall configuredCall = documentRepository.GetDocumentById(topicCreateDto.DocumentId).Returns((Document)null);
+            NSubstitute.Core.ConfiguredCall configuredCall =
+                documentRepository.GetDocumentById(topicCreateDto.DocumentId).Returns((Document)null);
 
             // act 
             var result = await topicService.Create(topicCreateDto);
@@ -94,6 +96,7 @@ namespace LW.UnitTests.Service
             Assert.IsFalse(result.IsSucceeded);
             Assert.That(result.Message, Is.EqualTo("Document of topic not found !!!"));
         }
+
         [Test]
         public async Task CreateShouldCreateTopicSuccessfullyWhenDocumentExists()
         {
@@ -185,6 +188,7 @@ namespace LW.UnitTests.Service
             Assert.IsFalse(result.IsSucceeded);
             Assert.AreEqual("Topic is not found !!!", result.Message);
         }
+
         [Test]
         public async Task UpdateShouldUpdateTopicAndCreateOrUpdateElasticTopic()
         {
@@ -206,7 +210,8 @@ namespace LW.UnitTests.Service
             topicRepository.GetTopicById(1).Returns(topic);
             mapper.Map(model, topic).Returns(updatedTopic);
             mapper.Map<TopicDto>(updatedTopic).Returns(topicDto);
-            elasticSearchService.UpdateDocumentAsync(ElasticConstant.ElasticTopics, topicDto, model.ParentId.Value).Returns(Task.FromResult("some String"));
+            elasticSearchService.UpdateDocumentAsync(ElasticConstant.ElasticTopics, topicDto, model.ParentId.Value)
+                .Returns(Task.FromResult("some String"));
 
             // Act
             var result = await topicService.Update(model);
@@ -262,7 +267,7 @@ namespace LW.UnitTests.Service
             // Assert
             Assert.IsTrue(result.IsSucceeded);
             Assert.AreEqual("Update status of topic successfully", result.Message);
-          
+
             await elasticSearchService.Received(1).UpdateDocumentAsync(
                 ElasticConstant.ElasticTopics, parentTopicDto, parentId
             );
@@ -292,7 +297,8 @@ namespace LW.UnitTests.Service
             var emptyLessonList = new List<Lesson>();
 
             topicRepository.GetTopicByAllId(topicId).Returns(Task.FromResult(topicEntity));
-            lessonRepository.GetAllLessonByTopic(topicId).Returns(Task.FromResult<IEnumerable<Lesson>>(emptyLessonList));
+            lessonRepository.GetAllLessonByTopic(topicId)
+                .Returns(Task.FromResult<IEnumerable<Lesson>>(emptyLessonList));
             topicRepository.DeleteTopic(topicId).Returns(Task.FromResult(true));
 
             // Act
@@ -323,7 +329,6 @@ namespace LW.UnitTests.Service
             // Assert
             Assert.IsTrue(result.IsSucceeded);
             Assert.AreEqual("Delete topic successfully", result.Message);
-           
         }
 
         [Test]
@@ -342,7 +347,7 @@ namespace LW.UnitTests.Service
             Assert.IsFalse(result.IsSucceeded);
             Assert.AreEqual("List topic is null !!!", result.Message);
         }
-       
+
 
         [Test]
         public async Task GetAllShouldReturnAllTopicsSuccessfullyWhenStatusFilterIsNotApplied()
@@ -350,15 +355,15 @@ namespace LW.UnitTests.Service
             // Arrange
             var status = (bool?)null;
             var topics = new List<Topic>
-        {
-            new Topic { Id = 1, Title = "Topic 1", IsActive = true },
-            new Topic { Id = 2, Title = "Topic 2", IsActive = false }
-        };
+            {
+                new Topic { Id = 1, Title = "Topic 1", IsActive = true },
+                new Topic { Id = 2, Title = "Topic 2", IsActive = false }
+            };
             var topicDtos = new List<TopicDto>
-        {
-            new TopicDto { Id = 1, Title = "Topic 1", IsActive = true },
-            new TopicDto { Id = 2, Title = "Topic 2", IsActive = false }
-        };
+            {
+                new TopicDto { Id = 1, Title = "Topic 1", IsActive = true },
+                new TopicDto { Id = 2, Title = "Topic 2", IsActive = false }
+            };
 
             topicRepository.GetAllTopic().Returns(Task.FromResult((IEnumerable<Topic>)topics));
             mapper.Map<IEnumerable<TopicDto>>(topics).Returns(topicDtos);
@@ -396,16 +401,16 @@ namespace LW.UnitTests.Service
             // Arrange
             int documentId = 1;
             var topics = new List<Topic>
-        {
-            new Topic { Id = 1, Title = "Topic 1" },
-            new Topic { Id = 2, Title = "Topic 2" }
-        };
+            {
+                new Topic { Id = 1, Title = "Topic 1" },
+                new Topic { Id = 2, Title = "Topic 2" }
+            };
 
             var topicDtos = new List<TopicDto>
-        {
-            new TopicDto { Id = 1, Title = "Topic 1" },
-            new TopicDto { Id = 2, Title = "Topic 2" }
-        };
+            {
+                new TopicDto { Id = 1, Title = "Topic 1" },
+                new TopicDto { Id = 2, Title = "Topic 2" }
+            };
 
             topicRepository.GetAllTopicByDocument(documentId).Returns(Task.FromResult<IEnumerable<Topic>>(topics));
             mapper.Map<IEnumerable<TopicDto>>(topics).Returns(topicDtos);
@@ -506,5 +511,4 @@ namespace LW.UnitTests.Service
             Assert.AreEqual("Topic not found !!!", result.Message);
         }
     }
-
 }

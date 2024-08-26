@@ -20,9 +20,8 @@ using System.Threading.Tasks;
 
 namespace LW.UnitTests.Services.PublicUnitTests
 {
-    public  class QuizQuestionServiceTest
+    public class QuizQuestionServiceTest
     {
-
         [TestFixture]
         public class QuizQuestionServiceTests
         {
@@ -34,7 +33,6 @@ namespace LW.UnitTests.Services.PublicUnitTests
             private Mock<ICloudinaryService> _mockCloudinaryService;
             private Mock<IMapper> _mockMapper;
             private Mock<IRedisCache<string>> _mockRedisCacheService;
-
             private QuizQuestionService _quizQuestionService;
 
             [SetUp]
@@ -88,14 +86,13 @@ namespace LW.UnitTests.Services.PublicUnitTests
                 {
                     HashQuestion = 1,
                     Content = "Duplicate Question",
-                     QuestionLevel = (EQuestionLevel)1,
+                    QuestionLevel = (EQuestionLevel)1,
                     Type = (ETypeQuestion)1,
-
                 };
                 var processHashNum = new HashSet<(int, string)>
-            {
-                (1, "Duplicate Question")
-            };
+                {
+                    (1, "Duplicate Question")
+                };
 
                 // Act
                 var result = _quizQuestionService.ValidateQuizQuestionImportDto(dto, processHashNum);
@@ -157,7 +154,7 @@ namespace LW.UnitTests.Services.PublicUnitTests
                     Type = (ETypeQuestion)1,
                     HashQuestion = 1,
                     Content = "Valid Question",
-                    QuestionLevel = (EQuestionLevel) 1 
+                    QuestionLevel = (EQuestionLevel)1
                 };
                 var processHashNum = new HashSet<(int, string)>();
 
@@ -184,7 +181,8 @@ namespace LW.UnitTests.Services.PublicUnitTests
             int expectedType = (int)ETypeQuestion.QuestionMultiChoice; // Assuming it is 1
 
             // Assert
-            Assert.AreEqual(expectedType, actualType, $"Expected type for '{typeDisplayName}' was {expectedType} but got {actualType}");
+            Assert.AreEqual(expectedType, actualType,
+                $"Expected type for '{typeDisplayName}' was {expectedType} but got {actualType}");
         }
 
         [Test]
@@ -194,7 +192,8 @@ namespace LW.UnitTests.Services.PublicUnitTests
             string invalidTypeDisplayName = "NonExistentType";
 
             // Act & Assert
-            Assert.AreEqual(EnumHelperExtensions.GetEnumIntValueFromDisplayName<ETypeQuestion>(invalidTypeDisplayName), 0);
+            Assert.AreEqual(EnumHelperExtensions.GetEnumIntValueFromDisplayName<ETypeQuestion>(invalidTypeDisplayName),
+                0);
         }
 
         [Test]
@@ -207,9 +206,8 @@ namespace LW.UnitTests.Services.PublicUnitTests
             // Act & Assert
             Assert.AreEqual(EnumHelperExtensions.GetEnumIntValueFromDisplayName<ETypeQuestion>(nullDisplayName), 0);
             Assert.AreEqual(EnumHelperExtensions.GetEnumIntValueFromDisplayName<ETypeQuestion>(emptyDisplayName), 0);
-            
-        }  
-        
+        }
+
         [Test]
         public void GetEnumIntValueFromDisplayName_ValidLevelDisplayName_ReturnsCorrectIntValue()
         {
@@ -224,7 +222,8 @@ namespace LW.UnitTests.Services.PublicUnitTests
 
             // Assert
             // optional message parameter when assert error 
-            Assert.AreEqual(expectedType, actualType, $"Expected type for '{typeDisplayName}' was {expectedType} but got {actualType}");
+            Assert.AreEqual(expectedType, actualType,
+                $"Expected type for '{typeDisplayName}' was {expectedType} but got {actualType}");
         }
 
         [Test]
@@ -234,7 +233,8 @@ namespace LW.UnitTests.Services.PublicUnitTests
             string invalidTypeDisplayName = "NonExistentType";
 
             // Act & Assert
-            Assert.AreEqual(EnumHelperExtensions.GetEnumIntValueFromDisplayName<EQuestionLevel>(invalidTypeDisplayName), 0);
+            Assert.AreEqual(EnumHelperExtensions.GetEnumIntValueFromDisplayName<EQuestionLevel>(invalidTypeDisplayName),
+                0);
         }
 
         [Test]
@@ -247,8 +247,6 @@ namespace LW.UnitTests.Services.PublicUnitTests
             // Act & Assert
             Assert.AreEqual(EnumHelperExtensions.GetEnumIntValueFromDisplayName<EQuestionLevel>(nullDisplayName), 0);
             Assert.AreEqual(EnumHelperExtensions.GetEnumIntValueFromDisplayName<EQuestionLevel>(emptyDisplayName), 0);
-            
         }
-
     }
 }
