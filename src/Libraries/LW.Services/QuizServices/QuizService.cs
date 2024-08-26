@@ -4,10 +4,12 @@ using LW.Data.Entities;
 using LW.Data.Repositories.GradeRepositories;
 using LW.Data.Repositories.LessonRepositories;
 using LW.Data.Repositories.QuizRepositories;
+using LW.Data.Repositories.TagRepositories;
 using LW.Data.Repositories.TopicRepositories;
 using LW.Infrastructure.Extensions;
 using LW.Shared.Constant;
 using LW.Shared.DTOs.Quiz;
+using LW.Shared.DTOs.Tag;
 using LW.Shared.Enums;
 using LW.Shared.SeedWork;
 using Microsoft.EntityFrameworkCore;
@@ -22,13 +24,14 @@ public class QuizService : IQuizService
     private readonly ILessonRepository _lessonRepository;
     private readonly ITopicRepository _topicRepository;
     private readonly IGradeRepository _gradeRepository;
+    private readonly ITagRepository _tagRepository;
     private readonly IMapper _mapper;
     private readonly IElasticSearchService<QuizDto, int> _elasticSearchService;
     private readonly ILogger _logger;
 
     public QuizService(IQuizRepository quizRepository, IMapper mapper,
         IElasticSearchService<QuizDto, int> elasticSearchService, ILogger logger, ILessonRepository lessonRepository,
-        ITopicRepository topicRepository, IGradeRepository gradeRepository)
+        ITopicRepository topicRepository, IGradeRepository gradeRepository, ITagRepository tagRepository)
     {
         _quizRepository = quizRepository;
         _mapper = mapper;
@@ -37,6 +40,7 @@ public class QuizService : IQuizService
         _lessonRepository = lessonRepository;
         _topicRepository = topicRepository;
         _gradeRepository = gradeRepository;
+        _tagRepository = tagRepository;
     }
 
     public async Task<ApiResult<IEnumerable<QuizDto>>> GetAllQuiz(bool? status)
@@ -188,6 +192,29 @@ public class QuizService : IQuizService
         }
 
         return new ApiSuccessResult<IEnumerable<QuizDto>>(quizList);
+    }
+
+    public async Task<ApiResult<IEnumerable<TagDto>>> GetQuizIdByTag(int id)
+    {
+        var quiz = await _quizRepository.GetQuizById(id);
+        if (quiz is null)
+        {
+            return new ApiResult<IEnumerable<TagDto>>(false, "Quiz not found !!!");
+        }
+
+        var listStringTag = quiz.KeyWord.Trim().Split(',', StringSplitOptions.RemoveEmptyEntries);
+        var listTag = new List<Tag>();
+        foreach (var item in listStringTag)
+        {
+            var tagEntity = await _tagRepository.GetTagByKeyword(item);
+            if (tagEntity is not null)
+            {
+                listTag.Add(tagEntity);
+            }
+        }
+
+        var result = _mapper.Map<IEnumerable<TagDto>>(listTag);
+        return new ApiSuccessResult<IEnumerable<TagDto>>(result);
     }
 
     public async Task<ApiResult<QuizDto>> GetQuizById(int id)

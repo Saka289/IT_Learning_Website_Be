@@ -7,6 +7,7 @@ using LW.API.Application.Validators.QuizValidator;
 using LW.Services.QuizServices;
 using LW.Shared.Constant;
 using LW.Shared.DTOs.Quiz;
+using LW.Shared.DTOs.Tag;
 using LW.Shared.Enums;
 using LW.Shared.SeedWork;
 using Microsoft.AspNetCore.Authorization;
@@ -65,6 +66,19 @@ namespace LW.API.Controllers.Public
                 return NotFound(result);
             }
             
+            return Ok(result);
+        }
+        
+        [HttpGet("GetQuizIdByTag/{id}")]
+        [AllowAnonymous]
+        public async Task<ActionResult<ApiResult<IEnumerable<TagDto>>>> GetQuizIdByTag(int id)
+        {
+            var result = await _quizService.GetQuizIdByTag(id);
+            if (!result.IsSucceeded)
+            {
+                return NotFound(result);
+            }
+
             return Ok(result);
         }
 

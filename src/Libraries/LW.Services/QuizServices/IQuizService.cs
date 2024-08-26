@@ -1,4 +1,5 @@
 ﻿using LW.Shared.DTOs.Quiz;
+using LW.Shared.DTOs.Tag;
 using LW.Shared.Enums;
 using LW.Shared.SeedWork;
 
@@ -9,6 +10,7 @@ public interface IQuizService
     Task<ApiResult<IEnumerable<QuizDto>>> GetAllQuiz(bool? status);
     Task<ApiResult<PagedList<QuizDto>>> GetAllQuizPagination(SearchQuizDto searchQuizDto);
     Task<ApiResult<IEnumerable<QuizDto>>> GetAllQuizNoPagination(SearchQuizDto searchQuizDto);
+    Task<ApiResult<IEnumerable<TagDto>>> GetQuizIdByTag(int id);
     Task<ApiResult<QuizDto>> GetQuizById(int id);
     Task<ApiResult<bool>> UpdateQuizStatus(int id);
     Task<ApiResult<QuizDto>> CreateQuiz(QuizCreateDto quizCreateDto);
