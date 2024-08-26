@@ -73,7 +73,7 @@ public class ExamCodeService : IExamCodeService
         }
         // check code  is existed
         var codeExist =
-            await _examCodeRepository.GetExamCodeByCode(examCodeCreateDto.Code);
+            await _examCodeRepository.GetExamCodeByCode(examCodeCreateDto.ExamId, examCodeCreateDto.Code);
         if (codeExist != null)
         {
             return new ApiResult<ExamCodeDto>(false,
@@ -98,41 +98,6 @@ public class ExamCodeService : IExamCodeService
         return new ApiResult<ExamCodeDto>(true, result, "Create code for exam successfully");
     }
 
-    public async Task<ApiResult<IEnumerable<ExamCodeDto>>> CreateRangeExamCode(ExamCodeCreateRangeDto ExamCodeCreateRangeDtos)
-    {
-        var exam = await _examRepository.GetExamById(ExamCodeCreateRangeDtos.ExamId);
-        if (exam == null)
-        {
-            return new ApiResult<IEnumerable<ExamCodeDto>>(false, $"Not find exam with examId = {ExamCodeCreateRangeDtos.ExamId}");
-        }
-        foreach (var examCode  in ExamCodeCreateRangeDtos.CodeDtos)
-        {
-            var codeExist = await _examCodeRepository.GetExamCodeByCode(examCode.Code);
-            if (codeExist != null)
-            {
-                return new ApiResult<IEnumerable<ExamCodeDto>>(false,
-                    $"An code already exists with codeName = {examCode.Code}");
-            }
-        }
-
-        var listExamCode = new List<ExamCode>();
-        foreach (var codeDto in ExamCodeCreateRangeDtos.CodeDtos)
-        {
-            var filePath =
-                await _cloudinaryService.CreateFileAsync(codeDto.ExamFileUpload, CloudinaryConstant.FolderExamFilePdf);
-            listExamCode.Add(new ExamCode()
-            {
-                ExamId = ExamCodeCreateRangeDtos.ExamId,
-                ExamFile = filePath.Url,
-                PublicExamId = filePath.PublicId,
-                Code = codeDto.Code,
-            });
-        }
-        var rs = await _examCodeRepository.CreateRangeExamCode(listExamCode);
-        var result = _mapper.Map<IEnumerable<ExamCodeDto>>(rs);
-        return new ApiResult<IEnumerable<ExamCodeDto>>(true, result, "Create range code for exam successfully");
-    }
-
     public async Task<ApiResult<ExamCodeDto>> UpdateExamCode(ExamCodeUpdateDto examCodeUpdateDto)
     {
         var examCode = await _examCodeRepository.GetExamCodeById(examCodeUpdateDto.Id);
@@ -145,7 +110,13 @@ public class ExamCodeService : IExamCodeService
         {
             return new ApiResult<ExamCodeDto>(false, $"Not find exam with examId = {examCodeUpdateDto.ExamId}");
         }
-       
+
+        var checkExamCodeExist =
+          await  FindDuplicateExamCodeIndex(examCodeUpdateDto.Code, examCodeUpdateDto.ExamId, examCodeUpdateDto.Id);
+        if (checkExamCodeExist)
+        {
+            return new ApiResult<ExamCodeDto>(false, $"Đã tồn tại mã đề này");
+        }
         var objUpdate = _mapper.Map(examCodeUpdateDto, examCode);
         if (examCodeUpdateDto.ExamFileUpload != null && examCodeUpdateDto.ExamFileUpload.Length > 0)
         {
@@ -169,5 +140,21 @@ public class ExamCodeService : IExamCodeService
         await _examCodeRepository.DeleteAsync(examCode);
         await _cloudinaryService.DeleteFileAsync(examCode.PublicExamId);
         return new ApiResult<bool>(true, "Delete exam code successfully");
+    }
+    private async Task<bool> FindDuplicateExamCodeIndex(string code,int examId,int id = 0)
+    {
+        var listExamCode = await _examCodeRepository.GetAllExamCodeByExamId(examId);
+        if (id > 0)
+        {
+            listExamCode = listExamCode.Where(l => l.Id != id);
+        }
+        
+        if (listExamCode.Any(l => l.Code == code))
+        {
+            return true;
+        }
+
+
+        return false;
     }
 }

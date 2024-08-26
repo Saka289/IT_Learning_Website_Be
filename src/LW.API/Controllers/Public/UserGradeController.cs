@@ -8,6 +8,7 @@ using LW.Services.UserGradeServices;
 using LW.Shared.DTOs;
 using LW.Shared.DTOs.Grade;
 using LW.Shared.SeedWork;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 
@@ -15,6 +16,7 @@ namespace LW.API.Controllers.Public
 {
     [Route("api/[controller]")]
     [ApiController]
+    [Authorize]
     public class UserGradeController : ControllerBase
     {
         private readonly IUserGradeService _userGradeService;
@@ -22,7 +24,9 @@ namespace LW.API.Controllers.Public
         {
             _userGradeService = userGradeService;
         }
+        
         [HttpGet("GetAllUserGrade")]
+        [AllowAnonymous]
         public async Task<ActionResult<ApiResult<IEnumerable<UserGradeDto>>>> GetAllUserGrade()
         {
             var result = await _userGradeService.GetAllUserGrade();
@@ -32,7 +36,9 @@ namespace LW.API.Controllers.Public
             }
             return Ok(result);
         }
+        
         [HttpGet("GetUserGradeById/{id}")]
+        [AllowAnonymous]
         public async Task<ActionResult<ApiResult<UserGradeDto>>> GetUserGradeById(int id)
         {
             var result = await _userGradeService.GeUserGradeById(id);
@@ -42,7 +48,9 @@ namespace LW.API.Controllers.Public
             }
             return Ok(result);
         }
+        
         [HttpGet("GetUserGradeByUserId/{userId}")]
+        [AllowAnonymous]
         public async Task<ActionResult<ApiResult<UserGradeDto>>> GetUserGradeByUserId(string userId)
         {
             var result = await _userGradeService.GetAllUserGradeByUserId(userId);
@@ -52,7 +60,9 @@ namespace LW.API.Controllers.Public
             }
             return Ok(result);
         }
+        
         [HttpPost("CreateUserGrade")]
+        [AllowAnonymous]
         public async Task<ActionResult<ApiResult<bool>>> CreateUserGrade(UserGradeCreateDto model)
         {
             var validationResult = await new CreateUserGradeCommandValidator().ValidateAsync(model);
@@ -67,7 +77,9 @@ namespace LW.API.Controllers.Public
             }
             return Ok(result);
         }
+        
         [HttpPost("UpdateRangeUserGrade")]
+        [AllowAnonymous]
         public async Task<ActionResult<ApiResult<bool>>> UpdateRangeUserGrade(UserGradeCreateRangeDto models)
         {
             var listUserGradeDto = new List<UserGradeCreateDto>();
@@ -93,7 +105,9 @@ namespace LW.API.Controllers.Public
             }
             return Ok(result);
         }
+        
         [HttpPost("CreateRangeUserGrade")]
+        [AllowAnonymous]
         public async Task<ActionResult<ApiResult<bool>>> CreateRangeUserGrade(UserGradeCreateRangeDto models)
         {
             var listUserGradeDto = new List<UserGradeCreateDto>();
@@ -116,7 +130,9 @@ namespace LW.API.Controllers.Public
             }
             return Ok(result);
         }
+        
         [HttpPut("UpdateUserGrade")]
+        [AllowAnonymous]
         public async Task<ActionResult<ApiResult<bool>>> UpdateUserGrade(UserGradeUpdateDto model)
         {
             var result = await _userGradeService.UpdateUserGrade(model);
@@ -126,6 +142,7 @@ namespace LW.API.Controllers.Public
             }
             return Ok(result);
         }
+        
         [HttpDelete("DeleteUserGrade")]
         public async Task<ActionResult<ApiResult<bool>>> DeleteUserGrade(int id)
         {
@@ -136,6 +153,7 @@ namespace LW.API.Controllers.Public
             }
             return Ok(result);
         }
+        
         [HttpDelete("DeleteRangeUserGrade/{userId}")]
         public async Task<ActionResult<ApiResult<bool>>> DeleteRangeUserGrade(string userId)
         {

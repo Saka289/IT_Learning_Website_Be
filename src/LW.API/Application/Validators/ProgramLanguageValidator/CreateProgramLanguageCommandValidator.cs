@@ -9,6 +9,6 @@ public class CreateProgramLanguageCommandValidator : AbstractValidator<ProgramLa
     {
         RuleFor(x => x.Name).NotNull().NotEmpty();
         RuleFor(x => x.BaseId).NotNull().GreaterThan(0);
-        RuleFor(x => x.IsActive).NotNull().NotEmpty();
+        RuleFor(x => x.IsActive).NotNull();
     }
 }

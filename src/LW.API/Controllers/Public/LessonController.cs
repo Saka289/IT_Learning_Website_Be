@@ -7,6 +7,7 @@ using LW.API.Application.Validators.LessonValidator;
 using LW.Services.LessonServices;
 using LW.Shared.Constant;
 using LW.Shared.DTOs.Lesson;
+using LW.Shared.DTOs.Tag;
 using LW.Shared.SeedWork;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
@@ -17,6 +18,7 @@ namespace LW.API.Controllers.Public
 {
     [Route("api/[controller]")]
     [ApiController]
+    [Authorize(Roles = $"{RoleConstant.RoleAdmin},{RoleConstant.RoleContentManager}")]
     public class LessonController : ControllerBase
     {
         private readonly ILessonService _lessonService;
@@ -27,9 +29,10 @@ namespace LW.API.Controllers.Public
         }
 
         [HttpGet("GetAllLesson")]
-        public async Task<ActionResult<ApiResult<IEnumerable<LessonDto>>>> GetAllLesson()
+        [AllowAnonymous]
+        public async Task<ActionResult<ApiResult<IEnumerable<LessonDto>>>> GetAllLesson(bool? status)
         {
-            var result = await _lessonService.GetAllLesson();
+            var result = await _lessonService.GetAllLesson(status);
             if (!result.IsSucceeded)
             {
                 return NotFound(result);
@@ -39,9 +42,23 @@ namespace LW.API.Controllers.Public
         }
 
         [HttpGet("GetAllLessonByTopic/{topicId}")]
-        public async Task<ActionResult<ApiResult<IEnumerable<LessonDto>>>> GetAllLessonByTopic(int topicId)
+        [AllowAnonymous]
+        public async Task<ActionResult<ApiResult<IEnumerable<LessonDto>>>> GetAllLessonByTopic(int topicId, bool? status)
         {
-            var result = await _lessonService.GetAllLessonByTopic(topicId);
+            var result = await _lessonService.GetAllLessonByTopic(topicId, status);
+            if (!result.IsSucceeded)
+            {
+                return NotFound(result);
+            }
+
+            return Ok(result);
+        }
+        
+        [HttpGet("GetLessonIdByTag/{id}")]
+        [AllowAnonymous]
+        public async Task<ActionResult<ApiResult<IEnumerable<TagDto>>>> GetLessonIdByTag(int id)
+        {
+            var result = await _lessonService.GetLessonIdByTag(id);
             if (!result.IsSucceeded)
             {
                 return NotFound(result);
@@ -51,6 +68,7 @@ namespace LW.API.Controllers.Public
         }
 
         [HttpGet("GetAllLessonPagination")]
+        [AllowAnonymous]
         public async Task<ActionResult<ApiResult<PagedList<LessonDto>>>> GetAllLessonPagination([FromQuery] SearchLessonDto searchLessonDto)
         {
             var result = await _lessonService.GetAllLessonPagination(searchLessonDto);
@@ -64,6 +82,7 @@ namespace LW.API.Controllers.Public
         }
 
         [HttpGet("GetLessonById/{id}")]
+        [AllowAnonymous]
         public async Task<ActionResult<ApiResult<LessonDto>>> GetLessonById([Required] int id)
         {
             var result = await _lessonService.GetLessonById(id);

@@ -113,17 +113,17 @@ public class LoginUserTest
         var roles = new List<string> { "User" };
         var accessToken = "access_token";
         var refreshToken = "new_refresh_token";
-        
+
         _userManager.Users.Returns(new List<ApplicationUser> { user }.AsQueryable().BuildMock());
         _userManager.CheckPasswordAsync(user, model.Password).Returns(true);
         _userManager.GetRolesAsync(user).Returns(roles);
         _jwtTokenService.GenerateAccessToken(user, roles).Returns(accessToken);
         _jwtTokenService.GenerateRefreshToken().Returns(refreshToken);
         _userManager.UpdateAsync(user).Returns(IdentityResult.Success);
-        
+
         // Act
         var result = await _userService.Login(model);
-        
+
         // Assert
         Assert.IsTrue(result.IsSucceeded);
         Assert.AreEqual("Login successfully !!!", result.Message);
@@ -180,8 +180,4 @@ public class LoginUserTest
         Assert.AreEqual(user.FirstName + " " + user.LastName, result.Data.UserDto.FullName);
         Assert.AreEqual(user.PhoneNumber, result.Data.UserDto.PhoneNumber);
     }
-
-
-
-
 }

@@ -79,6 +79,12 @@ public class ExecuteCodeService : IExecuteCodeService
             return new ApiResult<ExecuteCodeDto>(false, "Problem not found !!!");
         }
 
+        var isDuplicate = await FindDuplicateExecuteCode(executeCodeCreateDto.ProblemId, executeCodeCreateDto.LanguageId, true);
+        if (!isDuplicate)
+        {
+            return new ApiResult<ExecuteCodeDto>(false, "ExecuteCode is duplicate !!!");
+        }
+
         var language = await _programLanguageRepository.GetProgramLanguageById(executeCodeCreateDto.LanguageId);
         if (language is null)
         {
@@ -109,6 +115,12 @@ public class ExecuteCodeService : IExecuteCodeService
         if (executeCode is null)
         {
             return new ApiResult<ExecuteCodeDto>(false, "Execute not found !!!");
+        }
+        
+        var isDuplicate = await FindDuplicateExecuteCode(executeCodeUpdateDto.ProblemId, executeCodeUpdateDto.LanguageId, false, executeCode.LanguageId);
+        if (!isDuplicate)
+        {
+            return new ApiResult<ExecuteCodeDto>(false, "ExecuteCode is duplicate !!!");
         }
         
         var executeCodeMapper = _mapper.Map(executeCodeUpdateDto, executeCode);
@@ -142,6 +154,12 @@ public class ExecuteCodeService : IExecuteCodeService
             if (problem is null)
             {
                 return new ApiResult<bool>(false, "Problem not found !!!");
+            }
+            
+            var isDuplicate = await FindDuplicateExecuteCode(item.ProblemId, item.LanguageId, true);
+            if (!isDuplicate)
+            {
+                return new ApiResult<bool>(false, "ExecuteCode is duplicate !!!");
             }
 
             var language = await _programLanguageRepository.GetProgramLanguageById(item.LanguageId);
@@ -178,6 +196,12 @@ public class ExecuteCodeService : IExecuteCodeService
             {
                 return new ApiResult<bool>(false, "Execute not found !!!");
             }
+            
+            var isDuplicate = await FindDuplicateExecuteCode(item.ProblemId, item.LanguageId, false, executeCode.LanguageId);
+            if (!isDuplicate)
+            {
+                return new ApiResult<bool>(false, "ExecuteCode is duplicate !!!");
+            }
 
             var executeCodeMapper = _mapper.Map(item, executeCode);
             await _executeCodeRepository.UpdateExecuteCode(executeCodeMapper);
@@ -212,5 +236,20 @@ public class ExecuteCodeService : IExecuteCodeService
         }
 
         return new ApiSuccessResult<bool>(true);
+    }
+
+    private async Task<bool> FindDuplicateExecuteCode(int problemId, int languageIdNew, bool createOrUpdate, int languageIdOld = 0)
+    {
+        var executeCodeList = await _executeCodeRepository.GetAllExecuteCodeByProblemId(problemId);
+        if (!createOrUpdate)
+        {
+            executeCodeList = executeCodeList.Where(e => e.LanguageId != languageIdOld);
+        }
+        if (executeCodeList.Any(e => e.LanguageId == languageIdNew))
+        {
+            return false;
+        }
+
+        return true;
     }
 }

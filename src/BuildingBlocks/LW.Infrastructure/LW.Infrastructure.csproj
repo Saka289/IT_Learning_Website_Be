@@ -13,7 +13,7 @@
     </ItemGroup>
 
     <ItemGroup>
-      <PackageReference Include="Aspose.PDF" Version="24.6.0" />
+      <PackageReference Include="Aspose.PDF.Drawing" Version="24.7.0" />
       <PackageReference Include="CloudinaryDotNet" Version="1.26.2" />
       <PackageReference Include="MailKit" Version="4.6.0" />
       <PackageReference Include="Microsoft.AspNetCore.SignalR" Version="1.0.4" />

@@ -7,6 +7,7 @@ using LW.API.Application.Validators.PostCommentValidator;
 using LW.Services.PostCommentServices;
 using LW.Shared.DTOs.PostComment;
 using LW.Shared.SeedWork;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Newtonsoft.Json;
@@ -15,6 +16,7 @@ namespace LW.API.Controllers.Public
 {
     [Route("api/[controller]")]
     [ApiController]
+    [Authorize]
     public class PostCommentController : ControllerBase
     {
         private readonly IPostCommentService _postCommentService;
@@ -25,6 +27,7 @@ namespace LW.API.Controllers.Public
         }
 
         [HttpGet("GetAllCommentByPostIdPagination")]
+        [AllowAnonymous]
         public async Task<ActionResult<ApiResult<PagedList<PostCommentDto>>>> GetAllCommentByPostIdPagination(
             [Required] int postId, [FromQuery] PagingRequestParameters pagingRequestParameters)
         {
@@ -38,6 +41,7 @@ namespace LW.API.Controllers.Public
         }
 
         [HttpGet("GetAllCommentByParentIdPagination")]
+        [AllowAnonymous]
         public async Task<ActionResult<ApiResult<PagedList<PostCommentDto>>>> GetAllCommentByParentIdPagination(
             [Required] int parentId, [FromQuery] PagingRequestParameters pagingRequestParameters)
         {
@@ -54,6 +58,7 @@ namespace LW.API.Controllers.Public
 
 
         [HttpGet("GetPostCommentById/{id}")]
+        [AllowAnonymous]
         public async Task<ActionResult<ApiResult<PostCommentDto>>> GetCommentDocumentById(
             int id)
         {

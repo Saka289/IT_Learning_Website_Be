@@ -87,7 +87,7 @@ public class UserQuizService : IUserQuizService
                 var listBoth = listAnswer.Intersect(listAnswerUser).ToList();
                 if (listBoth.Any())
                 {
-                    if (listBoth.Count() == listAnswer.Count())
+                    if (listAnswer.Count() == listAnswerUser.Count() && listBoth.Count() == listAnswer.Count())
                     {
                         var history = new HistoryQuizDto()
                         {
@@ -136,7 +136,7 @@ public class UserQuizService : IUserQuizService
         var Totalscore = listHistory.Sum(h => h.Score);
         var userQuiz = new UserQuiz()
         {
-            Score = Totalscore,
+            Score = Math.Round(Totalscore, 2),
             NumberCorrect = numberCorrect,
             TotalQuestion = totalQuestion,
             HistoryQuizzes = _mapper.Map<List<HistoryQuiz>>(listHistory),

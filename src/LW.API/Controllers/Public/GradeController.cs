@@ -5,8 +5,10 @@ using System.Linq;
 using System.Threading.Tasks;
 using LW.API.Application.Validators.GradeValidator;
 using LW.Services.GradeServices;
+using LW.Shared.Constant;
 using LW.Shared.DTOs.Grade;
 using LW.Shared.SeedWork;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Newtonsoft.Json;
@@ -15,6 +17,7 @@ namespace LW.API.Controllers.Public
 {
     [Route("api/[controller]")]
     [ApiController]
+    [Authorize(Roles = $"{RoleConstant.RoleAdmin},{RoleConstant.RoleContentManager}")]
     public class GradeController : ControllerBase
     {
         private readonly IGradeService _gradeService;
@@ -25,6 +28,7 @@ namespace LW.API.Controllers.Public
         }
 
         [HttpGet("GetAllGrade")]
+        [AllowAnonymous]
         public async Task<ActionResult<ApiResult<IEnumerable<GradeDto>>>> GetAllGrade([Required] bool isInclude)
         {
             var result = await _gradeService.GetAllGrade(isInclude);
@@ -35,8 +39,21 @@ namespace LW.API.Controllers.Public
 
             return Ok(result);
         }
+        [HttpGet("GetAllGradeByLevelId")]
+        [AllowAnonymous]
+        public async Task<ActionResult<ApiResult<IEnumerable<GradeDto>>>> GetAllGradeByLevelId([Required] int levelId)
+        {
+            var result = await _gradeService.GetListGradeByLevelId(levelId);
+            if (!result.IsSucceeded)
+            {
+                return NotFound(result);
+            }
+
+            return Ok(result);
+        }
 
         [HttpGet("GetAllGradePagination")]
+        [AllowAnonymous]
         public async Task<ActionResult<ApiResult<PagedList<GradeDto>>>> GetAllGradePagination([FromQuery] SearchGradeDto searchGradeDto)
         {
             var result = await _gradeService.GetAllGradePagination(searchGradeDto);
@@ -50,6 +67,7 @@ namespace LW.API.Controllers.Public
         }
 
         [HttpGet("GetGradeById/{id}")]
+        [AllowAnonymous]
         public async Task<ActionResult<ApiResult<GradeDto>>> GetGradeById([Required] int id, bool isInclude)
         {
             var result = await _gradeService.GetGradeById(id, isInclude);

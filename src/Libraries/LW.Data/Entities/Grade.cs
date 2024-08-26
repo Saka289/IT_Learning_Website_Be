@@ -12,6 +12,12 @@ public class Grade : EntityAuditBase<int>
     public string KeyWord { get; set; }
     [Required] 
     public bool IsActive { get; set; }
+    
+    [Required]
+    public int LevelId { get; set; }
+    [ForeignKey(nameof(LevelId))]
+    public virtual Level Level { get; set; }
+    
     public virtual ICollection<Quiz> QuizzesCustom { get; set; }
     public virtual ICollection<Problem> ProblemsCustom { get; set; }
     public virtual ICollection<Document> Documents { get; set; }

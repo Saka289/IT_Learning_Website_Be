@@ -100,7 +100,7 @@ public class EditorialService : IEditorialService
         var imagePath = new FileImageDto();
         if (editorialUpdateDto.Image != null && editorialUpdateDto.Image.Length > 0)
         {
-            imagePath = await _cloudinaryService.UpdateImageAsync(CloudinaryConstant.FolderEditorialImage, editorialUpdateDto.Image);
+            imagePath = await _cloudinaryService.UpdateImageAsync(editorialEntity.PublicId, editorialUpdateDto.Image);
         }
         else
         {

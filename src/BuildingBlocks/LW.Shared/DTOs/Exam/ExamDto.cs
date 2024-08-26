@@ -16,7 +16,8 @@ public class ExamDto
     public int Year { set; get; }
     public int NumberQuestion { set; get; }
     public bool IsActive { get; set; }
-    public int GradeId { get; set; }
+    public int? LevelId { get; set; }
+    public int? GradeId { get; set; }
     public DateTimeOffset CreatedDate { get; set; }
     public DateTimeOffset? LastModifiedDate { get; set; }
 }
