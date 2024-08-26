@@ -38,7 +38,8 @@ public class ExamService : IExamService
     public ExamService(IMapper mapper, IExamRepository examRepository,
         IElasticSearchService<ExamDto, int> elasticSearchService, ICloudinaryService cloudinaryService,
         IExamCodeRepository examCodeRepository, ICompetitionRepository competitionRepository,
-        IGradeRepository gradeRepository, ITagRepository tagRepository, ILevelRepository levelRepository, IExamAnswerRepository examAnswerRepository)
+        IGradeRepository gradeRepository, ITagRepository tagRepository, ILevelRepository levelRepository,
+        IExamAnswerRepository examAnswerRepository)
     {
         _mapper = mapper;
         _examRepository = examRepository;
@@ -229,7 +230,9 @@ public class ExamService : IExamService
             obj.UrlDownloadSolutionFile = filePath.UrlDownload;
         }
 
-        var keyWordValue = (examCreateDto.TagValues is not null) ? examCreateDto.TagValues.ConvertToTagString() : examCreateDto.Title!.RemoveDiacritics();
+        var keyWordValue = (examCreateDto.TagValues is not null)
+            ? examCreateDto.TagValues.ConvertToTagString()
+            : examCreateDto.Title!.RemoveDiacritics();
         obj.KeyWord = keyWordValue;
         if (examCreateDto.GradeId > 0) // chon Grade thi de Level la null truowcs khi add db
         {
@@ -317,23 +320,25 @@ public class ExamService : IExamService
         {
             objUpdate.LevelId = null;
         }
-        
+
         await _examRepository.UpdateExam(objUpdate);
         if (examUpdateDto.GradeId > 0)
         {
             var gradeExist = await _gradeRepository.GetGradeById(Convert.ToInt32(examUpdateDto.GradeId), false);
             objUpdate.Grade = gradeExist;
-        }                                           
+        }
         else
         {
             var level = await _levelRepository.GetLevelById(Convert.ToInt32(examUpdateDto.LevelId));
             objUpdate.Level = level;
         }
+
         var examDto = _mapper.Map<ExamDto>(objUpdate);
         if (examDto.GradeId == null)
         {
             examDto.GradeId = 0;
         }
+
         await _elasticSearchService.UpdateDocumentAsync(ElasticConstant.ElasticExams, examDto, examUpdateDto.Id);
         return new ApiResult<ExamDto>(true, examDto, "Update exam successfully");
     }
@@ -346,15 +351,25 @@ public class ExamService : IExamService
             return new ApiResult<bool>(false, "Không tìm thấy bài kiểm tra");
         }
 
-        var examCodes = await _examCodeRepository.GetAllExamCodeByExamId(id);
-        foreach (var examCode in examCodes)
+        if (exam.Type == EExamType.TN)
         {
-            var examAnswers = await _examAnswerRepository.GetAllExamAnswerByExamCodeId(examCode.Id);
-            if (!examAnswers.Any()) // Kiểm tra nếu không có đáp án nào
+            var examCodes = await _examCodeRepository.GetAllExamCodeByExamId(id);
+            if (!examCodes.Any())
             {
-                return new ApiResult<bool>(false, $"Mã đề {examCode.Code} chưa có đầy đủ đáp án, vui lòng kiểm tra lại !");
+                return new ApiResult<bool>(false,
+                    $"Đề trắc nghiệm này chưa có mã đề, vui lòng kiểm tra lại !");
+            }
+            foreach (var examCode in examCodes)
+            {
+                var examAnswers = await _examAnswerRepository.GetAllExamAnswerByExamCodeId(examCode.Id);
+                if (!examAnswers.Any()) // Kiểm tra nếu không có đáp án nào
+                {
+                    return new ApiResult<bool>(false,
+                        $"Mã đề {examCode.Code} chưa có đầy đủ đáp án, vui lòng kiểm tra lại !");
+                }
             }
         }
+
         exam.IsActive = !exam.IsActive;
         await _examRepository.UpdateExam(exam);
         var examDto = _mapper.Map<ExamDto>(exam);
