@@ -188,7 +188,7 @@ public class LessonService : ILessonService
             return new ApiResult<LessonDto>(false, "TopicId not found !!!");
         }
 
-        var isDuplicateIndex = await FindDuplicateLessonIndex(lessonCreateDto.Index);
+        var isDuplicateIndex = await FindDuplicateLessonIndex(lessonCreateDto.Index, lessonCreateDto.TopicId);
         if (isDuplicateIndex)
         {
             return new ApiResult<LessonDto>(false, "Lesson Index is Duplicate !!!");
@@ -215,10 +215,10 @@ public class LessonService : ILessonService
                 CloudinaryConstant.FolderLessonFile);
             lessonEntity.Content = lessonCreateDto.Content.Base64Encode();
         }
-
-        lessonEntity.KeyWord = (lessonCreateDto.TagValues is not null)
-            ? lessonCreateDto.TagValues.ConvertToTagString()
-            : lessonCreateDto.Title.RemoveDiacritics();
+        
+        var title = $"{EntityConstant.TitleLesson} {lessonCreateDto.Index}: {lessonCreateDto.Title}";
+        lessonEntity.Title = title;
+        lessonEntity.KeyWord = (lessonCreateDto.TagValues is not null) ? lessonCreateDto.TagValues.ConvertToTagString() : title.RemoveDiacritics();
         lessonEntity.FilePath = filePath.Url;
         lessonEntity.PublicId = filePath.PublicId;
         lessonEntity.UrlDownload = filePath.UrlDownload;
@@ -243,7 +243,7 @@ public class LessonService : ILessonService
             return new ApiResult<LessonDto>(false, "Lesson not found !!!");
         }
         
-        var isDuplicateIndex = await FindDuplicateLessonIndex(lessonUpdateDto.Index, lessonUpdateDto.Id);
+        var isDuplicateIndex = await FindDuplicateLessonIndex(lessonUpdateDto.Index, lessonUpdateDto.TopicId, lessonUpdateDto.Id);
         if (isDuplicateIndex)
         {
             return new ApiResult<LessonDto>(false, "Lesson Index is Duplicate !!!");
@@ -272,10 +272,12 @@ public class LessonService : ILessonService
             lessonEntity.Content = lessonUpdateDto.Content.Base64Encode();
         }
 
+        var title = $"{EntityConstant.TitleLesson} {lessonUpdateDto.Index}: {lessonUpdateDto.Title}";
+        lessonEntity.Title = title;
         model.FilePath = filePath.Url;
         model.PublicId = filePath.PublicId;
         model.UrlDownload = filePath.UrlDownload;
-        model.KeyWord = (lessonUpdateDto.TagValues is not null) ? lessonUpdateDto.TagValues.ConvertToTagString() : lessonUpdateDto.Title.RemoveDiacritics();
+        model.KeyWord = (lessonUpdateDto.TagValues is not null) ? lessonUpdateDto.TagValues.ConvertToTagString() : title.RemoveDiacritics();
         var updateLesson = await _lessonRepository.UpdateLesson(model);
         await _lessonRepository.SaveChangesAsync();
         await CreateOrUpdateElasticLesson(lessonUpdateDto.Id, true);
@@ -441,9 +443,9 @@ public class LessonService : ILessonService
         return false;
     }
 
-    private async Task<bool> FindDuplicateLessonIndex(int index, int id = 0)
+    private async Task<bool> FindDuplicateLessonIndex(int index, int topicId, int id = 0)
     {
-        var listLesson = await _lessonRepository.GetAllLesson();
+        var listLesson = await _lessonRepository.GetAllLessonByTopic(topicId);
         if (id > 0)
         {
             listLesson = listLesson.Where(l => l.Id != id);
