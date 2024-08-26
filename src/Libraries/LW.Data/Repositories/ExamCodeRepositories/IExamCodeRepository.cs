@@ -6,11 +6,11 @@ namespace LW.Data.Repositories.ExamCodeRepositories;
 public interface IExamCodeRepository : IRepositoryBase<ExamCode, int>
 {
     Task<IEnumerable<ExamCode>> GetAllExamCode();
-    Task<IEnumerable<ExamCode>> GetAllExamCodeByExamId(int examId);
-    Task<ExamCode> GetExamCodeById(int id);
-    Task<ExamCode> GetExamCodeByCode(string  code);
-    Task<IEnumerable<ExamCode>> CreateRangeExamCode(IEnumerable<ExamCode> ExamCodes);
-    Task<ExamCode> CreateExamCode(ExamCode ExamCode);
-    Task<ExamCode> UpdateExamCode(ExamCode ExamCode);
+    Task<IEnumerable<ExamCode?>> GetAllExamCodeByExamId(int examId);
+    Task<ExamCode?> GetExamCodeById(int id);
+    Task<ExamCode?> GetExamCodeByCode(int examId, string code);
+    Task<IEnumerable<ExamCode>> CreateRangeExamCode(IEnumerable<ExamCode> examCodes);
+    Task<ExamCode> CreateExamCode(ExamCode examCode);
+    Task<ExamCode> UpdateExamCode(ExamCode examCode);
     Task<bool> DeleteExamCode(int id);
 }
