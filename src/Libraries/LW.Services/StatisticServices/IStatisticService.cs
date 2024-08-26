@@ -6,7 +6,7 @@ namespace LW.Services.StatisticServices;
 public interface IStatisticService
 {
     Task<ApiResult<int>> CountUser();
-    Task<ApiResult<int>> CountRole();
+    Task<ApiResult<IEnumerable<StatisticRoleDto>>> CountUserByRole();
     Task<ApiResult<IEnumerable<StatisticDto>>> DocumentStatistic(int year);
     Task<ApiResult<IEnumerable<StatisticDto>>> TopicStatistic(int year);
     Task<ApiResult<IEnumerable<StatisticDto>>> LessonStatistic(int year);

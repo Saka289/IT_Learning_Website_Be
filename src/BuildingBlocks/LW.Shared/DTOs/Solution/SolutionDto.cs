@@ -12,4 +12,6 @@ public class SolutionDto
     public string FullName { get; set; }
     public string Image { get; set; }
     public bool IsActive { get; set; }
+    public DateTimeOffset CreatedDate { get; set; }
+    public DateTimeOffset? LastModifiedDate { get; set; }
 }

@@ -2,6 +2,7 @@
 using LW.Data.Repositories.DocumentRepositories;
 using LW.Data.Repositories.LessonRepositories;
 using LW.Data.Repositories.TopicRepositories;
+using LW.Infrastructure.Extensions;
 using LW.Shared.DTOs.Statistic;
 using LW.Shared.SeedWork;
 using Microsoft.AspNetCore.Identity;
@@ -39,16 +40,27 @@ public class StatisticService : IStatisticService
         return new ApiSuccessResult<int>(count);
     }
 
-    public async Task<ApiResult<int>> CountRole()
+    public async Task<ApiResult<IEnumerable<StatisticRoleDto>>> CountUserByRole()
     {
-        var countRole = await _roleManager.Roles.ToListAsync();
-        if (!countRole.Any())
+        var roles = await _roleManager.Roles.ToListAsync();
+        var statistics = new List<StatisticRoleDto>();
+
+        foreach (var role in roles)
         {
-            return new ApiResult<int>(false, "Not found Role !!!");
+            var countUsers = await _userManager.GetUsersInRoleAsync(role.Name);
+
+            var statistic = new StatisticRoleDto
+            {
+                Id = role.Id,
+                Name = role.Name.ConvertRoleName(),
+                BaseName = role.Name,
+                CountUser = countUsers.Count
+            };
+
+            statistics.Add(statistic);
         }
-        int count = 0;
-        count = countRole.Count;
-        return new ApiSuccessResult<int>(count);
+
+        return new ApiSuccessResult<IEnumerable<StatisticRoleDto>>(statistics);
     }
 
     public async Task<ApiResult<IEnumerable<StatisticDto>>> DocumentStatistic(int year)
