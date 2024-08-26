@@ -1138,14 +1138,6 @@ public class QuizQuestionService : IQuizQuestionService
             isValid = false;
         }
 
-        // if (dto.Type != 0 &&
-        //     (((int)dto.Type == 1 || (int)dto.Type == 2) && dto.QuizAnswers.Count() != 1) ||
-        //     ((int)dto.Type == 3 && dto.QuizAnswers.Count() >= 6))
-        // {
-        //     AddImportError(dto, $"Số lượng câu trả lời chưa phù hợp với loại câu hỏi");
-        //     isValid = false;
-        // }
-
         var countAnswer = dto.QuizAnswers.Count();
         var countAnswerTrue = dto.QuizAnswers.Count(x => x.IsCorrect);
         switch (dto.Type)
@@ -1153,7 +1145,7 @@ public class QuizQuestionService : IQuizQuestionService
             case ETypeQuestion.QuestionTrueFalse:
                 if (countAnswer != 2)
                 {
-                    AddImportError(dto, "Đây là câu hỏi true or false !!!");
+                    AddImportError(dto, "Đây là câu hỏi true or false.");
                     isValid = false;
                 }
 
@@ -1161,7 +1153,7 @@ public class QuizQuestionService : IQuizQuestionService
             case ETypeQuestion.QuestionFourAnswer:
                 if (countAnswer != 4)
                 {
-                    AddImportError(dto, "Đây là câu hỏi bốn đáp án !!!");
+                    AddImportError(dto, "Đây là câu hỏi bốn đáp án.");
                     isValid = false;
                 }
 
@@ -1169,7 +1161,7 @@ public class QuizQuestionService : IQuizQuestionService
             case ETypeQuestion.QuestionMultiChoice:
                 if (countAnswer != 6 || countAnswerTrue < 1)
                 {
-                    AddImportError(dto, "Đây là câu hỏi chọn nhiều đáp án với 6 đáp án !!!");
+                    AddImportError(dto, "Đây là câu hỏi sáu đáp án và được chọn nhiều đáp án.");
                     isValid = false;
                 }
 
@@ -1194,8 +1186,7 @@ public class QuizQuestionService : IQuizQuestionService
             AddImportError(dto, $"Không tìm thấy nội dung câu hỏi");
             isValid = false;
         }
-
-
+        
         return isValid;
     }
 
@@ -1264,8 +1255,7 @@ public class QuizQuestionService : IQuizQuestionService
                 .ToArray();
             // map insert những thằng này vào db xong mình phải lấy ra được id của nó vừa insert rồi mới thực hiện được 
             //var quizQuestionRelations = 
-            var quizQuestionRelationCreate =
-                await _quizQuestionRelationRepository.CreateRangeQuizQuestionRelation(resultArray);
+            var quizQuestionRelationCreate = await _quizQuestionRelationRepository.CreateRangeQuizQuestionRelation(resultArray);
             return new ApiResult<bool>(true, $"Import Success: {quizQuestionCreate}");
         }
         catch (Exception ex)
