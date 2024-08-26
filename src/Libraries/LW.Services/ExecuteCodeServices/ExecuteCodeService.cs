@@ -184,12 +184,6 @@ public class ExecuteCodeService : IExecuteCodeService
             {
                 return new ApiResult<bool>(false, "Problem not found !!!");
             }
-            
-            var isDuplicate = await FindDuplicateExecuteCode(item.ProblemId, item.LanguageId, false);
-            if (!isDuplicate)
-            {
-                return new ApiResult<bool>(false, "ExecuteCode is duplicate !!!");
-            }
 
             var language = await _programLanguageRepository.GetProgramLanguageById(item.LanguageId);
             if (language is null)
@@ -201,6 +195,12 @@ public class ExecuteCodeService : IExecuteCodeService
             if (executeCode is null)
             {
                 return new ApiResult<bool>(false, "Execute not found !!!");
+            }
+            
+            var isDuplicate = await FindDuplicateExecuteCode(item.ProblemId, executeCode.LanguageId, false);
+            if (!isDuplicate)
+            {
+                return new ApiResult<bool>(false, "ExecuteCode is duplicate !!!");
             }
 
             var executeCodeMapper = _mapper.Map(item, executeCode);
