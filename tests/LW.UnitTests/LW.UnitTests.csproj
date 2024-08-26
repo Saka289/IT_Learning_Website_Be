@@ -32,6 +32,7 @@
       <ProjectReference Include="..\..\src\Libraries\LW.Cache\LW.Cache.csproj" />
       <ProjectReference Include="..\..\src\Libraries\LW.Data\LW.Data.csproj" />
       <ProjectReference Include="..\..\src\Libraries\LW.Services\LW.Services.csproj" />
+      <ProjectReference Include="..\..\src\LW.API\LW.API.csproj" />
     </ItemGroup>
 
 </Project>
