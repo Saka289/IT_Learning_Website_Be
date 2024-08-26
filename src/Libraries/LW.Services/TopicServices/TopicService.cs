@@ -367,7 +367,7 @@ public class TopicService : ITopicService
         return new ApiResult<bool>(true, "Delete topic successfully");
     }
 
-    private async Task CreateOrUpdateElasticTopic(int id, bool isCreateOrUpdate)
+    public async Task CreateOrUpdateElasticTopic(int id, bool isCreateOrUpdate)
     {
         var topic = await _topicRepository.GetTopicById(id);
         var result = _mapper.Map<TopicDto>(topic);
