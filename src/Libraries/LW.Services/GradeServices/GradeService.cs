@@ -304,7 +304,7 @@ public class GradeService : IGradeService
         return new ApiSuccessResult<IEnumerable<GradeDto>>(result);
     }
 
-    private async Task CreateOrUpdateElasticGrade(int id, bool isCreateOrUpdate)
+    public async Task CreateOrUpdateElasticGrade(int id, bool isCreateOrUpdate)
     {
         var grade = await _gradeRepository.GetGradeById(id, true);
         var result = _mapper.Map<GradeDto>(grade);

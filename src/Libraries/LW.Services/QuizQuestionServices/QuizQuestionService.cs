@@ -1126,6 +1126,14 @@ public class QuizQuestionService : IQuizQuestionService
             AddImportError(dto, $"Không tìm thấy loại câu hỏi {dto.TypeName}");
             isValid = false;
         }
+        if (dto.Type != 0 &&
+     (((int)dto.Type == 1 || (int)dto.Type == 2) && dto.QuizAnswers.Count() != 1) ||
+     ((int)dto.Type == 3 && dto.QuizAnswers.Count() >= 6))
+        {
+
+            AddImportError(dto, $"Số lượng câu trả lời chưa phù hợp với loại câu hỏi");
+            isValid = false;
+        }
 
         if (dto.HashQuestion == 0 ||
             processHashNum.Contains((dto.HashQuestion, dto.Content))) // you has just compare the old answers 

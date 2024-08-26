@@ -5,6 +5,7 @@ using LW.Data.Repositories.QuizAnswerRepositories;
 using LW.Data.Repositories.QuizQuestionRelationRepositories;
 using LW.Data.Repositories.QuizQuestionRepositories;
 using LW.Data.Repositories.QuizRepositories;
+using LW.Infrastructure.Extensions;
 using LW.Services.QuizQuestionServices;
 using LW.Shared.DTOs.QuizQuestion;
 using LW.Shared.Enums;
@@ -13,6 +14,7 @@ using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Reflection.Metadata;
 using System.Text;
 using System.Threading.Tasks;
 
@@ -167,6 +169,86 @@ namespace LW.UnitTests.Services.PublicUnitTests
                 Assert.IsEmpty(dto.Errors);
             }
         }
-    
+
+
+        [Test]
+        public void GetEnumIntValueFromDisplayName_ValidTypeDisplayName_ReturnsCorrectIntValue()
+        {
+            // Arrange
+            string typeDisplayName = "Loại nhiều câu trả lời";
+
+            // Act
+            int actualType = EnumHelperExtensions.GetEnumIntValueFromDisplayName<ETypeQuestion>(typeDisplayName);
+
+            // Expected value based on the enum definition
+            int expectedType = (int)ETypeQuestion.QuestionMultiChoice; // Assuming it is 1
+
+            // Assert
+            Assert.AreEqual(expectedType, actualType, $"Expected type for '{typeDisplayName}' was {expectedType} but got {actualType}");
+        }
+
+        [Test]
+        public void GetEnumIntValueFromDisplayName_InvalidTypeDisplayName_ThrowsException()
+        {
+            // Arrange
+            string invalidTypeDisplayName = "NonExistentType";
+
+            // Act & Assert
+            Assert.AreEqual(EnumHelperExtensions.GetEnumIntValueFromDisplayName<ETypeQuestion>(invalidTypeDisplayName), 0);
+        }
+
+        [Test]
+        public void GetEnumIntValueFromDisplayName_NullOrEmptyTypeDisplayName_ThrowsException()
+        {
+            // Arrange
+            string nullDisplayName = null;
+            string emptyDisplayName = "";
+
+            // Act & Assert
+            Assert.AreEqual(EnumHelperExtensions.GetEnumIntValueFromDisplayName<ETypeQuestion>(nullDisplayName), 0);
+            Assert.AreEqual(EnumHelperExtensions.GetEnumIntValueFromDisplayName<ETypeQuestion>(emptyDisplayName), 0);
+            
+        }  
+        
+        [Test]
+        public void GetEnumIntValueFromDisplayName_ValidLevelDisplayName_ReturnsCorrectIntValue()
+        {
+            // Arrange
+            string typeDisplayName = "Cấp độ rất dễ";
+
+            // Act
+            int actualType = EnumHelperExtensions.GetEnumIntValueFromDisplayName<EQuestionLevel>(typeDisplayName);
+
+            // Expected value based on the enum definition
+            int expectedType = (int)EQuestionLevel.VeryLow; // Assuming it is 1
+
+            // Assert
+            // optional message parameter when assert error 
+            Assert.AreEqual(expectedType, actualType, $"Expected type for '{typeDisplayName}' was {expectedType} but got {actualType}");
+        }
+
+        [Test]
+        public void GetEnumIntValueFromDisplayName_InvalidLevelDisplayName_ThrowsException()
+        {
+            // Arrange
+            string invalidTypeDisplayName = "NonExistentType";
+
+            // Act & Assert
+            Assert.AreEqual(EnumHelperExtensions.GetEnumIntValueFromDisplayName<EQuestionLevel>(invalidTypeDisplayName), 0);
+        }
+
+        [Test]
+        public void GetEnumIntValueFromDisplayName_NullOrEmptyLevelDisplayName_ThrowsException()
+        {
+            // Arrange
+            string nullDisplayName = null;
+            string emptyDisplayName = "";
+
+            // Act & Assert
+            Assert.AreEqual(EnumHelperExtensions.GetEnumIntValueFromDisplayName<EQuestionLevel>(nullDisplayName), 0);
+            Assert.AreEqual(EnumHelperExtensions.GetEnumIntValueFromDisplayName<EQuestionLevel>(emptyDisplayName), 0);
+            
+        }
+
     }
 }
