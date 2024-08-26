@@ -19,11 +19,12 @@ namespace LW.API.Controllers.Public
     public class ExamCodeController : ControllerBase
     {
         private readonly IExamCodeService _examCodeService;
+
         public ExamCodeController(IExamCodeService examCodeService)
         {
             _examCodeService = examCodeService;
         }
-        
+
         [HttpGet("GetAllExamCodeByExamId/{examId}")]
         [AllowAnonymous]
         public async Task<ActionResult<ApiResult<IEnumerable<ExamCodeDto>>>> GetAllExamCodeByExamId(int examId)
@@ -81,22 +82,6 @@ namespace LW.API.Controllers.Public
             return Ok(result);
         }
 
-        [HttpPost("CreateRangeExamCode/{examId}")]
-        public async Task<ActionResult<ApiResult<IEnumerable<ExamCodeDto>>>> CreateRangeExamCode(int examId, [FromForm] List<CodeDto> codeDto)
-        {
-            var examCodeCreateRangeDto = new ExamCodeCreateRangeDto()
-            {
-                ExamId = examId,
-                CodeDtos = codeDto
-            };
-            var result = await _examCodeService.CreateRangeExamCode(examCodeCreateRangeDto);
-            if (!result.IsSucceeded)
-            {
-                return BadRequest(result);
-            }
-
-            return Ok(result);
-        }
 
         [HttpPut("UpdateExamCode")]
         public async Task<ActionResult<ApiResult<ExamCodeDto>>> UpdateExamCode(

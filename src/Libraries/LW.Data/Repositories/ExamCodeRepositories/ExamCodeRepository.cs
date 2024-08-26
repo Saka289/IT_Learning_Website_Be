@@ -14,40 +14,41 @@ public class ExamCodeRepository : RepositoryBase<ExamCode, int>, IExamCodeReposi
 
     public async Task<IEnumerable<ExamCode>> GetAllExamCode()
     {
-        return await FindAll().Include(x=>x.Exam).ToListAsync();
+        return await FindAll().Include(x => x.Exam).ToListAsync();
     }
 
-    public async Task<IEnumerable<ExamCode>> GetAllExamCodeByExamId(int examId)
+    public async Task<IEnumerable<ExamCode?>> GetAllExamCodeByExamId(int examId)
     {
-        return await FindByCondition(x => x.ExamId == examId).Include(x=>x.Exam).ToListAsync();
+        return await FindByCondition(x => x.ExamId == examId).Include(x => x.Exam).ToListAsync();
     }
 
-    public async Task<ExamCode> GetExamCodeById(int id)
+    public async Task<ExamCode?> GetExamCodeById(int id)
     {
-        return await FindByCondition(x => x.Id == id).Include(x=>x.Exam).FirstOrDefaultAsync();
+        return await FindByCondition(x => x.Id == id).Include(x => x.Exam).FirstOrDefaultAsync();
     }
 
-    public async Task<ExamCode> GetExamCodeByCode(string code)
+    public async Task<ExamCode?> GetExamCodeByCode(int examId, string code)
     {
-        return await FindByCondition(x => x.Code == code).Include(x=>x.Exam).FirstOrDefaultAsync();
+        return await FindByCondition(x => x.ExamId == examId && x.Code == code).Include(x => x.Exam)
+            .FirstOrDefaultAsync();
     }
 
-    public async Task<IEnumerable<ExamCode>> CreateRangeExamCode(IEnumerable<ExamCode> ExamCodes)
+    public async Task<IEnumerable<ExamCode>> CreateRangeExamCode(IEnumerable<ExamCode> examCodes)
     {
-        await CreateListAsync(ExamCodes);
-        return ExamCodes;
+        await CreateListAsync(examCodes);
+        return examCodes;
     }
 
-    public async Task<ExamCode> CreateExamCode(ExamCode ExamCode)
+    public async Task<ExamCode> CreateExamCode(ExamCode examCode)
     {
-        await CreateAsync(ExamCode);
-        return ExamCode;
+        await CreateAsync(examCode);
+        return examCode;
     }
 
-    public async Task<ExamCode> UpdateExamCode(ExamCode ExamCode)
+    public async Task<ExamCode> UpdateExamCode(ExamCode examCode)
     {
-        await UpdateAsync(ExamCode);
-        return ExamCode;
+        await UpdateAsync(examCode);
+        return examCode;
     }
 
     public async Task<bool> DeleteExamCode(int id)

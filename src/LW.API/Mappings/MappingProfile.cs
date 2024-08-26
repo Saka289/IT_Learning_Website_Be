@@ -230,6 +230,7 @@ public class MappingProfile : Profile
             .ForMember(x => x.ExamId, y => y.MapFrom(src => src.ExamCode.Exam.Id))
             .ForMember(x => x.ExamCodeId, y => y.MapFrom(src => src.ExamCode.Id))
             .ForMember(x => x.Code, y => y.MapFrom(src => src.ExamCode.Code))
+            .ForMember(x => x.ExamCodeImage, y => y.MapFrom(src => src.ExamCode.ExamFile))
             .ReverseMap();
         CreateMap<HistoryAnswer, HistoryAnswerDto>().ReverseMap();
         //Quiz
