@@ -49,7 +49,7 @@ public class JwtTokenService : IJwtTokenService
             Audience = _jwtSettings.Audience,
             Issuer = _jwtSettings.Issuer,
             Subject = new ClaimsIdentity(claimList),
-            Expires = DateTime.UtcNow.AddHours(1),
+            Expires = DateTime.UtcNow.AddHours(12),
             SigningCredentials = signingCredentials
         };
 
