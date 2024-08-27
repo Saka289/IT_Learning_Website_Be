@@ -222,13 +222,17 @@ public class ElasticSearchService<T, K> : IElasticSearchService<T, K> where T : 
         if (int.TryParse(searchRequestValue.Value, out int intValue))
         {
             searchValue = intValue;
+        }   
+        else
+        {
+            searchValue = $"\"{searchRequestValue.Value}\"";
         }
         
         var responseSearch = await _elasticClient.SearchAsync<T>(s => s
             .Index(indexName)
             .Query(q => q
                 .QueryString(d => d
-                    .Query(searchValue is int ? searchValue.ToString() : '*' + searchValue.ToString() + '*')
+                    .Query(searchValue.ToString())
                     .DefaultField("*")
                 )
             )
