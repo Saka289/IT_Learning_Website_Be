@@ -749,6 +749,7 @@ public class QuizQuestionService : IQuizQuestionService
             var value = prop.GetValue(item, null);
             string cellValue = value != null ? value.ToString() : "";
             worksheet.Cells[rowIndex, excelColumnIndex].Value = cellValue;
+            worksheet.Cells[rowIndex, excelColumnIndex].Style.WrapText = true; // Ensure text wraps within the cell
             excelColumnIndex++;
         }
     }
@@ -810,6 +811,7 @@ public class QuizQuestionService : IQuizQuestionService
                 {
                     string cellValue = !string.IsNullOrEmpty(correctAnswer) ? correctAnswer : "";
                     worksheet.Cells[rowIndex, excelColumnIndex].Value = cellValue;
+                    worksheet.Cells[rowIndex, excelColumnIndex].Style.WrapText = true; // Ensure text wraps within the cell
                     excelColumnIndex++;
                 }
                 else if (prop.Name == "Errors")
@@ -823,6 +825,7 @@ public class QuizQuestionService : IQuizQuestionService
                         ? (boolValue ? "Có" : "Không")
                         : propValue?.ToString() ?? "";
                     worksheet.Cells[rowIndex, excelColumnIndex].Value = cellValue;
+                    worksheet.Cells[rowIndex, excelColumnIndex].Style.WrapText = true; // Ensure text wraps within the cell
                     excelColumnIndex++;
                 }
             }
