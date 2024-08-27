@@ -1141,36 +1141,39 @@ public class QuizQuestionService : IQuizQuestionService
             isValid = false;
         }
 
-        var countAnswer = dto.QuizAnswers.Count();
-        var countAnswerTrue = dto.QuizAnswers.Count(x => x.IsCorrect);
-        switch (dto.Type)
+        if (dto.Type != 0)
         {
-            case ETypeQuestion.QuestionTrueFalse:
-                if (countAnswer != 2)
-                {
-                    AddImportError(dto, "Đây là câu hỏi true or false.");
-                    isValid = false;
-                }
+            var countAnswer = dto.QuizAnswers.Count();
+            var countAnswerTrue = dto.QuizAnswers.Count(x => x.IsCorrect);
+            switch (dto.Type)
+            {
+                case ETypeQuestion.QuestionTrueFalse:
+                    if (countAnswer != 2)
+                    {
+                        AddImportError(dto, "Đây là câu hỏi true or false.");
+                        isValid = false;
+                    }
 
-                break;
-            case ETypeQuestion.QuestionFourAnswer:
-                if (countAnswer != 4)
-                {
-                    AddImportError(dto, "Đây là câu hỏi bốn đáp án.");
-                    isValid = false;
-                }
+                    break;
+                case ETypeQuestion.QuestionFourAnswer:
+                    if (countAnswer != 4)
+                    {
+                        AddImportError(dto, "Đây là câu hỏi bốn đáp án.");
+                        isValid = false;
+                    }
 
-                break;
-            case ETypeQuestion.QuestionMultiChoice:
-                if (countAnswer != 6 || countAnswerTrue < 1)
-                {
-                    AddImportError(dto, "Đây là câu hỏi sáu đáp án và được chọn nhiều đáp án.");
-                    isValid = false;
-                }
+                    break;
+                case ETypeQuestion.QuestionMultiChoice:
+                    if (countAnswer != 6 || countAnswerTrue < 1)
+                    {
+                        AddImportError(dto, "Đây là câu hỏi sáu đáp án và được chọn nhiều đáp án.");
+                        isValid = false;
+                    }
 
-                break;
+                    break;
+            }
+
         }
-
         if (dto.HashQuestion == 0 ||
             processHashNum.Contains((dto.HashQuestion, dto.Content))) // you has just compare the old answers 
         {
@@ -1189,7 +1192,7 @@ public class QuizQuestionService : IQuizQuestionService
             AddImportError(dto, $"Không tìm thấy nội dung câu hỏi");
             isValid = false;
         }
-        
+
         return isValid;
     }
 

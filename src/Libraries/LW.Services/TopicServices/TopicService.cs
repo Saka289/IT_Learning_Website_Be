@@ -180,7 +180,9 @@ public class TopicService : ITopicService
 
     public async Task<ApiResult<bool>> Create(TopicCreateDto model)
     {
-        var documentEntity = await _documentRepository.GetDocumentById(model.DocumentId);
+        // Create topic: chứa document Id 
+        
+        var documentEntity = await _documentRepository.GetDocumentById(model.DocumentId); // fake kết quả là null 
         if (documentEntity is null)
         {
             return new ApiResult<bool>(false, "Document of topic not found !!!");

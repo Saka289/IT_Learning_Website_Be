@@ -7,6 +7,7 @@ using LW.Data.Repositories.QuizQuestionRepositories;
 using LW.Data.Repositories.QuizRepositories;
 using LW.Infrastructure.Extensions;
 using LW.Services.QuizQuestionServices;
+using LW.Shared.DTOs.QuizAnswer;
 using LW.Shared.DTOs.QuizQuestion;
 using LW.Shared.Enums;
 using Moq;
@@ -81,6 +82,9 @@ namespace LW.UnitTests.Services.PublicUnitTests
             [Test]
             public void ValidateQuizQuestionImportDto_DuplicateQuestion_ReturnsFalse()
             {
+                List<QuizAnswerDto> answers = new List<QuizAnswerDto>();
+                answers.Add(new QuizAnswerDto(true, "Màu vàng "));
+                answers.Add(new QuizAnswerDto(false, "Màu đen  "));
                 // Arrange
                 var dto = new QuizQuestionImportDto
                 {
@@ -88,6 +92,7 @@ namespace LW.UnitTests.Services.PublicUnitTests
                     Content = "Duplicate Question",
                     QuestionLevel = (EQuestionLevel)1,
                     Type = (ETypeQuestion)1,
+                    QuizAnswers = answers
                 };
                 var processHashNum = new HashSet<(int, string)>
                 {
@@ -148,13 +153,18 @@ namespace LW.UnitTests.Services.PublicUnitTests
             [Test]
             public void ValidateQuizQuestionImportDto_ValidDto_ReturnsTrue()
             {
+                List<QuizAnswerDto> answers = new List<QuizAnswerDto>();
+                answers.Add(new QuizAnswerDto(true, "Màu vàng "));
+                answers.Add(new QuizAnswerDto(false, "Màu đen  "));
                 // Arrange
                 var dto = new QuizQuestionImportDto
                 {
                     Type = (ETypeQuestion)1,
                     HashQuestion = 1,
                     Content = "Valid Question",
-                    QuestionLevel = (EQuestionLevel)1
+                    QuestionLevel = (EQuestionLevel)1,
+                    QuizAnswers = answers
+
                 };
                 var processHashNum = new HashSet<(int, string)>();
 

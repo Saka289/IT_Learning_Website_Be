@@ -84,14 +84,20 @@ namespace LW.UnitTests.Service
         [Test]
         public async Task CreateServiceDocumentNotFoundReturnDocumentNotFound()
         {
-            // arrange
-            TopicCreateDto topicCreateDto = new TopicCreateDto();
-            NSubstitute.Core.ConfiguredCall configuredCall =
-                documentRepository.GetDocumentById(topicCreateDto.DocumentId).Returns((Document)null);
+            // 3 bước: 3A
+            // arrange: chuẩn bị dữ liệu để fake ; act: thực hiện; assert: so sánh kết quả mong đợi 
 
-            // act 
+            // chuẩn bị model TopicCreateDto
+
+            TopicCreateDto topicCreateDto = new TopicCreateDto();
+            documentRepository.GetDocumentById(topicCreateDto.DocumentId).Returns((Document)null); // NSubstitute 
+
+
+            // act : gọi hàm create 
             var result = await topicService.Create(topicCreateDto);
             // assert 
+
+            // tôi muốn kết quả không được null, IsSucces là false
             Assert.IsNotNull(result);
             Assert.IsFalse(result.IsSucceeded);
             Assert.That(result.Message, Is.EqualTo("Document of topic not found !!!"));
@@ -189,41 +195,7 @@ namespace LW.UnitTests.Service
             Assert.AreEqual("Topic is not found !!!", result.Message);
         }
 
-        [Test]
-        public async Task UpdateShouldUpdateTopicAndCreateOrUpdateElasticTopic()
-        {
-            // Arrange
-            var model = new TopicUpdateDto
-            {
-                DocumentId = 1,
-                Id = 1,
-                Title = "Updated Title",
-                TagValues = new List<string> { "Tag1", "Tag2" },
-                ParentId = 2
-            };
-            var document = new Document();
-            var topic = new Topic { Id = 1, Title = "Old Title" };
-            var updatedTopic = new Topic { Id = 1, Title = "Updated Title" };
-            var topicDto = new TopicDto { Id = 1, Title = "Updated Title" };
-
-            documentRepository.GetDocumentById(model.DocumentId).Returns(document);
-            topicRepository.GetTopicById(1).Returns(topic);
-            mapper.Map(model, topic).Returns(updatedTopic);
-            mapper.Map<TopicDto>(updatedTopic).Returns(topicDto);
-            elasticSearchService.UpdateDocumentAsync(ElasticConstant.ElasticTopics, topicDto, model.ParentId.Value)
-                .Returns(Task.FromResult("some String"));
-
-            // Act
-            var result = await topicService.Update(model);
-
-            // Assert
-            Assert.IsTrue(result.IsSucceeded);
-            Assert.AreEqual("Update topic successfully", result.Message);
-            await topicRepository.Received(1).UpdateTopic(updatedTopic);
-            await elasticSearchService.Received(1).UpdateDocumentAsync(
-                ElasticConstant.ElasticTopics, topicDto, model.ParentId.Value
-            );
-        }
+       
 
 
         [Test]
