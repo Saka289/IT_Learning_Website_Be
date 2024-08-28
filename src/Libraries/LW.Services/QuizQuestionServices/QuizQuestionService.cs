@@ -32,6 +32,7 @@ using Microsoft.EntityFrameworkCore;
 using MockQueryable.Moq;
 using System.Xml.Linq;
 using System.Data;
+using LW.Shared.DTOs.QuizQuestionRelation;
 using Moq;
 
 namespace LW.Services.QuizQuestionServices;
@@ -80,8 +81,7 @@ public class QuizQuestionService : IQuizQuestionService
         return new ApiSuccessResult<IEnumerable<QuizQuestionDto>>(result);
     }
 
-    public async Task<ApiResult<PagedList<QuizQuestionDto>>> GetAllQuizQuestionPagination(
-        SearchAllQuizQuestionDto searchAllQuizQuestionDto)
+    public async Task<ApiResult<PagedList<QuizQuestionDto>>> GetAllQuizQuestionPagination(SearchAllQuizQuestionDto searchAllQuizQuestionDto)
     {
         IEnumerable<QuizQuestionDto> quizQuestionList;
         if (!string.IsNullOrEmpty(searchAllQuizQuestionDto.Value))
@@ -98,6 +98,15 @@ public class QuizQuestionService : IQuizQuestionService
             }
 
             quizQuestionList = quizQuestionListSearch.ToList();
+            if (searchAllQuizQuestionDto.QuizId > 0)
+            {
+                foreach (var item in quizQuestionList)
+                {
+                    var quizRelation = await _quizQuestionRelationRepository.FindByCondition(x => x.QuizId == searchAllQuizQuestionDto.QuizId).ToListAsync();
+                    var quizRelationMapper = _mapper.Map<IEnumerable<QuizQuestionRelationDto>>(quizRelation);
+                    item.QuizQuestionRelations = quizRelationMapper;
+                }
+            }
         }
         else
         {
@@ -117,8 +126,7 @@ public class QuizQuestionService : IQuizQuestionService
 
         if (searchAllQuizQuestionDto.QuizId > 0)
         {
-            quizQuestionList = quizQuestionList.Where(q =>
-                q.QuizQuestionRelations.Any(q => q.QuizId == searchAllQuizQuestionDto.QuizId));
+            quizQuestionList = quizQuestionList.Where(q => q.QuizQuestionRelations.Any(q => q.QuizId == searchAllQuizQuestionDto.QuizId));
         }
 
         if (searchAllQuizQuestionDto.Level > 0)
@@ -133,8 +141,7 @@ public class QuizQuestionService : IQuizQuestionService
         return new ApiSuccessResult<PagedList<QuizQuestionDto>>(pagedResult);
     }
 
-    public async Task<ApiResult<IEnumerable<object>>> GetAllQuizQuestionByQuizId(
-        SearchQuizQuestionDto searchQuizQuestionDto)
+    public async Task<ApiResult<IEnumerable<object>>> GetAllQuizQuestionByQuizId(SearchQuizQuestionDto searchQuizQuestionDto)
     {
         var quiz = await _quizRepository.GetQuizById(Convert.ToInt32(searchQuizQuestionDto.QuizId));
         if (quiz is null)

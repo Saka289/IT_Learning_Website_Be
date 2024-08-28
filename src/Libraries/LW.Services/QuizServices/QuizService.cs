@@ -280,7 +280,7 @@ public class QuizService : IQuizService
             ? quizCreateDto.TagValues.ConvertToTagString()
             : quizCreateDto.Title.RemoveDiacritics();
         var quizCreate = await _quizRepository.CreateQuiz(quizEntity);
-        await CreateOrUpdateElasticQuiz(quizCreate.Id, false);
+        await CreateOrUpdateElasticQuiz(quizCreate.Id, true);
         var result = _mapper.Map<QuizDto>(quizCreate);
         return new ApiSuccessResult<QuizDto>(result);
     }
