@@ -4,6 +4,7 @@ using LW.Data.Entities;
 using LW.Data.Repositories.FavoritePostRepositories;
 using LW.Data.Repositories.GradeRepositories;
 using LW.Data.Repositories.PostRepositories;
+using LW.Infrastructure.Extensions;
 using LW.Shared.DTOs.Post;
 using LW.Shared.SeedWork;
 using Microsoft.AspNetCore.Identity;
@@ -52,7 +53,7 @@ public class PostService : IPostService
         // assign role for each poster
         foreach (var p in posts)
         {
-            var roles = (await _userManager.GetRolesAsync(p.ApplicationUser)).ToArray();
+            var roles = ((await _userManager.GetRolesAsync(p.ApplicationUser)).Select(x=>x.ConvertRoleName())).ToArray();
             p.Roles = roles;
         }
         var result = _mapper.Map<IEnumerable<PostDto>>(posts);
@@ -74,7 +75,7 @@ public class PostService : IPostService
         // assign role for each poster
         foreach (var p in posts)
         {
-            var roles = (await _userManager.GetRolesAsync(p.ApplicationUser)).ToArray();
+            var roles = ((await _userManager.GetRolesAsync(p.ApplicationUser)).Select(x=>x.ConvertRoleName())).ToArray();
             p.Roles = roles;
         }
         var result = _mapper.Map<IEnumerable<PostDto>>(posts);
@@ -102,7 +103,7 @@ public class PostService : IPostService
         // assign role for each poster
         foreach (var p in posts)
         {
-            var roles = (await _userManager.GetRolesAsync(p.ApplicationUser)).ToArray();
+            var roles = ((await _userManager.GetRolesAsync(p.ApplicationUser)).Select(x=>x.ConvertRoleName())).ToArray();
             p.Roles = roles;
         }
         var result = _mapper.Map<IEnumerable<PostDto>>(posts);
@@ -130,7 +131,7 @@ public class PostService : IPostService
         // assign role for each poster
         foreach (var p in posts)
         {
-            var roles = (await _userManager.GetRolesAsync(p.ApplicationUser)).ToArray();
+            var roles = ((await _userManager.GetRolesAsync(p.ApplicationUser)).Select(x=>x.ConvertRoleName())).ToArray();
             p.Roles = roles;
         }
         var result = _mapper.Map<IEnumerable<PostDto>>(posts);
@@ -231,7 +232,7 @@ public class PostService : IPostService
         // assign role for each poster
         foreach (var p in posts)
         {
-            var roles = (await _userManager.GetRolesAsync(p.ApplicationUser)).ToArray();
+            var roles = ((await _userManager.GetRolesAsync(p.ApplicationUser)).Select(x=>x.ConvertRoleName())).ToArray();
             p.Roles = roles;
         }
         
@@ -299,7 +300,7 @@ public class PostService : IPostService
         // assign role for each poster
         foreach (var p in posts)
         {
-            var roles = (await _userManager.GetRolesAsync(p.ApplicationUser)).ToArray();
+            var roles = ((await _userManager.GetRolesAsync(p.ApplicationUser)).Select(x=>x.ConvertRoleName())).ToArray();
             p.Roles = roles;
         }
         var result = _mapper.Map<IEnumerable<PostDto>>(posts);

@@ -108,7 +108,8 @@ public class ElasticSearchService<T, K> : IElasticSearchService<T, K> where T : 
         return response.Items.Select(i => i.Id).Where(id => !string.IsNullOrEmpty(id));
     }
 
-    public async Task<IEnumerable<T>> SearchDocumentAsync(string indexName, SearchRequestParameters searchRequestParameters)
+    public async Task<IEnumerable<T>> SearchDocumentAsync(string indexName,
+        SearchRequestParameters searchRequestParameters)
     {
         object searchValue = searchRequestParameters.Value;
         if (int.TryParse(searchRequestParameters.Value, out int intValue))
@@ -163,7 +164,8 @@ public class ElasticSearchService<T, K> : IElasticSearchService<T, K> where T : 
         return result;
     }
 
-    public async Task<IEnumerable<T>> SearchAllDocumentFieldAsync(string indexName, SearchRequestValue searchRequestValue)
+    public async Task<IEnumerable<T>> SearchAllDocumentFieldAsync(string indexName,
+        SearchRequestValue searchRequestValue)
     {
         object searchValue = searchRequestValue.Value;
         if (int.TryParse(searchRequestValue.Value, out int intValue))
@@ -192,6 +194,7 @@ public class ElasticSearchService<T, K> : IElasticSearchService<T, K> where T : 
             var resultSearch = responseSearch.Hits.Select(hit => hit.Source).ToList();
             return resultSearch;
         }
+
         var response = await _elasticClient.SearchAsync<T>(s => s
             .Index(indexName)
             .Size(searchRequestValue.Size)
@@ -217,24 +220,31 @@ public class ElasticSearchService<T, K> : IElasticSearchService<T, K> where T : 
             _logger.Information("Value is null !!!");
             return null;
         }
-        
+
         object searchValue = searchRequestValue.Value;
         if (int.TryParse(searchRequestValue.Value, out int intValue))
         {
             searchValue = intValue;
         }
-        
+        else
+        {
+            searchValue = searchRequestValue.Value;
+        }
+
         var responseSearch = await _elasticClient.SearchAsync<T>(s => s
             .Index(indexName)
             .Query(q => q
-                .QueryString(d => d
-                    .Query(searchValue is int ? searchValue.ToString() : '*' + searchValue.ToString() + '*')
-                    .DefaultField("*")
+                .MultiMatch(m => m
+                    .Query(searchValue.ToString())
+                    .Fields(fields => fields
+                            .Field("*") // Tìm kiếm trên tất cả các field
+                    )
+                    .Fuzziness(Fuzziness.Auto)
                 )
             )
             .Size(searchRequestValue.Size)
         );
-        
+
         if (!responseSearch.IsValid || responseSearch.Total == 0)
         {
             _logger.Information($"Search query failed: {responseSearch.IsValid.ToString()}");
