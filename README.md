@@ -25,28 +25,39 @@ Go to folder contain file `docker-compose`
 ```Powershell
 docker-compose -f docker-compose.yml -f docker-compose.override.yml up -d --remove-orphans
 ```
-
-## Application URLs - LOCAL Environment (Docker Container):
-- Product API: http://localhost:6001/api/products
-- Customer API: http://localhost:6001/api/customers
-
-## Docker Application URLs - LOCAL Environment (Docker Container):
-- Elasticsearch: http://localhost:9200 - username: elastic ; pass: admin1234
-- Kibana: http://localhost:5601 - username: elastic ; pass: admin1234
-- RabbitMQ: http://localhost:15672 - username: guest ; pass: guest
-
 2. Using Visual Studio 2022
 - Open LW-BE.sln - `LW_BE.sln`
 - Run Compound to start multi projects
 ---
-## Application URLs - DEVELOPMENT Environment:
-- Product API: http://localhost:5001/api/products
-- Customer API: http://localhost:5001/api/customers
----
-## Application URLs - PRODUCTION Environment:
 
----
+## Application URLs - LOCAL Environment:
+- Grade API: https://localhost:7000/api/grade
+- Document API: https://localhost:7000/api/document
+- Topic API: https://localhost:7000/api/topic
+
+## Docker Application URLs - LOCAL Environment (Docker Container):
+- Elasticsearch: http://localhost:9200 - username: elastic ; pass: admin1234
+- Kibana: http://localhost:5601 - username: elastic ; pass: admin1234
+- Redis: http://localhost:6379 - pass: admin@1234
+- MySQL: http://localhost:3306 - username: root ; pass: saka2892002
+- PostgreSQL: http://localhost:5432 - username: judge0 ; pass: admin@1234
+
+## Application URLs - DEVELOPMENT Environment (Docker Container):
+- Grade API: https://localhost:8000/api/grade
+- Document API: https://localhost:8000/api/document
+- Topic API: https://localhost:8000/api/topic
+
+## Application URLs - PRODUCTION Environment:
+- Grade API: https://lw-api.azurewebsites.net/api/grade
+- Document API: https://lw-api.azurewebsites.net/api/document
+- Topic API: https://lw-api.azurewebsites.net/api/topic
+
 ## Packages References
+- https://www.nuget.org/packages/FluentValidation/11.9.2
+- https://www.nuget.org/packages/Microsoft.EntityFrameworkCore.Design/6.0.3
+- https://www.nuget.org/packages/Microsoft.EntityFrameworkCore.Tools/6.0.3
+- https://www.nuget.org/packages/Microsoft.VisualStudio.Web.CodeGeneration.Design/6.0.16
+- https://www.nuget.org/packages/Swashbuckle.AspNetCore/6.5.0
 
 ## Install Environment
 
@@ -54,6 +65,14 @@ docker-compose -f docker-compose.yml -f docker-compose.override.yml up -d --remo
 - https://visualstudio.microsoft.com/
 
 ## References URLS
+- ASP.NET Core Documentation: https://learn.microsoft.com/en-us/aspnet/core/
+- Docker Documentation: https://docs.docker.com/
+- Entity Framework Core Documentation: https://learn.microsoft.com/en-us/ef/core/
+- Elasticsearch Documentation: https://www.elastic.co/guide/en/elasticsearch/reference/current/index.html
+- Redis Documentation: https://redis.io/docs/
+- Swashbuckle (Swagger) Documentation: https://swagger.io/docs/
+- FluentValidation Documentation: https://docs.fluentvalidation.net/en/latest/
+- Visual Studio Documentation: https://learn.microsoft.com/en-us/visualstudio/
 
 ## Docker Commands: (cd into folder contain file `docker-compose.yml`, `docker-compose.override.yml`)
 
